@@ -1,0 +1,36 @@
+{
+  "name": "live-indicator",
+  "title": "LiveIndicator",
+  "tier": "microcks",
+  "description": "Pink dot and label that marks a real-time stream. Not a status.",
+  "registryDependencies": [
+    "base"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Static <span> with a decorative dot and visible label",
+    "keyboard": [],
+    "aria": [
+      "Not a live region itself",
+      "paused adds the visible word \"paused\" and stops the dot",
+      "Dot pulse stops under reduced motion"
+    ],
+    "rgaa": [
+      "3.2",
+      "13.8"
+    ],
+    "wcag": [
+      "1.4.1",
+      "1.4.3",
+      "2.2.2"
+    ],
+    "notes": "Pair it with a Pause control for streams (RGAA 13.8). Never show it for a finished result."
+  },
+  "stories": [
+    "Microcks/LiveIndicator"
+  ]
+}

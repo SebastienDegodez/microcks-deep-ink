@@ -1,7 +1,7 @@
 {
   "name": "microcks-deep-ink",
   "private": true,
-  "description": "Microcks UI v2 design system (Deep Ink): tokens, Web Components, React and Angular wrappers, plugin SDK and Storybooks.",
+  "description": "Microcks UI v2 design system (Deep Ink): CSS tokens, a copy-paste component registry (React, Angular, HTML), three Web Components, a CLI, a plugin SDK, two Storybooks and a clean-architecture demo.",
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.28.0",
   "engines": {
@@ -9,9 +9,16 @@
   },
   "scripts": {
     "build": "pnpm -r --workspace-concurrency=1 --filter \"./packages/**\" build",
+    "build:strict": "pnpm --filter @microcks-deep-ink/registry exec node scripts/build.mjs --strict",
     "build:storybooks": "pnpm --filter storybook-react build-storybook && pnpm --filter storybook-angular build-storybook",
+    "build:demo": "pnpm --filter demo-react build",
+    "build:site": "bash tools/site/assemble.sh",
+    "test": "pnpm -r --if-present test",
+    "lint": "pnpm --filter @microcks-deep-ink/registry lint && pnpm --filter demo-react lint && pnpm --filter demo-react lint:arch",
+    "typecheck": "pnpm --filter @microcks-deep-ink/registry typecheck",
+    "a11y": "pnpm --filter a11y-tools build && python3 tools/a11y/smoke.py --site site --out a11y-report",
+    "deep-ink": "node packages/cli/bin/deep-ink.mjs",
     "storybook:react": "pnpm --filter storybook-react storybook",
-    "storybook:angular": "pnpm --filter storybook-angular storybook",
-    "clean": "pnpm -r exec rm -rf dist storybook-static"
+    "storybook:angular": "pnpm --filter storybook-angular storybook"
   }
 }

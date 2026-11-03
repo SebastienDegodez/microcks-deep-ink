@@ -14,14 +14,13 @@
     "@angular/forms": "^22.2.0",
     "@angular/platform-browser": "^22.2.0",
     "@angular/platform-browser-dynamic": "^22.2.0",
-    "@microcks-deep-ink/angular": "link:../../packages/angular/dist",
-    "@microcks-deep-ink/core": "workspace:*",
     "@microcks-deep-ink/plugin-sdk": "workspace:*",
     "@microcks-deep-ink/storybook-shared": "workspace:*",
     "@microcks-deep-ink/tokens": "workspace:*",
     "rxjs": "^7.8.0",
     "tslib": "^2.8.0",
-    "zone.js": "^0.16.0"
+    "zone.js": "^0.16.0",
+    "@microcks-deep-ink/registry": "workspace:*"
   },
   "devDependencies": {
     "@angular-devkit/architect": "^0.2202.0",
@@ -33,6 +32,8 @@
     "@storybook/addon-docs": "^10.6.5",
     "@storybook/angular": "^10.6.5",
     "storybook": "^10.6.5",
-    "typescript": "~6.0.0"
+    "typescript": "~6.0.0",
+    "react": "^19.2.7",
+    "@types/react": "^19.2.0"
   }
 }

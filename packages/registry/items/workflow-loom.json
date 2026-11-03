@@ -1,0 +1,72 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "workflow-loom",
+  "title": "WorkflowLoom",
+  "tier": "element",
+  "description": "Arazzo workflow as a loom: lanes per source, step nodes, data threads, parallel branches (dependsOn), end and retry actions, and an equivalent Steps table.",
+  "registryDependencies": [
+    "base"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [
+    "workflow-loom"
+  ],
+  "a11y": {
+    "pattern": "role=group with toggle-button nodes (aria-pressed), roving tabindex, and a Show as table view",
+    "keyboard": [
+      [
+        "Tab",
+        "Moves to the Show as table button, the diagram region, then to the loom (one tab stop for all steps)"
+      ],
+      [
+        "Arrow Left / Right",
+        "Moves to the previous or next column"
+      ],
+      [
+        "Arrow Up / Down",
+        "Moves to the previous or next lane or parallel branch in the same column"
+      ],
+      [
+        "Home / End",
+        "First step / last step"
+      ],
+      [
+        "Enter / Space",
+        "Selects the step (mkStepSelect)"
+      ]
+    ],
+    "aria": [
+      "The SVG is aria-hidden; every node is a button named \"Step 3, patchPastry, PATCH /pastries/{name}, Failed after 3 attempts, Success criteria passed, Schema validation failed\"",
+      "Actions (end, retry) and the AsyncAPI \"not runnable\" note are in the node's aria-describedby",
+      "Status is words plus a glyph: Passed, Failed, Not run (dashed outline, never reduced opacity)",
+      "Show as table (aria-pressed) swaps the diagram for a real table: #, Step, Source, Operation, Depends on, Status, Checks, Actions",
+      "The scrollable diagram and table are focusable regions with a name"
+    ],
+    "rgaa": [
+      "1.2",
+      "3.2",
+      "5.4",
+      "7.1",
+      "7.3",
+      "9.1",
+      "10.7",
+      "12.8"
+    ],
+    "wcag": [
+      "1.1.1",
+      "1.3.1",
+      "1.4.1",
+      "2.1.1",
+      "2.4.3",
+      "2.4.7",
+      "4.1.2"
+    ],
+    "notes": "Copy the element bundle with the wrapper (elements/workflow-loom.js is self-contained). Angular: add schemas: [CUSTOM_ELEMENTS_SCHEMA] to the host component. No goto: Arazzo actions are limited to end and retry in the Microcks POC. The loom reads the tokens (proto-*, link, border-control, success, danger), so load tokens.css."
+  },
+  "stories": [
+    "Elements/WorkflowLoom"
+  ]
+}

@@ -1,0 +1,23 @@
+<!--
+  Checkbox and radio recipes. The input sits inside its label, so the whole row is the click target.
+  A group of radios (or related checkboxes) is a fieldset with a legend.
+-->
+<label class="choice">
+  <input type="checkbox" class="checkbox" name="validate" checked aria-describedby="validate-desc" />
+  <span>
+    <span class="choice-label">Validate each response against its OpenAPI schema</span>
+    <span class="choice-description" id="validate-desc">Adds a Schema validation check to every step.</span>
+  </span>
+</label>
+
+<fieldset class="fieldset">
+  <legend>Run against</legend>
+  <label class="choice">
+    <input type="radio" class="radio" name="target" value="mocks" checked />
+    <span><span class="choice-label">Mocks</span></span>
+  </label>
+  <label class="choice">
+    <input type="radio" class="radio" name="target" value="implementations" />
+    <span><span class="choice-label">Implementations</span></span>
+  </label>
+</fieldset>

@@ -1,0 +1,18 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "input",
+  "title": "Input",
+  "tier": "natural",
+  "description": "Native text input and textarea with a visible 3:1 border.",
+  "registryDependencies": ["base"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "Native <input> and <textarea>",
+    "keyboard": [["Tab", "Moves focus into and out of the field"]],
+    "aria": ["Label with Field or <label for>", "aria-invalid=\"true\" when the value is wrong", "aria-describedby for help and error"],
+    "rgaa": ["3.3", "11.1", "11.2", "11.10", "11.13"],
+    "wcag": ["1.3.1", "1.3.5", "1.4.11", "3.3.2", "4.1.2"],
+    "notes": "A placeholder is not a label. Use the autocomplete attribute for personal data. The border uses --border-control (3:1)."
+  },
+  "stories": ["Components/Input"]
+}

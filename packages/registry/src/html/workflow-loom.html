@@ -1,0 +1,43 @@
+<!-- WorkflowLoom: Arazzo workflow as a loom. The bundle registers <workflow-loom>; data goes in as properties. -->
+<script type="module" src="./elements/workflow-loom.js"></script>
+
+<workflow-loom id="run14" label="restock-pastry, run 14"></workflow-loom>
+
+<script type="module">
+  const loom = document.getElementById('run14');
+  loom.validatesSchemas = true; // shows "Success criteria" and "Schema validation" on every step
+  loom.sources = [{ name: 'apiPastry', type: 'openapi', protocol: 'REST', linked: true }];
+  loom.steps = [
+    { stepId: 'listPastries', source: 'apiPastry', operation: 'GET /pastries', status: 'passed',
+      checks: { successCriteria: 'passed', schemaValidation: 'passed' } },
+    { stepId: 'getPastry', source: 'apiPastry', operation: 'GET /pastries/{name}', status: 'passed',
+      checks: { successCriteria: 'passed', schemaValidation: 'passed' },
+      actions: [{ type: 'end', name: 'alreadyAvailable', on: 'success',
+                  criteria: "$response.body#/status == 'available'", taken: false }] },
+    { stepId: 'patchPastry', source: 'apiPastry', operation: 'PATCH /pastries/{name}', status: 'failed', attempts: 3,
+      checks: { successCriteria: 'passed', schemaValidation: 'failed' },
+      actions: [{ type: 'retry', name: 'retryPatch', on: 'failure', retryAfter: 1, retryLimit: 2, applied: true }] },
+    { stepId: 'verifyPastry', source: 'apiPastry', operation: 'GET /pastries/{name}', status: 'not-run',
+      checks: { successCriteria: 'not-evaluated', schemaValidation: 'not-evaluated' } },
+  ];
+  loom.threads = [
+    { from: 'listPastries', to: 'getPastry', expression: '$steps.listPastries.outputs.firstName → name' },
+    { from: 'getPastry', to: 'patchPastry', expression: '$steps.getPastry.outputs.price → price' },
+  ];
+  loom.addEventListener('mkStepSelect', (e) => console.log('selected', e.detail.stepId));
+</script>
+
+<!-- Parallel branches (Arazzo 1.1 step-level dependsOn): steps without dependsOn run in parallel and join. -->
+<workflow-loom id="menu" label="check-menu"></workflow-loom>
+<script type="module">
+  const loom = document.getElementById('menu');
+  const source = 'apiPastry';
+  loom.sources = [{ name: source, type: 'openapi', protocol: 'REST', linked: true }];
+  loom.steps = [
+    { stepId: 'getSmall', source, operation: 'GET /menu/small', dependsOn: [] },
+    { stepId: 'getMedium', source, operation: 'GET /menu/medium' },
+    { stepId: 'getLarge', source, operation: 'GET /menu/large' },
+    { stepId: 'compareSizes', source, operation: 'POST /menu/compare', dependsOn: ['getSmall', 'getMedium', 'getLarge'] },
+  ];
+  loom.threads = [];
+</script>

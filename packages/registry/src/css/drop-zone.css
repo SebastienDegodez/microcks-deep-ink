@@ -1,0 +1,24 @@
+@layer deep-ink.components {
+  .drop-zone {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-12) var(--space-6);
+    background: var(--surface);
+    border: 2px dashed var(--border-control);
+    border-radius: var(--radius-node);
+    color: var(--text-secondary);
+    text-align: center;
+  }
+  .drop-zone[data-dragging] { background: var(--selected); border-style: solid; border-color: var(--action); color: var(--text); }
+  .drop-zone-heading { margin: 0; color: var(--text); font: var(--type-heading); }
+  .drop-zone-hint { margin: 0; color: var(--text-secondary); font: var(--type-small); }
+  .drop-zone-status { margin: 0; min-height: 1.25em; color: var(--text); font: var(--type-small); font-weight: 600; }
+  /* The input is visually hidden (.sr-only) but focusable: its label shows the focus. */
+  .drop-zone-input:focus-visible + .drop-zone-choose {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    box-shadow: var(--shadow-focus);
+  }
+}

@@ -1,0 +1,36 @@
+<!-- AppShell. Landmarks: header (banner), nav, main. One <h1> per page, inside <main>.
+     The skip link is the first focusable element. Below 768px the nav sits behind the Menu button. -->
+<div class="shell">
+  <a class="skip-link" href="#main">Skip to content</a>
+  <header class="topbar">
+    <button type="button" class="button shell-menu" data-variant="ghost" aria-expanded="false" aria-controls="shell-nav">Menu</button>
+    <div class="topbar-brand">Microcks</div>
+    <div class="topbar-actions"><!-- actions, theme toggle --></div>
+  </header>
+  <nav class="sidenav" id="shell-nav" aria-label="Main" data-open="false">
+    <ul>
+      <li><a class="sidenav-link" href="#/cockpit" aria-current="page"><span>Cockpit</span></a></li>
+      <li><a class="sidenav-link" href="#/services"><span>APIs &amp; Services</span><span class="sidenav-badge">12</span></a></li>
+    </ul>
+  </nav>
+  <main id="main" tabindex="-1" class="main">
+    <h1>Cockpit</h1>
+  </main>
+</div>
+
+<script>
+  // Menu disclosure for narrow screens, and focus move for the skip link (safe with hash routers).
+  (function () {
+    var btn = document.querySelector('.shell-menu');
+    var nav = document.getElementById('shell-nav');
+    function set(open) { btn.setAttribute('aria-expanded', String(open)); nav.setAttribute('data-open', String(open)); }
+    btn.addEventListener('click', function () { set(btn.getAttribute('aria-expanded') !== 'true'); });
+    nav.addEventListener('click', function (e) { if (e.target.closest('a')) set(false); });
+    document.addEventListener('keydown', function (e) {
+      if (e.key === 'Escape' && btn.getAttribute('aria-expanded') === 'true') { set(false); btn.focus(); }
+    });
+    document.querySelector('.skip-link').addEventListener('click', function (e) {
+      e.preventDefault(); document.getElementById('main').focus();
+    });
+  })();
+</script>

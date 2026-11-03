@@ -1,0 +1,35 @@
+{
+  "name": "empty-state",
+  "title": "EmptyState",
+  "tier": "natural",
+  "description": "Explains why a list or page has no content and offers the next action.",
+  "registryDependencies": [
+    "base"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "<section aria-labelledby> with a heading",
+    "keyboard": [],
+    "aria": [
+      "The title is a real heading at the level passed in headingLevel (default 2)",
+      "Actions are real buttons or links",
+      "Do not use only an illustration to carry the message"
+    ],
+    "rgaa": [
+      "9.1",
+      "12.6"
+    ],
+    "wcag": [
+      "1.3.1",
+      "2.4.6"
+    ],
+    "notes": "Pick headingLevel so heading order stays sequential in the page."
+  },
+  "stories": [
+    "Components/EmptyState"
+  ]
+}

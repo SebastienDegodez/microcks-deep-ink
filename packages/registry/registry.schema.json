@@ -1,0 +1,69 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://github.com/SebastienDegodez/microcks-deep-ink/registry.schema.json",
+  "title": "Deep Ink registry item",
+  "description": "Metadata of one copyable Deep Ink item (items/<name>.json). Source files are discovered by name, see README.md.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["name", "title", "tier", "description", "registryDependencies", "a11y"],
+  "properties": {
+    "$schema": { "type": "string" },
+    "name": { "type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" },
+    "title": { "type": "string", "minLength": 1 },
+    "tier": { "enum": ["natural", "microcks", "element"] },
+    "description": { "type": "string", "minLength": 1 },
+    "cssOnly": {
+      "type": "boolean",
+      "description": "True for items that ship only CSS (tokens, base). They have no React or Angular files; an HTML recipe is optional."
+    },
+    "registryDependencies": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9]*(-[a-z0-9]+)*$" }
+    },
+    "npmDependencies": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "react": { "type": "array", "items": { "type": "string" } },
+        "angular": { "type": "array", "items": { "type": "string" } }
+      }
+    },
+    "elements": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9]*-[a-z0-9-]+$" }
+    },
+    "extraFiles": {
+      "type": "object",
+      "description": "Source files that do not match the name-based discovery rule (for example a shared helper). Paths are relative to src/<framework>/.",
+      "additionalProperties": false,
+      "properties": {
+        "react": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9./-]*\\.(tsx|ts)$" } },
+        "angular": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9./-]*\\.ts$" } }
+      }
+    },
+    "a11y": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["pattern", "keyboard", "aria", "rgaa", "wcag"],
+      "properties": {
+        "pattern": { "type": "string", "minLength": 1 },
+        "keyboard": {
+          "type": "array",
+          "items": {
+            "type": "array",
+            "minItems": 2,
+            "maxItems": 2,
+            "items": { "type": "string", "minLength": 1 }
+          }
+        },
+        "aria": { "type": "array", "items": { "type": "string", "minLength": 1 } },
+        "rgaa": { "type": "array", "items": { "type": "string", "pattern": "^[0-9]+\\.[0-9]+(\\.[0-9]+)?$" } },
+        "wcag": { "type": "array", "items": { "type": "string", "pattern": "^[0-9]\\.[0-9]+\\.[0-9]+$" } },
+        "notes": { "type": "string" }
+      }
+    },
+    "stories": { "type": "array", "items": { "type": "string" } }
+  }
+}

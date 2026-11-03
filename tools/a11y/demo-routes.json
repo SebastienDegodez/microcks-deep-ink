@@ -1,0 +1,157 @@
+{
+  "$comment": "Demo routes audited by smoke.py, relative to the site root (smoke.py serves the assembled site). ?fast removes the simulated latency of the in-memory adapters.",
+  "routes": [
+    {
+      "url": "demo/#/?fast",
+      "label": "demo /"
+    },
+    {
+      "url": "demo/#/sources/new?fast",
+      "label": "demo /sources/new"
+    },
+    {
+      "url": "demo/#/sources?fast",
+      "label": "demo /sources"
+    },
+    {
+      "url": "demo/#/services?fast",
+      "label": "demo /services"
+    },
+    {
+      "url": "demo/#/services/pastry2?fast",
+      "label": "demo /services/pastry2"
+    },
+    {
+      "url": "demo/#/services/pastry2/properties?fast",
+      "label": "demo /services/pastry2/properties"
+    },
+    {
+      "url": "demo/#/services/pastry2/tests?fast",
+      "label": "demo /services/pastry2/tests"
+    },
+    {
+      "url": "demo/#/services/pastry2/operations/get-name?fast",
+      "label": "demo /services/pastry2/operations/get-name"
+    },
+    {
+      "url": "demo/#/services/pastry2/copilot?op=get-name&fast",
+      "label": "demo /services/pastry2/copilot?op=get-name"
+    },
+    {
+      "url": "demo/#/services/concierge/skills?fast",
+      "label": "demo /services/concierge/skills"
+    },
+    {
+      "url": "demo/#/services/concierge/card?fast",
+      "label": "demo /services/concierge/card"
+    },
+    {
+      "url": "demo/#/services/concierge/mock?fast",
+      "label": "demo /services/concierge/mock"
+    },
+    {
+      "url": "demo/#/services/concierge/tasks?fast",
+      "label": "demo /services/concierge/tasks"
+    },
+    {
+      "url": "demo/#/tests/agent?fast",
+      "label": "demo /tests/agent"
+    },
+    {
+      "url": "demo/#/tests/agent/3?fast",
+      "label": "demo /tests/agent/3"
+    },
+    {
+      "url": "demo/#/workflows?fast",
+      "label": "demo /workflows"
+    },
+    {
+      "url": "demo/#/workflows/pastry/restock-pastry?fast",
+      "label": "demo /workflows/pastry/restock-pastry"
+    },
+    {
+      "url": "demo/#/workflows/pastry/restock-pastry/loom?fast",
+      "label": "demo /workflows/pastry/restock-pastry/loom"
+    },
+    {
+      "url": "demo/#/workflows/pastry/restock-pastry/steps?fast",
+      "label": "demo /workflows/pastry/restock-pastry/steps"
+    },
+    {
+      "url": "demo/#/workflows/pastry/restock-pastry/source?fast",
+      "label": "demo /workflows/pastry/restock-pastry/source"
+    },
+    {
+      "url": "demo/#/workflows/pastry/restock-pastry/mock-url?fast",
+      "label": "demo /workflows/pastry/restock-pastry/mock-url"
+    },
+    {
+      "url": "demo/#/workflows/pastry/restock-pastry/sessions?fast",
+      "label": "demo /workflows/pastry/restock-pastry/sessions"
+    },
+    {
+      "url": "demo/#/workflows/pastry/restock-pastry/examples?fast",
+      "label": "demo /workflows/pastry/restock-pastry/examples"
+    },
+    {
+      "url": "demo/#/workflows/pastry/restock-pastry/runs?fast",
+      "label": "demo /workflows/pastry/restock-pastry/runs"
+    },
+    {
+      "url": "demo/#/workflows/pastry/check-menu?fast",
+      "label": "demo /workflows/pastry/check-menu"
+    },
+    {
+      "url": "demo/#/workflows/pastry/order-pastry?fast",
+      "label": "demo /workflows/pastry/order-pastry"
+    },
+    {
+      "url": "demo/#/workflows/pastry/restock-pastry/run?fast",
+      "label": "demo /workflows/pastry/restock-pastry/run"
+    },
+    {
+      "url": "demo/#/workflows/runs/6729a1d27e4c0b5f93a8c214?fast",
+      "label": "demo /workflows/runs/6729a1d27e4c0b5f93a8c214"
+    },
+    {
+      "url": "demo/#/workflows/runs/6729a4b15c9e7d3a28b0f6e1?fast",
+      "label": "demo /workflows/runs/6729a4b15c9e7d3a28b0f6e1"
+    },
+    {
+      "url": "demo/#/tests/create?fast",
+      "label": "demo /tests/create"
+    },
+    {
+      "url": "demo/#/tests/runner/119?fast",
+      "label": "demo /tests/runner/119"
+    },
+    {
+      "url": "demo/#/tests/service/pastry2?fast",
+      "label": "demo /tests/service/pastry2"
+    },
+    {
+      "url": "demo/#/metrics/pastry2?fast",
+      "label": "demo /metrics/pastry2"
+    },
+    {
+      "url": "demo/#/traces?fast",
+      "label": "demo /traces"
+    },
+    {
+      "url": "demo/#/hub?fast",
+      "label": "demo /hub"
+    },
+    {
+      "url": "demo/#/admin?fast",
+      "label": "demo /admin"
+    },
+    {
+      "url": "demo/#/admin/secrets?fast",
+      "label": "demo /admin/secrets"
+    },
+    {
+      "url": "demo/#/map?fast",
+      "label": "demo /map"
+    }
+  ]
+}

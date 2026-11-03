@@ -1,0 +1,35 @@
+<!-- ConformanceMatrix: a real table. Each cell writes glyph + word; a finished cell is a button (aria-pressed).
+     Queued and running cells are plain text. A cell that spans every column uses colspan. -->
+<div class="matrix-wrap" role="region" aria-label="Conformance matrix" tabindex="0">
+  <table class="matrix" style="--matrix-columns: 2">
+    <caption class="sr-only">Conformance matrix</caption>
+    <thead>
+      <tr>
+        <th scope="col">Check</th>
+        <th scope="col"><span>JSON-RPC</span><span class="matrix-sub">preferred · SSE</span></th>
+        <th scope="col"><span>gRPC</span><span class="matrix-sub">stream</span></th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="matrix-group"><th scope="rowgroup" colspan="3">Behaviour<span class="matrix-sub"> · 2 conversations replayed</span></th></tr>
+      <tr>
+        <th scope="row" data-mono><span>eclair-size-m</span><span class="matrix-sub">skill order-pastry · 2 turns</span></th>
+        <td data-result="pass">
+          <button type="button" class="matrix-cell" aria-pressed="false">
+            <span class="sr-only">JSON-RPC × eclair-size-m: </span>            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l5 5 9-10"/></svg>
+            <span>Passed</span><span class="matrix-ms">2.96 s</span>
+          </button>
+        </td>
+        <td data-result="fail">
+          <button type="button" class="matrix-cell" aria-pressed="true">
+            <span class="sr-only">gRPC × eclair-size-m: </span>            <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+            <span>Failed</span><span class="matrix-ms">2.84 s</span>
+          </button>
+        </td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr><th scope="row">Conversations passed</th><td>1/1</td><td data-tone="danger">0/1</td></tr>
+    </tfoot>
+  </table>
+</div>

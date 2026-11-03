@@ -1,0 +1,27 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "skill-list",
+  "title": "SkillList",
+  "tier": "microcks",
+  "description": "The skills of an A2A Agent Card: id, name, calls, tags and last test result per skill, with a fallback entry for messages no skill matched.",
+  "registryDependencies": ["base", "icon"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "elements": [],
+  "a11y": {
+    "pattern": "<ul aria-label> of <li> holding a <button aria-pressed> (selectable) or a <div> (read-only)",
+    "keyboard": [
+      ["Tab", "Moves between the skills of a selectable list"],
+      ["Enter / Space", "Selects the skill; the detail updates in its own region"]
+    ],
+    "aria": [
+      "The list is named (\"Skills of Pastry concierge 1.0\"); a selected skill uses aria-pressed, not role=tab",
+      "The call count is read with its unit (\"14 calls in 24 hours\")",
+      "The test result is an icon plus the word passed or failed, and an optional sentence read after it",
+      "The fallback entry is dashed and written \"No skill matched\"; a dashed outline is never the only signal"
+    ],
+    "rgaa": ["1.1", "3.1", "3.2", "9.3", "11.9"],
+    "wcag": ["1.3.1", "1.4.1", "1.4.3", "4.1.2"],
+    "notes": "Announce the detail change politely when the selection moves it out of view. Keep ids as plain text so they can be selected and copied."
+  },
+  "stories": ["Microcks/SkillList"]
+}

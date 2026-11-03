@@ -1,0 +1,31 @@
+{
+  "name": "description-list",
+  "title": "DescriptionList",
+  "tier": "natural",
+  "description": "Term and value pairs in a native <dl>, with optional monospace values.",
+  "registryDependencies": [
+    "base"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Native <dl> > div > dt + dd",
+    "keyboard": [],
+    "aria": [
+      "Terms and values keep native list semantics (each pair wrapped in a div)"
+    ],
+    "rgaa": [
+      "9.3"
+    ],
+    "wcag": [
+      "1.3.1"
+    ],
+    "notes": "Static item: not focusable and no key interaction of its own."
+  },
+  "stories": [
+    "Components/DescriptionList"
+  ]
+}

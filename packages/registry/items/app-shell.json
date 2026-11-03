@@ -1,0 +1,63 @@
+{
+  "name": "app-shell",
+  "title": "AppShell",
+  "tier": "natural",
+  "description": "Page frame: skip link, top bar (banner), main navigation, and main content. The navigation collapses behind a disclosure button below 768px.",
+  "registryDependencies": [
+    "base",
+    "icon",
+    "button"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Landmarks: <header> (banner), <nav aria-label=\"Main\">, <main id=\"main\" tabindex=\"-1\">",
+    "keyboard": [
+      [
+        "Tab",
+        "First stop is the skip link; it becomes visible on focus"
+      ],
+      [
+        "Enter (on skip link)",
+        "Moves focus to <main> (works with hash routers too)"
+      ],
+      [
+        "Enter / Space (on Menu button)",
+        "Opens or closes the navigation below 768px"
+      ],
+      [
+        "Escape",
+        "Closes the open navigation below 768px and returns focus to the Menu button"
+      ]
+    ],
+    "aria": [
+      "The active nav link has aria-current=\"page\"",
+      "The Menu button has aria-expanded and aria-controls pointing at the nav",
+      "Below 768px the closed nav is display:none, so it is out of the tab order and the accessibility tree",
+      "The nav is closed after a link is chosen",
+      "banner prop is a site-wide notice rendered below the top bar, not a landmark"
+    ],
+    "rgaa": [
+      "12.6",
+      "12.7",
+      "12.8",
+      "10.11",
+      "10.7"
+    ],
+    "wcag": [
+      "1.3.1",
+      "1.4.10",
+      "2.1.1",
+      "2.4.1",
+      "2.4.7",
+      "4.1.2"
+    ],
+    "notes": "Render exactly one h1 per page inside children. Pass renderLink to use router links; spread the props it receives onto your link element."
+  },
+  "stories": [
+    "Components/AppShell"
+  ]
+}

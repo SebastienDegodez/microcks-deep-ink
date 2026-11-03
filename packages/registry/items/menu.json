@@ -1,0 +1,29 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "menu",
+  "title": "Menu",
+  "tier": "natural",
+  "description": "Actions menu using the disclosure pattern on the native popover attribute.",
+  "registryDependencies": ["base", "button", "icon"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "Disclosure: button[popovertarget][aria-expanded] + div[popover] of buttons and links",
+    "keyboard": [
+      ["Enter / Space", "Opens the menu and focuses the first item"],
+      ["↓ / ↑", "Next / previous item, wrapping"],
+      ["Home / End", "First / last item"],
+      ["Escape", "Closes the menu and returns focus to the button"],
+      ["Tab", "Moves on and closes the menu when focus leaves it"]
+    ],
+    "aria": [
+      "aria-expanded on the trigger mirrors the popover state",
+      "aria-controls points at the popover",
+      "Icon-only trigger takes the label as aria-label",
+      "Items are native buttons or links; no role=menu is used"
+    ],
+    "rgaa": ["7.1", "7.3", "10.7", "12.6"],
+    "wcag": ["2.1.1", "2.4.3", "4.1.2"],
+    "notes": "This is a disclosure of actions, not an application menu bar. Use links for navigation and buttons for actions. Requires the popover attribute (all current browsers)."
+  },
+  "stories": ["Components/Menu"]
+}

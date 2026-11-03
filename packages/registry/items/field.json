@@ -1,0 +1,23 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "field",
+  "title": "Field",
+  "tier": "natural",
+  "description": "Label, control, help and error wired together for forms.",
+  "registryDependencies": ["base", "icon"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "Visible <label for> with aria-describedby help and error",
+    "keyboard": [["Tab", "Moves between controls in DOM order"]],
+    "aria": [
+      "aria-describedby lists the help and error ids",
+      "aria-invalid=\"true\" when an error is shown",
+      "required attribute on the control; the asterisk is aria-hidden",
+      "Errors have an icon and the visually hidden word \"Error\""
+    ],
+    "rgaa": ["3.1", "11.1", "11.2", "11.4", "11.10", "11.11"],
+    "wcag": ["1.3.1", "1.4.1", "3.3.1", "3.3.2", "4.1.2"],
+    "notes": "On submit, also render an error summary (role=\"alert\") that links to each invalid field. Explain the asterisk once near the form (\"* required\")."
+  },
+  "stories": ["Components/Field"]
+}

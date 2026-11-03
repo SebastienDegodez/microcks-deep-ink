@@ -1,0 +1,38 @@
+{
+  "name": "api-badge",
+  "title": "ApiBadge",
+  "tier": "microcks",
+  "description": "Signature shield: protocol or metric on the left, name and version or a proof on the right. The ARAZZO variant is inverted and never borrows a protocol color.",
+  "registryDependencies": [
+    "base",
+    "icon"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Static inline element; the visible text is the accessible name",
+    "keyboard": [],
+    "aria": [
+      "No role=\"img\" override: the text is read as \"REST API Pastry 2.0\" or \"ARAZZO restock-pastry\"",
+      "Proof status fills add an icon and a visually hidden status word",
+      "Proof badges read as \"<label> <value>\""
+    ],
+    "rgaa": [
+      "3.2",
+      "3.3",
+      "3.1"
+    ],
+    "wcag": [
+      "1.4.1",
+      "1.4.3",
+      "1.4.11"
+    ],
+    "notes": "Protocol is always written as text in the badge; the color only speeds up scanning."
+  },
+  "stories": [
+    "Microcks/ApiBadge"
+  ]
+}

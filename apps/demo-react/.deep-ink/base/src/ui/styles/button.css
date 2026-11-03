@@ -1,0 +1,145 @@
+/* Deep Ink · button@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .button {
+    box-sizing: border-box;
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    margin: 0;
+    padding: 0 20px;
+    font: 500 15px/22px var(--font-ui);
+    text-decoration: none;
+    white-space: nowrap;
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-control);
+    cursor: pointer;
+    transition:
+      background-color 0.12s ease,
+      border-color 0.12s ease,
+      color 0.12s ease;
+  }
+
+  .button[data-size="sm"] {
+    min-height: 32px;
+    padding: 0 12px;
+    font-size: 13px;
+    line-height: 18px;
+  }
+
+  .button:hover {
+    background: var(--raised);
+  }
+
+  /* Variants */
+  .button[data-variant="primary"] {
+    background: var(--action);
+    border-color: var(--action);
+    color: var(--on-action);
+    font-weight: 600;
+  }
+  .button[data-variant="primary"]:hover {
+    background: var(--action);
+    box-shadow: inset 0 0 0 2px var(--on-action);
+  }
+
+  .button[data-variant="ghost"] {
+    background: transparent;
+    border-color: transparent;
+    color: var(--link);
+    padding-inline: 12px;
+  }
+  .button[data-variant="ghost"]:hover {
+    background: var(--raised);
+  }
+
+  .button[data-variant="danger"] {
+    background: transparent;
+    border-color: var(--danger);
+    color: var(--danger);
+  }
+  .button[data-variant="danger"]:hover {
+    background: var(--danger-tint);
+  }
+  /* Filled danger: only inside a confirmation dialog. */
+  .button[data-variant="danger"][data-confirm] {
+    background: var(--danger);
+    color: var(--on-status);
+  }
+  .button[data-variant="danger"][data-confirm]:hover {
+    background: var(--danger);
+    box-shadow: inset 0 0 0 2px var(--on-status);
+  }
+
+  /* Toggle buttons: fill, inner bar and heavier text, so the state is not color only. */
+  .button[aria-pressed="true"] {
+    background: var(--selected);
+    border-color: var(--action);
+    box-shadow: inset 0 0 0 1px var(--action);
+    color: var(--text);
+    font-weight: 600;
+  }
+
+  /* Works on <label> (file choosers): show the ring when its hidden input has keyboard focus. */
+  label.button:has(:focus-visible) {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    box-shadow: var(--shadow-focus);
+  }
+
+  /* Icon-only: square target */
+  .button[data-icon-only] {
+    min-width: 44px;
+    padding: 0;
+  }
+  .button[data-icon-only][data-size="sm"] {
+    min-width: 32px;
+  }
+
+  /* Disabled and busy: text and border stay readable (no opacity). */
+  .button[data-variant]:disabled,
+  .button[data-variant][aria-disabled="true"],
+  .button[data-variant][data-confirm]:disabled,
+  .button[data-variant][data-confirm][aria-disabled="true"] {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--text-muted);
+    box-shadow: none;
+    cursor: not-allowed;
+  }
+
+  .button[aria-busy="true"] {
+    cursor: progress;
+  }
+  .button[aria-busy="true"]::before {
+    content: "";
+    flex: none;
+    width: 14px;
+    height: 14px;
+    border: 2px solid currentColor;
+    border-inline-end-color: transparent;
+    border-radius: 50%;
+    animation: button-spin 0.8s linear infinite;
+  }
+
+  @keyframes button-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+
+  @media (forced-colors: active) {
+    .button {
+      border-color: ButtonText;
+    }
+    .button[data-variant]:disabled,
+    .button[data-variant][aria-disabled="true"] {
+      border-color: GrayText;
+      color: GrayText;
+    }
+  }
+}

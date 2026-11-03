@@ -1,0 +1,9 @@
+<!-- CodeBlock. The <pre> scrolls, so it is focusable and named (role="region" + aria-label).
+     A bad line shows a visible ✕ marker AND a visible note. Copy button: see copy-button. -->
+<figure class="code" data-language="json">
+  <figcaption>
+    <span class="code-caption">Response body</span>
+    <button type="button" class="button copy-button" data-size="sm" data-copy="#code-1">Copy</button>
+  </figcaption>
+  <pre tabindex="0" role="region" aria-label="Response body"><code id="code-1" class="language-json"><span class="code-line">{</span><span class="code-line">  "name": "Millefeuille",</span><span class="code-line" data-bad><span class="code-mark" aria-hidden="true">✕</span><span class="sr-only">Problem:</span>   "price": "3.20"<span class="code-note">Schema expects a number, found a string.</span></span><span class="code-line">}</span></code></pre>
+</figure>

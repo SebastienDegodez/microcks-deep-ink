@@ -1,0 +1,38 @@
+@layer deep-ink.components {
+  .panel {
+    box-sizing: border-box;
+    min-width: 0;
+    color: var(--text);
+    background: var(--canvas);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-panel);
+  }
+
+  .panel-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-4) 0;
+  }
+  .panel-title {
+    margin: 0;
+    font: var(--type-title);
+  }
+  .panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-inline-start: auto;
+  }
+
+  .panel-body {
+    padding: var(--space-4);
+  }
+  .panel[data-flush] .panel-body {
+    padding: 0;
+  }
+  .panel[data-flush] .panel-header {
+    padding-block-end: var(--space-3);
+  }
+}

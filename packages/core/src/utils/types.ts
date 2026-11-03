@@ -1,27 +1,16 @@
-export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
+export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 
-export type Outcome = 'conformant' | 'failed' | 'partial' | 'running' | 'never';
+export const PROTOCOL_TOKEN: Record<Protocol, string> = {
+  REST: 'proto-rest',
+  SOAP: 'proto-soap',
+  EVENT: 'proto-event',
+  gRPC: 'proto-grpc',
+  GRAPHQL: 'proto-graphql',
+  DIRECT: 'proto-direct',
+  A2A: 'proto-a2a',
+};
 
-export type ProofStatus = 'success' | 'danger' | 'warning' | 'info' | 'neutral';
-
-export type OperationResult = 'pass' | 'fail' | 'untested';
-
-export interface NavItem {
-  id: string;
-  label: string;
-  icon?: string;
-  href?: string;
-  badge?: string;
-  /** Items contributed by a plugin carry its id, so the nav can mark them. */
-  pluginId?: string;
-}
-
-export interface TabItem {
-  id: string;
-  label: string;
-  count?: number;
-}
-
+/** Entry of the command bar. `kind` groups the results; 'action' items are commands. */
 export interface CommandItem {
   id: string;
   label: string;
@@ -32,47 +21,42 @@ export interface CommandItem {
   keywords?: string[];
 }
 
-export interface TableColumn {
-  key: string;
-  label: string;
-  align?: 'start' | 'end';
-  mono?: boolean;
-  width?: string;
-}
+/* ---------- Workflow loom (Arazzo) ---------- */
 
-export interface WorkflowSource {
+export type StepStatus = 'passed' | 'failed' | 'not-run';
+export type CheckState = 'passed' | 'failed' | 'off' | 'not-evaluated';
+
+export interface LoomSource {
   name: string;
+  type: 'openapi' | 'asyncapi';
   protocol: Protocol;
+  linked: boolean;
 }
 
-export interface WorkflowStep {
+export type LoomAction =
+  | { type: 'end'; name: string; on: 'success' | 'failure'; criteria: string; taken?: boolean }
+  | { type: 'retry'; name: string; on: 'failure'; retryAfter: number; retryLimit: number; applied?: boolean };
+
+export interface LoomStep {
   stepId: string;
   source: string;
+  /** "GET /pastries" */
   operation: string;
-  criteria: 'pass' | 'fail' | 'pending';
-  contract: 'pass' | 'fail' | 'pending';
-  retry?: string;
+  /** Arazzo 1.1 step-level dependsOn. Steps without it run in parallel as soon as any step declares one. */
+  dependsOn?: string[];
+  status?: StepStatus;
+  attempts?: number;
+  checks?: { successCriteria: CheckState; schemaValidation?: CheckState };
+  actions?: LoomAction[];
 }
 
-export interface WorkflowThread {
+export interface LoomThread {
+  /** stepId or '$inputs' */
   from: string;
+  /** stepId or '$outputs' */
   to: string;
   expression: string;
 }
-
-export interface WorkflowGoto {
-  from: string;
-  to: string;
-}
-
-export const PROTOCOL_TOKEN: Record<Protocol, string> = {
-  REST: 'proto-rest',
-  SOAP: 'proto-soap',
-  EVENT: 'proto-event',
-  gRPC: 'proto-grpc',
-  GRAPHQL: 'proto-graphql',
-  DIRECT: 'proto-direct',
-};
 
 export function parseJson<T>(value: T | string | undefined, fallback: T): T {
   if (value === undefined || value === null) return fallback;

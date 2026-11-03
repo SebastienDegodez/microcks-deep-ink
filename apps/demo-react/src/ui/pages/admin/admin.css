@@ -1,0 +1,11 @@
+.ad-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.ad-table th, .ad-table td { padding: 8px 10px; border-bottom: 1px solid var(--border); text-align: start; vertical-align: middle; }
+.ad-avatar { display: inline-grid; place-items: center; width: 28px; height: 28px; margin-inline-end: 8px; border-radius: 50%; background: var(--selected); border: 1px solid var(--border-control); font-size: 0.75rem; font-weight: 700; }
+.ad-groups { display: grid; gap: 16px; grid-template-columns: minmax(0, 1fr); }
+@media (min-width: 900px) { .ad-groups { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.ad-members { display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 0; border: 0; min-width: 0; }
+.ad-members > legend { font-weight: 600; margin-block-end: 6px; }
+.ad-dot { display: inline-block; width: 8px; height: 8px; margin-inline-start: 6px; border-radius: 50%; background: var(--danger); border: 1px solid var(--surface); }
+.ad-toast { position: sticky; top: 8px; z-index: 5; margin-block-end: 12px; }
+.ad-file { max-width: 100%; }
+.ad-form { display: flex; flex-direction: column; gap: 12px; }

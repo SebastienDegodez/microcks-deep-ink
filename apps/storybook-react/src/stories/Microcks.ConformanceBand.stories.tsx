@@ -1,0 +1,27 @@
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import React from 'react';
+import { ConformanceBand } from '@microcks-deep-ink/registry/react/conformance-band';
+import { CONFORMANCE } from '@microcks-deep-ink/storybook-shared/fixtures';
+import { itemParams } from './_meta';
+
+export default {
+  title: 'Microcks/ConformanceBand',
+  parameters: itemParams(['conformance-band'], 'One segment per operation. The band is `role="img"` with a sentence ("11 of 12 operations pass, 1 fails"). Failed segments are hatched as well as colored, and the full size writes the summary.'),
+} satisfies Meta;
+
+export const Default: StoryObj = {
+  render: () => <ConformanceBand outcomes={CONFORMANCE} />,
+};
+
+export const Mini: StoryObj = {
+  render: () => (
+    <div className="inline">
+      <ConformanceBand size="mini" outcomes={CONFORMANCE} />
+      <ConformanceBand size="mini" outcomes={['pass', 'pass', 'untested', 'untested']} />
+    </div>
+  ),
+};
+
+export const Failing: StoryObj = {
+  render: () => <ConformanceBand outcomes={['pass', 'fail', 'fail', 'pass', 'untested', 'fail']} />,
+};

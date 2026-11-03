@@ -9,39 +9,41 @@ import { Meta } from '@storybook/addon-docs/blocks';
 The Microcks UI v2 design system, a proposal for the maintainers.
 **The contract is the source of truth; the interface makes it alive.**
 
-This Storybook shows the **React** wrappers. The same components exist for **Angular**, generated from a single
-set of Web Components, so a plugin looks identical whatever framework renders it.
+Deep Ink is a **copy-paste registry**, in the spirit of shadcn: you copy the source into your project and own it.
+This Storybook shows the **React** versions. The Angular Storybook shows the same 46 items, with the same stories.
+
+- **Natural components** are native HTML (`<button>`, `<table>`, `<dialog>`) styled by a CSS class API with plain class names (`.button`, `.table`, `.dialog`).
+- **Microcks components** (API badge, status, operation row...) are native React or Angular code over the same CSS, plus an HTML recipe for plugins.
+- **Three Web Components remain**, where the logic is heavy: the Workflow Loom, the Command Bar and the Plugin Slot. They ship as self-contained bundles with a thin wrapper.
 
 ```
-@microcks-deep-ink/tokens      CSS variables, dark (Deep Ink) + light (Paper)
-        │
-@microcks-deep-ink/core        22 Web Components (Stencil), mk-* tags
-        │
-   ┌────┴─────┐
- react      angular            generated wrappers
-        │
-@microcks-deep-ink/plugin-sdk  manifest, extension points, shared plugin host
+packages/tokens     CSS variables, dark (Deep Ink) and light (Paper)
+packages/registry   the single source of truth: React, Angular, CSS, HTML recipes
+packages/cli        deep-ink init | add | list | diff | view
+packages/core       the three Web Components, compiled to element bundles
 ```
 
-## Install
+## Copy a component
+
+Every story has a **Copy** panel (open by default, next to Controls and Accessibility). It shows the exact files the CLI copies for the selected
+framework, with a Copy button per file, the dependencies, and the matching command:
 
 ```bash
-# Not on npm yet (demo): build locally with `pnpm build` in the repo
-pnpm add @microcks-deep-ink/react @microcks-deep-ink/tokens
+# Not on npm (demo): run it from a clone of the repository, after `pnpm build`
+pnpm deep-ink add button --framework react
 ```
 
-```tsx
-import '@microcks-deep-ink/tokens/deep-ink.css';
-import { MkApiBadge, MkButton } from '@microcks-deep-ink/react';
+The files land in your project (`src/components/ui`, `src/styles/deep-ink`), with a `deep-ink.json` lockfile so `deep-ink diff` can compare them with the registry later.
 
-<MkApiBadge protocol="REST" name="API Pastry" version="2.0" />
-<MkButton variant="primary" onMkClick={run}>Run test</MkButton>
-```
+## Accessibility
+
+Every item documents its keyboard interactions and ARIA attributes in the story docs, taken from the registry. The target is RGAA 4.1.2 (about WCAG 2.1 AA),
+checked by axe-core and a11ylint. These tools do not replace an audit: **the status is "not audited"**, and this project never claims conformance.
 
 ## Principles
 
 1. **Contract first.** Paths, URLs and payloads in mono, copyable in one click.
 2. **Density with air.** Workbench density, separated by the `space-6` rhythm.
 3. **Light over shadow.** Elevation lightens the ink; shadows only for overlays and focus.
-4. **Color is data.** Protocol colors identify API types, status colors report outcomes, pink marks live activity.
+4. **Color is data, never the only data.** Protocol colors identify API types, status colors report outcomes, and every status also has an icon and a word.
 5. **Both themes, same meaning.** Use the **Theme** toolbar button to switch.

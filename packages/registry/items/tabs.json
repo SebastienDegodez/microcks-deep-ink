@@ -1,0 +1,28 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "tabs",
+  "title": "Tabs",
+  "tier": "natural",
+  "description": "Tab strip with an action-colored underline and the full WAI-ARIA keyboard model.",
+  "registryDependencies": ["base"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "WAI-ARIA tabs: role=tablist / tab / tabpanel with roving tabindex",
+    "keyboard": [
+      ["← / →", "Previous / next tab, wrapping. Selects it in automatic mode"],
+      ["Home / End", "First / last tab"],
+      ["Enter / Space", "Selects the focused tab in manual mode"],
+      ["Tab", "Leaves the tab list for the selected panel"]
+    ],
+    "aria": [
+      "role=\"tablist\" with aria-label",
+      "aria-selected and aria-controls on each tab, aria-labelledby on each panel",
+      "Only the selected tab is in the Tab order (tabindex 0, others -1)",
+      "Counts are read as \"Operations, 4\""
+    ],
+    "rgaa": ["7.1", "7.3", "10.7", "12.6"],
+    "wcag": ["1.3.1", "2.1.1", "2.4.7", "4.1.2"],
+    "notes": "Use tabs to switch views of one page, not to navigate between pages. Disabled tabs are skipped by the arrow keys. Set idPrefix when you render TabPanel outside Tabs."
+  },
+  "stories": ["Components/Tabs"]
+}

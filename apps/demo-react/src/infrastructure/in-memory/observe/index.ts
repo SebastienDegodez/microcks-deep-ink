@@ -1,0 +1,89 @@
+import { matchesTraceFilter, type DomainConformance, type InvocationPoint, type Invocations, type Period, type TraceCall, type TraceFilter } from '@/domain/observe';
+import type { MetricsRepository, TraceStream, TrafficStream } from '@/application/ports/observe';
+import { SERVICES, after, createTickingStream, type InMemoryDeps } from '../shared';
+import { HISTORY_LENGTH, CLIENT_EDGES, EXAMPLE_EDGES, TOPOLOGY_CLIENTS, TOPOLOGY_ENDPOINTS, TOPOLOGY_EXAMPLES, historyCalls, makeCall } from './seed/traces.seed';
+import { CONFORMANCE_INDEX, usageDataFor } from './seed/usage.seed';
+
+export { makeCall } from './seed/traces.seed';
+export { matchesTraceFilter } from '@/domain/observe';
+
+export interface ObserveAdapters {
+  metrics: MetricsRepository;
+  traces: TraceStream;
+  traffic: TrafficStream;
+}
+
+const hash = (text: string) => [...text].reduce((n, c) => (n * 31 + c.charCodeAt(0)) % 9973, 7);
+
+const PERIOD_POINTS: Record<Period, number> = { day: 24, week: 7, month: 30 };
+
+function invocations(serviceId: string, period: Period): Invocations {
+  const service = SERVICES.find((s) => s.id === serviceId);
+  const base = Math.max(1, Math.round((service?.calls24h ?? 10) / 24));
+  const n = PERIOD_POINTS[period];
+  const points: InvocationPoint[] = Array.from({ length: n }, (_, i) => ({
+    at: `${period === 'day' ? '2026-11-03T' + String(i).padStart(2, '0') + ':00:00Z' : '2026-10-' + String(31 - ((n - 1 - i) % 31)).padStart(2, '0')}`,
+    calls: Math.max(0, Math.round(base * (period === 'day' ? 1 : 24) * (0.6 + ((hash(serviceId) + i * 37) % 80) / 100))),
+  }));
+  return { serviceId, period, points, total: points.reduce((sum, p) => sum + p.calls, 0) };
+}
+
+export function createInMemoryObserveAdapters(_deps: InMemoryDeps = {}): ObserveAdapters {
+  let replays = 0;
+  // Streamed calls continue after the history, so a subscriber starts at call 11.
+  const stream = createTickingStream((tick) => makeCall(HISTORY_LENGTH + tick + 1));
+
+  const metrics: MetricsRepository = {
+    invocations: (serviceId, period) => after(() => invocations(serviceId, period)),
+    usageData: (scope) => after(() => usageDataFor(scope)),
+    conformanceByDomain: () =>
+      after<DomainConformance[]>(() => {
+        const byDomain = new Map<string, DomainConformance>();
+        for (const s of SERVICES) {
+          const domain = s.labels.find((l) => l.key === 'domain')?.value ?? 'other';
+          const entry = byDomain.get(domain) ?? { domain, score: null, services: 0, items: [] };
+          entry.services += 1;
+          const meta = CONFORMANCE_INDEX[s.id];
+          entry.items?.push({
+            serviceId: s.id,
+            name: `${s.name} ${s.version}`,
+            protocol: s.protocol,
+            operations: s.operationCount,
+            score: s.conformance,
+            index: meta?.index ?? 0,
+            trend: meta?.trend ?? null,
+          });
+          byDomain.set(domain, entry);
+        }
+        return [...byDomain.values()].map((entry) => {
+          const scores = (entry.items ?? []).flatMap((i) => (i.score === null ? [] : [i.score]));
+          return { ...entry, score: scores.length ? Math.round(scores.reduce((a, b) => a + b, 0) / scores.length) : null };
+        });
+      }),
+  };
+
+  const traces: TraceStream = {
+    subscribe: (filter: TraceFilter, listener: (call: TraceCall) => void) => stream((call) => (matchesTraceFilter(call, filter) ? listener(call) : undefined)),
+    replay: (callId) =>
+      after(() => {
+        const original = Number(callId.replace('call-', '')) || 1;
+        replays += 1;
+        // Replayed calls get their own number range, so they never collide with the live ones.
+        const seq = 1000 + replays;
+        return { ...makeCall(original), seq, callId: `call-${seq}`, at: new Date(Date.parse('2026-11-03T09:10:04.208Z') + replays * 400).toISOString() };
+      }),
+    get: (callId) => after(() => makeCall(Number(callId.replace('call-', '')) || 1)),
+    topology: () =>
+      after(() => ({
+        clients: TOPOLOGY_CLIENTS,
+        endpoints: TOPOLOGY_ENDPOINTS,
+        examples: TOPOLOGY_EXAMPLES,
+        clientEdges: CLIENT_EDGES,
+        exampleEdges: EXAMPLE_EDGES,
+        history: historyCalls(),
+      })),
+  };
+
+  const traffic: TrafficStream = { subscribe: stream };
+  return { metrics, traces, traffic };
+}

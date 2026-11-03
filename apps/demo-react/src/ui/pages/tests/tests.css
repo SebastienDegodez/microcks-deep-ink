@@ -1,0 +1,11 @@
+.ts-filters { display: flex; flex-wrap: wrap; gap: 12px 16px; align-items: end; }
+.ts-filters > * { min-width: 160px; flex: 1 1 160px; }
+.ts-svg { width: 100%; height: auto; max-height: 260px; display: block; }
+.ts-svg text { fill: var(--text-muted); font-size: 11px; font-family: var(--font-mono); }
+.ts-line { fill: none; stroke: var(--action); stroke-width: 2; }
+.ts-grid { stroke: var(--border); stroke-width: 1; }
+.ts-ok { fill: var(--action); stroke: var(--surface); stroke-width: 2; }
+.ts-ko { fill: var(--danger); stroke: var(--surface); stroke-width: 2; }
+.ts-matrix { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.ts-matrix th, .ts-matrix td { padding: 6px 10px; border-bottom: 1px solid var(--border); text-align: start; white-space: nowrap; }
+.ts-cell { display: inline-flex; gap: 6px; align-items: center; }

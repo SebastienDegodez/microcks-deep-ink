@@ -1,0 +1,28 @@
+/* Deep Ink · step-status@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .step-status {
+    --step-color: var(--text-secondary);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--step-color);
+    font: 600 13px/18px var(--font-ui);
+  }
+  .step-status[data-status="passed"] { --step-color: var(--success); }
+  .step-status[data-status="failed"] { --step-color: var(--danger); }
+  /* Not run: muted text and a dashed outline. Never opacity, which would break contrast. */
+  .step-status[data-status="not-run"] {
+    --step-color: var(--text-secondary);
+    padding: 1px 8px;
+    border: 1px dashed var(--border-control);
+    border-radius: var(--radius-control);
+  }
+  .step-status > .icon { flex: none; }
+  .step-status-attempts { font-weight: 400; }
+
+  .checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: var(--space-1); font: var(--type-small); color: var(--text); }
+  .checks > li { display: flex; flex-wrap: wrap; align-items: center; gap: 2px var(--space-2); }
+  .checks-state { display: inline-flex; align-items: center; gap: 4px; color: var(--text-secondary); font-weight: 600; }
+  .checks > li[data-state="passed"] .checks-state { color: var(--success); }
+  .checks > li[data-state="failed"] .checks-state { color: var(--danger); }
+}

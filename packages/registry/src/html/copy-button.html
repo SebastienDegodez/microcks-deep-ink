@@ -1,0 +1,17 @@
+<!--
+  Copy button recipe. The live region must exist in the page before the text changes,
+  so keep it next to the button and fill it from your script.
+-->
+<button type="button" class="button copy-button" data-variant="secondary" data-size="sm" data-copy="curl https://example.com">
+  <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d="M9 9h11v11H9z" /><path d="M5 15H4V4h11v1" />
+  </svg>
+  Copy
+</button>
+<span role="status" aria-live="polite" class="sr-only"></span>
+
+<script>
+  // On click: await navigator.clipboard.writeText(button.dataset.copy), then put "Copied"
+  // (or "Copy failed") in the status span and clear it after 2 seconds.
+</script>

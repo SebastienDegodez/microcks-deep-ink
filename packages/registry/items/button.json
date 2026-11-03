@@ -1,0 +1,26 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "button",
+  "title": "Button",
+  "tier": "natural",
+  "description": "Sturdy, near-square action. One primary per task region.",
+  "registryDependencies": ["base", "icon"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "Native <button> (or <a> for navigation)",
+    "keyboard": [
+      ["Enter", "Activates the button"],
+      ["Space", "Activates the button"]
+    ],
+    "aria": [
+      "Icon-only buttons need aria-label",
+      "Toggle buttons use aria-pressed",
+      "Loading sets aria-busy and disables the button",
+      "Disabled uses the native disabled attribute"
+    ],
+    "rgaa": ["3.3", "7.1", "10.7", "11.9", "11.10"],
+    "wcag": ["1.4.11", "2.1.1", "2.4.7", "4.1.2"],
+    "notes": "Never use a <div> with a click handler. Medium buttons are 44px high, small ones 32px; a page's primary action is always medium."
+  },
+  "stories": ["Components/Button"]
+}

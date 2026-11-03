@@ -1,0 +1,49 @@
+/* Agent screens (18, 19). Layout only: the look comes from the copied components and the tokens. */
+.ag-layout { display: grid; gap: 16px; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); align-items: start; }
+@media (max-width: 960px) { .ag-layout { grid-template-columns: minmax(0, 1fr); } }
+.ag-script { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
+.ag-script > li { display: grid; gap: 4px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-md, 6px); background: var(--canvas); min-width: 0; }
+.ag-script > li[data-selected] { border-color: var(--action); background: var(--selected); }
+.ag-script > li[data-kind='user'] { background: var(--raised); margin-inline-start: 32px; }
+.ag-script > li[data-kind='turn'] { border-style: dashed; }
+.ag-chips { display: flex; flex-wrap: wrap; gap: 6px; }
+.ag-part { margin: 0; padding: 6px 8px; border-left: 2px solid var(--border-strong); overflow-wrap: anywhere; }
+.ag-part pre { margin: 0; white-space: pre-wrap; font-family: var(--font-mono); font-size: var(--type-small); }
+.ag-table-wrap { overflow-x: auto; }
+.ag-table { width: 100%; border-collapse: collapse; }
+.ag-table th, .ag-table td { text-align: start; padding: 8px 12px; border-top: 1px solid var(--border); vertical-align: middle; }
+.ag-table thead th { border-top: 0; color: var(--text-secondary); font-weight: 600; font-size: var(--type-small); }
+.ag-table tr[data-selected] { background: var(--selected); }
+.ag-pickbtn { all: unset; cursor: pointer; font-family: var(--font-mono); text-decoration: underline; }
+.ag-pickbtn:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.ag-transport { display: grid; gap: 8px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-md, 6px); background: var(--surface); min-width: 0; }
+.ag-transport[data-preferred] { border-color: var(--proto-a2a); }
+.ag-diff { margin: 0; font-family: var(--font-mono); font-size: var(--type-small); display: grid; }
+.ag-diff > li { list-style: none; padding: 0 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
+.ag-diff > li[data-mark='-'] { background: var(--danger-tint); text-decoration: line-through; }
+.ag-diff > li[data-mark='+'] { background: var(--success-tint); }
+.ag-setup { display: grid; gap: 16px; max-width: 880px; }
+.ag-choices { display: grid; gap: 8px; border: 0; margin: 0; padding: 0; min-width: 0; }
+.ag-choices > legend { padding: 0; font-weight: 600; margin-bottom: 8px; }
+.ag-choice { display: flex; gap: 8px; align-items: flex-start; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-md, 6px); background: var(--surface); }
+.ag-choice:has(input:checked) { border-color: var(--action); background: var(--selected); }
+.ag-log { margin: 0; padding: 0; list-style: none; display: grid; gap: 2px; font-family: var(--font-mono); font-size: var(--type-small); max-height: 260px; overflow: auto; }
+.ag-log > li { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 8px; }
+.ag-segs { display: flex; gap: 2px; height: 10px; }
+.ag-segs > span { flex: 1; background: var(--border); border-radius: 2px; }
+.ag-segs > span[data-state='pass'] { background: var(--success); }
+.ag-segs > span[data-state='fail'] { background: var(--danger); }
+.ag-segs > span[data-state='warn'] { background: var(--warning); }
+.ag-segs > span[data-state='run'] { background: var(--action); }
+.ag-exchange { display: grid; gap: 8px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-md, 6px); }
+.ag-exchange[data-highlight] { border-color: var(--danger); }
+.ag-exchange-cols { display: grid; gap: 12px; grid-template-columns: repeat(2, minmax(0, 1fr)); }
+@media (max-width: 960px) { .ag-exchange-cols { grid-template-columns: minmax(0, 1fr); } }
+.ag-ln { font-family: var(--font-mono); font-size: var(--type-small); white-space: pre-wrap; overflow-wrap: anywhere; padding: 0 6px; }
+.ag-ln[data-kind='head'] { color: var(--text-muted); }
+.ag-ln[data-kind='ok'] { background: var(--success-tint); }
+.ag-ln[data-kind='bad'] { background: var(--danger-tint); }
+.ag-events { list-style: none; margin: 0; padding: 0; display: grid; gap: 4px; }
+.ag-events > li { display: grid; gap: 2px 12px; grid-template-columns: 80px minmax(0, 1fr); padding: 6px 12px; border: 1px solid var(--border); border-radius: var(--radius-md, 6px); }
+.ag-events > li[data-expected] { border-style: dashed; border-color: var(--danger); color: var(--text-secondary); }
+.ag-events > li[data-bad] { background: var(--danger-tint); }

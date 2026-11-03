@@ -8,13 +8,12 @@
     "build-storybook": "storybook build -o storybook-static"
   },
   "dependencies": {
-    "@microcks-deep-ink/core": "workspace:*",
     "@microcks-deep-ink/plugin-sdk": "workspace:*",
-    "@microcks-deep-ink/react": "workspace:*",
     "@microcks-deep-ink/storybook-shared": "workspace:*",
     "@microcks-deep-ink/tokens": "workspace:*",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "@microcks-deep-ink/registry": "workspace:*"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^10.6.5",

@@ -1,0 +1,14 @@
+{
+  "name": "@microcks-deep-ink/cli",
+  "private": true,
+  "version": "0.2.0",
+  "license": "Apache-2.0",
+  "type": "module",
+  "description": "Copies Deep Ink components from the registry into a React or Angular app (shadcn-style). Zero dependencies.",
+  "bin": {
+    "deep-ink": "./bin/deep-ink.mjs"
+  },
+  "scripts": {
+    "test": "node --test"
+  }
+}

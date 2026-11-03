@@ -1,0 +1,28 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "task-timeline",
+  "title": "TaskTimeline",
+  "tier": "microcks",
+  "description": "Lifecycle of an A2A task: state tags, a chain of states that can select the steps of a script, and a state-machine diff of lanes (expected versus actual).",
+  "registryDependencies": ["base", "icon"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "elements": [],
+  "a11y": {
+    "pattern": "<ol aria-label> of <li>; each state is a <span> (read-only) or a <button aria-pressed> (selects a step). Lanes are named <ol>s inside a group",
+    "keyboard": [
+      ["Tab", "Moves between the state buttons of a selectable timeline"],
+      ["Enter / Space", "Selects the step of the state, or clears it when it is already selected"]
+    ],
+    "aria": [
+      "The state is always written (\"input-required\"); the glyph is aria-hidden and its shape differs per state",
+      "State buttons read \"working at +300 ms, show in script\" and use aria-pressed",
+      "The text on a link between two states (a user reply) is real text, the rule and chevron are CSS shapes",
+      "Unreached end states are dashed tags under \"other end states\", not an empty list",
+      "Lane nodes with a tone add an icon and a hidden word (legal or illegal); the red outline is never the only signal"
+    ],
+    "rgaa": ["1.1", "3.1", "3.2", "9.3", "11.9"],
+    "wcag": ["1.3.1", "1.4.1", "1.4.3", "4.1.2"],
+    "notes": "Put the same sequence as a table or a log elsewhere on the page when the timing matters. Rejected and canceled stay neutral: they are outcomes of a request, not failures of the task."
+  },
+  "stories": ["Microcks/TaskTimeline"]
+}

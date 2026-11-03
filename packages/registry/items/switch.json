@@ -1,0 +1,18 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "switch",
+  "title": "Switch",
+  "tier": "natural",
+  "description": "On/off setting built on a native checkbox with role=switch.",
+  "registryDependencies": ["base", "checkbox"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "<input type=checkbox role=switch> inside <label>",
+    "keyboard": [["Space", "Toggles the switch"]],
+    "aria": ["role=\"switch\" exposes on/off through the native checked state", "Label names the setting, not the state"],
+    "rgaa": ["3.3", "7.1", "11.1", "11.9"],
+    "wcag": ["1.4.1", "1.4.11", "2.1.1", "4.1.2"],
+    "notes": "The knob moves and the track fills, so the state is not color only. Use a switch for settings that apply immediately; use a checkbox in forms that are submitted."
+  },
+  "stories": ["Components/Switch"]
+}

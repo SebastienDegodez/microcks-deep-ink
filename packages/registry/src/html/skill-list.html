@@ -1,0 +1,23 @@
+<!-- SkillList: a named list; each item is a toggle button (aria-pressed) when it selects a skill.
+     The fallback entry (no skill matched) is dashed. The call count is read with its unit. -->
+<ul class="skill-list" aria-label="Skills of Pastry concierge 1.0">
+  <li class="skill-item-row">
+    <button type="button" class="skill-item" aria-pressed="true">
+      <span class="skill-item-head"><span class="skill-item-id">order-pastry</span><span class="skill-item-calls">14<span class="sr-only"> calls in 24 hours</span></span></span>
+      <span class="skill-item-name">Order a pastry</span>
+      <span class="skill-item-tags"><span class="skill-item-tag">orders</span><span class="skill-item-tag">multi-turn</span></span>
+      <span class="skill-item-foot">
+        <span>1 conversation</span>
+        <span class="skill-item-result" data-result="fail">
+          <svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>failed
+        </span>
+      </span>
+    </button>
+  </li>
+  <li class="skill-item-row">
+    <button type="button" class="skill-item" data-variant="fallback" aria-pressed="false">
+      <span class="skill-item-head"><span class="skill-item-id">No skill matched</span><span class="skill-item-calls">3<span class="sr-only"> calls in 24 hours</span></span></span>
+      <span class="skill-item-foot"><span>fallback · out-of-scope · answers rejected</span></span>
+    </button>
+  </li>
+</ul>

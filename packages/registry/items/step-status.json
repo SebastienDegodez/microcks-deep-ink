@@ -1,0 +1,38 @@
+{
+  "name": "step-status",
+  "title": "StepStatus",
+  "tier": "microcks",
+  "description": "Workflow step outcome (Passed, Failed, Not run) and the two checks, Success criteria and Schema validation.",
+  "registryDependencies": [
+    "base",
+    "icon"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Static <span> and <ul> with visible words",
+    "keyboard": [],
+    "aria": [
+      "Icon is decorative; the word carries the meaning",
+      "Not run uses a dashed outline and muted text, never reduced opacity (contrast)",
+      "Checks are a list: \"Success criteria: Passed\", \"Schema validation: Failed\""
+    ],
+    "rgaa": [
+      "3.1",
+      "3.2",
+      "9.3"
+    ],
+    "wcag": [
+      "1.3.1",
+      "1.4.1",
+      "1.4.3"
+    ],
+    "notes": "Failed steps show the attempt count: \"Failed · 3 attempts\"."
+  },
+  "stories": [
+    "Microcks/StepStatus"
+  ]
+}

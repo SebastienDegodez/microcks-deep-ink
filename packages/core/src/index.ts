@@ -1,5 +1,4 @@
 export type * from './components.d.ts';
 export * from './utils/types';
-export { setTheme, getTheme, restoreTheme } from './utils/theme';
-export type { Theme } from './utils/theme';
-export { DEFAULT_NAV } from './utils/nav';
+export { layoutLoom } from './utils/loom-layout';
+export type { LoomEdge, LoomLayout, LoomPlacement } from './utils/loom-layout';

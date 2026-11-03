@@ -1,0 +1,81 @@
+import { buildUsageView, type DomainConformance, type Invocations, type Period, type TraceCall, type TraceFilter, type TraceTopology, type UsagePeriod, type UsageView } from '@/domain/observe';
+import type { ServiceSummary } from '@/domain/shared';
+import type { TestRunSummary } from '@/domain/testing';
+import type { Unsubscribe } from '@/application/shared';
+import type { ServiceCatalog } from '@/application/ports/catalog';
+import type { Clock } from '@/application/ports/shared';
+import type { MetricsRepository, TraceStream, TrafficStream } from '@/application/ports/observe';
+import type { TestRunRepository } from '@/application/ports/testing';
+
+/** Observe composes the catalogue and the test runs through their ports (never through other use cases). */
+export type ObservePorts = {
+  metrics: MetricsRepository;
+  traces: TraceStream;
+  traffic: TrafficStream;
+  catalog: ServiceCatalog;
+  testRuns: TestRunRepository;
+  clock: Clock;
+};
+
+export interface CockpitView {
+  /** ISO time the view was composed at (the demo clock). */
+  asOf: string;
+  kpis: {
+    services: number;
+    operations: number;
+    calls24h: number;
+    /** Average conformance of the tested services, null when none is tested. */
+    conformance: number | null;
+    failingServices: number;
+  };
+  services: ServiceSummary[];
+  recentTests: TestRunSummary[];
+}
+
+export interface ObserveUseCases {
+  getCockpit(): Promise<CockpitView>;
+  /** Live traffic ticker (tick 1200 ms). */
+  subscribeTraffic(listener: (call: TraceCall) => void): Unsubscribe;
+  invocations(serviceId: string, period: Period): Promise<Invocations>;
+  conformanceByDomain(): Promise<DomainConformance[]>;
+  /** Live calls matching the filter. */
+  subscribeTraces(filter: TraceFilter, listener: (call: TraceCall) => void): Unsubscribe;
+  replay(callId: string): Promise<TraceCall>;
+  getTrace(callId: string): Promise<TraceCall | undefined>;
+  /** Everything the Usage page shows for a service (or `all`) over a period. */
+  usage(scope: string, period: UsagePeriod): Promise<UsageView>;
+  /** Who calls what and which example answers, plus the recent calls the live stream continues from. */
+  traceTopology(): Promise<TraceTopology>;
+}
+
+export function createObserveUseCases(ports: ObservePorts): ObserveUseCases {
+  return {
+    getCockpit: async () => {
+      const [services, recentTests] = await Promise.all([ports.catalog.list(), ports.testRuns.recent(5)]);
+      const scored = services.filter((s) => s.conformance !== null);
+      return {
+        asOf: ports.clock.now().toISOString(),
+        kpis: {
+          services: services.length,
+          operations: services.reduce((n, s) => n + s.operationCount, 0),
+          calls24h: services.reduce((n, s) => n + s.calls24h, 0),
+          conformance:
+            scored.length === 0
+              ? null
+              : Math.round(scored.reduce((n, s) => n + (s.conformance ?? 0), 0) / scored.length),
+          failingServices: services.filter((s) => s.testStatus === 'failed').length,
+        },
+        services,
+        recentTests,
+      };
+    },
+    subscribeTraffic: (listener) => ports.traffic.subscribe(listener),
+    invocations: (serviceId, period) => ports.metrics.invocations(serviceId, period),
+    conformanceByDomain: () => ports.metrics.conformanceByDomain(),
+    subscribeTraces: (filter, listener) => ports.traces.subscribe(filter, listener),
+    replay: (callId) => ports.traces.replay(callId),
+    getTrace: (callId) => ports.traces.get(callId),
+    usage: async (scope, period) => buildUsageView(await ports.metrics.usageData(scope), period),
+    traceTopology: () => ports.traces.topology(),
+  };
+}

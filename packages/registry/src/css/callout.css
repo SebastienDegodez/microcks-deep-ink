@@ -1,0 +1,33 @@
+@layer deep-ink.components {
+  .callout {
+    --callout-color: var(--link);
+    --callout-bg: var(--info-tint);
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    padding: var(--space-3) var(--space-4);
+    background: var(--callout-bg);
+    color: var(--text);
+    border: 1px solid var(--border-control);
+    border-inline-start: 4px solid var(--callout-color);
+    border-radius: var(--radius-panel);
+    font: var(--type-body);
+  }
+  .callout[data-tone="success"] { --callout-color: var(--success); --callout-bg: var(--success-tint); }
+  .callout[data-tone="warning"] { --callout-color: var(--warning); --callout-bg: var(--warning-tint); }
+  .callout[data-tone="danger"] { --callout-color: var(--danger); --callout-bg: var(--danger-tint); }
+  /* AI content: warning color, dashed edge, spark icon (README: AI content is always labelled). */
+  .callout[data-tone="ai"] {
+    --callout-color: var(--warning);
+    --callout-bg: var(--warning-tint);
+    border-style: dashed;
+    border-inline-start-style: solid;
+  }
+  .callout > .icon { flex: none; margin-top: 3px; color: var(--callout-color); }
+  .callout-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); }
+  .callout-title { margin: 0; font: var(--type-heading); color: var(--text); }
+  .callout-content { color: var(--text); }
+  .callout-content > :first-child { margin-top: 0; }
+  .callout-content > :last-child { margin-bottom: 0; }
+  .callout-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+}

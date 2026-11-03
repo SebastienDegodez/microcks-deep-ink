@@ -1,0 +1,37 @@
+/* Deep Ink · skill-list@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .skill-list { list-style: none; display: flex; flex-direction: column; gap: var(--space-2); margin: 0; padding: 0; }
+  .skill-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 44px;
+    margin: 0;
+    padding: var(--space-3);
+    color: var(--text);
+    background: var(--canvas);
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-control);
+    font: var(--type-body);
+    text-align: start;
+  }
+  button.skill-item { cursor: pointer; }
+  button.skill-item:hover { background: var(--raised); }
+  /* Selected: fill, a heavier action border and the pressed state. */
+  button.skill-item[aria-pressed="true"] { background: var(--selected); border-color: var(--action); border-width: 2px; padding: calc(var(--space-3) - 1px); }
+  .skill-item[data-variant="fallback"] { background: transparent; border-style: dashed; }
+  button.skill-item[data-variant="fallback"][aria-pressed="true"] { background: var(--selected); }
+
+  .skill-item-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
+  .skill-item-id { font: var(--type-code); font-size: 12px; color: var(--text-secondary); overflow-wrap: anywhere; }
+  .skill-item-calls { font: var(--type-code); font-size: 12px; font-variant-numeric: tabular-nums; color: var(--text-secondary); }
+  .skill-item-name { font-weight: 600; }
+  .skill-item-tags { display: flex; flex-wrap: wrap; gap: 4px; }
+  .skill-item-tag { padding: 0 6px; border: 1px solid var(--border-control); border-radius: var(--radius-badge); font: var(--type-code); font-size: 11px; color: var(--text-secondary); }
+  .skill-item-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); font: var(--type-small); color: var(--text-secondary); }
+  .skill-item-result { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; }
+  .skill-item-result[data-result="pass"] { color: var(--success); }
+  .skill-item-result[data-result="fail"] { color: var(--danger); }
+}

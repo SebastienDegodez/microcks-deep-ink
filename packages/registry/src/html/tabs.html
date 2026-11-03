@@ -1,0 +1,22 @@
+<!--
+  Tabs recipe (WAI-ARIA tabs pattern, automatic activation).
+  Script contract: only the selected tab has tabindex="0"; the others have tabindex="-1".
+  Left/Right move focus and select (wrap around), Home/End jump to the first/last tab.
+  Set aria-selected, tabindex and the panel's hidden attribute when the selection changes.
+-->
+<div class="tabs">
+  <div role="tablist" class="tablist" aria-label="Service sections">
+    <button type="button" role="tab" class="tab" id="tab-operations" aria-selected="true" aria-controls="panel-operations" tabindex="0">
+      Operations<span class="tab-count"><span class="sr-only">, </span>4</span>
+    </button>
+    <button type="button" role="tab" class="tab" id="tab-properties" aria-selected="false" aria-controls="panel-properties" tabindex="-1">
+      Properties
+    </button>
+    <button type="button" role="tab" class="tab" id="tab-tests" aria-selected="false" aria-controls="panel-tests" tabindex="-1">
+      Tests
+    </button>
+  </div>
+  <div role="tabpanel" class="tabpanel" id="panel-operations" aria-labelledby="tab-operations" tabindex="0">Operations content</div>
+  <div role="tabpanel" class="tabpanel" id="panel-properties" aria-labelledby="tab-properties" tabindex="0" hidden></div>
+  <div role="tabpanel" class="tabpanel" id="panel-tests" aria-labelledby="tab-tests" tabindex="0" hidden></div>
+</div>

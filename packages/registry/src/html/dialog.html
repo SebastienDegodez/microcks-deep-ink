@@ -1,0 +1,33 @@
+<!--
+  Dialog recipe. Native <dialog>: call dialog.showModal() to open (focus trap, inert page, Escape).
+  Remember the opener and call opener.focus() in the "close" event. Put data-autofocus on the element
+  that should receive focus first. Close icon button: aria-label="Close".
+-->
+<button type="button" class="button" data-variant="danger" id="delete-open">Delete service</button>
+
+<dialog class="dialog" data-size="sm" id="delete-dialog" aria-labelledby="delete-title" aria-describedby="delete-desc">
+  <div class="dialog-header">
+    <h2 class="dialog-title" id="delete-title">Delete API Pastry?</h2>
+    <button type="button" class="button" data-variant="ghost" data-size="sm" data-icon-only aria-label="Close" data-close>
+      <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <path d="M6 6l12 12M18 6L6 18" />
+      </svg>
+    </button>
+  </div>
+  <div class="dialog-body">
+    <p class="dialog-description" id="delete-desc">Its mocks and test history are removed. This cannot be undone.</p>
+  </div>
+  <div class="dialog-footer">
+    <button type="button" class="button" data-variant="secondary" data-autofocus data-close>Cancel</button>
+    <button type="button" class="button" data-variant="danger" data-confirm>Delete</button>
+  </div>
+</dialog>
+
+<script>
+  const dialog = document.getElementById('delete-dialog');
+  const opener = document.getElementById('delete-open');
+  opener.addEventListener('click', () => dialog.showModal());
+  dialog.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => dialog.close()));
+  dialog.addEventListener('close', () => opener.focus());
+</script>

@@ -1,0 +1,47 @@
+<!-- TaskStateTag: glyph (aria-hidden) + the state written out. Rejected and canceled are neutral, never red. -->
+<span class="task-state" data-state="input-required">
+  <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M4 5h16v11H9l-5 4z"/><path d="M10 9.2a2 2 0 1 1 2.8 1.8c-.5.3-.8.7-.8 1.3"/><path d="M12 14h.01"/></svg>input-required
+</span>
+
+<!-- TaskTimeline: an ordered list. Nodes are buttons (aria-pressed) when they select a step of a script.
+     The link text ("reply …") is written, the rule and chevron are drawn by CSS. -->
+<ol class="task-timeline" aria-label="Task lifecycle">
+  <li class="task-timeline-node">
+    <button type="button" class="task-state" data-state="submitted" aria-pressed="false" aria-label="submitted at +0 ms, show in script">submitted</button>
+    <span class="task-timeline-at">+0 ms</span>
+  </li>
+  <li class="task-timeline-node">
+    <span class="task-timeline-link"></span>
+    <button type="button" class="task-state" data-state="input-required" aria-pressed="true" aria-label="input-required at +900 ms, show in script">input-required</button>
+    <span class="task-timeline-at">+900 ms</span>
+  </li>
+  <li class="task-timeline-node">
+    <span class="task-timeline-link" data-text>reply “M”</span>
+    <button type="button" class="task-state" data-state="working" aria-pressed="false" aria-label="working at +200 ms, show in script">working</button>
+    <span class="task-timeline-at">+200 ms</span>
+  </li>
+  <li class="task-timeline-unreached">
+    <span>other end states</span>
+    <span class="task-state" data-state="failed" data-ghost>failed</span>
+    <span class="task-state" data-state="rejected" data-ghost>rejected</span>
+    <span class="task-state" data-state="canceled" data-ghost>canceled</span>
+  </li>
+</ol>
+
+<!-- TaskLanes: state-machine diff. A tone is also written for assistive technology. -->
+<div class="task-lanes" role="region" aria-label="Task lanes" tabindex="0">
+  <div class="task-lane" data-tone="ok">
+    <p class="task-lane-title"><strong>Expected</strong><span>task script</span></p>
+    <ol aria-label="Expected: task script">
+      <li class="task-lane-node"><span class="task-lane-label">input-required</span><span class="task-lane-task">task t-1</span></li>
+      <li class="task-lane-node" data-tone="ok"><span class="task-lane-label">working<span class="sr-only"> (legal)</span></span><span class="task-lane-task">task t-1 · resumed</span></li>
+    </ol>
+  </div>
+  <div class="task-lane" data-tone="bad">
+    <p class="task-lane-title"><strong>Actual</strong><span>HTTP+JSON</span></p>
+    <ol aria-label="Actual: HTTP+JSON">
+      <li class="task-lane-node"><span class="task-lane-label">input-required</span><span class="task-lane-task">task t-1</span></li>
+      <li class="task-lane-node" data-tone="bad"><span class="task-lane-label">submitted<span class="sr-only"> (illegal)</span></span><span class="task-lane-task">NEW task t-2</span></li>
+    </ol>
+  </div>
+</div>

@@ -1,0 +1,31 @@
+/* Deep Ink · progress@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .progress-field { display: flex; flex-direction: column; gap: var(--space-1); }
+  .progress-head { display: flex; justify-content: space-between; gap: var(--space-3); font: var(--type-small); }
+  .progress-label { color: var(--text); font-weight: 600; }
+  .progress-value { color: var(--text-secondary); font-family: var(--font-mono); }
+
+  .progress, .meter {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 100%;
+    height: 10px;
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-pill);
+    background: var(--surface);
+    overflow: hidden;
+  }
+  .progress::-webkit-progress-bar { background: var(--surface); }
+  .progress::-webkit-progress-value { background: var(--action); border-radius: var(--radius-pill); }
+  .progress::-moz-progress-bar { background: var(--action); border-radius: var(--radius-pill); }
+  /* Indeterminate: a static striped bar (no motion needed). */
+  .progress:indeterminate { background: repeating-linear-gradient(135deg, var(--action) 0 6px, var(--surface) 6px 12px); }
+
+  .meter::-webkit-meter-bar { background: var(--surface); border: 0; height: 100%; }
+  .meter::-webkit-meter-optimum-value { background: var(--success); }
+  .meter::-webkit-meter-suboptimum-value { background: var(--warning); }
+  .meter::-webkit-meter-even-less-good-value { background: var(--danger); }
+  .meter::-moz-meter-bar { background: var(--success); }
+  .meter:-moz-meter-sub-optimum::-moz-meter-bar { background: var(--warning); }
+  .meter:-moz-meter-sub-sub-optimum::-moz-meter-bar { background: var(--danger); }
+}

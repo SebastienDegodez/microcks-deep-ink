@@ -9,33 +9,50 @@ import { Meta } from '@storybook/addon-docs/blocks';
 The Microcks UI v2 design system, a proposal for the maintainers.
 **The contract is the source of truth; the interface makes it alive.**
 
-This Storybook shows the **Angular** standalone wrappers. They are generated from the same Web Components
-as the React wrappers, so the two Storybooks render the same pixels.
+This Storybook shows the **Angular** version of the registry. Nothing is installed from npm: you copy the
+files you need into your app, then you own them. The React Storybook renders the same CSS, so both look the same.
 
-## Install
+## Copy a component
+
+Every story has a **Copy** panel (selected by default, next to Accessibility). It shows the exact files the CLI writes.
 
 ```bash
-# Not on npm yet (demo): build locally with `pnpm build` in the repo
-pnpm add @microcks-deep-ink/angular @microcks-deep-ink/core @microcks-deep-ink/tokens
+# From a checkout of the repo (not on npm yet)
+pnpm deep-ink init --framework angular
+pnpm deep-ink add button tabs dialog
 ```
 
 ```ts
-// angular.json → styles: ["node_modules/@microcks-deep-ink/tokens/dist/deep-ink.css"]
-import { Component } from '@angular/core';
-import { FormsModule } from '@angular/forms';
-import { DEEP_INK } from '@microcks-deep-ink/angular';
+// angular.json → styles: ["src/styles/deep-ink/index.css"]
+import { Component, signal } from '@angular/core';
+import { ButtonDirective } from './ui/button';
+import { TabsComponent, TabPanelComponent } from './ui/tabs';
 
 @Component({
   selector: 'app-service-header',
-  imports: [DEEP_INK, FormsModule],
+  imports: [ButtonDirective, TabsComponent, TabPanelComponent],
   template: `
-    <mk-api-badge protocol="REST" name="API Pastry" version="2.0"></mk-api-badge>
-    <mk-input label="Contract URL" [(ngModel)]="url" mono></mk-input>
-    <mk-button variant="primary" (mkClick)="run()">Run test</mk-button>
+    <button mkButton variant="primary" (click)="run()">Run test</button>
+    <mk-tabs label="Sections" [items]="tabs" [(value)]="tab">
+      <div mkTabPanel tab="operations">Operations</div>
+    </mk-tabs>
   `,
 })
 export class ServiceHeader {}
 ```
 
-`DEEP_INK` contains every component plus the `ControlValueAccessor` for `mk-input`, so template-driven and
-reactive forms work out of the box.
+## How it is built
+
+- **Native elements first.** Single elements are attribute directives on the native element (`button[mkButton]`,
+  `input[mkInput]`, `table[mkTable]`, `dialog[mkDialog]`). Composite widgets are standalone components (`mk-tabs`, `mk-field`, `mk-app-shell`).
+- **Signals.** Inputs use `input()`, two-way state uses `model()`, events use `output()`. Components are standalone and `OnPush`.
+- **Accessibility is a contract.** RGAA 4.1.2 (about WCAG 2.1 AA). Every story is checked by axe and fails on a violation. The
+  Accessibility tab of each story lists the keyboard model and ARIA. This is not an audit: the status is *non audité*.
+
+## Why `mk` selectors in Angular
+
+Angular reserves unprefixed element selectors for the HTML standard, and its lint rules
+(`@angular-eslint/component-selector` and `directive-selector`) require a prefix. So Angular is the one place with a prefix:
+`mk-` for components (`<mk-tabs>`) and `mk` camelCase for attribute directives (`<button mkButton>`), while the three custom elements
+(`workflow-loom`, `command-bar`, `plugin-slot`), the CSS classes (`.button`), React names and the HTML recipes stay
+unprefixed.

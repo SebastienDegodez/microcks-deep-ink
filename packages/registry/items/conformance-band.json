@@ -1,0 +1,38 @@
+{
+  "name": "conformance-band",
+  "title": "ConformanceBand",
+  "tier": "microcks",
+  "description": "Conformance by operation: one cell per operation, with a spelled-out label and a visible summary in the full size.",
+  "registryDependencies": [
+    "base"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "<div role=\"img\" aria-label=\"11 of 12 operations pass, 1 fails\">",
+    "keyboard": [],
+    "aria": [
+      "The band is role=\"img\" with a label that spells out the counts",
+      "Failed cells are hatched as well as colored; untested cells are outlined",
+      "The full size shows a visible percentage and counts as text",
+      "Percentage color is secondary: the numbers are always written"
+    ],
+    "rgaa": [
+      "1.1",
+      "3.1",
+      "3.2"
+    ],
+    "wcag": [
+      "1.1.1",
+      "1.4.1",
+      "1.4.11"
+    ],
+    "notes": "Provide the same data as a table elsewhere on the page when the details matter."
+  },
+  "stories": [
+    "Microcks/ConformanceBand"
+  ]
+}

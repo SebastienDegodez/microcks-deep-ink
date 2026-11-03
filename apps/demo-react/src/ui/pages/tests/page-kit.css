@@ -1,0 +1,102 @@
+/* Small layout helpers shared by the Test, Observe and Govern pages. Colors come from the tokens. */
+
+.demo-loading {
+  display: block;
+  min-height: 6rem;
+}
+
+.demo-linkbutton {
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--link);
+  font: inherit;
+  text-decoration: underline;
+  cursor: pointer;
+  min-height: 24px;
+}
+
+.demo-two-col {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+
+@media (min-width: 1000px) {
+  .demo-two-col {
+    grid-template-columns: minmax(0, 1fr) minmax(320px, 440px);
+  }
+  .demo-two-col[data-wide-aside] {
+    grid-template-columns: minmax(0, 1fr) minmax(360px, 520px);
+  }
+}
+
+.demo-mono {
+  font-family: var(--font-mono);
+}
+
+.demo-muted {
+  color: var(--text-muted);
+}
+
+.demo-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 16px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  color: var(--text-secondary);
+  font-size: var(--type-small, 0.875rem);
+}
+
+.demo-meta-item {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: baseline;
+}
+
+.demo-meta-key {
+  color: var(--text-muted);
+}
+
+.demo-actions-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+.demo-error-summary {
+  border: 1px solid var(--danger);
+  border-radius: var(--radius-panel, 8px);
+  background: var(--danger-tint);
+  padding: 12px 16px;
+}
+
+.demo-error-summary h2 {
+  margin: 0 0 6px;
+  font-size: 1rem;
+}
+
+.demo-error-summary ul {
+  margin: 0;
+  padding-inline-start: 20px;
+}
+
+.demo-glyph {
+  font-family: var(--font-mono);
+  font-weight: 700;
+}
+
+.demo-scroll {
+  overflow-x: auto;
+}
+
+.demo-bars-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

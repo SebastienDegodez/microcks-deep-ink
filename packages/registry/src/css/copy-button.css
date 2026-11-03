@@ -1,0 +1,9 @@
+@layer deep-ink.components {
+  /* Extends .button: add both classes to the element. */
+  .copy-button {
+    min-width: 5.5rem;
+  }
+  .copy-button[data-icon-only] {
+    min-width: 32px;
+  }
+}

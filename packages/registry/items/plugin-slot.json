@@ -1,0 +1,23 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "plugin-slot",
+  "title": "PluginSlot",
+  "tier": "element",
+  "description": "Extension point that renders plugin contributions in the light DOM, so tokens and * classes reach them. Includes getPluginHost().",
+  "registryDependencies": ["base"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "elements": ["plugin-slot"],
+  "a11y": {
+    "pattern": "Light-DOM wrapper: div.plugin-item[data-plugin-id] around each contributed element, no ARIA of its own",
+    "keyboard": [["Tab", "Follows the contributed elements in DOM order; the slot adds no tab stop"]],
+    "aria": [
+      "The slot adds no role or landmark: the plugin's own markup carries the semantics",
+      "Plugins style themselves with the * classes; the HTML recipes are their reference",
+      "The outlined origin label is visible text (plugin id and extension point), not color"
+    ],
+    "rgaa": ["8.2", "9.1", "10.7"],
+    "wcag": ["1.3.1", "2.4.3", "4.1.1"],
+    "notes": "Scoped styles, no shadow root (decision D12). getPluginHost() reads globalThis.__MICROCKS_PLUGIN_HOST__ and creates it on first use, so the shell and every plugin bundle share one registry. Angular: add schemas: [CUSTOM_ELEMENTS_SCHEMA]."
+  },
+  "stories": ["Elements/PluginSlot"]
+}

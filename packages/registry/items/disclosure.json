@@ -1,0 +1,41 @@
+{
+  "name": "disclosure",
+  "title": "Disclosure",
+  "tier": "natural",
+  "description": "Show and hide a block of content with native <details> and <summary>.",
+  "registryDependencies": [
+    "base"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Native <details>/<summary>",
+    "keyboard": [
+      [
+        "Enter / Space",
+        "Toggles the section (on the summary)"
+      ]
+    ],
+    "aria": [
+      "Open state is exposed natively; no ARIA needed",
+      "Summary text states what is revealed"
+    ],
+    "rgaa": [
+      "7.1",
+      "9.1",
+      "10.7"
+    ],
+    "wcag": [
+      "1.3.1",
+      "2.1.1",
+      "4.1.2"
+    ],
+    "notes": "Do not add aria-expanded to <summary>."
+  },
+  "stories": [
+    "Components/Disclosure"
+  ]
+}

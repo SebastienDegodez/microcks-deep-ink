@@ -1,0 +1,40 @@
+/* Deep Ink · field@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .field {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    min-width: 0;
+  }
+
+  .label {
+    font: var(--type-label);
+    letter-spacing: var(--type-label-tracking);
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  /* The asterisk is decorative (aria-hidden); the control carries `required`. */
+  .required {
+    color: var(--danger);
+  }
+
+  .help {
+    margin: 0;
+    font: var(--type-small);
+    color: var(--text-muted);
+  }
+
+  .error {
+    display: flex;
+    align-items: flex-start;
+    gap: 6px;
+    margin: 0;
+    font: var(--type-small);
+    font-weight: 600;
+    color: var(--danger);
+  }
+  .error > svg {
+    margin-block-start: 1px;
+  }
+}

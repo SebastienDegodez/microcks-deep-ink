@@ -1,0 +1,14 @@
+@layer deep-ink.components {
+  .run-target {
+    display: inline-flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 2px 10px;
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-control);
+    color: var(--text);
+    font: 600 13px/18px var(--font-ui);
+  }
+  .run-target[data-target="mixed"] { border-style: dashed; }
+}
