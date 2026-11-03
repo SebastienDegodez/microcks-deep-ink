@@ -8,6 +8,7 @@ import { ThemeToggle } from '@/ui/components/ui/theme-toggle';
 import { useQuery } from './hooks';
 import { LiveAnnouncerProvider } from './announcer';
 import { DemoBanner } from './DemoBanner';
+import microcksLogo from './microcks-logo.svg';
 import { NAV_ITEMS, type RouteHandle } from './nav';
 import { useUseCases } from './UseCasesProvider';
 
@@ -57,6 +58,7 @@ export function AppLayout() {
       <AppShell
         brand={
           <Link to="/" className="demo-brand">
+            <img src={microcksLogo} alt="" width={30} height={26} />
             Microcks
           </Link>
         }
