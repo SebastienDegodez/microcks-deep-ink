@@ -1044,3 +1044,10 @@ These requirements arrived after the plan was written. They extend WP10 and over
 4. **Skill-ready.** `tools/a11y/README.md` documents inputs, outputs, exit codes and the JSON schema, so a future Claude skill can wrap the runner ("run a11ylint, list RGAA criteria and their status").
 5. **Upstream findings.** Every bug or missing rule hit in `@a11ylint/core@1.0.0-alpha.7` goes to `docs/a11ylint-findings.md`, written as a ready-to-file issue (title, RGAA criterion, minimal repro HTML, expected vs actual). Never patch the upstream package; stub or skip with a TODO so CI stays meaningful.
 6. **docs/accessibility.md** lists, per criterion, whether a11ylint, axe or a human checks it, and states the demo is "non audité" until a human audit.
+
+## Addendum B (coordinator, 2026-11-03): no CSS prefix, then Svelte
+
+1. **Drop the `di-` prefix.** Deep Ink is the design system of all Microcks v2, and Microcks v1 will be abandoned, so the host-collision argument no longer holds. After phase 2 and before WP10, the coordinator runs a mechanical rename (`di-` → nothing) across CSS, HTML recipes, React, Angular, the demo and both Storybooks, verified by the registry tests, the demo build and both Storybook builds. Angular selector convention: pending the maintainer's answer.
+2. **Plugin CSS rule.** Because unlayered plugin CSS beats the `@layer deep-ink` styles, the plugin contract (docs/plugins.md) requires plugin styles to be scoped by the plugin's `tagPrefix` or kept in shadow DOM.
+3. **Optional `--css-prefix` in the CLI** for third-party apps reusing the Microcks look (Microcks itself uses no prefix).
+4. **Svelte** comes in a work package after v0.2: the registry format must accept a third framework (`svelte` files next to `react`/`angular`), reusing the same CSS and HTML recipes.
