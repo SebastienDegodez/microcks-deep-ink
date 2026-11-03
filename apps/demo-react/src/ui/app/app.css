@@ -5,9 +5,21 @@
  */
 
 .demo-brand {
-  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-family: var(--font-brand);
+  font-weight: 800;
+  font-size: 22px;
+  letter-spacing: 0.02em;
   text-decoration: none;
   color: inherit;
+}
+
+.demo-brand img {
+  width: 30px;
+  height: 26px;
+  object-fit: contain;
 }
 
 .demo-banner {
