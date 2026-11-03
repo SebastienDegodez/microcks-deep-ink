@@ -282,6 +282,30 @@
         "src/ui/components/ui/theme-toggle.theme.ts": "aeed6898d638931f22fafc007d9bd443033ad540f80c63fde37168d1f7ee834d",
         "src/ui/styles/theme-toggle.css": "dffa9968a80190d5bb508054c4f0c0058eafc99b679fa1b2960bc362d5183dc8"
       }
+    },
+    "workflow-loom": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/workflow-loom.tsx": "55d6a16e027475718c5ccedd3956a4c499d32cb0a5363e32099ad758e826dbc9",
+        "src/ui/components/ui/elements/mk-workflow-loom.js": "abe9b578b226fe01c5b98e121f1d7bf0186770278284f7c8a1cb882780deef44",
+        "src/ui/components/ui/elements/mk-workflow-loom.d.ts": "cebdd92f3a03c970f2889e640899fbe6a00429ce8c074345bc92f5181d7bbe80"
+      }
+    },
+    "command-bar": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/command-bar.tsx": "29943a9c7abdb12c7fe61535dc297911704cc9e0d6fdb4e1330a0fd490937040",
+        "src/ui/components/ui/elements/mk-command-bar.js": "afe12d88e71063219d7de0d6de75515b2573db18fa2870efbacf4fc30aa29519",
+        "src/ui/components/ui/elements/mk-command-bar.d.ts": "049722ada8a79ff5fc2ca6f2cbd451c0e021dce46d684740412dc5fc3e86b0da"
+      }
+    },
+    "plugin-slot": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/plugin-slot.tsx": "cdd6524c1dde1975723aafe99668ab0df3bd8f09953c7b1c94d1e24930fa9ff7",
+        "src/ui/components/ui/elements/mk-plugin-slot.js": "6bb08587c66e73845901e908169f4e99dcee233e397d95c8fbc7b27d6047bb24",
+        "src/ui/components/ui/elements/mk-plugin-slot.d.ts": "2d2bc5c9546fa2bb484c1ffb98899fd3dba6d237687b3312ac5c4b2db1259899"
+      }
     }
   }
 }
