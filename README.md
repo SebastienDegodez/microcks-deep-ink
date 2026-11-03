@@ -108,4 +108,6 @@ Microcks v2 UI proposal. Design rules live in [docs/design-principles.md](docs/d
 
 ## License
 
-Apache-2.0, like Microcks.
+Apache License 2.0, the same license as Microcks (see [LICENSE](LICENSE)).
+
+`Microcks` and its logo are trademarks of the Microcks project (CNCF); this design system is a proposal and does not grant any right to use them.
