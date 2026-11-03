@@ -7,6 +7,10 @@ storybook-static/
 .stencil/
 *.log
 .DS_Store
-packages/react/src/components/stencil-generated/
-packages/angular/projects/library/src/lib/stencil-generated/
 packages/core/src/components.d.ts
+packages/registry/src/react/elements/
+packages/registry/src/angular/elements/
+a11y-report/
+site/
+.ngc/
+tools/a11y/dist/

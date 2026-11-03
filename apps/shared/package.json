@@ -7,10 +7,11 @@
   "exports": {
     "./fixtures": "./fixtures.ts",
     "./demo-plugin": "./demo-plugin.ts",
-    "./foundations.css": "./foundations.css"
+    "./foundations.css": "./foundations.css",
+    "./copy-panel": "./copy-panel/register.tsx"
   },
   "dependencies": {
-    "@microcks-deep-ink/core": "workspace:*",
-    "@microcks-deep-ink/plugin-sdk": "workspace:*"
+    "@microcks-deep-ink/plugin-sdk": "workspace:*",
+    "@microcks-deep-ink/registry": "workspace:*"
   }
 }

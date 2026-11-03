@@ -37,7 +37,8 @@
       "import": "./dist/components/index.js"
     },
     "./dist/*": "./dist/*",
-    "./deep-ink.css": "./dist/deep-ink/deep-ink.css"
+    "./deep-ink.css": "./dist/deep-ink/deep-ink.css",
+    "./dist/elements/*": "./dist/elements/*"
   },
   "files": [
     "dist",
@@ -45,8 +46,9 @@
   ],
   "sideEffects": true,
   "scripts": {
-    "build": "stencil build",
-    "start": "stencil build --dev --watch --serve"
+    "build": "stencil build && node scripts/bundle-elements.mjs",
+    "start": "stencil build --dev --watch --serve",
+    "test": "vitest run --passWithNoTests"
   },
   "dependencies": {
     "@microcks-deep-ink/plugin-sdk": "workspace:*",
@@ -54,7 +56,7 @@
     "@stencil/core": "^4.45.2"
   },
   "devDependencies": {
-    "@stencil/angular-output-target": "^1.5.3",
-    "@stencil/react-output-target": "^1.7.0"
+    "esbuild": "^0.28.0",
+    "vitest": "^5.1.0"
   }
 }
