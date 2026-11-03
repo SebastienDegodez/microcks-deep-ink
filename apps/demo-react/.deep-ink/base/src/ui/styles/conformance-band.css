@@ -1,0 +1,29 @@
+/* Deep Ink · conformance-band@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .conformance-wrap { display: flex; flex-direction: column; gap: var(--space-2); max-width: 420px; }
+  .conformance { display: flex; gap: 3px; height: 28px; }
+  .conformance[data-size="mini"] { height: 12px; gap: 2px; }
+  .conformance > span { flex: 1; min-width: 3px; border-radius: 2px; box-sizing: border-box; }
+  .conformance > [data-result="pass"] { background: var(--success); }
+  /* Failed: hatched as well as colored. */
+  .conformance > [data-result="fail"] {
+    background: repeating-linear-gradient(135deg, var(--danger) 0 4px, var(--danger-tint) 4px 8px);
+    border: 1px solid var(--danger);
+  }
+  /* Untested: outlined and empty. */
+  .conformance > [data-result="untested"] { background: var(--surface); border: 1px solid var(--border-control); }
+
+  .conformance-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-3);
+    margin: 0;
+    font: var(--type-small);
+    color: var(--text-secondary);
+  }
+  .conformance-score { font: var(--type-display); font-size: 40px; line-height: 44px; color: var(--text); }
+  .conformance-score[data-level="high"] { color: var(--success); }
+  .conformance-score[data-level="mid"] { color: var(--warning); }
+  .conformance-score[data-level="low"] { color: var(--danger); }
+}

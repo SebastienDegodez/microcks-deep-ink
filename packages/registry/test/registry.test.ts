@@ -51,6 +51,17 @@ describe('registry build', () => {
     }
   });
 
+  it('gives every item a content hash version, in both outputs, that does not depend on the copy header', () => {
+    for (const item of result.full.items) {
+      const h = (item as unknown as { hash: string }).hash;
+      expect(h, item.name).toMatch(/^[0-9a-f]{16}$/);
+      expect((result.index.items.find((i) => i.name === item.name) as unknown as { hash: string }).hash).toBe(h);
+    }
+    const hashes = result.full.items.map((i) => (i as unknown as { hash: string }).hash);
+    expect(new Set(hashes).size).toBeGreaterThan(hashes.length / 2);
+    expect(buildRegistry({ write: false }).full.items.map((i: Entry) => (i as unknown as { hash: string }).hash)).toEqual(hashes);
+  });
+
   it('puts the copy header on every file of the full registry', () => {
     for (const item of result.full.items) {
       for (const f of [...item.files.react, ...item.files.angular, ...item.files.html, ...item.css]) {
@@ -140,6 +151,26 @@ describe('registry validation', () => {
     ...extra,
   });
   const put = (root: string, m: ReturnType<typeof meta>) => writeFileSync(join(root, 'items', `${m.name}.json`), JSON.stringify(m));
+
+  it('changes the item hash when, and only when, a file of the item changes', () => {
+    const build = (css: string, other = 'x') =>
+      scratch((root) => {
+        put(root, meta('a', [], { cssOnly: false }));
+        put(root, meta('b', [], { cssOnly: false }));
+        writeFileSync(join(root, 'src', 'css', 'a.css'), css);
+        writeFileSync(join(root, 'src', 'css', 'b.css'), other);
+      });
+    const hashOf = (r: ReturnType<typeof build>, name: string) => (r.full.items.find((i: Entry) => i.name === name) as unknown as { hash: string }).hash;
+    const one = build('a{}');
+    const same = build('a{}');
+    const edited = build('a{color:red}');
+    const otherEdited = build('a{}', 'y');
+    expect(hashOf(same, 'a')).toBe(hashOf(one, 'a'));
+    expect(hashOf(edited, 'a')).not.toBe(hashOf(one, 'a'));
+    expect(hashOf(edited, 'b')).toBe(hashOf(one, 'b'));
+    expect(hashOf(otherEdited, 'a')).toBe(hashOf(one, 'a'));
+    expect(hashOf(otherEdited, 'b')).not.toBe(hashOf(one, 'b'));
+  });
 
   it('rejects an unknown dependency', () => {
     const r = scratch((root) => put(root, meta('a', ['ghost'])));

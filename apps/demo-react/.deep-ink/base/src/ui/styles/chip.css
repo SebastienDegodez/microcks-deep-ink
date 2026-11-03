@@ -1,0 +1,92 @@
+/* Deep Ink · chip@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .chip {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 24px;
+    margin: 0;
+    padding: 2px 10px;
+    font: 400 12px/16px var(--font-mono);
+    color: var(--text-secondary);
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+  }
+  .chip-key {
+    color: var(--text-muted);
+  }
+
+  /* Tones. Text and tint pairs are contrast-tested in the tokens package. */
+  .chip[data-tone="info"] {
+    color: var(--link);
+    background: var(--info-tint);
+    border-color: var(--link);
+  }
+  .chip[data-tone="success"] {
+    color: var(--success);
+    background: var(--success-tint);
+    border-color: var(--success);
+  }
+  .chip[data-tone="warning"] {
+    color: var(--warning);
+    background: var(--warning-tint);
+    border-color: var(--warning);
+  }
+  .chip[data-tone="danger"] {
+    color: var(--danger);
+    background: var(--danger-tint);
+    border-color: var(--danger);
+  }
+
+  .chip[data-variant="outline"],
+  .chip[data-variant="dashed"] {
+    background: transparent;
+  }
+  .chip[data-variant="dashed"] {
+    border-style: dashed;
+  }
+  .chip[data-tone="neutral"][data-variant="outline"],
+  .chip[data-tone="neutral"][data-variant="dashed"] {
+    border-color: var(--border-control);
+  }
+
+  /* Toggle chip (filter) */
+  button.chip {
+    cursor: pointer;
+  }
+  button.chip:hover {
+    background: var(--raised);
+  }
+  button.chip[aria-pressed="true"] {
+    color: var(--text);
+    background: var(--selected);
+    border-color: var(--action);
+    box-shadow: inset 0 0 0 1px var(--action);
+    font-weight: 600;
+  }
+  /* Pressed also adds a check mark, so the state is not carried by color alone. The empty alt hides it from screen readers. */
+  button.chip[aria-pressed="true"]::before {
+    content: "✓";
+    content: "✓" / "";
+  }
+
+  .chip-remove {
+    display: inline-grid;
+    place-content: center;
+    box-sizing: border-box;
+    width: 20px;
+    height: 20px;
+    margin: 0 -6px 0 0;
+    padding: 0;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    border-radius: 50%;
+    cursor: pointer;
+  }
+  .chip-remove:hover {
+    background: var(--raised);
+  }
+}

@@ -1,0 +1,94 @@
+/* Deep Ink · base@0.2.0 · copied from packages/registry. You own this file. */
+/*
+ * Deep Ink base. Layer order, focus ring, helpers and reduced motion.
+ *
+ * Every component stylesheet is wrapped in `@layer deep-ink.components { ... }`.
+ * Your own unlayered CSS therefore always wins over Deep Ink, without !important.
+ */
+@layer deep-ink.base, deep-ink.components;
+
+@layer deep-ink.base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--bg);
+    color: var(--text);
+    font: var(--type-body);
+  }
+
+  /* One visible focus indicator for the whole system (WCAG 2.4.7, RGAA 10.7). */
+  :focus-visible {
+    outline: 2px solid var(--action);
+    outline-offset: 2px;
+    box-shadow: var(--shadow-focus);
+  }
+
+  /* Visually hidden, still announced by screen readers. */
+  .sr-only {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    margin: -1px;
+    padding: 0;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+    white-space: nowrap;
+    border: 0;
+  }
+
+  /* First focusable element of a page. Hidden until it receives focus. */
+  .skip-link {
+    position: absolute;
+    inset-block-start: var(--space-2);
+    inset-inline-start: var(--space-2);
+    z-index: 1000;
+    padding: var(--space-3) var(--space-4);
+    background: var(--action);
+    color: var(--on-action);
+    font: 600 15px/22px var(--font-ui);
+    border-radius: var(--radius-control);
+    text-decoration: underline;
+    transform: translateY(-200%);
+  }
+  .skip-link:focus,
+  .skip-link:focus-visible {
+    transform: none;
+    outline: 2px solid var(--on-action);
+    outline-offset: 2px;
+  }
+
+  /* Layout helpers. Set --gap to change the spacing. */
+  .stack {
+    display: flex;
+    flex-direction: column;
+    gap: var(--gap, var(--space-4));
+  }
+  .inline {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--gap, var(--space-2));
+  }
+}
+
+/*
+ * Reduced motion (WCAG 2.3.3, RGAA 13.8 companion). This block is deliberately unlayered:
+ * an unlayered declaration beats every layered one, so no component transition or
+ * animation can escape it. Your own rules still win on specificity.
+ */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation: none;
+    transition: none;
+  }
+}

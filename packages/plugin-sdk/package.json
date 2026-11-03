@@ -12,17 +12,26 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
-    "./microcks-plugin.schema.json": "./microcks-plugin.schema.json"
+    "./microcks-plugin.schema.json": "./microcks-plugin.schema.json",
+    "./check-plugin-css": {
+      "types": "./scripts/check-plugin-css.d.mts",
+      "default": "./scripts/check-plugin-css.mjs"
+    }
   },
   "files": [
     "dist",
+    "scripts",
     "microcks-plugin.schema.json"
   ],
   "sideEffects": false,
   "scripts": {
-    "build": "tsc -p tsconfig.json"
+    "build": "tsc -p tsconfig.json",
+    "test": "node --test"
   },
   "devDependencies": {
     "typescript": "~6.0.0"
+  },
+  "bin": {
+    "check-plugin-css": "./scripts/check-plugin-css.mjs"
   }
 }
