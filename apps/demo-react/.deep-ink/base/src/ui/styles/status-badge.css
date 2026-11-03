@@ -1,0 +1,23 @@
+/* Deep Ink · status-badge@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .status {
+    --status-color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--status-color);
+    font: 600 14px/20px var(--font-ui);
+  }
+  .status[data-size="sm"] { gap: 4px; font-size: 12px; line-height: 16px; }
+  .status[data-status="conformant"] { --status-color: var(--success); }
+  .status[data-status="failed"] { --status-color: var(--danger); }
+  .status[data-status="partial"] { --status-color: var(--warning); }
+  .status[data-status="running"] { --status-color: var(--running); }
+  .status[data-status="never"] { --status-color: var(--text-muted); }
+  .status > .icon { flex: none; }
+  .status[data-status="running"] > .icon { animation: status-spin 1s linear infinite; }
+  @keyframes status-spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .status[data-status="running"] > .icon { animation: none; }
+  }
+}

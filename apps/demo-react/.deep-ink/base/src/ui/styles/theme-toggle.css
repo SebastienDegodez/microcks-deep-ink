@@ -1,0 +1,9 @@
+/* Deep Ink · theme-toggle@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  /* Pressed (light theme on) is visible beyond color: filled background and a solid border. */
+  .theme-toggle[aria-pressed="true"] {
+    background: var(--selected);
+    border-color: var(--action);
+    color: var(--text);
+  }
+}

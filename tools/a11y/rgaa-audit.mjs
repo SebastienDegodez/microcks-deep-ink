@@ -224,7 +224,12 @@ const SETTLE_SCRIPT = `(async () => {
 const axeScript = (kind) => `(async () => {
   const cfg = { runOnly: { type: 'tag', values: ${JSON.stringify(AXE_TAGS)} }, resultTypes: ['violations', 'incomplete'],
     rules: ${JSON.stringify(kind === 'story' ? Object.fromEntries(STORY_AXE_DISABLED.map((r) => [r, { enabled: false }])) : {})} };
-  const r = await axe.run(document, cfg);
+  // Storybook's addon-a11y may run its own axe pass in the same page: wait for it instead of failing.
+  let r;
+  for (let i = 0; ; i++) {
+    try { r = await axe.run(document, cfg); break; }
+    catch (e) { if (i < 50 && /already running/i.test(String(e && e.message || e))) { await new Promise(res => setTimeout(res, 200)); continue; } throw e; }
+  }
   const slim = (list, nodes) => list.map(x => ({ id: x.id, impact: x.impact, help: x.help, helpUrl: x.helpUrl,
     nodes: nodes ? x.nodes.slice(0, 20).map(n => ({ html: n.html.slice(0, 300), target: n.target.join(' '), summary: n.failureSummary })) : [] }));
   return { violations: slim(r.violations, true), incomplete: slim(r.incomplete, false), passes: r.passes.map(x => x.id), inapplicable: r.inapplicable.map(x => x.id), version: axe.version };

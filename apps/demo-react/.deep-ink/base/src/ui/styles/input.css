@@ -1,0 +1,57 @@
+/* Deep Ink · input@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 40px;
+    margin: 0;
+    padding: 0 12px;
+    font: 400 15px/22px var(--font-ui);
+    color: var(--text);
+    background: var(--surface);
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-control);
+  }
+
+  textarea.input {
+    min-height: 96px;
+    padding: 8px 12px;
+    resize: vertical;
+  }
+
+  .input[data-mono] {
+    font: var(--type-code);
+  }
+
+  .input[data-size="sm"] {
+    min-height: 32px;
+    padding-inline: 8px;
+    font-size: 13px;
+  }
+
+  .input::placeholder {
+    color: var(--text-muted);
+    opacity: 1;
+  }
+
+  .input:hover {
+    border-color: var(--text-secondary);
+  }
+
+  /* Invalid: danger border plus a thicker inner line, so it is not a hue change only. */
+  .input[aria-invalid="true"] {
+    border-color: var(--danger);
+    box-shadow: inset 0 0 0 1px var(--danger);
+  }
+
+  .input:disabled {
+    background: var(--surface);
+    border-color: var(--border);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  .input[readonly] {
+    background: var(--canvas);
+  }
+}

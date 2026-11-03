@@ -1,0 +1,63 @@
+/* Deep Ink · dialog@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .dialog {
+    box-sizing: border-box;
+    width: min(32rem, calc(100vw - 2rem));
+    max-height: min(90vh, 48rem);
+    padding: 0;
+    color: var(--text);
+    background: var(--canvas);
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow-overlay);
+  }
+  .dialog[data-size="sm"] {
+    width: min(24rem, calc(100vw - 2rem));
+  }
+  .dialog[data-size="lg"] {
+    width: min(48rem, calc(100vw - 2rem));
+  }
+  .dialog[open] {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .dialog::backdrop {
+    background: var(--backdrop, rgb(7 11 20 / 0.65));
+  }
+
+  /* The page behind a modal dialog does not scroll. */
+  body:has(dialog.dialog[open]) {
+    overflow: hidden;
+  }
+
+  .dialog-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-4) 0;
+  }
+  .dialog-title {
+    margin: 0;
+    font: var(--type-title);
+  }
+
+  .dialog-body {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    padding: var(--space-4);
+  }
+  .dialog-description {
+    margin: 0 0 var(--space-4);
+    color: var(--text-secondary);
+  }
+
+  .dialog-footer {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: var(--space-2);
+    padding: var(--space-3) var(--space-4) var(--space-4);
+  }
+}

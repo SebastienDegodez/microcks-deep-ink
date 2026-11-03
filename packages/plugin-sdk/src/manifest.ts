@@ -63,9 +63,12 @@ export interface BackendPart {
 export interface FrontendPart {
   /** URL (or path relative to the plugin bundle) of the ES module exporting `activate`. */
   entry: string;
-  /** Custom element tag prefix reserved by the plugin, to avoid collisions. Example: "acme-". */
+  /**
+   * Custom element tag prefix reserved by the plugin. Required: a plugin without a prefix cannot contribute.
+   * Example: "acme-". Reserved prefixes (see RESERVED_TAG_PREFIXES) are rejected.
+   */
   tagPrefix: string;
-  /** Extension points the plugin contributes to, declared for marketplace display and lazy loading. */
+  /** Extension points the plugin contributes to. The host rejects a contribution to a point that is not listed. */
   contributes: ExtensionPointId[];
 }
 
@@ -82,3 +85,17 @@ export const EXTENSION_POINTS = {
 } as const;
 
 export type ExtensionPointId = keyof typeof EXTENSION_POINTS;
+
+/** Tag prefixes that belong to the host. A plugin cannot use them as `tagPrefix`, nor contribute such a tag. */
+export const RESERVED_TAG_PREFIXES = ['mk-', 'microcks-'] as const;
+
+/** Tags of the host's own custom elements. A plugin can never contribute one of these. */
+export const RESERVED_TAGS = ['workflow-loom', 'command-bar', 'plugin-slot'] as const;
+
+/**
+ * Permission the host requires from a plugin before it may contribute to an extension point.
+ * Points that are not listed need none.
+ */
+export const EXTENSION_POINT_PERMISSIONS: Partial<Record<ExtensionPointId, PluginPermission>> = {
+  'import.sources': 'services:write',
+};

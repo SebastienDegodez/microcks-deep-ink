@@ -6,6 +6,7 @@
 // Reads items/<name>.json, discovers source files by name (see README.md), validates
 // everything and writes dist/registry.json, dist/registry.full.json and
 // dist/deep-ink-components.css. Only writes inside packages/registry.
+import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -22,6 +23,18 @@ export function fileHeader(name, target, version) {
   if (target.endsWith('.css')) return `/* ${text} */\n`;
   if (target.endsWith('.html')) return `<!-- ${text} -->\n`;
   return `// ${text}\n`;
+}
+
+/**
+ * Version of one item: a hash of the content of all its files (every framework, the CSS, the element bundles),
+ * without the copy header. It changes when, and only when, what a consumer would copy changes.
+ */
+export function itemHash(files) {
+  const h = createHash('sha256');
+  for (const [key, content] of [...files].sort((a, b) => (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0))) {
+    h.update(`${key}\0${createHash('sha256').update(content).digest('hex')}\n`);
+  }
+  return h.digest('hex').slice(0, 16);
 }
 
 function readJson(path) {
@@ -198,12 +211,15 @@ export function buildRegistry(options = {}) {
   const index = { name: pkg.name, version, items: [] };
   const sections = [];
   for (const e of ordered) {
-    const withContent = (f) => {
-      const raw = f.generated ? (f.target === 'tokens.css' ? generatedTokens.css : '') : read(f.source);
-      return { ...f, content: fileHeader(e.name, f.target, version) + raw };
-    };
+    const rawOf = (f) => (f.generated ? (f.target === 'tokens.css' ? generatedTokens.css : '') : read(f.source));
+    const withContent = (f) => ({ ...f, content: fileHeader(e.name, f.target, version) + rawOf(f) });
     const strip = (f) => ({ target: f.target, kind: f.kind });
-    const base = { ...e, files: undefined, css: undefined };
+    const hashed = [
+      ...['react', 'angular', 'html'].flatMap((k) => e.files[k].map((f) => [`${k}:${f.target}`, rawOf(f)])),
+      ...e.css.map((f) => [`css:${f.target}`, rawOf(f)]),
+      ...(e.name === 'tokens' ? [['css:tokens.no-fonts.css', generatedTokens.cssNoFonts ?? '']] : []),
+    ];
+    const base = { ...e, hash: itemHash(hashed), files: undefined, css: undefined };
     const fullItem = { ...base, files: {}, css: e.css.map(withContent) };
     const indexItem = { ...base, files: {}, css: e.css.map(strip) };
     for (const k of ['react', 'angular', 'html']) {

@@ -1,0 +1,57 @@
+/* Deep Ink · segmented@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .segmented {
+    display: inline-flex;
+    flex-wrap: wrap;
+    max-width: 100%;
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-control);
+    overflow: hidden;
+  }
+
+  .segmented > button {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    min-height: 32px;
+    margin: 0;
+    padding: 0 var(--space-3);
+    font: 500 13px/18px var(--font-ui);
+    color: var(--text-secondary);
+    background: var(--surface);
+    border: 0;
+    border-inline-end: 1px solid var(--border-control);
+    border-radius: 0;
+    cursor: pointer;
+  }
+  .segmented > button:last-child {
+    border-inline-end: 0;
+  }
+  .segmented > button:hover {
+    color: var(--text);
+    background: var(--raised);
+  }
+
+  /* Pressed: fill, bold text and a check mark (hidden from screen readers), so it is not color only. */
+  .segmented > button[aria-pressed="true"] {
+    color: var(--text);
+    background: var(--selected);
+    font-weight: 600;
+    box-shadow: inset 0 -2px 0 var(--action);
+  }
+  .segmented > button[aria-pressed="true"]::before {
+    content: "✓";
+    content: "✓" / "";
+  }
+
+  /* The focus ring would be cut by the rounded container: draw it inside. */
+  .segmented > button:focus-visible {
+    outline-offset: -3px;
+  }
+
+  .segmented-count {
+    font: 400 12px/16px var(--font-mono);
+    color: var(--text-muted);
+  }
+}

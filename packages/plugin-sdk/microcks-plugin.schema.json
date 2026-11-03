@@ -52,9 +52,16 @@
       "required": ["entry", "tagPrefix", "contributes"],
       "properties": {
         "entry": { "type": "string" },
-        "tagPrefix": { "type": "string", "pattern": "^[a-z][a-z0-9]*-$" },
+        "tagPrefix": {
+          "type": "string",
+          "pattern": "^(?!(mk|microcks|workflow|command|plugin)-$)[a-z][a-z0-9]*-$",
+          "description": "Required. Lowercase word ending with a hyphen. Reserved: mk-, microcks-, and workflow-, command-, plugin- (they would cover the host tags workflow-loom, command-bar, plugin-slot)."
+        },
         "contributes": {
           "type": "array",
+          "minItems": 1,
+          "uniqueItems": true,
+          "description": "Extension points the plugin may contribute to. The host rejects a contribution to a point that is not listed.",
           "items": {
             "enum": [
               "nav.items",

@@ -137,7 +137,6 @@ deploys to GitHub Pages only from `main`.
 
 - **Svelte** is announced as the next target: the registry format will accept a third framework (`svelte` files next to
   `react` and `angular`), reusing the same CSS and HTML recipes.
-- Optional `--css-prefix` in the CLI for third-party apps that want the Microcks look next to other styles.
 - A human accessibility audit, then a real "déclaration d'accessibilité".
 
 ## Source

@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
+import { createHash } from 'node:crypto';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
@@ -110,7 +111,7 @@ describe('add', () => {
     writeFileSync(file, read(dir, 'src/components/ui/tabs.tsx') + '\n// my edit\n');
     const r = run(['add', 'tabs', '--cwd', dir]);
     assert.equal(r.status, 2);
-    assert.match(r.stdout, /skip\s+src\/components\/ui\/tabs\.tsx \(modified locally, use --overwrite or deep-ink diff tabs\)/);
+    assert.match(r.stdout, /skip\s+src\/components\/ui\/tabs\.tsx \(modified locally, use --merge, --overwrite or deep-ink diff tabs\)/);
     assert.match(read(dir, 'src/components/ui/tabs.tsx'), /my edit/);
     const o = run(['add', 'tabs', '--cwd', dir, '--overwrite']);
     assert.equal(o.status, 0);
@@ -125,9 +126,10 @@ describe('add', () => {
     const old = '// old version\n';
     writeFileSync(join(dir, rel), old);
     const lock = JSON.parse(read(dir, 'deep-ink.json'));
-    // sha256 of `old`
-    lock.items.tabs.files[rel] = spawnSync('shasum', ['-a', '256'], { input: old, encoding: 'utf8' }).stdout.split(' ')[0];
+    // sha256 of `old`, and the base copy that goes with it
+    lock.items.tabs.files[rel] = createHash('sha256').update(old).digest('hex');
     writeFileSync(join(dir, 'deep-ink.json'), JSON.stringify(lock));
+    writeFileSync(join(dir, '.deep-ink/base', rel), old);
     const r = run(['add', 'tabs', '--cwd', dir]);
     assert.equal(r.status, 0, r.stdout);
     assert.match(r.stdout, /updated\s+src\/components\/ui\/tabs\.tsx/);
@@ -184,9 +186,12 @@ describe('diff and view', () => {
     const rel = 'src/components/ui/tabs.tsx';
     writeFileSync(join(dir, rel), read(dir, rel).replace('Tabs with the WAI-ARIA tabs pattern', 'Mine'));
     const d = run(['diff', 'tabs', '--cwd', dir]).stdout;
-    assert.match(d, /^--- local\/src\/components\/ui\/tabs\.tsx/m);
-    assert.match(d, /^-.*Mine/m);
-    assert.match(d, /^\+.*Tabs with the WAI-ARIA tabs pattern/m);
+    assert.match(d, /== src\/components\/ui\/tabs\.tsx: local edits \(base -> your file\)/);
+    assert.match(d, /^--- base\/src\/components\/ui\/tabs\.tsx/m);
+    assert.match(d, /^\+\+\+ local\/src\/components\/ui\/tabs\.tsx/m);
+    assert.match(d, /^-.*Tabs with the WAI-ARIA tabs pattern/m);
+    assert.match(d, /^\+.*Mine/m);
+    assert.doesNotMatch(d, /upstream changes/);
   });
 
   it('view prints the files of an item', () => {

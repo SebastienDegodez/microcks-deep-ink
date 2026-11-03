@@ -83,7 +83,7 @@ describe('Agent test (screen 19)', () => {
     expect(await screen.findByText(/13 of 15 conversation checks passed/)).toBeTruthy();
     const detail = await screen.findByRole('region', { name: /Detail of HTTP\+JSON × eclair-size-m/ });
     expect(within(detail).getByText('NEW task t-2')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: /gRPC × ord-2417-ready: Failed/ }));
+    fireEvent.click(screen.getByRole('button', { name: /gRPC × ord-2417-ready:\s*Failed/ }));
     expect(await screen.findByRole('region', { name: /Detail of gRPC × ord-2417-ready/ })).toBeTruthy();
     expect(screen.getByText(/lastChunk: not set/)).toBeTruthy();
   });
