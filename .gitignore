@@ -11,6 +11,6 @@ packages/core/src/components.d.ts
 packages/registry/src/react/elements/
 packages/registry/src/angular/elements/
 a11y-report/
-site/
+/site/
 .ngc/
 tools/a11y/dist/
