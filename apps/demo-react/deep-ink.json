@@ -353,10 +353,10 @@
     "conformance-matrix": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/conformance-matrix.tsx": "d3be83b77330b9ea29791107159280cbab9928a84dd4f0a81b86e79970180016",
+        "src/ui/components/ui/conformance-matrix.tsx": "e0b1c57ee94b0bbb51d5c76761555244d9bab614937fa11c8cb2a46fd1a46e3f",
         "src/ui/styles/conformance-matrix.css": "b7f613e3141d5f204e805b89ce988c7eeb67c35a50e567ddd47790bff2c6c456"
       },
-      "hash": "1e6fc99da4bd388e"
+      "hash": "6bbc5209d68d5a03"
     },
     "skill-list": {
       "version": "0.2.0",

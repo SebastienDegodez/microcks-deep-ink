@@ -124,7 +124,7 @@ export function ConformanceMatrix({ caption, columns, groups, footer, selectedKe
                           aria-pressed={selected}
                           onClick={() => onSelectCell(selected ? undefined : key)}
                         >
-                          <span className="sr-only">{`${col ? `${col.label} × ` : ''}${r.label}: `}</span>
+                          <span className="sr-only">{`${col ? `${col.label} × ` : ''}${r.label}:`}</span>{' '}
                           {body}
                         </button>
                       ) : (
