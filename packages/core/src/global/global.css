@@ -1,13 +1,5 @@
 /*
- * Global stylesheet shipped as dist/deep-ink/deep-ink.css.
+ * Global stylesheet shipped as dist/deep-ink/deep-ink.css: tokens only.
  * Components read tokens through CSS custom properties, which cross the shadow DOM boundary.
- * Apps should import @microcks-deep-ink/tokens/deep-ink.css once, or this file.
  */
 @import '../../../tokens/dist/deep-ink.css';
-
-body {
-  background: var(--bg);
-  color: var(--text);
-  font: var(--type-body);
-  margin: 0;
-}

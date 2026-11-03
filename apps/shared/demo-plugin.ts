@@ -1,7 +1,11 @@
 // A demo plugin, written as a plain Web Component, registered into the shared host.
 // It proves the contract is framework-agnostic: the same plugin renders in both Storybooks.
+// Since <mk-plugin-slot> renders in light DOM, the plugin styles itself with the di- CSS API
+// and the HTML recipes of the registry (live-indicator, api-badge): no shadow DOM, no mk-* tags.
 import { definePlugin, getPluginHost, type SlotContext } from '@microcks-deep-ink/plugin-sdk';
 import { SAMPLE_MANIFEST } from './fixtures';
+
+const esc = (s: string): string => s.replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c] as string);
 
 class AcmeReplayWidget extends HTMLElement {
   private _ctx?: SlotContext;
@@ -14,16 +18,20 @@ class AcmeReplayWidget extends HTMLElement {
   }
   private render() {
     const svc = this._ctx?.service;
+    // HTML recipes: live-indicator and api-badge (packages/registry/src/html).
     this.innerHTML = `
-      <div style="display:flex;flex-direction:column;gap:8px;font:var(--type-body);color:var(--text)">
-        <div style="display:flex;align-items:center;gap:8px">
-          <strong style="font:var(--type-heading)">Kafka Replay</strong>
-          <mk-live-indicator label="recording"></mk-live-indicator>
+      <div class="di-stack" style="--di-gap: var(--space-2, 8px)">
+        <div class="di-inline">
+          <strong>Kafka Replay</strong>
+          <span class="di-live"><span class="di-live-dot" aria-hidden="true"></span>recording</span>
         </div>
-        <span style="font:var(--type-small);color:var(--text-muted)">
-          ${svc ? `Replaying traffic of ${svc.name} ${svc.version}` : 'No service in context'}
+        <span style="color: var(--text-secondary)">
+          ${svc ? `Replaying traffic of ${esc(svc.name)} ${esc(svc.version)}` : 'No service in context'}
         </span>
-        <mk-api-badge label="replayed" value="1,204 msgs" status="info"></mk-api-badge>
+        <span class="di-api-badge">
+          <span class="di-api-badge-type">replayed</span>
+          <span class="di-api-badge-name">1,204 msgs</span>
+        </span>
       </div>`;
   }
 }

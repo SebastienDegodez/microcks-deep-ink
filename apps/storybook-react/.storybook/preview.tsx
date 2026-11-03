@@ -1,9 +1,16 @@
 import type { Decorator, Preview } from '@storybook/react-vite';
 import React, { useEffect } from 'react';
-import { setTheme } from '@microcks-deep-ink/react';
+import { setTheme } from '@microcks-deep-ink/registry/react/theme-toggle';
 import '@microcks-deep-ink/tokens/deep-ink.css';
+import '@microcks-deep-ink/registry/dist/deep-ink-components.css';
 import '@microcks-deep-ink/storybook-shared/foundations.css';
 import { theme } from './theme';
+
+try {
+  document.documentElement.lang = 'en';
+} catch {
+  /* no document (static analysis) */
+}
 
 const withTheme: Decorator = (Story, ctx) => {
   const t = (ctx.globals.theme ?? 'dark') as 'dark' | 'light';
@@ -16,6 +23,7 @@ const withTheme: Decorator = (Story, ctx) => {
 };
 
 const preview: Preview = {
+  tags: ['autodocs'],
   globalTypes: {
     theme: {
       description: 'Deep Ink theme',
@@ -30,15 +38,19 @@ const preview: Preview = {
       },
     },
   },
-  initialGlobals: { theme: 'dark' },
+  // `framework` is read by the Copy panel to pick the source to show.
+  initialGlobals: { theme: 'dark', framework: 'react' },
   decorators: [withTheme],
   parameters: {
     layout: 'padded',
     backgrounds: { disable: true },
     controls: { expanded: true, matchers: { color: /(background|color)$/i } },
     docs: { theme },
-    options: { storySort: { order: ['Introduction', 'Foundations', 'Signature', 'Actions', 'Feedback', 'Contract', 'Proof', 'Navigation', 'Workflows', 'Shell', 'Plugins'] } },
-    a11y: { test: 'todo' },
+    options: {
+      selectedPanel: 'deep-ink/copy',
+      storySort: { order: ['Introduction', 'Foundations', 'Components', 'Microcks', 'Elements', 'Patterns', 'Plugins'] },
+    },
+    a11y: { test: 'error' },
   },
 };
 
