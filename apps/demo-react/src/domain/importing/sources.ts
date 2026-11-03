@@ -1,17 +1,25 @@
-import type { DiffLine, Importer, SyncEntry } from './types';
+import type { DiffLine, Importer, SourceOrigin, SyncEntry } from './types';
 
 export type SourceStatus = 'imported' | 'warning' | 'failed' | 'inactive' | 'running';
 
 /** The one status a source row shows: running beats inactive beats the outcome of the last import. */
 export function importerStatus(importer: Importer): SourceStatus {
   if (importer.state === 'running') return 'running';
-  if (!importer.active) return 'inactive';
+  if (importer.origin !== 'upload' && !importer.active) return 'inactive';
   return importer.health;
 }
 
 export interface SourceFilter {
   status?: SourceStatus | 'all';
+  origin?: SourceOrigin | 'all';
   query?: string;
+}
+
+/** Sources per origin, plus `all`. */
+export function originCounts(importers: readonly Importer[]): Record<SourceOrigin | 'all', number> {
+  const counts = { all: importers.length, upload: 0, url: 0, git: 0, hub: 0 };
+  for (const i of importers) counts[i.origin] += 1;
+  return counts;
 }
 
 /** Text a person can search: name, URL, secret, kind, labels and the services it produces. */
@@ -32,7 +40,9 @@ export function sourceSearchText(importer: Importer): string {
 export function filterImporters(importers: readonly Importer[], filter: SourceFilter): Importer[] {
   const q = (filter.query ?? '').trim().toLowerCase();
   return importers.filter(
-    (i) => (!filter.status || filter.status === 'all' || importerStatus(i) === filter.status) && (!q || sourceSearchText(i).includes(q)),
+    (i) => (!filter.status || filter.status === 'all' || importerStatus(i) === filter.status) &&
+      (!filter.origin || filter.origin === 'all' || i.origin === filter.origin) &&
+      (!q || sourceSearchText(i).includes(q)),
   );
 }
 

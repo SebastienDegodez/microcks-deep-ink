@@ -14,12 +14,12 @@ import { Icon } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { Panel } from '@/ui/components/ui/panel';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
-import { PROTOCOL_ORDER, fmt, pluralize } from '../explore-kit/format';
+import { PROTOCOL_ORDER, fmt, operationUnit, pluralize, testRunHref } from '../explore-kit/format';
 import { buildAttention } from './attention';
 
 const HOURS = [5, 1, 2, 1, 1, 6, 15, 40, 92, 121, 165, 125];
 const START_STEPS = [
-  { id: 'import', title: 'Import a contract', desc: 'OpenAPI, AsyncAPI, gRPC Protobuf, GraphQL schema, Postman collection or SoapUI project. Drop a file or point to a Git URL.', cta: 'Import a contract', to: '/import' },
+  { id: 'import', title: 'Import a contract', desc: 'OpenAPI, AsyncAPI, gRPC Protobuf, GraphQL schema, Postman collection or SoapUI project. Drop a file or point to a Git URL.', cta: 'Import a contract', to: '/sources/new' },
   { id: 'call', title: 'Call the mock', desc: 'Every operation is served right after the import, at a URL derived from the service name and version.', code: 'curl http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille', cta: 'Browse APIs', to: '/services' },
   { id: 'test', title: 'Run a conformance test', desc: 'Point Microcks at your implementation. It replays the examples and checks responses against the contract.', cta: 'Run a test', to: '/tests/create' },
 ];
@@ -31,10 +31,11 @@ const isLive = (s: ServiceSummary) => s.id === 'pastry2' || s.protocol === 'EVEN
 
 function usageText(s: ServiceSummary) {
   const unit = s.protocol === 'EVENT' ? 'msg' : 'req';
-  return `${pluralize(s.operationCount, 'operation')} · ${fmt(s.calls24h)} ${unit} today${isLive(s) ? (s.protocol === 'EVENT' ? ' · publishing on Kafka' : ' · called 12 s ago') : ''}`;
+  return `${pluralize(s.operationCount, operationUnit(s.protocol))} · ${fmt(s.calls24h)} ${unit} today${isLive(s) ? (s.protocol === 'EVENT' ? ' · publishing on Kafka' : ' · called 12 s ago') : ''}`;
 }
 
-const runCounts = (ops?: OperationOutcome[]) => (ops ? `${ops.filter((o) => o === 'pass').length}/${ops.length} ops` : '');
+const runCounts = (r: { operations?: OperationOutcome[]; runner: string; passed: number; total: number }) =>
+  r.runner === 'A2A_CONFORMANCE' ? `${r.passed}/${r.total} checks` : r.operations ? `${r.operations.filter((o) => o === 'pass').length}/${r.operations.length} ops` : '';
 
 export default function CockpitPage() {
   usePageTitle('Cockpit · Microcks');
@@ -72,7 +73,7 @@ export default function CockpitPage() {
         {empty ? 'Back to running instance' : 'Show empty install'}
       </Button>
       <Button asChild icon="upload">
-        <RouterLink to="/import">Import a contract</RouterLink>
+        <RouterLink to="/sources/new">Import a contract</RouterLink>
       </Button>
       <Button asChild variant="secondary" icon="play">
         <RouterLink to="/tests/create">Run a test</RouterLink>
@@ -245,7 +246,7 @@ export default function CockpitPage() {
           <Panel as="aside" title="Other ways to start" headingLevel={3} aria-label="Other ways to start">
             <ul className="ex-plain-list">
               <li><RouterLink to="/hub">Browse the Hub</RouterLink> <span className="ex-secondary">Install a ready-made API from the community catalogue.</span></li>
-              <li><RouterLink to="/importers">Connect a Git repository</RouterLink> <span className="ex-secondary">A scheduled Importer keeps mocks in sync with your contracts.</span></li>
+              <li><RouterLink to="/sources">Connect a Git repository</RouterLink> <span className="ex-secondary">A scheduled Importer keeps mocks in sync with your contracts.</span></li>
               <li><a href="https://microcks.io/documentation/tutorials/getting-started/" target="_blank" rel="noreferrer">Read the getting-started tutorial (opens in a new tab)</a></li>
             </ul>
           </Panel>
@@ -283,7 +284,7 @@ export default function CockpitPage() {
                           {isLive(s) ? <LiveIndicator /> : null}
                         </span>
                         <span className="ex-row">
-                          <ConformanceBand size="mini" outcomes={toOutcomes(s)} />
+                          <ConformanceBand size="mini" outcomes={toOutcomes(s)} unit={operationUnit(s.protocol)} />
                           <span className="ex-small">{s.conformance === null ? 'untested' : `${s.conformance}%`}</span>
                         </span>
                         <span className="ex-small ex-secondary">{usageText(s)}</span>
@@ -330,13 +331,13 @@ export default function CockpitPage() {
                     return (
                       <li key={r.id}>
                         <RouterLink
-                          to={`/tests/runner/${r.id}`}
+                          to={testRunHref(r)}
                           className="ex-row"
                         >
                           <Icon name={ok ? 'check' : 'cross'} size={14} />
                           <strong>{ok ? 'Passed' : 'Failed'}</strong>
                           {svc ? <ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} size="sm" /> : null}
-                          <span className="ex-small ex-secondary">#{r.id} · {r.runner} · {runCounts(r.operations)} · {relative(r.startedAt)}</span>
+                          <span className="ex-small ex-secondary">#{r.id} · {r.runner} · {runCounts(r)} · {relative(r.startedAt)}</span>
                         </RouterLink>
                       </li>
                     );

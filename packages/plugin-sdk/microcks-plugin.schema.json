@@ -72,6 +72,6 @@
     }
   },
   "$defs": {
-    "protocol": { "enum": ["REST", "SOAP", "EVENT", "gRPC", "GRAPHQL", "DIRECT"] }
+    "protocol": { "enum": ["REST", "SOAP", "EVENT", "gRPC", "GRAPHQL", "DIRECT", "A2A"] }
   }
 }

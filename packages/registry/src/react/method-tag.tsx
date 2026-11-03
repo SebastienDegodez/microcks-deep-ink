@@ -1,6 +1,6 @@
 import type { HTMLAttributes } from 'react';
 
-export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
+export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 
 export interface MethodTagProps extends HTMLAttributes<HTMLSpanElement> {
   /** GET/POST... for REST, SUBSCRIBE/PUBLISH for EVENT, the RPC name for gRPC, QUERY/MUTATION for GraphQL. */
@@ -8,7 +8,7 @@ export interface MethodTagProps extends HTMLAttributes<HTMLSpanElement> {
   protocol?: Protocol;
 }
 
-const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct' };
+const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
 
 /** The verb is the text, so color is never the only signal. */
 export function MethodTag({ method, protocol = 'REST', className, ...rest }: MethodTagProps) {

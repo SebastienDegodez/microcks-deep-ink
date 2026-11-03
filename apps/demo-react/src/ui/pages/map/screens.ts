@@ -8,7 +8,7 @@ export interface MapScreen {
   href: string;
   what: string;
   wow: string;
-  /** Delivery wave 1..6 (Mock, Test, Enrich, Observe, Govern, Orchestrate). */
+  /** Delivery wave 1..7 (Mock, Test, Enrich, Observe, Govern, Orchestrate, Agents). */
   wave: number;
 }
 
@@ -19,15 +19,15 @@ export interface MapPhase {
   screens: MapScreen[];
 }
 
-export const WAVES = ['Mock', 'Test', 'Enrich', 'Observe', 'Govern', 'Orchestrate'] as const;
+export const WAVES = ['Mock', 'Test', 'Enrich', 'Observe', 'Govern', 'Orchestrate', 'Agents'] as const;
 
 /** Run #14 of restock-pastry: the hero run of the demo. */
 const RUN_14 = '6729a1d27e4c0b5f93a8c214';
 
 export const PHASES: MapPhase[] = [
   { step: 1, name: 'Import', verb: 'The contract comes in', screens: [
-    { n: '01', title: 'Import', route: '/import', href: '/import', what: 'Drop a file, a URL or a Git repository; Direct API wizard.', wow: 'Detected services and operations previewed before import.', wave: 1 },
-    { n: '02', title: 'Sources', route: '/importers', href: '/importers', what: 'Scheduled importers, primary/secondary artifacts, secrets.', wow: 'Sync timeline, diff between two contract versions.', wave: 3 },
+    { n: '01', title: 'Add a source', route: '/sources/new', href: '/sources/new', what: 'Upload a file, a URL or a Git repository; Direct API wizard.', wow: 'Detected services and operations previewed before import.', wave: 1 },
+    { n: '02', title: 'Sources', route: '/sources', href: '/sources', what: 'Every import: uploads, URLs, Git, Hub; scheduled sync.', wow: 'Sync timeline, diff between two contract versions.', wave: 3 },
   ] },
   { step: 2, name: 'Explore', verb: 'See the landscape', screens: [
     { n: '03', title: 'Cockpit', route: '/', href: '/', what: 'Services, mock traffic, recent tests, conformance.', wow: 'Live wall of API badges, filterable by protocol.', wave: 4 },
@@ -55,5 +55,9 @@ export const PHASES: MapPhase[] = [
   { step: 7, name: 'Govern', verb: 'Share & administer', screens: [
     { n: '13', title: 'Hub', route: '/hub', href: '/hub', what: 'Public API packages to install.', wow: 'Badge preview + one-click install.', wave: 5 },
     { n: '14', title: 'Admin', route: '/admin', href: '/admin', what: 'Users, groups, secrets, snapshots.', wow: 'Roles × groups matrix at a glance.', wave: 5 },
+  ] },
+  { step: 8, name: 'Agents', verb: 'Mock & test A2A agents', screens: [
+    { n: '18', title: 'Agent', route: '/services/:id', href: '/services/concierge/skills', what: 'Agent Card, skills, conversations, mock on 3 transports.', wow: 'Task script: the lifecycle as a timeline.', wave: 7 },
+    { n: '19', title: 'Agent test', route: '/tests/agent/:id', href: '/tests/agent/3', what: 'Card, protocol and behaviour on each transport.', wow: 'Conformance matrix + state-machine diff.', wave: 7 },
   ] },
 ];

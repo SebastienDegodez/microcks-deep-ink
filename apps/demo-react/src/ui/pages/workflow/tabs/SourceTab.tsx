@@ -104,7 +104,7 @@ export function SourceTab({ detail }: { detail: WorkflowDetail }) {
             {validating ? 'Validating…' : 'Validate the document'}
           </Button>
           <CopyButton value={text} label="Copy YAML" />
-          <ButtonRouterLink to="/importers">Edit in source</ButtonRouterLink>
+          <ButtonRouterLink to="/sources">Edit in source</ButtonRouterLink>
         </div>
       </div>
 

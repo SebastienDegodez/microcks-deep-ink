@@ -6,3 +6,4 @@ export type * from './testing';
 export type * from './arazzo';
 export type * from './observe';
 export type * from './govern';
+export type * from './agents';

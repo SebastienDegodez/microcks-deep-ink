@@ -15,6 +15,7 @@ const PROTOCOLS: Array<[Protocol, string, string]> = [
   ['gRPC', 'HelloService', 'v1'],
   ['GRAPHQL', 'Movie Graph', '1.0'],
   ['DIRECT', 'Direct', '1.0'],
+  ['A2A', 'Pastry concierge', '1.0'],
 ];
 
 export const Default: StoryObj = {

@@ -38,6 +38,9 @@ export const SERVICES: ServiceSummary[] = [
   { id: 'beer', name: 'Beer Catalog API', version: '0.9', protocol: 'REST', format: 'Postman collection v2.1', operationCount: 3,
     lastResults: ['pass', 'fail', 'fail'], labels: L('domain=beer', 'status=beta'), testStatus: 'failed',
     lastTest: { runId: '5', when: at('2026-10-13T08:00:04') }, conformance: 33, calls24h: 3, updatedAt: at('2026-10-13T08:00:04'), mcp: false },
+  { id: 'concierge', name: 'Pastry concierge', version: '1.0', protocol: 'A2A', format: 'A2A Agent Card · spec 1.0', operationCount: 3,
+    lastResults: ['pass', 'fail', 'fail'], labels: L('domain=pastry', 'status=beta'), testStatus: 'failed',
+    lastTest: { runId: '3', when: at('2026-11-03T08:10:04') }, conformance: 83, calls24h: 64, updatedAt: at('2026-11-03T08:41:04'), mcp: false },
 ];
 
 const op = (id: string, method: string, path: string, summary: string, calls: number, spark: number[], extra: Partial<Operation> = {}): Operation => ({
@@ -79,6 +82,11 @@ export const OPERATIONS: Record<string, Operation[]> = {
   ],
   usersignedup: [op('user-signedup', 'SUBSCRIBE', 'user-signedup', 'User signed up', 218, [30, 31, 32, 31, 30, 32, 32], { dispatcher: 'JSON_BODY', rule: '/id' })],
   hellosoap: [op('say-hello', 'POST', 'sayHello', 'Say hello', 9, [1, 1, 2, 1, 1, 2, 1], { dispatcher: 'QUERY_ARGS', rule: 'name' })],
+  concierge: [
+    op('recommend-pastry', 'SKILL', 'recommend-pastry', 'Recommend a pastry', 29, [3, 4, 4, 5, 4, 5, 4], { dispatcher: 'QUERY_ARGS', rule: 'metadata.skillId' }),
+    op('order-pastry', 'SKILL', 'order-pastry', 'Order a pastry', 14, [2, 2, 1, 3, 2, 2, 2], { dispatcher: 'QUERY_ARGS', rule: 'metadata.skillId' }),
+    op('track-order', 'SKILL', 'track-order', 'Track an order', 18, [2, 3, 2, 3, 3, 2, 3], { dispatcher: 'QUERY_ARGS', rule: 'metadata.skillId' }),
+  ],
   beer: [
     op('find-beer', 'GET', '/beers', 'Find beers', 1, [0, 0, 0, 0, 0, 0, 1], { dispatcher: 'URI_PARAMS', rule: 'name' }),
     op('get-beer', 'GET', '/beers/{name}', 'Get a beer', 1, [0, 0, 0, 0, 0, 0, 1]),

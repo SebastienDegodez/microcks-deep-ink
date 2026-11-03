@@ -2,7 +2,7 @@ import { DestroyRef, Directive, ElementRef, booleanAttribute, effect, inject, in
 import './elements/workflow-loom.js';
 
 /* Types mirror packages/core/src/utils/types.ts and the React wrapper (keep them identical). */
-export type LoomProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
+export type LoomProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 export type LoomStepStatus = 'passed' | 'failed' | 'not-run';
 export type LoomCheckState = 'passed' | 'failed' | 'off' | 'not-evaluated';
 

@@ -51,7 +51,7 @@ The radius has a meaning: `radius-control` 4px for sturdy controls, `radius-badg
 
 ### Layout
 
-Shell = top bar (logo, ⌘K command bar, *Import a contract*, theme toggle, user) + left nav (Cockpit, APIs & Services, Import, Tests, Sources, Usage & conformance, Live traces, Hub, Administration) + fluid content. Pages are fluid: split views stack under 768px, wide tables scroll inside their box.
+Shell = top bar (logo, ⌘K command bar, *Import a contract*, theme toggle, user) + left nav (Cockpit, APIs & Services, Workflows, Tests, Sources, Usage & conformance, Live traces, Hub, Administration) + fluid content. Pages are fluid: split views stack under 768px, wide tables scroll inside their box.
 
 ## Signature: the API badge
 

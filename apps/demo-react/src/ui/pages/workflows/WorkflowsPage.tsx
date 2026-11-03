@@ -90,10 +90,10 @@ function Onboarding() {
           ))}
         </ol>
         <div className="wf-row">
-          <ButtonRouterLink to="/import" variant="primary" icon="upload">
+          <ButtonRouterLink to="/sources/new" variant="primary" icon="upload">
             Import Arazzo document
           </ButtonRouterLink>
-          <ButtonRouterLink to="/importers">Sync from a Git repository</ButtonRouterLink>
+          <ButtonRouterLink to="/sources">Sync from a Git repository</ButtonRouterLink>
         </div>
       </div>
       <CodeBlock caption="A minimal Arazzo document" language="yaml" code={SAMPLE_YAML} />
@@ -188,8 +188,8 @@ export default function WorkflowsPage() {
         eyebrow={countLine}
         actions={
           <>
-            <ButtonRouterLink to="/importers">Sources</ButtonRouterLink>
-            <ButtonRouterLink to="/import" variant="primary" icon="upload">
+            <ButtonRouterLink to="/sources">Sources</ButtonRouterLink>
+            <ButtonRouterLink to="/sources/new" variant="primary" icon="upload">
               Import Arazzo document
             </ButtonRouterLink>
           </>
@@ -551,7 +551,7 @@ function DocumentGroup({ document: doc, rows, total, serviceName, relative, onLi
           {doc.origin.startsWith('Synced') ? (
             <>
               {' via '}
-              <PageLink to="/importers">{doc.title}</PageLink>
+              <PageLink to="/sources">{doc.title}</PageLink>
             </>
           ) : null}
         </span>

@@ -86,7 +86,7 @@ export function createImportingUseCases({ gateway, importers, secrets, history, 
       return {
         cron: '0 0 * * * *',
         envVar: 'SERVICES_UPDATE_INTERVAL',
-        description: 'every hour, global to all sources',
+        description: 'every hour, global to all scheduled sources',
         lastScanAt: window.last.toISOString(),
         nextScanAt: window.next.toISOString(),
         minutesSinceLast: window.minutesSince,

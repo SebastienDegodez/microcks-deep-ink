@@ -7,6 +7,7 @@
  *
  * To plug a real backend, replace the factories below by adapters that implement the same ports.
  */
+import { createAgentUseCases } from '@/application/agents';
 import { createArazzoUseCases } from '@/application/arazzo';
 import { createCatalogUseCases } from '@/application/catalog';
 import { createCopilotUseCases } from '@/application/copilot';
@@ -16,6 +17,7 @@ import { createObserveUseCases } from '@/application/observe';
 import { createTestingUseCases } from '@/application/testing';
 import type { Clock } from '@/application/ports/shared';
 import type { UseCases } from '@/application/use-cases';
+import { createInMemoryAgentAdapters } from '@/infrastructure/in-memory/agents';
 import { createInMemoryArazzoAdapters } from '@/infrastructure/in-memory/arazzo';
 import { createInMemoryCatalogAdapters } from '@/infrastructure/in-memory/catalog';
 import { createInMemoryCopilotAdapters } from '@/infrastructure/in-memory/copilot';
@@ -48,6 +50,7 @@ export function createComposition(options: CompositionOptions = {}): Composition
   const arazzo = createInMemoryArazzoAdapters(deps);
   const observe = createInMemoryObserveAdapters(deps);
   const govern = createInMemoryGovernAdapters(deps);
+  const agents = createInMemoryAgentAdapters(deps);
 
   const useCases: UseCases = {
     catalog: createCatalogUseCases({ catalog: catalog.catalog }),
@@ -57,6 +60,7 @@ export function createComposition(options: CompositionOptions = {}): Composition
     arazzo: createArazzoUseCases({ ...arazzo, secrets: importing.secrets }),
     observe: createObserveUseCases({ ...observe, catalog: catalog.catalog, testRuns: testing.testRuns, clock }),
     govern: createGovernUseCases({ ...govern, secrets: importing.secrets }),
+    agents: createAgentUseCases(agents),
   };
   return { useCases, clock };
 }

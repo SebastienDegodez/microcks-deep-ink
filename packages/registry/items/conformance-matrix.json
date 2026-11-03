@@ -1,0 +1,28 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "conformance-matrix",
+  "title": "ConformanceMatrix",
+  "tier": "microcks",
+  "description": "Checks by columns (transports, environments) as a real table. Every cell writes its result with a glyph and a word; finished cells select a detail panel.",
+  "registryDependencies": ["base", "icon"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "elements": [],
+  "a11y": {
+    "pattern": "<div role=\"region\" tabindex=\"0\" aria-label> > <table> with <caption>, <th scope=\"col\">, <th scope=\"rowgroup\"> per <tbody>, <th scope=\"row\">; finished cells hold a <button aria-pressed>",
+    "keyboard": [
+      ["Tab", "Moves between finished cells (buttons); queued and running cells are not stops. The scroll region is focusable when the table overflows"],
+      ["Enter / Space", "Selects the cell and shows its detail, or clears it when it is already selected"]
+    ],
+    "aria": [
+      "Each cell button is named by a hidden \"gRPC × eclair-size-m: \" prefix followed by its visible text (\"Failed 2.84 s\") and uses aria-pressed",
+      "Every result is a glyph plus a word (Passed, Failed, Warning, Running, Queued); the tint and outline are secondary",
+      "Queued cells are dashed with muted text, never reduced opacity",
+      "A cell that spans every column uses colspan, so the table keeps its row and column headers",
+      "Announce progress in a live region elsewhere (\"check 7 of 20\"); the table itself is not live"
+    ],
+    "rgaa": ["1.1", "3.1", "3.2", "5.4", "5.6", "11.9"],
+    "wcag": ["1.3.1", "1.4.1", "1.4.3", "1.4.11", "4.1.2"],
+    "notes": "Put the detail of the selected cell in a named region under the table. For small screens keep the horizontal scroll inside the region, never on the page."
+  },
+  "stories": ["Microcks/ConformanceMatrix"]
+}

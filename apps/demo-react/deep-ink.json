@@ -7,7 +7,7 @@
     "tokens": {
       "version": "0.2.0",
       "files": {
-        "src/ui/styles/tokens.css": "a7a1152b928a9ca11f91c5518d78621e1a160ee33d22904ee00ba26d1b74bcc2"
+        "src/ui/styles/tokens.css": "ea6db8a75935d7fee51c67757766c82d8109ac06b8b2bd8df1bb3a706abc98a7"
       }
     },
     "base": {
@@ -40,8 +40,8 @@
     "api-badge": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/api-badge.tsx": "2a73eb388d10b3e2d0263e71d55b4071a1ee7aaf565bda62cad3b442d1820d1d",
-        "src/ui/styles/api-badge.css": "d6a2fee9ce14998085050775a4d392d4f174011b6e4ed79661b0f4ee1b10807f"
+        "src/ui/components/ui/api-badge.tsx": "0e521b3fadbbd7c8ebd94dfbaca9f51e6b303e9302be70dfd73648e66e562bc7",
+        "src/ui/styles/api-badge.css": "a006c7b7a128e0b1b682c2b87bf1999b4618ce21497232e7517444f8ada6d890"
       }
     },
     "app-shell": {
@@ -96,7 +96,7 @@
     "conformance-band": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/conformance-band.tsx": "ae3f6db0d3b4183f86650e056de65ba6be9a6b46c8c6adbb910eb45db7ddbcc4",
+        "src/ui/components/ui/conformance-band.tsx": "ce3b6edd64ab045956ebab9ecf2a53f14c7b3ebbf385b69d0a4586f62d02b989",
         "src/ui/styles/conformance-band.css": "744f5bbfa54d2b55ce6302171f70785a5db4b35fe526b2f68740ac0e6dcbc226"
       }
     },
@@ -173,8 +173,8 @@
     "method-tag": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/method-tag.tsx": "af9879fd8cd55221b8ab4d7aeae106d137ddcbe54462ed0e9dea29783f0f5ff0",
-        "src/ui/styles/method-tag.css": "f790ab9e2a843cad4e52ccb22dcf192fb7d3e7ee41e7c95d83568e6ce084a49e"
+        "src/ui/components/ui/method-tag.tsx": "8c7dfaceeba8c91d848560b76bbaafbcc63a288473a8c37874dbbedb727e98f3",
+        "src/ui/styles/method-tag.css": "e56f1d24e44c8aaae40ddbd9f1b6a4d08a939fcef2a713ae8cbf70d38f665271"
       }
     },
     "segmented": {
@@ -286,25 +286,46 @@
     "workflow-loom": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/workflow-loom.tsx": "fa4b622cbeb4ed8b4e764f3c6e68a440848a146190d9abb8c79d97c8457692a1",
-        "src/ui/components/ui/elements/workflow-loom.js": "9d5de3bed0980157e9db0dd6fe4e96f85e479bdf57a2b17311a003adf533e7b7",
+        "src/ui/components/ui/workflow-loom.tsx": "70e65d2c4bdc3b1b6a95867f6b870b3e0eb7f2a9eda2640d5af038424eafddfc",
+        "src/ui/components/ui/elements/workflow-loom.js": "2e0fb47736170e90b94c9b2785fecf48f352c004f914787b80d0d0955eebb4f2",
         "src/ui/components/ui/elements/workflow-loom.d.ts": "cebdd92f3a03c970f2889e640899fbe6a00429ce8c074345bc92f5181d7bbe80"
       }
     },
     "command-bar": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/command-bar.tsx": "71deb4586001162ec3cb4f939a0ebe7952f26165d72eda8e9abc9e424720c6bc",
-        "src/ui/components/ui/elements/command-bar.js": "68e37f8e39f9ddd8bd585f7fcf43f5136a755785c474b76f285ed21603e0f8de",
+        "src/ui/components/ui/command-bar.tsx": "3590e6a2b53dac0174506b24a90d0fc23bcbe3f842afd99bf17dd3e609b987e1",
+        "src/ui/components/ui/elements/command-bar.js": "0eb11b6d853eb5cac917cbaf69b41108e2c2ad3c33a055f857eb14e5d5aa84b1",
         "src/ui/components/ui/elements/command-bar.d.ts": "049722ada8a79ff5fc2ca6f2cbd451c0e021dce46d684740412dc5fc3e86b0da"
       }
     },
     "plugin-slot": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/plugin-slot.tsx": "ba5d4c0904af8b7a849df5e1f2b8cbd5f36b3075080dd0564237c3170db60d33",
-        "src/ui/components/ui/elements/plugin-slot.js": "beaa3e8a24dceed18cedd9c534c0161b573961ce979d22229efb8eba4a5b1097",
+        "src/ui/components/ui/plugin-slot.tsx": "e0967668f4c15df353f44f587698194d29869b2007ebf42a91f4b66e282ad882",
+        "src/ui/components/ui/elements/plugin-slot.js": "294bd272a68c58925d2fbc08d002bc43ccc387fd1bc4d483edcf9646c99de214",
         "src/ui/components/ui/elements/plugin-slot.d.ts": "2d2bc5c9546fa2bb484c1ffb98899fd3dba6d237687b3312ac5c4b2db1259899"
+      }
+    },
+    "conformance-matrix": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/conformance-matrix.tsx": "d3be83b77330b9ea29791107159280cbab9928a84dd4f0a81b86e79970180016",
+        "src/ui/styles/conformance-matrix.css": "b7f613e3141d5f204e805b89ce988c7eeb67c35a50e567ddd47790bff2c6c456"
+      }
+    },
+    "skill-list": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/skill-list.tsx": "f60f4497d2c31c1a7705ee8e8db6eb95bb864b8dc25d54276cec75d5a063b2e6",
+        "src/ui/styles/skill-list.css": "8ff63ede8e3b6ec72ea207db5df8c63dc6a09229ce01b0aef25e6eb14a581d21"
+      }
+    },
+    "task-timeline": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/task-timeline.tsx": "8bdd1cd1280f671eee834b6eacc98334b490c416d7e0bcf9d9dd47d2f5c68b7c",
+        "src/ui/styles/task-timeline.css": "b503d219157662f602fc2a5ee8f182728d16507a9cb7929e82ce73e8540b3a4e"
       }
     }
   }

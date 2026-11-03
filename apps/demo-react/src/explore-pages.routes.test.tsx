@@ -40,7 +40,7 @@ describe('WP7 pages', () => {
     expect(chip.getAttribute('aria-pressed')).toBe('false');
     fireEvent.click(chip);
     expect(screen.getByRole('button', { name: /^EVENT 2/ }).getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByText(/of 10 services/)).toBeTruthy();
+    expect(screen.getByText(/of 11 services/)).toBeTruthy();
     const pause = screen.getByRole('button', { name: 'Pause' });
     fireEvent.click(pause);
     expect(screen.getByRole('button', { name: 'Resume' }).getAttribute('aria-pressed')).toBe('true');
@@ -56,17 +56,17 @@ describe('WP7 pages', () => {
     expect(screen.getByText('1 of 3 done')).toBeTruthy();
   });
 
-  it('Catalogue: shows 10 services, filters by status and resets', async () => {
+  it('Catalogue: shows 11 services, filters by status and resets', async () => {
     renderAt('/services');
     await h1('APIs & Services');
     await screen.findByRole('link', { name: /API Pastry 2\.0/ });
-    expect(screen.getByTestId('result-count').textContent).toContain('10 of 10');
+    expect(screen.getByTestId('result-count').textContent).toContain('11 of 11');
     fireEvent.click(screen.getByRole('button', { name: /^Failing/ }));
-    await waitFor(() => expect(screen.getByTestId('result-count').textContent).toContain('4 of 10'));
+    await waitFor(() => expect(screen.getByTestId('result-count').textContent).toContain('5 of 11'));
     fireEvent.change(screen.getByRole('searchbox', { name: 'Filter by name' }), { target: { value: 'zzz' } });
     expect(await screen.findByRole('heading', { level: 2, name: 'No API matches these filters' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Reset filters' }));
-    await waitFor(() => expect(screen.getByTestId('result-count').textContent).toContain('10 of 10'));
+    await waitFor(() => expect(screen.getByTestId('result-count').textContent).toContain('11 of 11'));
   });
 
   it('Service: operations tab with the AI proposal, then properties and tests tabs', async () => {
@@ -107,8 +107,8 @@ describe('WP7 pages', () => {
   });
 
   it('Import: analyzes the sample then imports it', async () => {
-    renderAt('/import');
-    await h1('Import a contract');
+    renderAt('/sources/new');
+    await h1('Add a source');
     fireEvent.click(screen.getByRole('button', { name: 'Sample: API Pastry' }));
     expect(await screen.findByRole('heading', { level: 2, name: 'Preview before import' })).toBeTruthy();
     expect(screen.getByText(/3 Operations discovered · 7 Examples/)).toBeTruthy();
@@ -118,8 +118,8 @@ describe('WP7 pages', () => {
   });
 
   it('Import: the Direct API form shows labelled errors', async () => {
-    renderAt('/import');
-    await h1('Import a contract');
+    renderAt('/sources/new');
+    await h1('Add a source');
     fireEvent.click(screen.getByRole('tab', { name: 'Direct API' }));
     fireEvent.click(screen.getByRole('button', { name: 'Create mock' }));
     expect(await screen.findByText(/Name the API/)).toBeTruthy();
@@ -127,7 +127,7 @@ describe('WP7 pages', () => {
   });
 
   it('Sources: lists jobs, filters failed, deletes with a confirmation and undoes', async () => {
-    renderAt('/importers');
+    renderAt('/sources');
     await h1('Sources');
     await screen.findByRole('article', { name: 'Pastry orders events' });
     fireEvent.click(screen.getByRole('button', { name: /^Failed/ }));
@@ -141,7 +141,7 @@ describe('WP7 pages', () => {
   });
 
   it('Sources: a timeline entry with a revision shows its diff', async () => {
-    renderAt('/importers/pastry-openapi');
+    renderAt('/sources/pastry-openapi');
     await h1('Sources');
     expect(await screen.findByRole('region', { name: 'Unified diff' })).toBeTruthy();
     expect(screen.getByRole('heading', { level: 2, name: 'API Pastry 2.0 · OpenAPI' })).toBeTruthy();

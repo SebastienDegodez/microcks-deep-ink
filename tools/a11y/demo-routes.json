@@ -6,12 +6,12 @@
       "label": "demo /"
     },
     {
-      "url": "demo/#/import?fast",
-      "label": "demo /import"
+      "url": "demo/#/sources/new?fast",
+      "label": "demo /sources/new"
     },
     {
-      "url": "demo/#/importers?fast",
-      "label": "demo /importers"
+      "url": "demo/#/sources?fast",
+      "label": "demo /sources"
     },
     {
       "url": "demo/#/services?fast",
@@ -36,6 +36,30 @@
     {
       "url": "demo/#/services/pastry2/copilot?op=get-name&fast",
       "label": "demo /services/pastry2/copilot?op=get-name"
+    },
+    {
+      "url": "demo/#/services/concierge/skills?fast",
+      "label": "demo /services/concierge/skills"
+    },
+    {
+      "url": "demo/#/services/concierge/card?fast",
+      "label": "demo /services/concierge/card"
+    },
+    {
+      "url": "demo/#/services/concierge/mock?fast",
+      "label": "demo /services/concierge/mock"
+    },
+    {
+      "url": "demo/#/services/concierge/tasks?fast",
+      "label": "demo /services/concierge/tasks"
+    },
+    {
+      "url": "demo/#/tests/agent?fast",
+      "label": "demo /tests/agent"
+    },
+    {
+      "url": "demo/#/tests/agent/3?fast",
+      "label": "demo /tests/agent/3"
     },
     {
       "url": "demo/#/workflows?fast",

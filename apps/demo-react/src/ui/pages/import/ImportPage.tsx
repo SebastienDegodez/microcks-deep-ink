@@ -34,7 +34,7 @@ const SAMPLE_URL = 'https://raw.githubusercontent.com/microcks/microcks/master/s
 const EMPTY_DIRECT = { type: 'REST' as DirectApiInput['type'], name: '', version: '', resource: '', payload: '' };
 
 export default function ImportPage() {
-  usePageTitle('Import a contract · Microcks');
+  usePageTitle('Add a source · Microcks');
   const uc = useUseCases();
   const announce = useAnnounce();
   const relative = useRelativeTime();
@@ -119,8 +119,11 @@ export default function ImportPage() {
 
   return (
     <div className="ex-stack">
-      <PageHeader title="Import a contract" eyebrow="CONTRACT → MOCK" />
-      <p className="ex-secondary" style={{ margin: 0 }}>Drop an artifact: Microcks shows you what it understood, then serves the mock right away.</p>
+      <PageHeader
+        title="Add a source"
+        eyebrow={<span role="group" aria-label="Breadcrumb"><RouterLink to="/sources">Sources</RouterLink> / <span aria-current="page">Add a source</span></span>}
+      />
+      <p className="ex-secondary" style={{ margin: 0 }}>Upload a file once, or point Microcks to a URL or a Git repository it keeps in sync. You see what it understood before anything is created.</p>
       <ol className="ex-stepper" aria-label="Import progress">
         {STEPS.map((label, i) => (
           <li key={label} aria-current={i === stepIndex ? 'step' : undefined}>
@@ -160,6 +163,7 @@ export default function ImportPage() {
                       <span className="ex-secondary">No contract at hand?</span>
                       <Button variant="secondary" size="sm" onClick={() => void analyze({ kind: 'file', files: [{ name: 'apipastry-openapi.yaml', sizeBytes: 5120 }] })}>Sample: API Pastry</Button>
                       <Button variant="secondary" size="sm" onClick={() => void analyze({ kind: 'file', files: [{ name: 'pastry-workflows.arazzo.yaml', sizeBytes: 9216 }] })}>Example: Pastry workflows (Arazzo)</Button>
+                      <Button variant="secondary" size="sm" onClick={() => void analyze({ kind: 'file', files: [{ name: 'agent-card.json', sizeBytes: 3277 }] })}>Example: Pastry concierge (A2A Agent Card)</Button>
                     </div>
                     <p className="ex-small ex-secondary">One-off upload: relative references are only resolved if a default artifact repository is configured. To follow a contract as it evolves, prefer a Git repository.</p>
                   </div>
@@ -174,7 +178,7 @@ export default function ImportPage() {
                 </TabPanel>
                 <TabPanel id="git" idPrefix="imp" value={tab}>
                   <form className="ex-stack" onSubmit={(e) => { e.preventDefault(); setTouched(true); if (!Object.keys(validateGitForm({ name: git.name, url: git.url })).length) void analyze({ kind: 'git', repository: git.url.trim(), name: git.name.trim(), secretName: git.secret || undefined, insecure: git.insecure }); }} noValidate>
-                    <Field label="Importer name" error={gitErrors.name}>{(c) => <Input {...c} placeholder="API Pastry — main" value={git.name} onChange={(e) => setGit({ ...git, name: e.target.value })} />}</Field>
+                    <Field label="Source name" error={gitErrors.name}>{(c) => <Input {...c} placeholder="API Pastry — main" value={git.name} onChange={(e) => setGit({ ...git, name: e.target.value })} />}</Field>
                     <Field label="File URL in the repository" error={gitErrors.url}>{(c) => <Input {...c} type="url" placeholder="https://raw.githubusercontent.com/acme/contracts/main/pastry/openapi.yaml" value={git.url} onChange={(e) => setGit({ ...git, url: e.target.value })} />}</Field>
                     <Field label="Authentication Secret">
                       {(c) => (
@@ -185,7 +189,7 @@ export default function ImportPage() {
                       )}
                     </Field>
                     <Checkbox label="Disable SSL validation" checked={git.insecure} onChange={(e) => setGit({ ...git, insecure: e.target.checked })} />
-                    <p className="ex-small ex-secondary">Scheduled Importer: Microcks re-scans the file on the global <code>services.update.interval</code> (every 2 h by default) and resolves external references. <RouterLink to="/importers">Manage sources</RouterLink></p>
+                    <p className="ex-small ex-secondary">Scheduled source: Microcks re-scans the file on the global <code>services.update.interval</code> (every 2 h by default) and resolves external references. <RouterLink to="/sources">Manage sources</RouterLink></p>
                     <div><Button type="submit" loading={step === 'analyzing'}>Analyze repository</Button></div>
                   </form>
                 </TabPanel>
@@ -247,6 +251,25 @@ export default function ImportPage() {
                   <p className="ex-small ex-secondary">Linked through the ArazzoSources overlay <code>pastry-workflows.arazzo-sources.yaml</code>, or link them here.</p>
                   <div role="note" className="ex-small">Arazzo documents outside the supported subset are refused (e.g. goto actions, jsonpath criteria, workflowId steps). Success criteria use the simple and regex types; step actions are end and retry.</div>
                 </div>
+              ) : preview.agent ? (
+                <div className="ex-stack">
+                  <p role="status" className="ex-row"><Icon name="check" size={14} /> Valid A2A Agent Card · provider {preview.agent.provider} · {preview.agent.skills.length} skills · {preview.agent.interfaces.length} interfaces · security {preview.agent.security}</p>
+                  <p className="ex-row"><Chip>{preview.formatLabel}</Chip> <ApiBadge protocol="A2A" name="Pastry concierge" version="1.0" /><Chip variant="outline">Projection · v2 module</Chip></p>
+                  <h3>{preview.agent.skills.length} skills discovered · each one becomes an operation</h3>
+                  <ul className="ex-plain-list">
+                    {preview.agent.skills.map((k) => <li key={k.id} className="ex-row"><MethodTag method="SKILL" protocol="A2A" /><span className="ex-mono">{k.id}</span><span className="ex-small ex-secondary">{k.name}</span></li>)}
+                  </ul>
+                  <h3>{preview.agent.interfaces.length} interfaces · supportedInterfaces, in order</h3>
+                  <ol className="ex-plain-list">
+                    {preview.agent.interfaces.map((i, n) => (
+                      <li key={i.binding} className="ex-row"><span className="ex-mono">{i.binding}</span><span className="ex-mono ex-small ex-secondary">{i.url}</span>{i.preferred ? <Chip tone="info">preferred</Chip> : null}<span className="sr-only">{`Mock: ${preview.agent?.mockInterfaces[n]?.url ?? ''}`}</span></li>
+                    ))}
+                  </ol>
+                  <p className="ex-small ex-secondary" style={{ margin: 0 }}>Capabilities {preview.agent.capabilities.join(', ')} · Modes {preview.agent.modes.join(', ')}</p>
+                  <Callout tone="info" title="No conversations yet">
+                    <p>Add an APIExamples secondary artifact to give the mock its conversations. The card alone describes skills, not what the agent answers. The mock serves the card with supportedInterfaces rewritten to point at Microcks, on all {preview.agent.mockInterfaces.length} transports.</p>
+                  </Callout>
+                </div>
               ) : (
                 <div className="ex-stack">
                   {preview.services.map((s) => (
@@ -280,11 +303,11 @@ export default function ImportPage() {
                       )}
                     </Field>
                   ) : null}
-                  {source?.kind === 'git' ? <p className="ex-small ex-secondary">The Importer “{source.name}” will be created, scanned and imported immediately, then re-scanned every 2 h. <RouterLink to="/importers">Manage sources</RouterLink></p> : null}
+                  {source?.kind === 'git' ? <p className="ex-small ex-secondary">The source “{source.name}” will be created, scanned and imported immediately, then re-scanned every 2 h. <RouterLink to="/sources">Manage sources</RouterLink></p> : null}
                 </div>
               )}
               <div className="ex-row" style={{ marginTop: 12 }}>
-                <Button loading={step === 'importing'} onClick={() => void doImport()}>{arazzo ? `Import ${arazzo.workflows.length} workflows` : source?.kind === 'git' ? 'Create Importer' : 'Import'}</Button>
+                <Button loading={step === 'importing'} onClick={() => void doImport()}>{arazzo ? `Import ${arazzo.workflows.length} workflows` : source?.kind === 'git' ? 'Create source' : 'Import'}</Button>
                 <Button variant="secondary" onClick={reset}>Cancel</Button>
               </div>
             </Panel>
@@ -299,7 +322,7 @@ export default function ImportPage() {
                 {result.outcome === 'arazzo' && result.arazzo ? (
                   <>
                     <p className="ex-row"><ApiBadge arazzo name={`${result.name} ${result.version}`} /><ApiBadge label="workflows" value={String(result.arazzo.workflows)} size="sm" /><ApiBadge label="steps" value={String(result.arazzo.steps)} size="sm" /></p>
-                    <div className="ex-row"><Button asChild><RouterLink to="/workflows">Open workflows</RouterLink></Button><Button variant="secondary" onClick={reset}>Import another contract</Button></div>
+                    <div className="ex-row"><Button asChild><RouterLink to="/workflows">Open workflows</RouterLink></Button><Button asChild variant="secondary"><RouterLink to="/sources">Back to Sources</RouterLink></Button><Button variant="secondary" onClick={reset}>Add another source</Button></div>
                   </>
                 ) : (
                   <>
@@ -315,8 +338,9 @@ export default function ImportPage() {
                     {result.tryIt ? <CodeBlock code={result.tryIt} language="shell" caption="Try it now" copy /> : null}
                     <div className="ex-row">
                       <Button asChild><RouterLink to={`/services/${result.serviceId}`}>Open service</RouterLink></Button>
-                      <Button variant="secondary" onClick={reset}>Import another contract</Button>
-                      <Button asChild variant="secondary"><RouterLink to={`/tests/create?service=${result.serviceId}`}>Run a test</RouterLink></Button>
+                      <Button asChild variant="secondary"><RouterLink to="/sources">Back to Sources</RouterLink></Button>
+                      <Button variant="secondary" onClick={reset}>Add another source</Button>
+                      <Button asChild variant="secondary"><RouterLink to={result.protocol === 'A2A' ? `/tests/agent?service=${result.serviceId}` : `/tests/create?service=${result.serviceId}`}>{result.protocol === 'A2A' ? 'Test the agent' : 'Run a test'}</RouterLink></Button>
                     </div>
                   </>
                 )}
@@ -326,7 +350,7 @@ export default function ImportPage() {
         </section>
 
         <aside aria-labelledby="recent-title" className="ex-stack">
-          <Panel title="Recent imports" id="recent-title" actions={<RouterLink to="/services">Full catalog</RouterLink>}>
+          <Panel title="Recent sources" id="recent-title" actions={<RouterLink to="/services">Full catalog</RouterLink>}>
             <ul className="ex-plain-list">
               {(recent.data ?? []).map((r) => (
                 <li key={r.id} className="ex-stack" style={{ gap: 2 }}>
@@ -335,7 +359,7 @@ export default function ImportPage() {
                 </li>
               ))}
             </ul>
-            <p className="ex-small ex-secondary">Scheduled Importers are grouped under Sources. <RouterLink to="/importers">Manage sources</RouterLink></p>
+            <p className="ex-small ex-secondary">Every upload, URL and repository is listed in Sources. <RouterLink to="/sources">Back to Sources</RouterLink></p>
           </Panel>
           <Panel title="From the command line" headingLevel={2}>
             <CodeBlock code={'microcks import apipastry-openapi.yaml:true \\\n  --microcksURL=http://microcks.local:8080/api/'} language="shell" caption="Microcks CLI" copy />
@@ -348,7 +372,8 @@ export default function ImportPage() {
 
 function doneTitle(r: ImportResult): string {
   switch (r.outcome) {
-    case 'importer-created': return 'Importer created, mock is live';
+    case 'importer-created': return 'Source created, mock is live';
+    case 'a2a': return 'Agent imported, mock is live';
     case 'merged': return 'Examples merged';
     case 'arazzo': return `${r.arazzo?.workflows ?? 0} workflows imported`;
     case 'direct': return 'Mock created and live';
@@ -360,6 +385,7 @@ function doneSub(r: ImportResult): string {
     case 'importer-created': return `First scan of “${r.importerName ?? r.name}” done: ${r.operationCount} Operations, ${r.samples ?? 0} Examples served. Next re-scan in 2 h.`;
     case 'merged': return `Non-conflicting Examples were added to ${r.name} ${r.version} (name + version key). The mock already serves them.`;
     case 'arazzo': return `${r.name} ${r.version}: ${r.arazzo?.workflows} workflows, ${r.arazzo?.steps} steps, ${r.arazzo?.sources} source descriptions linked. Play them on the Microcks mocks or run them against your implementations; order-pastry cannot run yet (AsyncAPI steps).`;
+    case 'a2a': return `${r.name} ${r.version} is imported as an A2A service: ${r.agent?.skills ?? 0} skills became operations and the mock serves the card on ${r.agent?.transports.length ?? 0} transports. It answers with a rejected task until conversations are added.`;
     case 'direct': return r.protocol === 'EVENT' ? `${r.name} ${r.version} publishes the reference payload at a regular interval.` : `${r.name} ${r.version} exposes the resource: create, read, filter and delete with free-form JSON.`;
     default: return `${r.name} ${r.version} is imported: ${r.operationCount} Operations, ${r.samples} Examples served by the mock.`;
   }

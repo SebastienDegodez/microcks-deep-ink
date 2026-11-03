@@ -29,7 +29,7 @@ describe('Catalogue screen', () => {
 
   it('browses with totals, workflow usage and facet counts that ignore their own selection', async () => {
     const view = await uc.catalog.browse({ protocols: ['REST'], testStatus: 'failed' });
-    expect(view.total).toBe(10);
+    expect(view.total).toBe(11);
     expect(view.operationsTotal).toBeGreaterThan(20);
     expect(view.workflowsUsing).toBeGreaterThan(0);
     expect(view.services.map((s) => s.id).sort()).toEqual(['beer', 'pastry1', 'pastry2']);

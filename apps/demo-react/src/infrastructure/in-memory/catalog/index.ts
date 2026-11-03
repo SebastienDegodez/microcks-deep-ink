@@ -30,8 +30,8 @@ export interface CatalogAdapters {
 
 const PAGE_COMMANDS: CommandItem[] = [
   { id: 'page-cockpit', label: 'Cockpit', kind: 'Page', href: '/' },
-  { id: 'page-import', label: 'Import a contract', kind: 'Page', href: '/import' },
-  { id: 'page-sources', label: 'Sources', kind: 'Page', href: '/importers' },
+  { id: 'page-import', label: 'Add a source', kind: 'Page', href: '/sources/new' },
+  { id: 'page-sources', label: 'Sources', kind: 'Page', href: '/sources' },
   { id: 'page-workflows', label: 'Workflows', kind: 'Page', href: '/workflows' },
   { id: 'page-tests', label: 'Tests', kind: 'Page', href: '/tests' },
   { id: 'page-traces', label: 'Live traces', kind: 'Page', href: '/traces' },

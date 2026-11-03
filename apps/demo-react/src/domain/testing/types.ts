@@ -1,4 +1,5 @@
 export type TestRunner =
+  | 'A2A_CONFORMANCE'
   | 'HTTP'
   | 'SOAP_HTTP'
   | 'SOAP_UI'

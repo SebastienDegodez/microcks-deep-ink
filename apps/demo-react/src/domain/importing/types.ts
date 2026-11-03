@@ -15,7 +15,17 @@ export type ImportSource =
       insecure?: boolean;
     };
 
-export type ArtifactKind = 'openapi' | 'asyncapi' | 'graphql' | 'grpc' | 'soap' | 'postman' | 'arazzo' | 'unknown';
+export type ArtifactKind = 'openapi' | 'asyncapi' | 'graphql' | 'grpc' | 'soap' | 'postman' | 'arazzo' | 'a2a' | 'unknown';
+
+/** Where a source comes from: a file uploaded once, or a URL, Git repository or Hub package Microcks keeps in sync. */
+export type SourceOrigin = 'upload' | 'url' | 'git' | 'hub';
+
+export const SOURCE_ORIGINS: readonly { id: SourceOrigin; label: string; fact: string }[] = [
+  { id: 'upload', label: 'Upload', fact: 'Upload · one-off file' },
+  { id: 'url', label: 'URL', fact: 'URL · scheduled' },
+  { id: 'git', label: 'Git', fact: 'Git repository · scheduled' },
+  { id: 'hub', label: 'Hub', fact: 'Hub package · scheduled' },
+];
 
 export interface DetectedOperation {
   method: string;
@@ -63,6 +73,21 @@ export interface ArazzoPreview {
   sources: DetectedSourceDescription[];
 }
 
+/** What Microcks understood of an A2A Agent Card (a projection: the v2 module turns skills into operations). */
+export interface AgentPreview {
+  fileName: string;
+  provider: string;
+  specVersion: string;
+  skills: { id: string; name: string }[];
+  /** `supportedInterfaces`, in order. */
+  interfaces: { binding: string; url: string; preferred: boolean }[];
+  /** The same interfaces once the card is served by the mock. */
+  mockInterfaces: { binding: string; url: string }[];
+  security: string;
+  capabilities: string[];
+  modes: string[];
+}
+
 export interface ImportPreview {
   previewId: string;
   source: ImportSource;
@@ -76,6 +101,7 @@ export interface ImportPreview {
   origin?: string;
   exampleCount?: number;
   arazzo?: ArazzoPreview;
+  agent?: AgentPreview;
 }
 
 export interface ImportOptions {
@@ -84,7 +110,7 @@ export interface ImportOptions {
   secretId?: string;
 }
 
-export type ImportOutcome = 'imported' | 'merged' | 'importer-created' | 'arazzo' | 'direct';
+export type ImportOutcome = 'imported' | 'merged' | 'importer-created' | 'arazzo' | 'direct' | 'a2a';
 
 export interface ImportResult {
   serviceId: string;
@@ -102,6 +128,8 @@ export interface ImportResult {
   /** Command to try the mock right away. */
   tryIt?: string;
   arazzo?: { documentId: string; workflows: number; steps: number; sources: number };
+  /** A2A agents: skills turned into operations, scripted conversations found, transports served. */
+  agent?: { skills: number; conversations: number; transports: string[] };
   /** Name of the scheduled importer created from a Git repository. */
   importerName?: string;
 }
@@ -158,6 +186,8 @@ export interface Importer {
   name: string;
   source: ImportSource;
   kind: ArtifactKind;
+  /** Uploads run once and have no schedule; the other origins are scanned on the global schedule. */
+  origin: SourceOrigin;
   active: boolean;
   /** `running` while a synchronisation is in progress. */
   state: 'idle' | 'running' | 'failed';

@@ -16,6 +16,7 @@ export const SERVICE_IDS = [
   'usersignedup',
   'hellosoap',
   'beer',
+  'concierge',
 ] as const;
 export type ServiceId = (typeof SERVICE_IDS)[number];
 

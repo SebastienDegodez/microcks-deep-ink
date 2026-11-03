@@ -1,3 +1,4 @@
+import type { AgentUseCases } from './agents';
 import type { ArazzoUseCases } from './arazzo';
 import type { CatalogUseCases } from './catalog';
 import type { CopilotUseCases } from './copilot';
@@ -18,4 +19,5 @@ export interface UseCases {
   arazzo: ArazzoUseCases;
   observe: ObserveUseCases;
   govern: GovernUseCases;
+  agents: AgentUseCases;
 }

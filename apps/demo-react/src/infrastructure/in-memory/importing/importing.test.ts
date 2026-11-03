@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { ValidationError } from '@/application/shared';
 import { createImportingUseCases } from '@/application/importing';
-import { detectArtifactKind, directApiEndpoint, filterImporters, importerStatus, statusCounts, validateDirectApi, validateGitForm } from '@/domain/importing';
+import { detectArtifactKind, directApiEndpoint, filterImporters, importerStatus, originCounts, statusCounts, validateDirectApi, validateGitForm } from '@/domain/importing';
 
 import { createInMemoryImportingAdapters } from '.';
 
@@ -61,11 +61,11 @@ describe('Import screen', () => {
 });
 
 describe('Sources screen', () => {
-  it('lists the ten importers with the failed and inactive ones', async () => {
+  it('lists the twelve sources (two are one-off uploads) with the failed and inactive ones', async () => {
     const all = await uc.importing.listImporters();
-    expect(all).toHaveLength(10);
+    expect(all).toHaveLength(12);
     const counts = statusCounts(all);
-    expect(counts).toMatchObject({ all: 10, failed: 1, warning: 1, inactive: 1, running: 1 });
+    expect(counts).toMatchObject({ all: 12, failed: 1, warning: 1, inactive: 1, running: 1 });
     expect(all.find((i) => i.id === 'pastry-orders')?.error?.message).toContain('401');
   });
 
@@ -116,5 +116,26 @@ describe('Sources screen', () => {
     expect(s.lastScanAt).toBe('2026-11-03T09:00:00.000Z');
     expect(s.minutesSinceLast).toBe(10);
     expect(s.minutesUntilNext).toBe(50);
+  });
+});
+
+describe('Sources by origin and A2A', () => {
+  it('counts the origins and filters on them; uploads are one-off and never inactive', async () => {
+    const all = await uc.importing.listImporters();
+    expect(originCounts(all)).toEqual({ all: 12, upload: 2, url: 4, git: 4, hub: 2 });
+    expect(filterImporters(all, { origin: 'upload' }).map((i) => i.id)).toEqual(['upload-agent-card', 'upload-postman']);
+    const upload = all.find((i) => i.id === 'upload-agent-card');
+    expect(upload).toMatchObject({ origin: 'upload', kind: 'a2a', schedule: 'no schedule · one-off', active: true });
+    expect(upload?.produces[0]).toMatchObject({ protocol: 'A2A', id: 'concierge' });
+    expect(uc.importing.getScanSchedule().description).toBe('every hour, global to all scheduled sources');
+  });
+
+  it('detects an Agent Card and previews 3 skills and 3 interfaces before anything is created', async () => {
+    const preview = await uc.importing.analyze({ kind: 'file', files: [{ name: 'agent-card.json', sizeBytes: 3277 }] });
+    expect(preview.agent?.skills.map((s) => s.id)).toEqual(['recommend-pastry', 'order-pastry', 'track-order']);
+    expect(preview.agent?.interfaces.map((i) => i.binding)).toEqual(['JSONRPC', 'HTTP+JSON', 'GRPC']);
+    expect(preview.services[0]).toMatchObject({ protocol: 'A2A', kind: 'a2a' });
+    const result = await uc.importing.import(preview.previewId, { role: 'primary' });
+    expect(result).toMatchObject({ outcome: 'a2a', serviceId: 'concierge', operationCount: 3 });
   });
 });

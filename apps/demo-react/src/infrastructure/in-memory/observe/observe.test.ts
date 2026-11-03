@@ -31,7 +31,7 @@ describe('observe use cases', () => {
     const uc = setup();
     const domains = await uc.conformanceByDomain();
     const pastry = domains.find((d) => d.domain === 'pastry');
-    expect(pastry?.items?.map((i) => i.serviceId)).toEqual(['pastry2', 'orders', 'pastry1']);
+    expect(pastry?.items?.map((i) => i.serviceId)).toEqual(['pastry2', 'orders', 'pastry1', 'concierge']);
     expect(pastry?.score).toBe(86);
     expect(domains.find((d) => d.domain === 'pets')?.score).toBeNull();
     expect(domains.find((d) => d.domain === 'other')?.items).toHaveLength(2);

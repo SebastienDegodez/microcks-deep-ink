@@ -2,8 +2,8 @@ import '../explore-kit/explore.css';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import {
-  defaultDiffEntry, diffStats, filterImporters, formatHourMinute, formatShortClock, importerStatus, splitRevision, statusCounts,
-  type Importer, type SourceStatus, type SyncEntry,
+  defaultDiffEntry, diffStats, filterImporters, formatHourMinute, formatShortClock, importerStatus, originCounts, splitRevision, statusCounts, SOURCE_ORIGINS,
+  type Importer, type SourceOrigin, type SourceStatus, type SyncEntry,
 } from '@/domain/importing';
 import { PageHeader, useAnnounce, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
@@ -54,6 +54,7 @@ export default function SourcesPage() {
   const list = useQuery(() => uc.importing.listImporters(), [uc]);
   const schedule = uc.importing.getScanSchedule();
   const [status, setStatus] = useState<SourceStatus | 'all'>('all');
+  const [origin, setOrigin] = useState<SourceOrigin | 'all'>('all');
   const [query, setQuery] = useState('');
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [confirm, setConfirm] = useState<Importer | undefined>();
@@ -84,7 +85,8 @@ export default function SourcesPage() {
   const all = list.data ?? [];
   const importers = all.map((i) => (progress[i.id] !== undefined ? { ...i, state: 'running' as const } : i));
   const counts = statusCounts(importers);
-  const shown = filterImporters(importers, { status, query });
+  const originTotals = originCounts(importers);
+  const shown = filterImporters(importers, { status, origin, query });
   const selected = importers.find((i) => i.id === importerId) ?? shown[0] ?? importers[0];
   const defaultEntry = selected ? defaultDiffEntry(selected.timeline) : undefined;
   const activeEntry = (selected?.timeline.find((e) => e.kind === 'run' && e.id === entryId && e.revision) ?? selected?.timeline.find((e) => e.id === defaultEntry)) as Extract<SyncEntry, { kind: 'run' }> | undefined;
@@ -111,7 +113,7 @@ export default function SourcesPage() {
     setConfirm(undefined);
     setUndoing(gone);
     list.reload();
-    if (importerId === gone.id) navigate('/importers', { replace: true });
+    if (importerId === gone.id) navigate('/sources', { replace: true });
     announce(`${gone.name} deleted. Undo is available.`);
   };
   const undo = async () => {
@@ -136,9 +138,9 @@ export default function SourcesPage() {
     <div className="ex-stack">
       <PageHeader
         title="Sources"
-        actions={<Button asChild icon="plus"><RouterLink to="/import">New source</RouterLink></Button>}
+        actions={<Button asChild icon="plus"><RouterLink to="/sources/new">Add source</RouterLink></Button>}
       />
-      <p className="ex-secondary" style={{ margin: 0 }}>Importers pull your contracts from Git repositories and HTTP URLs on a schedule, resolve their <code>$ref</code> dependencies and keep Services and mocks in sync.</p>
+      <p className="ex-secondary" style={{ margin: 0 }}>Everything Microcks imports is a source: files you upload once and URLs or repositories it keeps in sync.</p>
 
       <div className="ex-row" role="group" aria-label="Scan schedule">
         <strong>Scan schedule</strong> <code>{schedule.cron}</code> <span className="ex-secondary">{schedule.description}</span> <code>{schedule.envVar}</code>
@@ -162,11 +164,17 @@ export default function SourcesPage() {
             { id: 'inactive', label: 'Inactive', count: counts.inactive },
           ]}
         />
+        <Segmented
+          label="Origin"
+          value={origin}
+          onChange={(id) => setOrigin(id as SourceOrigin | 'all')}
+          options={[{ id: 'all', label: 'All', count: originTotals.all }, ...SOURCE_ORIGINS.map((o) => ({ id: o.id, label: o.label, count: originTotals[o.id] }))]}
+        />
         <span role="status" className="ex-small ex-secondary">{shown.length} of {counts.all} sources</span>
       </section>
 
       <div className="ex-grid ex-grid-sources">
-        <section aria-label="Importer jobs" className="ex-stack">
+        <section aria-label="Sources" className="ex-stack">
           {undoing ? (
             <Callout tone="info" live="polite" actions={<Button size="sm" variant="secondary" icon="undo" onClick={() => void undo()}>Undo</Button>}>
               <strong>{undoing.name}</strong> deleted. Services already discovered remain but are no longer updated.
@@ -179,30 +187,36 @@ export default function SourcesPage() {
             return (
               <article key={j.id} aria-label={j.name} className="ex-source-row" aria-current={selected?.id === j.id ? 'true' : undefined}>
                 <div className="ex-row-between">
-                  <Switch label={<span className="sr-only">{`Scan ${j.name} on schedule`}</span>} checked={j.active} onChange={(v) => void toggleActive(j, v)} />
-                  <RouterLink to={`/importers/${j.id}`} aria-current={selected?.id === j.id ? 'true' : undefined} className="ex-tile-title">{j.name}</RouterLink>
+                  {j.origin === 'upload' ? null : <Switch label={<span className="sr-only">{`Scan ${j.name} on schedule`}</span>} checked={j.active} onChange={(v) => void toggleActive(j, v)} />}
+                  <RouterLink to={`/sources/${j.id}`} aria-current={selected?.id === j.id ? 'true' : undefined} className="ex-tile-title">{j.name}</RouterLink>
                   {running ? <LiveIndicator label="live · importing" /> : <span className="ex-row ex-small"><Icon name={STATUS_ICON[st]} size={14} />{STATUS_WORD[st]} <span className="ex-muted">{j.lastSyncAt ? relative(j.lastSyncAt) : ''}</span></span>}
                 </div>
                 <div className="ex-small ex-secondary ex-url-line">{j.url}</div>
                 <div className="ex-row ex-small">
-                  <Chip>{j.role}</Chip><Chip variant="outline">{j.artifactLabel}</Chip>
+                  <Chip tone="info">{originLabel(j.origin)}</Chip><Chip>{j.role}</Chip><Chip variant="outline">{j.artifactLabel}</Chip>
                   {j.secretName ? <Chip variant="outline"><span className="sr-only">Secret </span><Icon name="link" size={12} /> {j.secretName}</Chip> : null}
-                  <span className="ex-muted">{j.active ? `next scan ${formatHourMinute(schedule.nextScanAt)}` : 'scans paused'}</span>
+                  <span className="ex-muted">{j.origin === 'upload' ? 'no schedule · one-off' : j.active ? `next scan ${formatHourMinute(schedule.nextScanAt)}` : 'scans paused'}</span>
                 </div>
                 <ServiceLinks importer={j} />
                 {j.error ? <div role="alert" className="ex-small"><Icon name="cross" size={12} /> {j.error.message} <span className="ex-muted">{j.error.since}</span></div> : null}
                 {j.warning ? <div className="ex-small"><Icon name="warning" size={12} /> {j.warning}</div> : null}
                 {pct !== undefined ? <Progress label={`Importing ${j.name}`} value={pct} max={100} /> : null}
                 <div className="ex-row">
-                  <Button size="sm" variant="secondary" icon="retry" disabled={running || !j.active} title={!j.active ? 'Activate scans to run this source' : undefined} onClick={() => run(j.id)}>{running ? 'Importing…' : 'Run now'}</Button>
-                  <Button asChild size="sm" variant="ghost"><RouterLink to="/import" aria-label={`Edit ${j.name}`}>Edit</RouterLink></Button>
+                  {j.origin === 'upload' ? (
+                    <Button asChild size="sm" variant="secondary" icon="upload"><RouterLink to="/sources/new" aria-label={`Re-upload ${j.name}`}>Re-upload</RouterLink></Button>
+                  ) : (
+                    <>
+                      <Button size="sm" variant="secondary" icon="retry" disabled={running || !j.active} title={!j.active ? 'Activate scans to run this source' : undefined} onClick={() => run(j.id)}>{running ? 'Importing…' : 'Run now'}</Button>
+                      <Button asChild size="sm" variant="ghost"><RouterLink to="/sources/new" aria-label={`Edit ${j.name}`}>Edit</RouterLink></Button>
+                    </>
+                  )}
                   <Button size="sm" variant="ghost" icon="trash" aria-label={`Delete ${j.name}`} onClick={() => setConfirm(j)}>Delete</Button>
                 </div>
               </article>
             );
           })}
           {shown.length === 0 ? (
-            <EmptyState title="No source matches these filters" headingLevel={2} actions={<Button onClick={() => { setStatus('all'); setQuery(''); }}>Clear filters</Button>}>
+            <EmptyState title="No source matches these filters" headingLevel={2} actions={<Button onClick={() => { setStatus('all'); setOrigin('all'); setQuery(''); }}>Clear filters</Button>}>
               <p>Change the status or the search to see your sources again.</p>
             </EmptyState>
           ) : null}
@@ -223,6 +237,7 @@ export default function SourcesPage() {
               ) : null}
               <dl className="ex-stack" style={{ margin: 0 }}>
                 {[
+                  ['Origin', SOURCE_ORIGINS.find((o) => o.id === selected.origin)?.fact ?? selected.origin, undefined],
                   ['Role', selected.role === 'primary' ? 'Primary artifact' : 'Secondary artifact', selected.artifactNote],
                   ['Artifact type', selected.artifactLabel, undefined],
                   ['Secret', selected.secretName ? selected.secretName : 'None', selected.secretType],
@@ -278,6 +293,10 @@ export default function SourcesPage() {
       </Dialog>
     </div>
   );
+}
+
+function originLabel(origin: SourceOrigin): string {
+  return SOURCE_ORIGINS.find((o) => o.id === origin)?.label ?? origin;
 }
 
 function TimelineLine({ entry }: { entry: Extract<SyncEntry, { kind: 'run' }> }) {

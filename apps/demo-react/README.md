@@ -1,6 +1,6 @@
 # Microcks UI v2 · DEMO (React)
 
-A clickable, in-memory demo of the 17 screens of the Microcks UI v2 proposal. **Nothing is saved**: every
+A clickable, in-memory demo of the 19 screens of the Microcks UI v2 proposal. **Nothing is saved**: every
 page shows the DEMO banner. It exists to prove two things:
 
 1. The Deep Ink design system works as **copied code** (shadcn style): the demo imports no
@@ -21,7 +21,8 @@ pnpm --filter demo-react build        # tsc --noEmit, then vite build
 ```
 
 Useful URLs: `#/map` (screen map with a link to every screen), `#/workflows/pastry/restock-pastry`,
-`#/workflows/runs/6729a1d27e4c0b5f93a8c214` (run #14), `#/tests/runner/119`.
+`#/workflows/runs/6729a1d27e4c0b5f93a8c214` (run #14), `#/tests/runner/119`, `#/services/concierge/skills` (the A2A agent, screen 18),
+`#/tests/agent/3` (its conformance test, screen 19) and `#/sources/new` (add a source).
 
 `?fast` in the hash query (`#/workflows?fast`) or `localStorage['deep-ink-demo-fast'] = '1'` removes the
 simulated latency (120 to 350 ms, deterministic). The Playwright smoke run uses it. Streams tick every 1200 ms.
@@ -64,6 +65,20 @@ Enforced by `.dependency-cruiser.cjs` (every rule has severity `error`, `pnpm li
 Tests follow the same rules. Write use-case tests that need the in-memory adapters next to the adapters
 (`src/infrastructure/in-memory/<feature>/*.test.ts`) or in `src/composition-root.test.ts`. Tests that render the router
 live at `src/` level (`app.routes.test.tsx`).
+
+## The A2A agent (screens 18 and 19)
+
+An agent imported from its Agent Card is a service whose protocol is `A2A` (token `proto-a2a`). It follows spec 1.0: three
+protocol bindings (JSON-RPC 2.0, HTTP+JSON, gRPC), task states `submitted`, `working`, `input-required` and `auth-required`
+(interrupted) then the terminal `completed`, `failed`, `rejected` and `canceled`, and the `TASK_STATE_*` wire names in raw payloads.
+Skills are counted as operations ("skills" in the UI).
+
+- `src/domain/agents`: Agent Card, skills, scripted conversations, tasks, mock call samples, the test plan and its totals (pure).
+- `src/application/agents` and `ports/agents.ts`: `AgentRepository`, `AgentTaskGateway` (1 s stream, `CancelTask`), `AgentTestGateway`.
+- `src/infrastructure/in-memory/agents`: the Pastry concierge (3 skills, 4 conversations plus the fallback), its tasks (`task-9a04` streams) and
+  the conformance runner (run #3 fails on HTTP+JSON `eclair-size-m` and gRPC `ord-2417-ready`).
+- The service route `#/services/:serviceId/:tab?` shows the Agent screen when the protocol is `A2A`; the test is `#/tests/agent/:runId?`.
+- New registry items used here: `task-timeline`, `conformance-matrix`, `skill-list`.
 
 ## Adding a use case (phase-2 contract)
 

@@ -3,7 +3,7 @@ import type { Protocol, ServiceSummary } from '@/domain/shared';
 
 export interface AttentionItem {
   id: string;
-  kind: 'Failing test' | 'Failing workflow' | 'Importer error' | 'Never tested';
+  kind: 'Failing test' | 'Failing agent test' | 'Failing workflow' | 'Importer error' | 'Never tested';
   tone: 'danger' | 'warning' | 'neutral';
   badge: Protocol | 'ARAZZO' | 'importer';
   subject: string;
@@ -48,7 +48,16 @@ export function buildAttention(services: readonly ServiceSummary[], importers: r
       id: `importer-${importer.id}`, kind: 'Importer error', tone: 'warning', badge: 'importer', subject: importer.name,
       title: `Scheduled import failed: ${importer.error?.message ?? 'error'}`,
       detail: `${importer.error?.detail ?? ''} ${importer.error?.since ?? ''}. Mocks still serve the last imported version.`.trim(),
-      cta: 'Fix in Sources', to: `/importers/${importer.id}`,
+      cta: 'Fix in Sources', to: `/sources/${importer.id}`,
+    });
+  }
+  const concierge = services.find((s) => s.protocol === 'A2A' && s.testStatus === 'failed');
+  if (concierge) {
+    items.push({
+      id: 'agent-test-3', kind: 'Failing agent test', tone: 'danger', badge: 'A2A', subject: `${concierge.name} ${concierge.version}`,
+      title: 'Agent Pastry concierge · HTTP+JSON resumes input-required on a new task',
+      detail: 'Run #3 · A2A_CONFORMANCE · order-pastry: after input-required the agent answered with a new taskId instead of resuming the same task. 10 of 12 checks passed.',
+      cta: `Open run #${concierge.lastTest?.runId ?? '3'}`, to: `/tests/agent/${concierge.lastTest?.runId ?? '3'}`,
     });
   }
   const never = services.filter((s) => s.conformance === null);
@@ -57,7 +66,7 @@ export function buildAttention(services: readonly ServiceSummary[], importers: r
     const others = never.slice(1).map((s) => `${s.name} ${s.version}`);
     items.push({
       id: 'never', kind: 'Never tested', tone: 'neutral', badge: first.protocol, subject: `${first.name} ${first.version}`,
-      title: `${first.operationCount} operations without a conformance proof`,
+      title: `${first.operationCount} ${first.protocol === 'A2A' ? 'skills' : 'operations'} without a conformance proof`,
       detail: `Its mock served ${first.calls24h} requests today.${others.length ? ` ${others.join(' and ')} were never tested either.` : ''}`,
       cta: 'Run a first test', to: `/tests/create?service=${first.id}`,
     });

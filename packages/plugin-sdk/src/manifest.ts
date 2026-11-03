@@ -29,7 +29,7 @@ export interface MicrocksPluginManifest {
   frontend?: FrontendPart;
 }
 
-export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
+export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 
 export type PluginCategory =
   | 'importer'

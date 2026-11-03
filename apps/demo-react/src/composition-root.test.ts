@@ -9,9 +9,9 @@ beforeEach(() => {
 });
 
 describe('catalog use cases', () => {
-  it('lists the 10 seeded services and filters them', async () => {
-    expect(await uc.catalog.listServices()).toHaveLength(10);
-    expect((await uc.catalog.listServices({ query: 'pastry' })).map((s) => s.id)).toEqual(['pastry2', 'orders', 'pastry1']);
+  it('lists the 11 seeded services and filters them', async () => {
+    expect(await uc.catalog.listServices()).toHaveLength(11);
+    expect((await uc.catalog.listServices({ query: 'pastry' })).map((s) => s.id)).toEqual(['pastry2', 'orders', 'pastry1', 'concierge']);
     expect((await uc.catalog.listServices({ protocols: ['EVENT'] })).map((s) => s.id)).toEqual(['orders', 'usersignedup']);
     expect((await uc.catalog.listServices({ testStatus: 'never' })).map((s) => s.id)).toEqual(['petstore', 'rocks', 'usersignedup']);
     expect((await uc.catalog.listServices({ labels: ['domain=pastry', 'status=GA'] })).map((s) => s.id)).toEqual(['pastry2']);
@@ -120,15 +120,15 @@ describe('testing, observe, govern and importing use cases', () => {
   it('builds the cockpit from the catalogue and the test runs', async () => {
     const cockpit = await uc.observe.getCockpit();
     expect(cockpit.asOf).toBe('2026-11-03T09:10:04.000Z');
-    expect(cockpit.kpis.services).toBe(10);
-    // movie, pastry1, beer and, since test #119, pastry2
-    expect(cockpit.kpis.failingServices).toBe(4);
+    expect(cockpit.kpis.services).toBe(11);
+    // movie, pastry1, beer, concierge (run #3) and, since test #119, pastry2
+    expect(cockpit.kpis.failingServices).toBe(5);
     expect(cockpit.recentTests[0]?.id).toBe('119');
   });
 
   it('computes invocations and conformance by domain', async () => {
     expect((await uc.observe.invocations('pastry2', 'day')).points).toHaveLength(24);
-    expect((await uc.observe.conformanceByDomain()).find((d) => d.domain === 'pastry')?.services).toBe(3);
+    expect((await uc.observe.conformanceByDomain()).find((d) => d.domain === 'pastry')?.services).toBe(4);
   });
 
   it('installs a hub package and reports progress', async () => {

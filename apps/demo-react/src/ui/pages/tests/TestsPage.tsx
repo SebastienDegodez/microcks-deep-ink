@@ -13,6 +13,7 @@ import { Select } from '@/ui/components/ui/select';
 import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
 import { StatusBadge, type Outcome } from '@/ui/components/ui/status-badge';
 import { ErrorBlock, LoadingBlock } from './PageStates';
+import { testRunHref } from '../explore-kit/format';
 import './tests.css';
 
 const LIMIT = 12;
@@ -41,10 +42,33 @@ export default function TestsPage() {
           </Button>
         }
       />
+      {service && service.protocol !== 'A2A' ? <OtherServices /> : null}
       {query.status === 'loading' && !data ? <LoadingBlock label="the test history" /> : null}
       {query.status === 'error' ? <ErrorBlock error={query.error} what="Test history" onRetry={query.reload} /> : null}
       {data ? <History key={serviceId} runs={data[0]} timeline={data[1]} operations={data[2].targets.find((t) => t.serviceId === serviceId)?.operations ?? []} service={service} /> : null}
     </>
+  );
+}
+
+/** The agent tests live on their own screen: point to the latest one from the history of any other service. */
+function OtherServices() {
+  const uc = useUseCases();
+  const agent = useQuery(async () => {
+    const [svc] = await uc.catalog.listServices({ protocols: ['A2A'] });
+    const [run] = svc ? await uc.testing.listForService(svc.id) : [];
+    return svc && run ? { svc, run } : undefined;
+  }, [uc]);
+  if (!agent.data) return null;
+  const { svc, run } = agent.data;
+  return (
+    <p className="ex-row" style={{ margin: 0 }}>
+      <span>Other services:</span>
+      <RouterLink to={testRunHref(run)} className="ex-row">
+        <ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} size="sm" />
+        <span>run #{run.id} {run.result} {run.passed}/{run.total}</span>
+       
+      </RouterLink>
+    </p>
   );
 }
 

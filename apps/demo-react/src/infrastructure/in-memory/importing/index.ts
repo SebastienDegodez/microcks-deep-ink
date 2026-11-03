@@ -1,5 +1,5 @@
 import type {
-  ArazzoPreview, DetectedService, ImportOptions, ImportPreview, ImportResult, ImportSource, Importer, ImporterDiff, RecentImport,
+  AgentPreview, ArazzoPreview, DetectedService, ImportOptions, ImportPreview, ImportResult, ImportSource, Importer, ImporterDiff, RecentImport,
 } from '@/domain/importing';
 import { detectArtifactKind, directApiEndpoint, nameFromFile } from '@/domain/importing';
 import type { SecretSummary } from '@/domain/shared';
@@ -28,10 +28,10 @@ const SEED_SECRETS: SecretSummary[] = [
 ];
 
 const RECENT: RecentImport[] = [
-  { id: 'r1', protocol: 'ARAZZO', name: 'Pastry workflows', at: '2026-11-03T07:20:00Z', via: 'Git importer', status: 'imported', statusText: 'Imported', note: '4 workflows · 14 steps · 3 sources linked' },
-  { id: 'r2', protocol: 'REST', name: 'API Pastry 2.0', at: '2026-11-03T07:14:00Z', via: 'URL importer', status: 'imported', statusText: 'Updated', note: '+1 operation · 2 examples changed' },
+  { id: 'r1', protocol: 'ARAZZO', name: 'Pastry workflows', at: '2026-11-03T07:20:00Z', via: 'Git repository · scheduled', status: 'imported', statusText: 'Imported', note: '4 workflows · 14 steps · 3 sources linked' },
+  { id: 'r2', protocol: 'REST', name: 'API Pastry 2.0', at: '2026-11-03T07:14:00Z', via: 'Upload', status: 'imported', statusText: 'Updated', note: '+1 operation · 2 examples changed' },
   { id: 'r3', protocol: 'EVENT', name: 'User signed-up API 0.1.1', at: '2026-11-03T09:00:00Z', via: 'Scheduled scan', status: 'warning', statusText: 'Imported with warning', note: '1 example skipped' },
-  { id: 'r4', protocol: 'REST', name: 'Beer Catalog API 0.9', at: '2026-11-01T10:00:00Z', via: 'Postman importer', status: 'imported', statusText: 'Updated', note: '+1 example' },
+  { id: 'r4', protocol: 'REST', name: 'Beer Catalog API 0.9', at: '2026-11-01T10:00:00Z', via: 'URL · scheduled', status: 'imported', statusText: 'Updated', note: '+1 example' },
 ];
 
 const OPENAPI_OPS = [
@@ -57,6 +57,24 @@ const ARAZZO_PREVIEW: Omit<ArazzoPreview, 'fileName'> = {
 
 const MOCK_BASE = 'https://microcks.bakery.dev';
 
+const AGENT_PREVIEW: Omit<AgentPreview, 'fileName'> = {
+  provider: 'Bakery platform', specVersion: '1.0',
+  skills: [{ id: 'recommend-pastry', name: 'Recommend a pastry' }, { id: 'order-pastry', name: 'Order a pastry' }, { id: 'track-order', name: 'Track an order' }],
+  interfaces: [
+    { binding: 'JSONRPC', url: 'https://concierge.staging.acme.io/a2a/jsonrpc', preferred: true },
+    { binding: 'HTTP+JSON', url: 'https://concierge.staging.acme.io/a2a/v1', preferred: false },
+    { binding: 'GRPC', url: 'concierge.staging.acme.io:443 · a2a.v1.A2AService', preferred: false },
+  ],
+  mockInterfaces: [
+    { binding: 'JSONRPC', url: 'http://microcks.local:8080/a2a/Pastry+concierge/1.0/jsonrpc' },
+    { binding: 'HTTP+JSON', url: 'http://microcks.local:8080/a2a/Pastry+concierge/1.0/v1' },
+    { binding: 'GRPC', url: 'microcks.local:9090 · a2a.v1.A2AService' },
+  ],
+  security: 'bakeryOAuth (OAuth2 client credentials)',
+  capabilities: ['streaming', 'pushNotifications'],
+  modes: ['text/plain', 'application/json'],
+};
+
 export function createInMemoryImportingAdapters(deps: InMemoryDeps = {}): ImportingAdapters {
   const clock = deps.clock ?? new FixedClock();
   const importers = new Map(seedImporters().map((i) => [i.id, i]));
@@ -77,6 +95,15 @@ export function createInMemoryImportingAdapters(deps: InMemoryDeps = {}): Import
         ...base, services: [], formatLabel: 'Arazzo 1.1.0',
         origin: source.kind === 'git' ? 'Scanned from the repository: 1 Arazzo document found.' : 'Uploaded Arazzo document.',
         arazzo: { fileName, ...ARAZZO_PREVIEW },
+      };
+    } else if (kind === 'a2a') {
+      preview = {
+        ...base, formatLabel: 'A2A Agent Card · spec 1.0', origin: 'Example · concierge.staging.acme.io/.well-known/agent-card.json · one-off upload',
+        services: [{
+          name: 'Pastry concierge', version: '1.0', protocol: 'A2A', kind: 'a2a', exists: false,
+          operations: AGENT_PREVIEW.skills.map((s) => ({ method: 'SKILL', path: s.id, dispatcher: 'metadata.skillId' })),
+        }],
+        agent: { fileName, ...AGENT_PREVIEW },
       };
     } else {
       const service: DetectedService = {
@@ -100,6 +127,14 @@ export function createInMemoryImportingAdapters(deps: InMemoryDeps = {}): Import
             serviceId: 'pastry', name: preview.arazzo.title, version: preview.arazzo.version, operationCount: 0, outcome: 'arazzo', protocol: 'ARAZZO',
             arazzo: { documentId: 'pastry', workflows: preview.arazzo.workflows.length, steps: preview.arazzo.workflows.reduce((n, w) => n + w.steps, 0), sources: preview.arazzo.sources.length },
             importerName: preview.source.kind === 'git' ? (preview.source.name ?? 'Pastry workflows') : undefined,
+          };
+        }
+        if (preview.agent) {
+          return {
+            serviceId: 'concierge', name: 'Pastry concierge', version: '1.0', operationCount: 3, outcome: 'a2a', protocol: 'A2A', samples: '0', mcp: false,
+            mockLabel: 'Mock Agent Card', mockUrl: 'http://microcks.local:8080/a2a/Pastry+concierge/1.0/.well-known/agent-card.json',
+            tryIt: "curl http://microcks.local:8080/a2a/Pastry+concierge/1.0/.well-known/agent-card.json",
+            agent: { skills: 3, conversations: 0, transports: preview.agent.mockInterfaces.map((i) => i.binding) },
           };
         }
         const merged = options.role === 'secondary';

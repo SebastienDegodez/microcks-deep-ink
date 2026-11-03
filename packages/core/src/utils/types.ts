@@ -1,4 +1,4 @@
-export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
+export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 
 export const PROTOCOL_TOKEN: Record<Protocol, string> = {
   REST: 'proto-rest',
@@ -7,6 +7,7 @@ export const PROTOCOL_TOKEN: Record<Protocol, string> = {
   gRPC: 'proto-grpc',
   GRAPHQL: 'proto-graphql',
   DIRECT: 'proto-direct',
+  A2A: 'proto-a2a',
 };
 
 /** Entry of the command bar. `kind` groups the results; 'action' items are commands. */

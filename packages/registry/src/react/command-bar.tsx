@@ -3,7 +3,7 @@ import type { DetailedHTMLProps, HTMLAttributes, Ref } from 'react';
 import './elements/command-bar.js';
 
 /* Types mirror packages/core/src/utils/types.ts (a parity test keeps them identical). */
-export type CommandProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
+export type CommandProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 
 export interface CommandItem {
   id: string;

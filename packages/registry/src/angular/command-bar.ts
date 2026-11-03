@@ -2,7 +2,7 @@ import { DestroyRef, Directive, ElementRef, booleanAttribute, effect, inject, in
 import './elements/command-bar.js';
 
 /* Types mirror packages/core/src/utils/types.ts and the React wrapper (keep them identical). */
-export type CommandProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
+export type CommandProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 
 export interface CommandItem {
   id: string;

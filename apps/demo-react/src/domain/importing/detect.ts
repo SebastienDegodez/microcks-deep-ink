@@ -4,6 +4,7 @@ export const RECOGNIZED_FORMATS = [
   'OpenAPI',
   'AsyncAPI',
   'Arazzo',
+  'A2A Agent Card',
   'gRPC/Protobuf',
   'GraphQL',
   'Postman',
@@ -16,6 +17,7 @@ export const RECOGNIZED_FORMATS = [
 /** Guesses what an artifact is from its name or URL (the real Microcks reads the content). */
 export function detectArtifactKind(nameOrUrl: string): ArtifactKind {
   const n = nameOrUrl.toLowerCase();
+  if (n.includes('agent-card') || n.includes('agentcard')) return 'a2a';
   if (n.includes('arazzo')) return 'arazzo';
   if (/\.proto(\?|$)/.test(n)) return 'grpc';
   if (/\.(graphql|gql)(\?|$)/.test(n)) return 'graphql';

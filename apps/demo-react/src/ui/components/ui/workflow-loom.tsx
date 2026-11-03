@@ -4,7 +4,7 @@ import type { DetailedHTMLProps, HTMLAttributes, Ref } from 'react';
 import './elements/workflow-loom.js';
 
 /* Types mirror packages/core/src/utils/types.ts (a parity test keeps them identical). */
-export type LoomProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
+export type LoomProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 export type LoomStepStatus = 'passed' | 'failed' | 'not-run';
 export type LoomCheckState = 'passed' | 'failed' | 'off' | 'not-evaluated';
 

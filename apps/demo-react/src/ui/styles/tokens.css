@@ -70,6 +70,7 @@
   --proto-grpc: #41C7C7;
   --proto-graphql: #F45BBF;
   --proto-direct: #B98AF5;
+  --proto-a2a: #8F9BFF;
   --on-proto: #06101F;
   --shadow-focus: 0 0 0 4px rgba(46,155,240,0.25);
   --shadow-overlay: 0 16px 40px rgba(0,0,0,0.55);
@@ -109,6 +110,7 @@
   --proto-grpc: #176E6E;
   --proto-graphql: #B5007A;
   --proto-direct: #7A3FC0;
+  --proto-a2a: #3F4BC0;
   --on-proto: #FFFFFF;
   --shadow-focus: 0 0 0 4px rgba(10,98,179,0.25);
   --shadow-overlay: 0 16px 40px rgba(11,18,32,0.16);

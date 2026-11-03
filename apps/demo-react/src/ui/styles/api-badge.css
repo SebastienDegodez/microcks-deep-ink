@@ -17,6 +17,7 @@
   .api-badge[data-protocol="grpc"] { --badge-proto: var(--proto-grpc); }
   .api-badge[data-protocol="graphql"] { --badge-proto: var(--proto-graphql); }
   .api-badge[data-protocol="direct"] { --badge-proto: var(--proto-direct); }
+  .api-badge[data-protocol="a2a"] { --badge-proto: var(--proto-a2a); }
 
   .api-badge > span { display: inline-flex; align-items: center; padding: 5px 9px; }
   .api-badge[data-size="sm"] > span { padding: 2px 6px; font-size: 11px; }

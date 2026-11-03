@@ -14,7 +14,7 @@ import { Input } from '@/ui/components/ui/input';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { StatusBadge } from '@/ui/components/ui/status-badge';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
-import { PROTOCOL_ORDER, fmt, pluralize } from '../explore-kit/format';
+import { PROTOCOL_ORDER, fmt, operationUnit, pluralize } from '../explore-kit/format';
 
 const bandOf = (s: ServiceSummary): OperationResult[] =>
   s.lastResults ? s.lastResults.map((r) => (r === 'pass' ? 'pass' : 'fail')) : Array.from({ length: s.operationCount }, () => 'untested');
@@ -42,7 +42,7 @@ export default function CataloguePage() {
   const data = view$.data;
   const actions = (
     <Button asChild variant="secondary" icon="plus">
-      <RouterLink to="/import">Direct API</RouterLink>
+      <RouterLink to="/sources/new">Direct API</RouterLink>
     </Button>
   );
   if (view$.status === 'error' && !data) {
@@ -80,11 +80,11 @@ export default function CataloguePage() {
       render: (s) => (
         <span className="ex-stack" style={{ gap: 2 }}>
           <StatusBadge size="sm" status={outcomeOf(s)} />
-          {s.lastTest ? <RouterLink to={`/tests/runner/${s.lastTest.runId}`} className="ex-small">{lastTestText(s, relative)}</RouterLink> : <span className="ex-small ex-muted">no test run yet</span>}
+          {s.lastTest ? <RouterLink to={s.protocol === 'A2A' ? `/tests/agent/${s.lastTest.runId}` : `/tests/runner/${s.lastTest.runId}`} className="ex-small">{lastTestText(s, relative)}</RouterLink> : <span className="ex-small ex-muted">no test run yet</span>}
         </span>
       ),
     },
-    { key: 'conformance', header: 'Conformance', render: (s) => <span className="ex-row"><span>{s.conformance === null ? '—' : `${s.conformance}%`}</span><ConformanceBand size="mini" outcomes={bandOf(s)} /></span> },
+    { key: 'conformance', header: 'Conformance', render: (s) => <span className="ex-row"><span>{s.conformance === null ? '—' : `${s.conformance}%`}</span><ConformanceBand size="mini" outcomes={bandOf(s)} unit={operationUnit(s.protocol)} /></span> },
     { key: 'calls', header: 'Mock 24 h', render: callsText },
     { key: 'updated', header: 'Updated', render: (s) => relative(s.updatedAt) },
   ];
@@ -167,7 +167,7 @@ export default function CataloguePage() {
           {data.services.map((s) => (
             <article key={s.id} className="ex-tile">
               <span className="ex-row"><ApiBadge protocol={s.protocol} name={s.name} version={s.version} /></span>
-              <span className="ex-small ex-secondary">{s.format} · {pluralize(s.operationCount, 'operation')}</span>
+              <span className="ex-small ex-secondary">{s.format} · {pluralize(s.operationCount, operationUnit(s.protocol))}</span>
               <span className="ex-row">
                 <ApiBadge label="conformance" value={s.conformance === null ? 'untested' : `${s.conformance}%`} status={s.conformance === null ? 'neutral' : s.conformance >= 90 ? 'success' : s.conformance >= 60 ? 'warning' : 'danger'} size="sm" />
                 <ApiBadge label="mcp" value={s.mcp ? 'agent-ready' : 'not exposed'} status={s.mcp ? 'info' : 'neutral'} size="sm" />

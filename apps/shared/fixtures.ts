@@ -4,6 +4,9 @@ import type { OperationResult } from '@microcks-deep-ink/registry/react/conforma
 import type { TabItem } from '@microcks-deep-ink/registry/react/tabs';
 import type { CommandItem } from '@microcks-deep-ink/registry/react/command-bar';
 import type { LoomSource, LoomStep, LoomThread } from '@microcks-deep-ink/registry/react/workflow-loom';
+import type { MatrixColumn, MatrixGroup } from '@microcks-deep-ink/registry/react/conformance-matrix';
+import type { SkillItem } from '@microcks-deep-ink/registry/react/skill-list';
+import type { TaskLane, TaskTimelineNode } from '@microcks-deep-ink/registry/react/task-timeline';
 
 /** Props of the <WorkflowLoom> element wrapper, minus the callbacks. */
 export interface LoomScenario {
@@ -55,6 +58,7 @@ export const COMMANDS: CommandItem[] = [
   { id: 'svc-orders', label: 'Open Pastry orders API 0.1.0', kind: 'service', protocol: 'EVENT', hint: 'service', keywords: ['pastry', 'kafka'] },
   { id: 'svc-hello', label: 'Open HelloService v1', kind: 'service', protocol: 'gRPC', hint: 'service' },
   { id: 'svc-movie', label: 'Open Movie Graph 1.0', kind: 'service', protocol: 'GRAPHQL', hint: 'service' },
+  { id: 'svc-concierge', label: 'Open Pastry concierge 1.0', kind: 'service', protocol: 'A2A', hint: 'agent', keywords: ['pastry', 'agent', 'a2a'] },
 ];
 
 export const CATALOGUE_COLUMNS: Array<{ key: keyof CatalogueRow & string; header: string; align?: 'start' | 'end'; mono?: boolean; sortable?: boolean }> = [
@@ -72,6 +76,7 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
   { id: 'hello-grpc', name: 'HelloService', version: 'v1', type: 'gRPC', operations: 1, conformance: '—', updated: '3 days ago' },
   { id: 'movie', name: 'Movie Graph', version: '1.0', type: 'GRAPHQL', operations: 5, conformance: '64%', updated: 'last week' },
   { id: 'hello-soap', name: 'HelloService', version: '0.9', type: 'SOAP', operations: 2, conformance: '41%', updated: 'last month' },
+  { id: 'concierge', name: 'Pastry concierge', version: '1.0', type: 'A2A', operations: 3, conformance: '83%', updated: '1 h ago' },
 ];
 
 /**
@@ -216,7 +221,7 @@ export const COLOR_GROUPS: Array<{ title: string; tokens: string[] }> = [
   { title: 'Action & links', tokens: ['action', 'on-action', 'link', 'selected', 'focus-ring'] },
   { title: 'Outcomes', tokens: ['success', 'danger', 'warning', 'running', 'on-status', 'success-tint', 'danger-tint', 'warning-tint', 'info-tint'] },
   { title: 'Live', tokens: ['live', 'live-text'] },
-  { title: 'Protocols', tokens: ['proto-rest', 'proto-soap', 'proto-event', 'proto-grpc', 'proto-graphql', 'proto-direct', 'on-proto'] },
+  { title: 'Protocols', tokens: ['proto-rest', 'proto-soap', 'proto-event', 'proto-grpc', 'proto-graphql', 'proto-direct', 'proto-a2a', 'on-proto'] },
   { title: 'Brand (theme-independent)', tokens: ['brand-blue', 'brand-cloud', 'brand-deep', 'brand-pink', 'brand-ink'] },
 ];
 
@@ -256,3 +261,76 @@ export const SAMPLE_MANIFEST = {
     contributes: ['nav.items' as const, 'service.tabs' as const, 'cockpit.widgets' as const],
   },
 };
+
+/** The `eclair-size-m` conversation of the Pastry concierge: a multi-turn order that waits for a size. */
+export const AGENT_LIFECYCLE: TaskTimelineNode[] = [
+  { state: 'submitted', at: '+0 ms' },
+  { state: 'working', at: '+400 ms' },
+  { state: 'input-required', at: '+900 ms' },
+  { state: 'working', at: '+200 ms', connector: 'reply “M”' },
+  { state: 'completed', at: '+750 ms' },
+];
+
+/** Expected versus actual lifecycle of the same conversation over HTTP+JSON (run #3). */
+export const AGENT_LANES: TaskLane[] = [
+  {
+    label: 'Expected',
+    sub: 'task script',
+    tone: 'ok',
+    nodes: [
+      { label: 'submitted', task: 'task t-1', at: '+0 ms' },
+      { label: 'input-required', task: 'task t-1 · "Which size?"', at: '+1.31 s' },
+      { label: 'user "M"', task: 'taskId t-1', at: 'turn 2' },
+      { label: 'working', task: 'task t-1 · resumed', at: 'any delay', tone: 'ok' },
+      { label: 'completed', task: 'task t-1 · artifact order', at: 'terminal', tone: 'ok' },
+    ],
+  },
+  {
+    label: 'Actual',
+    sub: 'HTTP+JSON',
+    tone: 'bad',
+    nodes: [
+      { label: 'submitted', task: 'task t-1', at: '+0 ms' },
+      { label: 'input-required', task: 'task t-1 · "Which size?"', at: '+1.28 s' },
+      { label: 'user "M"', task: 'taskId t-1', at: '+1.34 s' },
+      { label: 'submitted', task: 'NEW task t-2', at: '+1.36 s', tone: 'bad' },
+      { label: 'completed', task: 'task t-2 · artifact order', at: '+3.12 s', tone: 'bad' },
+    ],
+  },
+];
+
+export const AGENT_SKILLS: SkillItem[] = [
+  { id: 'recommend-pastry', name: 'Recommend a pastry', calls: 29, tags: ['menu'], meta: '1 conversation', result: 'pass', resultNote: 'passed on JSON-RPC, HTTP+JSON and gRPC' },
+  { id: 'order-pastry', name: 'Order a pastry', calls: 14, tags: ['orders', 'multi-turn'], meta: '1 conversation', result: 'fail', resultNote: 'HTTP+JSON resumed input-required on a new taskId' },
+  { id: 'track-order', name: 'Track an order', calls: 18, tags: ['orders', 'streaming'], meta: '2 conversations', result: 'fail', resultNote: 'gRPC stream closed without lastChunk: true' },
+  { id: 'No skill matched', name: '', calls: 3, meta: 'fallback · out-of-scope · answers rejected', fallback: true },
+];
+
+export const MATRIX_COLUMNS: MatrixColumn[] = [
+  { id: 'jsonrpc', label: 'JSON-RPC', sub: 'preferred · SSE' },
+  { id: 'http', label: 'HTTP+JSON', sub: 'SSE' },
+  { id: 'grpc', label: 'gRPC', sub: 'stream' },
+];
+
+export const MATRIX_GROUPS: MatrixGroup[] = [
+  {
+    id: 'card',
+    label: 'Agent Card',
+    sub: '/.well-known/agent-card.json',
+    rows: [
+      { id: 'schema', label: 'Schema · required fields', sub: 'A2A v1.0 JSON Schema', cells: [{ result: 'pass', duration: '42 ms' }] },
+      { id: 'iface', label: 'Interfaces reachable', cells: [{ columnId: 'jsonrpc', result: 'pass', duration: '96 ms' }, { columnId: 'http', result: 'pass', duration: '88 ms' }, { columnId: 'grpc', result: 'pass', duration: '131 ms' }] },
+      { id: 'sig', label: 'Signature (JWS)', sub: 'optional in v1.0 · absent is a warning', cells: [{ result: 'warn', duration: '4 ms' }] },
+    ],
+  },
+  {
+    id: 'behaviour',
+    label: 'Behaviour · conversations',
+    sub: '3 replayed',
+    rows: [
+      { id: 'millefeuille-for-dessert', label: 'millefeuille-for-dessert', mono: true, sub: 'skill recommend-pastry · 1 turn', cells: [{ columnId: 'jsonrpc', result: 'pass', duration: '1.84 s' }, { columnId: 'http', result: 'pass', duration: '1.91 s' }, { columnId: 'grpc', result: 'pass', duration: '1.72 s' }] },
+      { id: 'eclair-size-m', label: 'eclair-size-m', mono: true, sub: 'skill order-pastry · 2 turns', cells: [{ columnId: 'jsonrpc', result: 'pass', duration: '2.96 s' }, { columnId: 'http', result: 'fail', duration: '3.12 s' }, { columnId: 'grpc', result: 'pass', duration: '2.84 s' }] },
+      { id: 'ord-2417-ready', label: 'ord-2417-ready', mono: true, sub: 'skill track-order · streamed', cells: [{ columnId: 'jsonrpc', result: 'pass', duration: '2.51 s' }, { columnId: 'http', result: 'running' }, { columnId: 'grpc', result: 'queued' }] },
+    ],
+  },
+];

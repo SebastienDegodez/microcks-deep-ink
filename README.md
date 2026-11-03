@@ -9,7 +9,7 @@ The **Microcks UI v2 design system**, a proposal for the maintainers, packaged f
 | Demo site | URL (after the first Pages deploy) |
 | --- | --- |
 | Landing page | https://sebastiendegodez.github.io/microcks-deep-ink/ |
-| Clickable demo, 17 screens (React) | https://sebastiendegodez.github.io/microcks-deep-ink/demo/ |
+| Clickable demo, 19 screens (React) | https://sebastiendegodez.github.io/microcks-deep-ink/demo/ |
 | React Storybook | https://sebastiendegodez.github.io/microcks-deep-ink/react/ |
 | Angular Storybook | https://sebastiendegodez.github.io/microcks-deep-ink/angular/ |
 
@@ -59,11 +59,11 @@ rules require one; the reasoning is in the Angular Storybook introduction and at
 | --- | --- |
 | `packages/tokens` | Design tokens: `tokens.json`, `deep-ink.css` (dark Deep Ink and light Paper), contrast test |
 | `packages/core` | The three Web Components (Stencil) and their self-contained bundles |
-| `packages/registry` | The registry: 43 items (CSS, React, Angular, HTML recipes, accessibility contract). See its [README](packages/registry/README.md) for the CSS class API |
+| `packages/registry` | The registry: 46 items (CSS, React, Angular, HTML recipes, accessibility contract). See its [README](packages/registry/README.md) for the CSS class API |
 | `packages/cli` | `deep-ink`, a zero-dependency CLI that copies items into an app. See its [README](packages/cli/README.md) |
 | `packages/plugin-sdk` | Plugin manifest, extension points, shared plugin host |
 | `apps/storybook-react`, `apps/storybook-angular` | The two Storybooks, each with a Copy panel |
-| `apps/demo-react` | The clickable demo: 17 screens, clean architecture, built only from copied components |
+| `apps/demo-react` | The clickable demo: 19 screens, clean architecture, built only from copied components |
 | `tools/a11y` | The RGAA audit runner and the accessibility smoke run |
 | `tools/site` | The landing page and the script that assembles the Pages site |
 

@@ -100,4 +100,5 @@ export const CONFORMANCE_INDEX: Record<string, Pick<ConformanceItem, 'index' | '
   hellosoap: { index: 100, trend: 'stable' },
   rocks: { index: 45, trend: null },
   hellogrpc: { index: 100, trend: 'stable' },
+  concierge: { index: 80, trend: null },
 };

@@ -23,6 +23,7 @@ import { Segmented } from '@/ui/components/ui/segmented';
 import { StatusBadge } from '@/ui/components/ui/status-badge';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
+import AgentPage from '../agent/AgentPage';
 import { fmt, pluralize } from '../explore-kit/format';
 
 type TabId = 'operations' | 'properties' | 'tests';
@@ -51,7 +52,7 @@ function WorkflowResult({ usage }: { usage: WorkflowUsage }) {
   );
 }
 
-export default function ServicePage() {
+function ApiServicePage() {
   const { serviceId = '', tab } = useParams();
   const [search, setSearch] = useSearchParams();
   const navigate = useNavigate();
@@ -362,4 +363,21 @@ export default function ServicePage() {
       </Tabs>
     </div>
   );
+}
+
+/** One route for every service: an A2A agent gets its own screen (18), the others the service screen (05). */
+export default function ServicePage() {
+  const { serviceId = '' } = useParams();
+  const uc = useUseCases();
+  const service = useQuery(() => uc.catalog.getService(serviceId), [uc, serviceId]);
+  if (service.data?.protocol === 'A2A') return <AgentPage />;
+  if (!service.data && service.status === 'loading') {
+    return (
+      <>
+        <PageHeader title="Service" />
+        <LoadingBlock label="the service" />
+      </>
+    );
+  }
+  return <ApiServicePage />;
 }

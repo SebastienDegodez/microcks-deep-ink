@@ -1,4 +1,4 @@
-import type { ArtifactKind, Importer, ProducedService, SyncChange, SyncEntry, SyncResult } from '@/domain/importing';
+import type { ArtifactKind, Importer, SourceOrigin, ProducedService, SyncChange, SyncEntry, SyncResult } from '@/domain/importing';
 import { labelFromString } from '@/domain/shared';
 
 /** Absolute time: `at(11, 3, 9, 0)` is Nov 3 09:00 UTC. Today is Nov 3, 2026 09:10:04 (the demo clock). */
@@ -27,6 +27,7 @@ interface Job {
   url: string;
   main: boolean;
   kind: ArtifactKind;
+  origin?: SourceOrigin;
   label: string;
   secret?: string;
   secretType?: string;
@@ -45,6 +46,19 @@ interface Job {
   timeline: SyncEntry[];
   running?: boolean;
 }
+
+const ORIGIN_OF: Record<string, SourceOrigin> = {
+  'pastry-openapi': 'url',
+  'pastry-postman': 'url',
+  'pastry-workflows': 'git',
+  'pastry-workflows-sources': 'git',
+  'pastry-orders': 'git',
+  'user-signedup': 'git',
+  'hello-grpc': 'hub',
+  'hello-soap': 'hub',
+  'movie-graph': 'url',
+  'beer-catalog': 'url',
+};
 
 const JOBS: Job[] = [
   {
@@ -164,6 +178,22 @@ const JOBS: Job[] = [
       run('e2', at(NOV, 1, 10), 'Scheduled', 'imported', { changes: [add('1 example')], revision: 'aa04f3e → 1c7d5b2' }),
       run('e3', at(7, 6, 13, 12), 'Created by MA', 'imported', { note: 'initial import · 3 operations, 8 examples' }),
     ],
+  },  {
+    id: 'upload-agent-card', name: 'Pastry concierge · Agent Card', url: 'agent-card.json · uploaded file · 3.2 KB', main: true, kind: 'a2a', origin: 'upload',
+    label: 'A2A_AGENT_CARD', ssl: true, labels: 'domain=pastry · status=beta', created: at(NOV, 2, 10, 12), active: true, health: 'imported',
+    produces: [svc('A2A', 'Pastry concierge', '1.0', 'concierge')],
+    artifactNote: 'A2A Agent Card · spec 1.0 · 3 skills become operations · Projection, v2 module',
+    timeline: [
+      run('e1', at(NOV, 2, 10, 12), 'Uploaded by MA', 'imported', { note: 'one-off upload · 3 skills, 3 interfaces (JSONRPC, HTTP+JSON, GRPC)' }),
+    ],
+  },
+  {
+    id: 'upload-postman', name: 'API Pastry 2.0 · Postman upload', url: 'apipastry-2.0-postman.json · uploaded file · 18 KB', main: false, kind: 'postman', origin: 'upload',
+    label: 'POSTMAN_COLLECTION', ssl: true, labels: 'domain=pastry', created: at(OCT, 31, 16, 40), active: true, health: 'imported',
+    produces: [svc('REST', 'API Pastry', '2.0', 'pastry2')],
+    timeline: [
+      run('e1', at(OCT, 31, 16, 40), 'Uploaded by MA', 'imported', { note: 'one-off upload · merged 3 examples into API Pastry 2.0' }),
+    ],
   },
 ];
 
@@ -175,9 +205,10 @@ export function seedImporters(): Importer[] {
       name: j.name,
       source: { kind: 'url', url: j.url, secretName: j.secret },
       kind: j.kind,
-      active: j.active,
+      origin: j.origin ?? ORIGIN_OF[j.id] ?? 'url',
+      active: j.origin === 'upload' ? true : j.active,
       state: j.running ? 'running' : j.health === 'failed' ? 'failed' : 'idle',
-      schedule: 'every hour',
+      schedule: (j.origin ?? ORIGIN_OF[j.id]) === 'upload' ? 'no schedule · one-off' : 'every hour',
       lastSyncAt: lastRun?.kind === 'run' ? lastRun.at : undefined,
       secretName: j.secret,
       versions: j.timeline

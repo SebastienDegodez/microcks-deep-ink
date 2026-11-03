@@ -6,7 +6,7 @@ import './elements/plugin-slot.js';
 export { getPluginHost } from './elements/plugin-slot.js';
 export type { PluginHost } from './elements/plugin-slot.js';
 
-type SlotProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
+type SlotProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 
 /** Extension points of the Microcks UI v2 shell (same ids as the plugin SDK). */
 export type ExtensionPointId =

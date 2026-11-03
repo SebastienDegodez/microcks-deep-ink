@@ -9,7 +9,7 @@ export default function ScreenMapPage() {
     <>
       <PageHeader title="From contract to proof" eyebrow="Screen map" />
       <p>
-        17 screens across 7 steps, delivered in 6 waves by priority:{' '}
+        19 screens across 8 steps, delivered in 7 waves by priority:{' '}
         {WAVES.map((name, i) => `W${i + 1} ${name}`).join(', ')}.
       </p>
       {PHASES.map((phase) => (

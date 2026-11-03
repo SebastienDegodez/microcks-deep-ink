@@ -155,5 +155,28 @@ export function seedTestRuns(): TestRun[] {
       { id: 's2', operationId: 'publish-order', name: 'Cancelled order', method: 'SUB', path: 'pastry/orders', ms: 610, result: 'passed', violations: [] },
     ],
   };
-  return [run119, ...HISTORY.map(toRun), orders];
+  return [run119, ...HISTORY.map(toRun), orders, conciergeRun()];
+}
+
+/** Run #3 of Pastry concierge 1.0 (A2A_CONFORMANCE): 10 of 12 checks passed. The Agent test screen holds its matrix. */
+function conciergeRun(): TestRun {
+  const step = (n: number, name: string, ms: number, failure?: string): TestStepResult => ({
+    id: `s${n}`, operationId: name.split(' · ')[1] ?? name, name, method: 'A2A', path: name, ms, result: failure ? 'failed' : 'passed',
+    violations: failure ? [{ path: '$.task.id', message: failure }] : [],
+  });
+  const steps: TestStepResult[] = [
+    step(1, 'JSON-RPC · recommend-pastry', 1840), step(2, 'HTTP+JSON · recommend-pastry', 1910), step(3, 'gRPC · recommend-pastry', 1720),
+    step(4, 'JSON-RPC · order-pastry', 2960),
+    step(5, 'HTTP+JSON · order-pastry', 3120, 'After input-required the agent answered with a new taskId instead of resuming the same task.'),
+    step(6, 'gRPC · order-pastry', 2840),
+    step(7, 'JSON-RPC · track-order', 2510), step(8, 'HTTP+JSON · track-order', 2560),
+    step(9, 'gRPC · track-order', 2419, 'The stream closed without lastChunk: true on artifact status.'),
+    step(10, 'JSON-RPC · Agent Card', 42), step(11, 'HTTP+JSON · Agent Card', 88), step(12, 'gRPC · Agent Card', 131),
+  ];
+  return {
+    id: '3', serviceId: 'concierge', runner: 'A2A_CONFORMANCE', environment: 'staging', endpoint: 'https://concierge.staging.acme.io/.well-known/agent-card.json',
+    result: 'failed', startedAt: '2026-11-03T08:10:04Z', durationMs: 27_300, passed: 10, total: 12, timeoutMs: 15_000, steps, launchedBy: 'MA',
+    reason: 'order-pastry · HTTP+JSON resumes input-required on a new task', operations: ['pass', 'fail', 'fail'],
+    operationLabels: [{ id: 'recommend-pastry', method: 'SKILL', path: 'recommend-pastry' }, { id: 'order-pastry', method: 'SKILL', path: 'order-pastry' }, { id: 'track-order', method: 'SKILL', path: 'track-order' }],
+  };
 }

@@ -33,7 +33,7 @@ const UI_GROUNDS = ['bg', 'canvas', 'surface', 'raised'];
 const TEXT_ROLES = [
   'text', 'text-secondary', 'text-muted', 'link', 'action',
   'success', 'danger', 'warning', 'running', 'live-text',
-  'proto-rest', 'proto-soap', 'proto-event', 'proto-grpc', 'proto-graphql', 'proto-direct',
+  'proto-rest', 'proto-soap', 'proto-event', 'proto-grpc', 'proto-graphql', 'proto-direct', 'proto-a2a',
 ];
 
 for (const theme of THEMES) {
@@ -54,7 +54,7 @@ for (const theme of THEMES) {
       ['on-action', 'action'],
       ['on-action', 'link'],
       ...['success', 'danger', 'warning', 'running'].map((f) => ['on-status', f]),
-      ...['rest', 'soap', 'event', 'grpc', 'graphql', 'direct'].map((p) => ['on-proto', `proto-${p}`]),
+      ...['rest', 'soap', 'event', 'grpc', 'graphql', 'direct', 'a2a'].map((p) => ['on-proto', `proto-${p}`]),
     ];
     for (const [fg, bg] of pairs) {
       const r = ratio(val(theme, fg), val(theme, bg));

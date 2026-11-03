@@ -19,6 +19,12 @@ describe('ConformanceBand', () => {
     expect(conformanceLabel([])).toBe('No operations');
   });
 
+  it('counts skills for an A2A agent', () => {
+    expect(conformanceLabel(['pass', 'fail', 'fail'], 'skill')).toBe('1 of 3 skills pass, 2 fail');
+    render(<ConformanceBand outcomes={['pass', 'fail']} unit="skill" size="mini" />);
+    expect(screen.getByRole('img').getAttribute('aria-label')).toBe('1 of 2 skills pass, 1 fails');
+  });
+
   it('writes the score and counts as visible text in the full size', () => {
     const { container } = render(<ConformanceBand outcomes={twelve} />);
     const summary = container.querySelector('.conformance-summary');

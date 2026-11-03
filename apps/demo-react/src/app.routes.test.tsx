@@ -29,14 +29,14 @@ describe('route table', () => {
   it('matches section 3.6 of the plan: routes, owners and unique ids', () => {
     expect(ROUTES.map((r) => r.id)).toHaveLength(new Set(ROUTES.map((r) => r.id)).size);
     expect(ROUTES.filter((r) => r.owner === 'WP7').map((r) => r.path)).toEqual([
-      '/', '/import', '/importers/:importerId?', '/services', '/services/:serviceId/:tab?',
+      '/', '/sources/new', '/sources/:importerId?', '/services', '/services/:serviceId/:tab?',
       '/services/:serviceId/operations/:operationId', '/services/:serviceId/copilot',
     ]);
     expect(ROUTES.filter((r) => r.owner === 'WP8').map((r) => r.path)).toEqual([
       '/workflows', '/workflows/:docId/:workflowId/:tab?', '/workflows/:docId/:workflowId/run', '/workflows/runs/:runId',
     ]);
     expect(ROUTES.filter((r) => r.owner === 'WP9').map((r) => r.path)).toEqual([
-      '/tests/create', '/tests/runner/:testRunId', '/tests/service/:serviceId', '/metrics/:serviceId?', '/traces', '/hub/:packageId?', '/admin/:tab?',
+      '/tests/create', '/tests/agent/:runId?', '/tests/runner/:testRunId', '/tests/service/:serviceId', '/metrics/:serviceId?', '/traces', '/hub/:packageId?', '/admin/:tab?',
     ]);
     expect(ROUTES.filter((r) => r.owner === 'WP3').map((r) => r.path)).toEqual(['/map', '*']);
   });
@@ -56,7 +56,7 @@ describe('every route renders a placeholder with one h1 and a document title', (
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     expect(heading.getAttribute('tabindex')).toBe('-1');
     await waitFor(() => expect(document.title.endsWith(' · Microcks')).toBe(true));
-    if (!['service', 'workflow', 'test-run', 'behavior'].includes(_id)) expect(document.title).toBe(title);
+    if (!['service', 'workflow', 'test-run', 'behavior', 'agent-test'].includes(_id)) expect(document.title).toBe(title);
   });
 });
 
@@ -86,7 +86,7 @@ describe('shell accessibility', () => {
     await screen.findByRole('heading', { level: 1 });
     const nav = screen.getByRole('navigation', { name: 'Main' });
     expect([...nav.querySelectorAll('a')].map((a) => a.textContent)).toEqual([
-      'Cockpit', 'APIs & Services', 'Workflows', 'Import', 'Tests', 'Sources', 'Usage & conformance', 'Live traces', 'Hub', 'Administration',
+      'Cockpit', 'APIs & Services', 'Workflows', 'Tests', 'Sources', 'Usage & conformance', 'Live traces', 'Hub', 'Administration',
     ]);
   });
 
@@ -154,7 +154,7 @@ describe('routing', () => {
     renderAt('/map');
     await screen.findByRole('heading', { level: 1, name: 'From contract to proof' });
     const links = screen.getAllByRole('link').filter((l) => l.closest('.demo-map'));
-    expect(links).toHaveLength(17);
+    expect(links).toHaveLength(19);
   });
 });
 

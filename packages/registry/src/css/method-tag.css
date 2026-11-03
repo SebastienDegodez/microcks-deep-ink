@@ -18,4 +18,5 @@
   .method[data-protocol="grpc"] { --method-bg: var(--proto-grpc); }
   .method[data-protocol="graphql"] { --method-bg: var(--proto-graphql); }
   .method[data-protocol="direct"] { --method-bg: var(--proto-direct); }
+  .method[data-protocol="a2a"] { --method-bg: var(--proto-a2a); }
 }

@@ -39,3 +39,6 @@
 @import './table.css';
 @import './tabs.css';
 @import './theme-toggle.css';
+@import './conformance-matrix.css';
+@import './skill-list.css';
+@import './task-timeline.css';
