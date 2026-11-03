@@ -11,7 +11,6 @@ export { useAnnounce, LiveAnnouncerProvider } from './announcer';
 export { PageHeader } from './PageHeader';
 export type { PageHeaderProps } from './PageHeader';
 export { DemoBanner } from './DemoBanner';
-export { PagePlaceholder } from './PagePlaceholder';
 export { AppLayout } from './AppLayout';
 export { NAV_ITEMS } from './nav';
 export type { NavId, NavItem } from './nav';

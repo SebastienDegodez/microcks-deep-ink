@@ -19,7 +19,7 @@ The CLI reads `packages/registry/dist/registry.full.json`. If it is missing it s
 ## Commands
 
 ```
-deep-ink init  [--framework react|angular|html] [--out DIR] [--css-out DIR] [--no-fonts] [--cwd DIR] [--yes]
+deep-ink init  [--framework react|angular|html] [--out DIR] [--css-out DIR] [--no-fonts] [--cwd DIR]
 deep-ink add   <item...> | --all [--tier natural,microcks,element] [--framework …] [--out DIR] [--css-out DIR]
                [--overwrite] [--dry-run] [--cwd DIR] [--registry FILE]
 deep-ink list  [--framework …] [--tier …] [--json]

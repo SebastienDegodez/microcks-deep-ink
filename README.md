@@ -121,7 +121,7 @@ themes. These checks find some failures; they do not prove conformance, and **th
 
 ```bash
 pnpm install
-pnpm build                 # tokens → plugin-sdk → core (+ element bundles) → registry (strict) → cli
+pnpm build                 # tokens → plugin-sdk → core (+ element bundles) → registry → cli
 pnpm test                  # tokens, core, registry, cli, demo
 pnpm lint && pnpm typecheck
 pnpm storybook:react       # http://localhost:6006

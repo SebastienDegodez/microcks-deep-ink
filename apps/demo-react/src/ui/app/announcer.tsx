@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useRef, useState, type ReactNode } from 'react';
+import { createContext, useCallback, useContext, useEffect, useRef, useState, type ReactNode } from 'react';
 
 type Announce = (message: string) => void;
 const AnnouncerContext = createContext<Announce>(() => undefined);
@@ -20,6 +20,8 @@ export function LiveAnnouncerProvider({ children }: { children: ReactNode }) {
     clearTimeout(timer.current);
     timer.current = setTimeout(() => setMessage(text), 50);
   }, []);
+
+  useEffect(() => () => clearTimeout(timer.current), []);
 
   return (
     <AnnouncerContext.Provider value={announce}>

@@ -26,7 +26,7 @@ beforeEach(() => {
 });
 
 describe('route table', () => {
-  it('matches section 3.6 of the plan: 21 routes, owners and unique ids', () => {
+  it('matches section 3.6 of the plan: routes, owners and unique ids', () => {
     expect(ROUTES.map((r) => r.id)).toHaveLength(new Set(ROUTES.map((r) => r.id)).size);
     expect(ROUTES.filter((r) => r.owner === 'WP7').map((r) => r.path)).toEqual([
       '/', '/import', '/importers/:importerId?', '/services', '/services/:serviceId/:tab?',

@@ -148,6 +148,7 @@ export function add({ values, positionals }) {
   const registry = loadRegistry(values.registry);
   const tiers = parseTiers(values.tier);
   let names = positionals;
+  if (values.all && positionals.length > 0) throw new CliError('Use either item names or --all, not both.');
   if (values.all) names = filterByTier(registry, tiers);
   else if (tiers) throw new CliError('--tier only works together with --all.');
   if (names.length === 0) throw new CliError('Name at least one item, or use --all. Try `deep-ink list`.');

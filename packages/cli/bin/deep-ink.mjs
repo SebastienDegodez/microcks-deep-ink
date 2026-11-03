@@ -6,7 +6,7 @@ import { log } from '../src/log.mjs';
 const HELP = `deep-ink: copy Deep Ink components into your app (shadcn-style).
 
 Usage
-  deep-ink init  [--framework react|angular|html] [--out DIR] [--css-out DIR] [--no-fonts] [--cwd DIR] [--yes]
+  deep-ink init  [--framework react|angular|html] [--out DIR] [--css-out DIR] [--no-fonts] [--cwd DIR]
   deep-ink add   <item...> | --all [--tier natural,microcks,element] [--framework ...] [--out DIR] [--css-out DIR]
                  [--overwrite] [--dry-run] [--cwd DIR] [--registry FILE]
   deep-ink list  [--framework ...] [--tier ...] [--json]
@@ -24,7 +24,6 @@ const options = {
   'css-out': { type: 'string' },
   'no-fonts': { type: 'boolean' },
   cwd: { type: 'string' },
-  yes: { type: 'boolean', short: 'y' },
   all: { type: 'boolean' },
   tier: { type: 'string' },
   overwrite: { type: 'boolean' },

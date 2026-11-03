@@ -43,7 +43,7 @@ describe('list', () => {
 describe('init', () => {
   it('copies tokens and base, writes index.css and the lockfile', () => {
     const dir = project();
-    const r = run(['init', '--cwd', dir, '--yes']);
+    const r = run(['init', '--cwd', dir]);
     assert.equal(r.status, 0, r.stderr);
     assert.ok(existsSync(join(dir, 'src/styles/deep-ink/tokens.css')));
     assert.ok(existsSync(join(dir, 'src/styles/deep-ink/base.css')));
@@ -58,13 +58,13 @@ describe('init', () => {
 
   it('--no-fonts copies the token variant without the font import', () => {
     const dir = project();
-    assert.equal(run(['init', '--cwd', dir, '--no-fonts', '--yes']).status, 0);
+    assert.equal(run(['init', '--cwd', dir, '--no-fonts']).status, 0);
     assert.doesNotMatch(read(dir, 'src/styles/deep-ink/tokens.css'), /fonts\.googleapis/);
   });
 
   it('honors --out and --css-out', () => {
     const dir = project();
-    assert.equal(run(['init', '--cwd', dir, '--out', 'src/ui', '--css-out', 'src/css', '--yes']).status, 0);
+    assert.equal(run(['init', '--cwd', dir, '--out', 'src/ui', '--css-out', 'src/css']).status, 0);
     assert.ok(existsSync(join(dir, 'src/css/tokens.css')));
     assert.equal(JSON.parse(read(dir, 'deep-ink.json')).out, 'src/ui');
   });
@@ -73,7 +73,7 @@ describe('init', () => {
 describe('add', () => {
   it('copies an item with its registry dependencies', () => {
     const dir = project();
-    run(['init', '--cwd', dir, '--yes']);
+    run(['init', '--cwd', dir]);
     const r = run(['add', 'tabs', '--cwd', dir]);
     assert.equal(r.status, 0, r.stderr);
     assert.ok(existsSync(join(dir, 'src/components/ui/tabs.tsx')));
@@ -145,7 +145,7 @@ describe('add', () => {
 
   it('detects Angular from package.json', () => {
     const dir = project({ dependencies: { '@angular/core': '22', react: '19' } });
-    const r = run(['init', '--cwd', dir, '--yes']);
+    const r = run(['init', '--cwd', dir]);
     assert.equal(r.status, 0, r.stderr);
     const lock = JSON.parse(read(dir, 'deep-ink.json'));
     assert.equal(lock.framework, 'angular');

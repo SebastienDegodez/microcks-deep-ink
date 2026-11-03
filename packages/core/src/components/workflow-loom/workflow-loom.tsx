@@ -250,6 +250,7 @@ export class MkWorkflowLoom {
       >
         <span class="sr">{`${t.from} to ${t.to}: `}</span>
         {t.expression}
+        <span class="thread-to" aria-hidden="true">{` → ${t.to}`}</span>
       </li>
     ));
   }

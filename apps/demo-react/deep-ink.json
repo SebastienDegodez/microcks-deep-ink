@@ -287,7 +287,7 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/workflow-loom.tsx": "fa4b622cbeb4ed8b4e764f3c6e68a440848a146190d9abb8c79d97c8457692a1",
-        "src/ui/components/ui/elements/workflow-loom.js": "d554b6a26ec491e95a485b6293bb051cc6fc4d2794d20bb42b1861d8bb347a57",
+        "src/ui/components/ui/elements/workflow-loom.js": "9d5de3bed0980157e9db0dd6fe4e96f85e479bdf57a2b17311a003adf533e7b7",
         "src/ui/components/ui/elements/workflow-loom.d.ts": "cebdd92f3a03c970f2889e640899fbe6a00429ce8c074345bc92f5181d7bbe80"
       }
     },

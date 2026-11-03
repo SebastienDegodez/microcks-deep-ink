@@ -49,7 +49,7 @@ export function syncElements({ tags, coreElements = CORE_ELEMENTS, root = PKG_RO
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
   const tags = process.argv.slice(2);
   if (tags.length === 0) {
-    console.error('usage: node scripts/sync-elements.mjs <mk-tag>...');
+    console.error('usage: node scripts/sync-elements.mjs <tag>...');
     process.exit(1);
   }
   const { copied, missing } = syncElements({ tags });
