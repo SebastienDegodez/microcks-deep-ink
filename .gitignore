@@ -1,0 +1,12 @@
+node_modules/
+dist/
+www/
+loader/
+storybook-static/
+.angular/
+.stencil/
+*.log
+.DS_Store
+packages/react/src/components/stencil-generated/
+packages/angular/projects/library/src/lib/stencil-generated/
+packages/core/src/components.d.ts

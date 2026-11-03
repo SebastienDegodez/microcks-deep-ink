@@ -1,0 +1,17 @@
+{
+  "name": "microcks-deep-ink",
+  "private": true,
+  "description": "Microcks UI v2 design system (Deep Ink): tokens, Web Components, React and Angular wrappers, plugin SDK and Storybooks.",
+  "license": "Apache-2.0",
+  "packageManager": "pnpm@10.28.0",
+  "engines": {
+    "node": ">=22"
+  },
+  "scripts": {
+    "build": "pnpm -r --workspace-concurrency=1 --filter \"./packages/**\" build",
+    "build:storybooks": "pnpm --filter storybook-react build-storybook && pnpm --filter storybook-angular build-storybook",
+    "storybook:react": "pnpm --filter storybook-react storybook",
+    "storybook:angular": "pnpm --filter storybook-angular storybook",
+    "clean": "pnpm -r exec rm -rf dist storybook-static"
+  }
+}

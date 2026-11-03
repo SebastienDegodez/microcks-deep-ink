@@ -1,0 +1,57 @@
+name: Build and publish Storybooks
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm build
+      - run: pnpm build:storybooks
+      - name: Assemble site
+        run: |
+          mkdir -p site/react site/angular
+          cp -r apps/storybook-react/storybook-static/* site/react/
+          cp -r apps/storybook-angular/storybook-static/* site/angular/
+          cat > site/index.html <<'HTML'
+          <!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+          <title>Microcks Deep Ink</title>
+          <style>body{margin:0;min-height:100vh;display:grid;place-items:center;background:#070B14;color:#E6EDF7;font:16px/1.5 system-ui,sans-serif}
+          main{display:flex;flex-direction:column;gap:16px;padding:32px}h1{margin:0;font-size:32px}a{display:block;padding:14px 20px;border:1px solid #22324F;border-radius:8px;color:#86CEF5;text-decoration:none;background:#0B1220}a:hover{background:#16233A}</style>
+          </head><body><main><h1>Microcks Deep Ink</h1><p>Microcks UI v2 design system, one set of Web Components, two framework wrappers.</p>
+          <a href="./react/">React Storybook →</a><a href="./angular/">Angular Storybook →</a></main></body></html>
+          HTML
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+
+  deploy:
+    if: github.event_name != 'pull_request'
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

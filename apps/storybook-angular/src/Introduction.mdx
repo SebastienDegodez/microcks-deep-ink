@@ -1,0 +1,38 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+# Microcks Deep Ink · Angular
+
+The Microcks UI v2 design system, a proposal for the maintainers.
+**The contract is the source of truth; the interface makes it alive.**
+
+This Storybook shows the **Angular** standalone wrappers. They are generated from the same Web Components
+as the React wrappers, so the two Storybooks render the same pixels.
+
+## Install
+
+```bash
+pnpm add @microcks-deep-ink/angular @microcks-deep-ink/core @microcks-deep-ink/tokens
+```
+
+```ts
+// angular.json → styles: ["node_modules/@microcks-deep-ink/tokens/dist/deep-ink.css"]
+import { Component } from '@angular/core';
+import { FormsModule } from '@angular/forms';
+import { DEEP_INK } from '@microcks-deep-ink/angular';
+
+@Component({
+  selector: 'app-service-header',
+  imports: [DEEP_INK, FormsModule],
+  template: `
+    <mk-api-badge protocol="REST" name="API Pastry" version="2.0"></mk-api-badge>
+    <mk-input label="Contract URL" [(ngModel)]="url" mono></mk-input>
+    <mk-button variant="primary" (mkClick)="run()">Run test</mk-button>
+  `,
+})
+export class ServiceHeader {}
+```
+
+`DEEP_INK` contains every component plus the `ControlValueAccessor` for `mk-input`, so template-driven and
+reactive forms work out of the box.

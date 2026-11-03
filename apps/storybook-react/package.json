@@ -1,0 +1,29 @@
+{
+  "name": "storybook-react",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build -o storybook-static"
+  },
+  "dependencies": {
+    "@microcks-deep-ink/core": "workspace:*",
+    "@microcks-deep-ink/plugin-sdk": "workspace:*",
+    "@microcks-deep-ink/react": "workspace:*",
+    "@microcks-deep-ink/storybook-shared": "workspace:*",
+    "@microcks-deep-ink/tokens": "workspace:*",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0"
+  },
+  "devDependencies": {
+    "@storybook/addon-a11y": "^10.6.5",
+    "@storybook/addon-docs": "^10.6.5",
+    "@storybook/react-vite": "^10.6.5",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "storybook": "^10.6.5",
+    "typescript": "~6.0.0",
+    "vite": "^8.3.0"
+  }
+}

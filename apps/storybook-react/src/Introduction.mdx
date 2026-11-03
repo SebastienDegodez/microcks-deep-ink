@@ -1,0 +1,44 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+# Microcks Deep Ink
+
+The Microcks UI v2 design system, a proposal for the maintainers.
+**The contract is the source of truth; the interface makes it alive.**
+
+This Storybook shows the **React** wrappers. The same components exist for **Angular**, generated from a single
+set of Web Components, so a plugin looks identical whatever framework renders it.
+
+```
+@microcks-deep-ink/tokens      CSS variables, dark (Deep Ink) + light (Paper)
+        │
+@microcks-deep-ink/core        22 Web Components (Stencil), mk-* tags
+        │
+   ┌────┴─────┐
+ react      angular            generated wrappers
+        │
+@microcks-deep-ink/plugin-sdk  manifest, extension points, shared plugin host
+```
+
+## Install
+
+```bash
+pnpm add @microcks-deep-ink/react @microcks-deep-ink/tokens
+```
+
+```tsx
+import '@microcks-deep-ink/tokens/deep-ink.css';
+import { MkApiBadge, MkButton } from '@microcks-deep-ink/react';
+
+<MkApiBadge protocol="REST" name="API Pastry" version="2.0" />
+<MkButton variant="primary" onMkClick={run}>Run test</MkButton>
+```
+
+## Principles
+
+1. **Contract first.** Paths, URLs and payloads in mono, copyable in one click.
+2. **Density with air.** Workbench density, separated by the `space-6` rhythm.
+3. **Light over shadow.** Elevation lightens the ink; shadows only for overlays and focus.
+4. **Color is data.** Protocol colors identify API types, status colors report outcomes, pink marks live activity.
+5. **Both themes, same meaning.** Use the **Theme** toolbar button to switch.

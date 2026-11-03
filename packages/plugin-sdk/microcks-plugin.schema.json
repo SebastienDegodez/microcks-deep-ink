@@ -1,0 +1,77 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://github.com/sebastiendegodez/microcks-deep-ink/microcks-plugin.schema.json",
+  "title": "Microcks plugin manifest",
+  "type": "object",
+  "required": ["schemaVersion", "id", "name", "version", "publisher", "microcks"],
+  "additionalProperties": false,
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "id": { "type": "string", "pattern": "^[a-z0-9]+(\\.[a-z0-9-]+)+$" },
+    "name": { "type": "string", "minLength": 1 },
+    "version": { "type": "string" },
+    "description": { "type": "string" },
+    "publisher": {
+      "type": "object",
+      "required": ["name"],
+      "properties": { "name": { "type": "string" }, "url": { "type": "string", "format": "uri" } }
+    },
+    "license": { "type": "string" },
+    "microcks": { "type": "string", "description": "SemVer range of compatible Microcks versions." },
+    "categories": {
+      "type": "array",
+      "items": { "enum": ["importer", "dispatcher", "test-runner", "observability", "ai", "integration", "ui"] }
+    },
+    "protocols": { "type": "array", "items": { "$ref": "#/$defs/protocol" } },
+    "permissions": {
+      "type": "array",
+      "items": { "enum": ["services:read", "services:write", "tests:run", "secrets:read", "network:outbound"] }
+    },
+    "backend": {
+      "type": "object",
+      "required": ["artifact", "extensions"],
+      "properties": {
+        "artifact": { "type": "string" },
+        "extensions": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "required": ["point", "id"],
+            "properties": {
+              "point": { "enum": ["importer", "dispatcher", "test-runner", "secret-provider"] },
+              "id": { "type": "string" },
+              "mediaTypes": { "type": "array", "items": { "type": "string" } },
+              "protocols": { "type": "array", "items": { "$ref": "#/$defs/protocol" } }
+            }
+          }
+        }
+      }
+    },
+    "frontend": {
+      "type": "object",
+      "required": ["entry", "tagPrefix", "contributes"],
+      "properties": {
+        "entry": { "type": "string" },
+        "tagPrefix": { "type": "string", "pattern": "^[a-z][a-z0-9]*-$" },
+        "contributes": {
+          "type": "array",
+          "items": {
+            "enum": [
+              "nav.items",
+              "command.actions",
+              "cockpit.widgets",
+              "service.header.badges",
+              "service.tabs",
+              "operation.panels",
+              "import.sources",
+              "test.results.panels"
+            ]
+          }
+        }
+      }
+    }
+  },
+  "$defs": {
+    "protocol": { "enum": ["REST", "SOAP", "EVENT", "gRPC", "GRAPHQL", "DIRECT"] }
+  }
+}
