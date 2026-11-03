@@ -1031,3 +1031,16 @@ pnpm build:storybooks && pnpm build:demo && pnpm build:site && pnpm a11y   # exi
 - `/home/claude/microcks-deep-ink/apps/demo-react/src/application/use-cases.ts` and `src/composition-root.ts` (new, WP3): the demo's clean-architecture contract.
 - `/home/claude/microcks-deep-ink/tools/a11y/smoke.py` (new, WP10): axe + a11ylint RGAA gate.
 - Reference prototypes: `/tmp/claude-0/-home-claude/58064407-1f28-5b5e-be19-86480618fa23/scratchpad/proto/project/Workflow.dc.html`, `/tmp/claude-0/-home-claude/58064407-1f28-5b5e-be19-86480618fa23/scratchpad/proto/project/WorkflowRun.dc.html` and `/tmp/claude-0/-home-claude/58064407-1f28-5b5e-be19-86480618fa23/scratchpad/ds2/project/components/WorkflowLoom/README.md`.
+
+## Addendum A (coordinator, 2026-11-03): a11ylint runner, skill-ready (applies to WP10)
+
+These requirements arrived after the plan was written. They extend WP10 and override it where they differ.
+
+1. **Standalone runner, not glue code.** The RGAA check lives in `tools/a11y/rgaa-audit.mjs` with a stable CLI:
+   `node tools/a11y/rgaa-audit.mjs --url <url|file> | --urls-from <storybook index.json|routes.json> --format json|md --out <dir>`.
+   Exit code is non-zero when any tested criterion is non-compliant. `tools/a11y/smoke.py` (Playwright) and CI call this runner; they do not reimplement it.
+2. **Criteria map as data.** `tools/a11y/rgaa-criteria.json` lists the RGAA 4.1.2 criteria (id, theme, title) with `automatedBy: "a11ylint" | "axe" | "manual"`. Coverage grows by editing this file, not code.
+3. **Stable JSON output.** Per URL, each criterion with status `compliant | non-compliant | not-applicable | not-tested-automatically`, the offending elements and a fix hint. "Not tested automatically" must never be reported as compliant.
+4. **Skill-ready.** `tools/a11y/README.md` documents inputs, outputs, exit codes and the JSON schema, so a future Claude skill can wrap the runner ("run a11ylint, list RGAA criteria and their status").
+5. **Upstream findings.** Every bug or missing rule hit in `@a11ylint/core@1.0.0-alpha.7` goes to `docs/a11ylint-findings.md`, written as a ready-to-file issue (title, RGAA criterion, minimal repro HTML, expected vs actual). Never patch the upstream package; stub or skip with a TODO so CI stays meaningful.
+6. **docs/accessibility.md** lists, per criterion, whether a11ylint, axe or a human checks it, and states the demo is "non audité" until a human audit.
