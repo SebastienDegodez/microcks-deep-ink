@@ -1,0 +1,45 @@
+version: 2
+updates:
+  # pnpm workspace: one entry at the root covers every package.json listed in pnpm-workspace.yaml.
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Paris
+    open-pull-requests-limit: 10
+    commit-message:
+      prefix: "chore(deps)"
+    labels: [dependencies]
+    versioning-strategy: increase
+    groups:
+      # Packages that must move together, or the build breaks.
+      angular:
+        patterns: ["@angular/*", "@angular-devkit/*", "ng-packagr", "zone.js"]
+      storybook:
+        patterns: ["storybook", "@storybook/*"]
+      stencil:
+        patterns: ["@stencil/*"]
+      react:
+        patterns: ["react", "react-dom", "@types/react", "@types/react-dom"]
+      tooling:
+        patterns: ["typescript", "vite", "tslib", "rxjs"]
+    ignore:
+      # Angular pins TypeScript to a minor range (6.0.x for Angular 22): let the angular group drive it.
+      - dependency-name: typescript
+        update-types: ["version-update:semver-minor", "version-update:semver-major"]
+
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
+      day: monday
+      time: "06:00"
+      timezone: Europe/Paris
+    commit-message:
+      prefix: "chore(ci)"
+    labels: [dependencies]
+    groups:
+      actions:
+        patterns: ["*"]
