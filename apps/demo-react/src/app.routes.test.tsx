@@ -56,7 +56,7 @@ describe('every route renders a placeholder with one h1 and a document title', (
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     expect(heading.getAttribute('tabindex')).toBe('-1');
     await waitFor(() => expect(document.title.endsWith(' · Microcks')).toBe(true));
-    if (!['service', 'workflow', 'test-run', 'behavior', 'agent-test'].includes(_id)) expect(document.title).toBe(title);
+    if (!['service', 'workflow', 'test-run', 'behavior', 'agent-test'].includes(_id)) await waitFor(() => expect(document.title).toBe(title));
   });
 });
 
