@@ -97,7 +97,7 @@ describe('shell accessibility', () => {
     expect(toggle.getAttribute('aria-pressed')).toBe('false');
     act(() => toggle.click());
     expect(document.documentElement.dataset.theme).toBe('light');
-    expect(screen.getByRole('button', { name: 'Light theme' }).getAttribute('aria-pressed')).toBe('true');
+    await waitFor(() => expect(screen.getByRole('button', { name: 'Light theme' }).getAttribute('aria-pressed')).toBe('true'));
     act(() => screen.getByRole('button', { name: 'Light theme' }).click());
   });
 
