@@ -44,7 +44,7 @@ describe('WP7 pages', () => {
     const pause = screen.getByRole('button', { name: 'Pause' });
     fireEvent.click(pause);
     expect(screen.getByRole('button', { name: 'Resume' }).getAttribute('aria-pressed')).toBe('true');
-    expect(document.title).toBe('Cockpit · Microcks');
+    await waitFor(() => expect(document.title).toBe('Cockpit · Microcks'));
   });
 
   it('Cockpit: the empty install shows the getting-started checklist', async () => {

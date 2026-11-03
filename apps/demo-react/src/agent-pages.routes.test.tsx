@@ -29,7 +29,7 @@ describe('Agent (screen 18)', () => {
   it('opens the Pastry concierge on the service route, with its skills, the failing ones flagged', async () => {
     renderAt('/services/concierge/skills');
     await h1('Pastry concierge 1.0');
-    expect(document.title).toBe('Pastry concierge 1.0 · Microcks');
+    await waitFor(() => expect(document.title).toBe('Pastry concierge 1.0 · Microcks'));
     const skills = await screen.findByRole('list', { name: 'Skills of Pastry concierge 1.0' });
     expect(within(skills).getAllByRole('listitem')).toHaveLength(4);
     expect(screen.getByRole('tab', { name: /Mock endpoints/ })).toBeTruthy();

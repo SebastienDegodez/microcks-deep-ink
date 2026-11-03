@@ -158,7 +158,7 @@ export function seedTestRuns(): TestRun[] {
   return [run119, ...HISTORY.map(toRun), orders, conciergeRun()];
 }
 
-/** Run #3 of Pastry concierge 1.0 (A2A_CONFORMANCE): 10 of 12 checks passed. The Agent test screen holds its matrix. */
+/** Run #3 of Pastry concierge 1.0 (A2A_CONFORMANCE): 13 of 15 checks passed. The Agent test screen holds its matrix. */
 function conciergeRun(): TestRun {
   const step = (n: number, name: string, ms: number, failure?: string): TestStepResult => ({
     id: `s${n}`, operationId: name.split(' · ')[1] ?? name, name, method: 'A2A', path: name, ms, result: failure ? 'failed' : 'passed',
@@ -175,7 +175,7 @@ function conciergeRun(): TestRun {
   ];
   return {
     id: '3', serviceId: 'concierge', runner: 'A2A_CONFORMANCE', environment: 'staging', endpoint: 'https://concierge.staging.acme.io/.well-known/agent-card.json',
-    result: 'failed', startedAt: '2026-11-03T08:10:04Z', durationMs: 27_300, passed: 10, total: 12, timeoutMs: 15_000, steps, launchedBy: 'MA',
+    result: 'failed', startedAt: '2026-11-03T08:10:04Z', durationMs: 27_300, passed: 13, total: 15, timeoutMs: 15_000, steps, launchedBy: 'MA',
     reason: 'order-pastry · HTTP+JSON resumes input-required on a new task', operations: ['pass', 'fail', 'fail'],
     operationLabels: [{ id: 'recommend-pastry', method: 'SKILL', path: 'recommend-pastry' }, { id: 'order-pastry', method: 'SKILL', path: 'order-pastry' }, { id: 'track-order', method: 'SKILL', path: 'track-order' }],
   };
