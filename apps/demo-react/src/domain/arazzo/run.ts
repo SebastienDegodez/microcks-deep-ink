@@ -73,4 +73,9 @@ export interface WorkflowRun {
   outputs: Record<string, unknown>;
   coherence: MockCoherenceIssue[];
   relatedTestRunId?: string;
+  /**
+   * Only on the intermediate frames of a RUNNING run: the step being called and its attempt number
+   * (an attempt above 1 means the step is being retried).
+   */
+  current?: { stepId: string; attempt: number };
 }

@@ -1,9 +1,9 @@
-import type { ArazzoDocument, Session, Workflow, WorkflowRun } from '@/domain/arazzo';
+import type { Session } from '@/domain/arazzo';
+import { verificationRun, verifySession, type ArazzoDocument, type Workflow } from '@/domain/arazzo';
 import type {
   ArazzoRepository,
   RunFilter,
   SessionRepository,
-  StartRunRequest,
   WorkflowRunRepository,
   WorkflowRunner,
 } from '@/application/ports/arazzo';
@@ -11,15 +11,19 @@ import { NotFoundError } from '@/application/shared';
 import {
   DOCUMENTS,
   EXAMPLES,
+  FixedClock,
+  MOCK_BASE,
   PASTRY_ARAZZO_YAML,
-  RUN_IDS,
+  PASTRY_OVERLAY_YAML,
+  SERVICES,
   WORKFLOWS,
   after,
-  createSequenceStream,
   seedRuns,
   seedSessions,
   type InMemoryDeps,
 } from '../shared';
+import { createRunner } from './runner';
+import { createArazzoState } from './run-store';
 
 export interface ArazzoAdapters {
   documents: ArazzoRepository;
@@ -43,15 +47,15 @@ const BEER_YAML = [
 ].join('\n');
 
 /**
- * In-memory Arazzo adapters. Phase 1 serves the shared seed (documents, workflows, the 7 seeded runs,
- * 3 sessions, 2 examples). WP8 replaces the runner stub with a real simulation built on the domain
- * `playWorkflow` and fills the details of each screen.
+ * In-memory Arazzo adapters over the shared seed (2 documents, 5 workflows, the 7 seeded runs, 3 sessions,
+ * 2 examples). The runner is a real simulation (see `runner.ts` and `world.ts`); sessions are verified against
+ * the workflow (`verifySession`) and a verification creates a run with the origin "session".
  */
-export function createInMemoryArazzoAdapters(_deps: InMemoryDeps = {}): ArazzoAdapters {
+export function createInMemoryArazzoAdapters(deps: InMemoryDeps = {}): ArazzoAdapters {
+  const clock = deps.clock ?? new FixedClock();
   const documents = DOCUMENTS.map((d): ArazzoDocument => ({ ...d, sources: d.sources.map((s) => ({ ...s })) }));
   const workflows = WORKFLOWS.map((w): Workflow => ({ ...w }));
-  const runs = seedRuns();
-  const sessions = seedSessions();
+  const state = createArazzoState({ runs: seedRuns(), sessions: seedSessions(), workflows });
 
   const repo: ArazzoRepository = {
     documents: () => after(() => documents),
@@ -63,7 +67,11 @@ export function createInMemoryArazzoAdapters(_deps: InMemoryDeps = {}): ArazzoAd
         const doc = documents.find((d) => d.id === documentId);
         const source = doc?.sources.find((s) => s.name === sourceName);
         if (!doc || !source) throw new NotFoundError('Source description', sourceName);
-        source.link = { status: 'linked', serviceId, protocol: 'REST', operationsFound: '3 of 3 found' };
+        const service = SERVICES.find((s) => s.id === serviceId);
+        if (!service) throw new NotFoundError('Service', serviceId);
+        const used = new Set(workflows.filter((w) => w.documentId === doc.id).flatMap((w) => w.steps).filter((s) => s.sourceName === sourceName).map((s) => s.operationId));
+        const found = Math.min(used.size, service.operationCount) || service.operationCount;
+        source.link = { status: 'linked', serviceId, protocol: service.protocol, operationsFound: `${found} of ${used.size || found} found` };
         if (doc.sources.every((s) => s.link.status === 'linked')) {
           workflows.forEach((w, i) => {
             if (w.documentId === doc.id && w.runnability.runnable === false && w.runnability.reason === 'source-not-linked') {
@@ -73,78 +81,67 @@ export function createInMemoryArazzoAdapters(_deps: InMemoryDeps = {}): ArazzoAd
         }
         return doc;
       }),
-    validate: (documentId) => after(() => (documents.find((d) => d.id === documentId)?.importIssues ?? [])),
+    validate: (documentId) => after(() => documents.find((d) => d.id === documentId)?.importIssues ?? []),
     source: (documentId) => after(() => (documentId === 'pastry' ? PASTRY_ARAZZO_YAML : BEER_YAML)),
+    overlay: (documentId) => after(() => (documentId === 'pastry' ? PASTRY_OVERLAY_YAML : undefined)),
     examples: (_documentId, workflowId) => after(() => EXAMPLES.filter((e) => e.workflowId === workflowId)),
   };
 
   const runRepo: WorkflowRunRepository = {
     list: (filter: RunFilter = {}) =>
       after(() =>
-        runs.filter(
+        state.runs.filter(
           (r) =>
             (!filter.documentId || r.documentId === filter.documentId) &&
             (!filter.workflowId || r.workflowId === filter.workflowId) &&
             (!filter.origin || r.origin.kind === filter.origin),
         ),
       ),
-    get: (id) => after(() => runs.find((r) => r.id === id)),
+    get: (id) => after(() => state.runs.find((r) => r.id === id)),
     save: (run) =>
       after(() => {
-        const at = runs.findIndex((r) => r.id === run.id);
-        if (at >= 0) runs[at] = run;
-        else runs.push(run);
+        const at = state.runs.findIndex((r) => r.id === run.id);
+        if (at >= 0) state.runs[at] = run;
+        else state.runs.push(run);
       }),
   };
 
-  /** Phase-1 stub: starts nothing, returns the seeded run that matches the request. */
-  const pickRun = (request: StartRunRequest): string => {
-    if (request.workflowId === 'check-menu') return RUN_IDS.checkMenu3;
-    if (request.target.kind === 'implementations') return RUN_IDS[14];
-    if (request.options.example === 'already-available') return RUN_IDS[15];
-    if (!request.options.example && request.options.inputs.size === 'S') return RUN_IDS[16];
-    return RUN_IDS[12];
-  };
-
-  const runner: WorkflowRunner = {
-    start: (request) => after(() => pickRun(request)),
-    watch: (runId) => {
-      const run = runs.find((r) => r.id === runId);
-      if (!run) throw new NotFoundError('Workflow run', runId);
-      const frames: WorkflowRun[] = [];
-      const ran = run.steps.filter((s) => s.status !== 'not-run').length;
-      for (let k = 1; k < ran; k++) {
-        frames.push({ ...run, status: 'RUNNING', steps: run.steps.map((s, i) => (i < k ? s : { ...s, status: 'not-run' as const, attempts: [] })) });
-      }
-      frames.push(run);
-      return createSequenceStream(frames);
-    },
-  };
-
   const sessionRepo: SessionRepository = {
-    list: (documentId, workflowId) => after(() => sessions.filter((s) => s.documentId === documentId && s.workflowId === workflowId)),
-    get: (id) => after(() => sessions.find((s) => s.id === id)),
+    list: (documentId, workflowId) => after(() => state.sessions.filter((s) => s.documentId === documentId && s.workflowId === workflowId)),
+    get: (id) => after(() => state.sessions.find((s) => s.id === id)),
     open: (input) =>
       after(() => {
         const created: Session = {
-          id: `s-${(0x2b91e04d + sessions.length * 7919).toString(16).slice(-8)}`,
-          app: input.app, documentId: input.documentId, workflowId: input.workflowId, state: 'open',
-          openedAt: '2026-11-03T09:10:04Z', inputs: input.inputs, failureInjection: input.failureInjection, calls: [],
+          id: state.newSessionId(),
+          app: input.app,
+          documentId: input.documentId,
+          workflowId: input.workflowId,
+          state: 'open',
+          openedAt: clock.now().toISOString(),
+          inputs: input.inputs,
+          failureInjection: input.failureInjection,
+          calls: [],
         };
-        sessions.unshift(created);
+        state.sessions.unshift(created);
         return created;
       }),
     verify: (id) =>
       after(() => {
-        const found = sessions.find((s) => s.id === id);
+        const found = state.sessions.find((s) => s.id === id);
         if (!found) throw new NotFoundError('Session', id);
-        if (!found.verification) {
-          found.state = 'closed';
-          found.verification = { result: 'SUCCESS', runNumber: 17, problems: [] };
-        }
+        if (found.verification) return found;
+        const workflow = workflows.find((w) => w.documentId === found.documentId && w.workflowId === found.workflowId);
+        if (!workflow) throw new NotFoundError('Workflow', found.workflowId);
+        const verdict = verifySession(found, workflow);
+        const number = state.nextNumber(found.documentId, found.workflowId);
+        state.runs.push(
+          verificationRun(found, workflow, verdict, { runId: state.newRunId(), number, baseUrl: MOCK_BASE, startedAt: clock.now().toISOString() }),
+        );
+        found.state = 'closed';
+        found.verification = { result: verdict.result, runNumber: number, problems: verdict.problems };
         return found;
       }),
   };
 
-  return { documents: repo, runs: runRepo, runner, sessions: sessionRepo };
+  return { documents: repo, runs: runRepo, runner: createRunner(state, clock), sessions: sessionRepo };
 }

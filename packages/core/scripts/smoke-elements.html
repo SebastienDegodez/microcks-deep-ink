@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Element smoke page</title>
+  <link rel="stylesheet" href="../../tokens/dist/deep-ink.no-fonts.css">
+  <style>body { margin: 0; padding: 16px; background: var(--bg); color: var(--text); font: var(--type-body); }</style>
+</head>
+<body>
+  <main id="app"><h1>Element smoke page</h1></main>
+  <script type="module">
+    // ?el=mk-workflow-loom|mk-command-bar|mk-plugin-slot  &fixture=run14|menu|definition  &theme=dark|light
+    const q = new URLSearchParams(location.search);
+    document.documentElement.dataset.theme = q.get('theme') || 'dark';
+    const tag = q.get('el');
+    await import(`../dist/elements/${tag}.js`);
+    const app = document.getElementById('app');
+    window.events = [];
+
+    const sources = [
+      { name: 'apiPastry', type: 'openapi', protocol: 'REST', linked: true },
+      { name: 'pastryOrders', type: 'asyncapi', protocol: 'EVENT', linked: false },
+    ];
+    const run14 = {
+      label: 'restock-pastry, run 14', validatesSchemas: true, sources,
+      inputs: ['name', 'quantity'], outputs: ['restocked'],
+      steps: [
+        { stepId: 'listPastries', source: 'apiPastry', operation: 'GET /pastries', status: 'passed', checks: { successCriteria: 'passed', schemaValidation: 'passed' } },
+        { stepId: 'getPastry', source: 'apiPastry', operation: 'GET /pastries/{name}', status: 'passed', checks: { successCriteria: 'passed', schemaValidation: 'passed' },
+          actions: [{ type: 'end', name: 'alreadyAvailable', on: 'success', criteria: "$response.body#/status == 'available'", taken: false }] },
+        { stepId: 'patchPastry', source: 'apiPastry', operation: 'PATCH /pastries/{name}', status: 'failed', attempts: 3, checks: { successCriteria: 'passed', schemaValidation: 'failed' },
+          actions: [{ type: 'retry', name: 'retryPatch', on: 'failure', retryAfter: 1, retryLimit: 2, applied: true }] },
+        { stepId: 'verifyPastry', source: 'apiPastry', operation: 'GET /pastries/{name}', status: 'not-run', checks: { successCriteria: 'not-evaluated', schemaValidation: 'not-evaluated' } },
+        { stepId: 'awaitRestock', source: 'pastryOrders', operation: 'SUBSCRIBE pastry-restocked', status: 'not-run' },
+      ],
+      threads: [
+        { from: '$inputs', to: 'listPastries', expression: '$inputs.name → filter' },
+        { from: 'listPastries', to: 'getPastry', expression: '$steps.listPastries.outputs.firstName → name' },
+        { from: 'getPastry', to: 'patchPastry', expression: '$steps.getPastry.outputs.price → price' },
+      ],
+    };
+    const lane = { name: 'apiPastry', type: 'openapi', protocol: 'REST', linked: true };
+    const mk = (stepId, op, extra = {}) => ({ stepId, source: 'apiPastry', operation: op, status: 'passed', ...extra });
+    const menu = {
+      label: 'check-menu', validatesSchemas: false, sources: [lane],
+      steps: [
+        mk('getSmall', 'GET /menu/small', { dependsOn: [] }), mk('getMedium', 'GET /menu/medium'), mk('getLarge', 'GET /menu/large'),
+        mk('compareSizes', 'POST /menu/compare', { dependsOn: ['getSmall', 'getMedium', 'getLarge'] }),
+      ],
+      threads: [{ from: 'getSmall', to: 'compareSizes', expression: '$steps.getSmall.outputs.price → small' }],
+    };
+    const definition = {
+      label: 'restock-pastry definition', sources: [lane],
+      steps: [{ stepId: 'a', source: 'apiPastry', operation: 'GET /pastries' }, { stepId: 'b', source: 'apiPastry', operation: 'GET /pastries/{name}' }],
+      threads: [],
+    };
+
+    if (tag === 'mk-workflow-loom') {
+      const f = { run14, menu, definition }[q.get('fixture') || 'run14'];
+      const el = document.createElement('mk-workflow-loom');
+      Object.assign(el, f);
+      el.addEventListener('mkStepSelect', (e) => window.events.push(['mkStepSelect', e.detail]));
+      app.append(el);
+    } else if (tag === 'mk-command-bar') {
+      const items = [
+        { id: 'test-pastry', label: 'Run a test on API Pastry 2.0', kind: 'action', keywords: ['test', 'run'] },
+        { id: 'import', label: 'Import a contract', kind: 'action', keywords: ['import'] },
+        { id: 'svc-pastry', label: 'Open API Pastry 2.0', kind: 'service', protocol: 'REST', hint: 'service', keywords: ['pastry'] },
+        { id: 'svc-orders', label: 'Open Pastry orders API 0.1.0', kind: 'service', protocol: 'EVENT', hint: 'service', keywords: ['pastry'] },
+        { id: 'op-get', label: 'GET /pastries', kind: 'operation', hint: 'operation' },
+      ];
+      const opener = document.createElement('button');
+      opener.id = 'opener'; opener.textContent = 'Open command bar';
+      const el = document.createElement('mk-command-bar');
+      el.items = items;
+      if (q.get('inline')) el.inline = true;
+      el.addEventListener('mkCommand', (e) => window.events.push(['mkCommand', e.detail.id]));
+      el.addEventListener('mkClose', () => window.events.push(['mkClose']));
+      opener.addEventListener('click', () => { el.open = true; });
+      app.append(opener, el);
+    } else if (tag === 'mk-plugin-slot') {
+      const { getPluginHost } = await import('../dist/elements/mk-plugin-slot.js');
+      class Probe extends HTMLElement {
+        set context(v) { this._c = v; this.render(); }
+        connectedCallback() { this.render(); }
+        render() { this.innerHTML = '<span class="di-live">probe ' + (this._c?.theme ?? '?') + '</span>'; }
+      }
+      customElements.define('probe-widget', Probe);
+      await getPluginHost().register({
+        manifest: { id: 'probe', frontend: { tagPrefix: 'probe-' } },
+        activate(api) { api.contribute('service.tabs', { id: 'p', element: 'probe-widget', title: 'Probe' }); },
+      });
+      const slot = document.createElement('mk-plugin-slot');
+      slot.point = 'service.tabs';
+      slot.context = { theme: 'dark' };
+      slot.outlined = true;
+      const empty = document.createElement('mk-plugin-slot');
+      empty.point = 'cockpit.widgets';
+      empty.innerHTML = '<p id="fallback">No plugin contributes here.</p>';
+      app.append(slot, empty);
+    }
+    window.ready = true;
+  </script>
+</body>
+</html>

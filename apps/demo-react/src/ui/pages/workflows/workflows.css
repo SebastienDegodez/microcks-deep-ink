@@ -1,0 +1,114 @@
+/*
+ * Styles of the Arazzo screens (Workflows, Workflow, Workflow run), prefix `wf-`.
+ * Components and tokens come from the copied design system; this file only lays them out.
+ * Colors are tokens, text is never drawn over alpha or color-mix backgrounds.
+ */
+
+.wf-page { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+.wf-grow { flex: 1 1 260px; }
+.wf-lead { margin: 0; max-width: 72ch; color: var(--text-secondary); }
+.wf-muted { color: var(--text-secondary); }
+.wf-small { font: var(--type-small); }
+.wf-mono { font: var(--type-code); overflow-wrap: anywhere; }
+.wf-section { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.wf-section > h2, .wf-h2 { margin: 0; font: var(--type-title); }
+.wf-h3 { margin: 0; font: var(--type-heading); }
+.wf-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
+.wf-row-between { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2) var(--space-4); }
+.wf-grid-2 { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 340px), 1fr)); align-items: start; }
+.wf-split { display: grid; gap: var(--space-4); grid-template-columns: minmax(0, 1fr); align-items: start; }
+@media (min-width: 1100px) {
+  .wf-split { grid-template-columns: minmax(0, 1fr) minmax(300px, 380px); }
+}
+.wf-list { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-2); }
+.wf-plain-list { margin: 0; padding-inline-start: 1.25em; display: flex; flex-direction: column; gap: var(--space-1); }
+.wf-loading { display: flex; flex-direction: column; gap: var(--space-4); }
+.wf-fields { display: grid; gap: var(--space-4); grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+
+/* Mini step strip */
+.wf-strip { display: inline-flex; gap: 2px; vertical-align: middle; }
+.wf-strip-cell {
+  display: inline-flex; align-items: center; justify-content: center;
+  inline-size: 20px; block-size: 20px; border-radius: 4px;
+  border: 1.5px solid var(--border-control);
+  font: 700 12px/1 var(--font-ui); color: var(--text);
+  background: var(--canvas);
+}
+.wf-strip-cell[data-status="passed"] { background: var(--success-tint); border-color: var(--success); }
+.wf-strip-cell[data-status="failed"] { background: var(--danger-tint); border-color: var(--danger); }
+.wf-strip-cell[data-status="not-run"] { border-style: dashed; color: var(--text-secondary); }
+.wf-strip-cell[data-status="never"] { border-style: dashed; border-color: var(--text-secondary); }
+
+/* Result word */
+.wf-result { display: inline-flex; align-items: center; gap: var(--space-1); font-weight: 600; }
+.wf-result[data-result="passed"] { color: var(--success); }
+.wf-result[data-result="failed"] { color: var(--danger); }
+.wf-result[data-result="never"] { color: var(--text-secondary); }
+
+/* Workflows list */
+.wf-filters { display: flex; flex-direction: column; gap: var(--space-3); }
+.wf-filter-row { display: flex; flex-wrap: wrap; align-items: end; gap: var(--space-3) var(--space-4); }
+.wf-doc { display: flex; flex-direction: column; gap: var(--space-3); min-width: 0; }
+.wf-doc-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2) var(--space-3); }
+.wf-doc-head h2 { margin: 0; font: var(--type-title); overflow-wrap: anywhere; }
+.wf-cell-stack { display: flex; flex-direction: column; gap: var(--space-1); align-items: flex-start; white-space: normal; min-inline-size: 150px; }
+.wf-cell-wide { min-inline-size: 240px; max-inline-size: 360px; white-space: normal; }
+.wf-reason { font: var(--type-small); color: var(--text-secondary); white-space: normal; max-inline-size: 280px; }
+.wf-link-source { margin-inline-start: auto; }
+
+/* Workflow header */
+.wf-meta { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-4); margin: 0; font: var(--type-small); color: var(--text-secondary); }
+.wf-title-badge { display: inline-flex; align-items: center; gap: var(--space-2); flex-wrap: wrap; }
+.wf-summary-strip { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-4); }
+
+/* Loom tab */
+.wf-loom-box { min-width: 0; border: 1px solid var(--border); border-radius: var(--radius-panel); background: var(--canvas); padding: var(--space-3); }
+.wf-loom-fallback { display: flex; flex-direction: column; gap: var(--space-2); }
+.wf-inspector { display: flex; flex-direction: column; gap: var(--space-4); min-width: 0; }
+.wf-inspector dl, .wf-kv { margin: 0; display: grid; grid-template-columns: max-content minmax(0, 1fr); gap: var(--space-1) var(--space-3); }
+.wf-kv dt { color: var(--text-secondary); }
+.wf-kv dd { margin: 0; overflow-wrap: anywhere; }
+.wf-attempts { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-1); }
+.wf-attempts li { display: flex; flex-wrap: wrap; gap: var(--space-1) var(--space-3); align-items: baseline; }
+.wf-expr { font: var(--type-code); background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 0 var(--space-1); overflow-wrap: anywhere; }
+.wf-lens { display: flex; flex-direction: column; gap: var(--space-2); }
+
+/* Source tab */
+.wf-yaml-line { display: block; }
+.wf-fold { font: var(--type-code); }
+.wf-outline { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+
+/* Sessions and runs */
+.wf-api-steps { margin: 0; padding: 0; list-style: none; display: grid; gap: var(--space-3); grid-template-columns: repeat(auto-fit, minmax(min(100%, 230px), 1fr)); }
+.wf-api-steps li { display: flex; flex-direction: column; gap: var(--space-1); border: 1px solid var(--border); border-radius: var(--radius-panel); padding: var(--space-3); background: var(--canvas); }
+.wf-callnote { white-space: normal; }
+
+/* Run setup */
+.wf-form { display: flex; flex-direction: column; gap: var(--space-6); min-width: 0; }
+.wf-form fieldset { margin: 0; }
+.wf-source-card { border: 1px solid var(--border); border-radius: var(--radius-panel); padding: var(--space-3) var(--space-4); display: flex; flex-direction: column; gap: var(--space-3); }
+.wf-error-summary { border: 2px solid var(--danger); border-radius: var(--radius-panel); padding: var(--space-3) var(--space-4); background: var(--danger-tint); }
+.wf-error-summary h2 { margin: 0 0 var(--space-2); font: var(--type-heading); }
+.wf-error-summary ul { margin: 0; padding-inline-start: 1.25em; }
+.wf-actions { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--space-3); }
+
+/* Run page */
+.wf-progress { display: flex; flex-direction: column; gap: var(--space-3); }
+.wf-segments { display: flex; gap: 4px; }
+.wf-segment { flex: 1; min-inline-size: 0; border: 1.5px solid var(--border-control); border-radius: 4px; padding: var(--space-1) var(--space-2); text-align: center; font: var(--type-small); background: var(--canvas); overflow-wrap: anywhere; }
+.wf-segment[data-status="passed"] { background: var(--success-tint); border-color: var(--success); }
+.wf-segment[data-status="failed"] { background: var(--danger-tint); border-color: var(--danger); }
+.wf-segment[data-status="running"] { background: var(--info-tint); border-color: var(--running); }
+.wf-segment[data-status="not-run"] { border-style: dashed; color: var(--text-secondary); }
+.wf-steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: var(--space-3); }
+.wf-step { border: 1px solid var(--border); border-radius: var(--radius-panel); background: var(--canvas); min-width: 0; }
+.wf-step[data-status="failed"] { border-color: var(--danger); }
+.wf-step-body { display: flex; flex-direction: column; gap: var(--space-4); padding: var(--space-3) var(--space-4) var(--space-4); }
+.wf-step-title { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2) var(--space-3); }
+.wf-baton { display: flex; flex-wrap: wrap; gap: var(--space-2); font: var(--type-small); color: var(--text-secondary); padding-inline-start: var(--space-4); }
+.wf-chip-line { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+.wf-tally { display: flex; flex-wrap: wrap; gap: var(--space-4); margin: 0; }
+.wf-tally div { display: flex; flex-direction: column; }
+.wf-tally dt { color: var(--text-secondary); font: var(--type-small); }
+.wf-tally dd { margin: 0; font: var(--type-heading); }
+.wf-pre { margin: 0; padding: var(--space-2) var(--space-3); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-control); font: var(--type-code); overflow-x: auto; white-space: pre-wrap; overflow-wrap: anywhere; }

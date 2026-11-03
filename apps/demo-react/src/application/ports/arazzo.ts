@@ -22,6 +22,8 @@ export interface ArazzoRepository {
   validate(documentId: string): Promise<ImportIssue[]>;
   /** Raw YAML of the document (Source tab). */
   source(documentId: string): Promise<string>;
+  /** Raw YAML of the ArazzoSources overlay (Examples tab), when the document has one. */
+  overlay(documentId: string): Promise<string | undefined>;
   examples(documentId: string, workflowId: string): Promise<WorkflowExample[]>;
 }
 

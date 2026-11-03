@@ -1,0 +1,26 @@
+.us-kpis { display: flex; flex-wrap: wrap; gap: 8px 32px; margin: 0; padding: 0; list-style: none; }
+.us-kpi-value { font-size: 1.5rem; font-weight: 700; }
+.us-bars { display: flex; align-items: flex-end; gap: 2px; height: 160px; padding: 0; border-bottom: 1px solid var(--border-control); }
+.us-bar {
+  flex: 1 1 0; min-width: 8px; height: 100%; display: flex; align-items: flex-end; padding: 0; margin: 0; border: 0; background: none; cursor: pointer;
+}
+.us-bar > span { display: block; width: 100%; background: var(--action); border-radius: 2px 2px 0 0; min-height: 2px; }
+.us-bar[data-future] > span { background: var(--border); }
+.us-bar[aria-pressed='true'] { outline: 2px solid var(--text); outline-offset: 1px; background: var(--selected); }
+.us-bar:focus-visible { outline: 3px solid var(--action); outline-offset: 2px; }
+.us-axis { display: flex; justify-content: space-between; margin: 4px 0 0; color: var(--text-muted); font-size: 0.75rem; font-family: var(--font-mono); }
+.us-heat { display: grid; grid-auto-columns: minmax(14px, 1fr); grid-template-rows: repeat(7, 22px); gap: 3px; overflow-x: auto; padding-block: 4px; }
+.us-day { min-width: 14px; padding: 0; border: 1px solid var(--border-control); border-radius: 3px; background: var(--surface); cursor: pointer; }
+.us-day[data-level='1'] { background: var(--selected); }
+.us-day[data-level='2'] { background: var(--info-tint, var(--selected)); border-color: var(--action); }
+.us-day[data-level='3'] { background: var(--action); border-color: var(--action); }
+.us-day[aria-pressed='true'] { outline: 2px solid var(--text); outline-offset: 1px; }
+.us-day:focus-visible { outline: 3px solid var(--action); outline-offset: 2px; }
+.us-tree { display: flex; flex-wrap: wrap; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.us-tile { display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; min-width: 120px; border: 1px solid var(--border-control); border-radius: var(--radius-control, 6px); background: var(--surface); }
+.us-tile[data-low] { border-width: 2px; border-color: var(--danger); background: var(--danger-tint); }
+.us-tile-name { font-weight: 600; overflow-wrap: anywhere; }
+.us-table { width: 100%; border-collapse: collapse; font-size: 0.875rem; }
+.us-table th, .us-table td { padding: 6px 10px; border-bottom: 1px solid var(--border); text-align: start; }
+.us-table td[data-num], .us-table th[data-num] { text-align: end; font-variant-numeric: tabular-nums; }
+.us-share { display: inline-block; height: 8px; background: var(--action); border-radius: 2px; vertical-align: middle; margin-inline-end: 8px; }

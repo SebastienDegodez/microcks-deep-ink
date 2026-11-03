@@ -138,10 +138,10 @@ describe('routing', () => {
     await screen.findByRole('heading', { level: 1, name: 'Run a workflow' });
     first.unmount();
     const second = renderAt('/services/pastry2/operations/get-name');
-    await screen.findByRole('heading', { level: 1, name: 'Operation behavior' });
+    await screen.findByRole('heading', { level: 1, name: '/pastries/{name}' });
     second.unmount();
     renderAt('/services/pastry2/copilot?op=get-name&hint=Tarte%20Tatin');
-    await screen.findByRole('heading', { level: 1, name: 'AI Copilot examples' });
+    await screen.findByRole('heading', { level: 1, name: 'AI Copilot' });
   });
 
   it('shows the not-found page with a link back', async () => {

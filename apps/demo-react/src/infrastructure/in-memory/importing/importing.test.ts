@@ -1,0 +1,120 @@
+import { beforeEach, describe, expect, it } from 'vitest';
+import { ValidationError } from '@/application/shared';
+import { createImportingUseCases } from '@/application/importing';
+import { detectArtifactKind, directApiEndpoint, filterImporters, importerStatus, statusCounts, validateDirectApi, validateGitForm } from '@/domain/importing';
+
+import { createInMemoryImportingAdapters } from '.';
+
+let uc: { importing: ReturnType<typeof createImportingUseCases> };
+beforeEach(() => {
+  uc = { importing: createImportingUseCases(createInMemoryImportingAdapters()) };
+});
+
+describe('Import screen', () => {
+  it('analyzes an OpenAPI file without creating anything, then imports it as primary', async () => {
+    const preview = await uc.importing.analyze({ kind: 'file', files: [{ name: 'apipastry-openapi.yaml', sizeBytes: 5000 }] });
+    expect(preview.services[0]?.operations).toHaveLength(3);
+    expect(preview.exampleCount).toBe(7);
+    const done = await uc.importing.import(preview.previewId, { role: 'primary' });
+    expect(done).toMatchObject({ serviceId: 'pastry2', outcome: 'imported', mcp: true });
+    const merged = await uc.importing.import((await uc.importing.analyze({ kind: 'file', files: [{ name: 'x-openapi.yaml', sizeBytes: 1 }] })).previewId, { role: 'secondary' });
+    expect(merged.outcome).toBe('merged');
+  });
+
+  it('analyzes an Arazzo document: 4 workflows, 14 steps, 3 linked sources', async () => {
+    const preview = await uc.importing.analyze({ kind: 'file', files: [{ name: 'pastry-workflows.arazzo.yaml', sizeBytes: 9000 }] });
+    expect(preview.arazzo?.workflows).toHaveLength(4);
+    expect(preview.arazzo?.workflows.reduce((n, w) => n + w.steps, 0)).toBe(14);
+    expect(preview.arazzo?.sources).toHaveLength(3);
+    expect(preview.arazzo?.workflows.find((w) => w.blocked)?.workflowId).toBe('track-order');
+    const done = await uc.importing.import(preview.previewId, { role: 'primary' });
+    expect(done).toMatchObject({ outcome: 'arazzo', arazzo: { workflows: 4, steps: 14, sources: 3 } });
+  });
+
+  it('a Git source creates a scheduled importer', async () => {
+    const preview = await uc.importing.analyze({ kind: 'git', repository: 'https://raw.githubusercontent.com/acme/contracts/main/pastry/openapi.yaml', name: 'API Pastry — main' });
+    expect((await uc.importing.import(preview.previewId, { role: 'primary' })).outcome).toBe('importer-created');
+  });
+
+  it('rejects an empty selection or URL', async () => {
+    await expect(uc.importing.analyze({ kind: 'file', files: [] })).rejects.toBeInstanceOf(ValidationError);
+    await expect(uc.importing.analyze({ kind: 'url', url: '  ' })).rejects.toBeInstanceOf(ValidationError);
+  });
+
+  it('creates a Direct API mock and validates the form', async () => {
+    expect(validateDirectApi({ type: 'GENERIC_EVENT', name: 'Order API', version: '1.0', resource: 'order' }).payload).toMatch(/needs a reference JSON payload/);
+    expect(validateDirectApi({ type: 'REST', name: '', version: '', resource: '1x', payload: '{' })).toMatchObject({ name: expect.any(String), resource: expect.any(String), payload: expect.stringContaining('Invalid JSON') });
+    const input = { type: 'REST' as const, name: 'Order API', version: '1.0', resource: 'order', payload: '{"id":1}' };
+    expect(validateDirectApi(input)).toEqual({});
+    const result = await uc.importing.createDirectApi(input);
+    expect(result).toMatchObject({ outcome: 'direct', samples: '1 payload', mockLabel: 'Mock base URL' });
+    expect(result.mockUrl).toBe(directApiEndpoint(input, 'https://microcks.bakery.dev').value);
+    expect(directApiEndpoint({ ...input, type: 'GENERIC_EVENT' }, 'x').value).toBe('OrderAPI-1.0-order');
+  });
+
+  it('lists the recent imports and detects formats', async () => {
+    expect((await uc.importing.recentImports(3)).length).toBe(3);
+    expect(detectArtifactKind('pastry.arazzo.yaml')).toBe('arazzo');
+    expect(detectArtifactKind('hello.proto')).toBe('grpc');
+    expect(validateGitForm({ name: '', url: 'nope' })).toMatchObject({ name: expect.any(String), url: expect.any(String) });
+  });
+});
+
+describe('Sources screen', () => {
+  it('lists the ten importers with the failed and inactive ones', async () => {
+    const all = await uc.importing.listImporters();
+    expect(all).toHaveLength(10);
+    const counts = statusCounts(all);
+    expect(counts).toMatchObject({ all: 10, failed: 1, warning: 1, inactive: 1, running: 1 });
+    expect(all.find((i) => i.id === 'pastry-orders')?.error?.message).toContain('401');
+  });
+
+  it('filters by status and by text (name, URL, secret, produced Service)', async () => {
+    const all = await uc.importing.listImporters();
+    expect(filterImporters(all, { status: 'failed' }).map((i) => i.id)).toEqual(['pastry-orders']);
+    expect(filterImporters(all, { query: 'gitlab-bakery' }).map((i) => i.id)).toEqual(['pastry-orders']);
+    expect(filterImporters(all, { query: 'helloservice' }).map((i) => i.id).sort()).toEqual(['hello-grpc', 'hello-soap']);
+    expect(importerStatus(all.find((i) => i.id === 'movie-graph')!)).toBe('inactive');
+  });
+
+  it('runs an importer to 100% and records a new timeline entry', async () => {
+    const seen: number[] = [];
+    const before = (await uc.importing.getImporter('hello-grpc')).timeline.length;
+    await new Promise<void>((resolve) => {
+      const stop = uc.importing.runImporter('hello-grpc', (p) => {
+        seen.push(p);
+        if (p === 100) {
+          stop();
+          resolve();
+        }
+      });
+    });
+    expect(seen).toEqual([25, 50, 75, 100]);
+    const after = await uc.importing.getImporter('hello-grpc');
+    expect(after.timeline.length).toBe(before + 1);
+    expect(after.timeline[0]).toMatchObject({ kind: 'run', trigger: 'Forced by MA' });
+  }, 15000);
+
+  it('deletes an importer and undoes it', async () => {
+    await uc.importing.deleteImporter('beer-catalog');
+    expect((await uc.importing.listImporters()).map((i) => i.id)).not.toContain('beer-catalog');
+    await uc.importing.undoDeleteImporter('beer-catalog');
+    expect((await uc.importing.listImporters()).map((i) => i.id)).toContain('beer-catalog');
+  });
+
+  it('pauses scans and returns the diff of a timeline entry', async () => {
+    expect((await uc.importing.setImporterActive('hello-soap', false)).active).toBe(false);
+    const diff = await uc.importing.getImporterDiff('pastry-openapi', '3c9e1d0', 'a41f9c2');
+    expect(diff.lines.some((l) => l.kind === 'added')).toBe(true);
+    expect(diff.lines.some((l) => l.kind === 'removed')).toBe(true);
+    await expect(uc.importing.getImporterDiff('pastry-openapi', 'a', 'b')).rejects.toBeInstanceOf(ValidationError);
+  });
+
+  it('shows the hourly scan window from the demo clock', () => {
+    const s = uc.importing.getScanSchedule();
+    expect(s.cron).toBe('0 0 * * * *');
+    expect(s.lastScanAt).toBe('2026-11-03T09:00:00.000Z');
+    expect(s.minutesSinceLast).toBe(10);
+    expect(s.minutesUntilNext).toBe(50);
+  });
+});

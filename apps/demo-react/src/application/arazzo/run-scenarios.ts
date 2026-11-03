@@ -1,4 +1,4 @@
-import { DEFAULT_RUN_TIMEOUT_MS, EXAMPLE_BASE_URL } from '@/domain/arazzo';
+import { DEFAULT_RUN_TIMEOUT_MS, EXAMPLE_BASE_URL, type Workflow } from '@/domain/arazzo';
 
 export type RunScenario = 'impl14' | 'mocksEnd' | 'mocksMissing';
 
@@ -72,4 +72,33 @@ export const RUN_SCENARIOS: Record<RunScenario, { label: string; runNumber: numb
 
 export function isRunScenario(value: string | null | undefined): value is RunScenario {
   return value === 'impl14' || value === 'mocksEnd' || value === 'mocksMissing';
+}
+
+const SAMPLE_INPUTS: Record<string, string> = { name: 'Eclair Cafe', quantity: '2', beerName: 'Pilsner' };
+
+function baseUrlOf(sourceName: string): string {
+  if (sourceName === 'apiPastry') return EXAMPLE_BASE_URL;
+  if (sourceName === 'apiPastryV1') return EXAMPLE_BASE_URL.replace(/\/v2$/, '/v1');
+  return '';
+}
+
+/**
+ * Initial values of the run form for a workflow. `restock-pastry` follows the prototype scenario
+ * (`impl14` unless another one is asked for); any other workflow starts on the mocks, with one base URL
+ * per source it uses, sample inputs and schema validation on.
+ */
+export function defaultsFor(workflow: Pick<Workflow, 'workflowId' | 'steps' | 'inputs'>, scenario?: RunScenario): RunFormDefaults {
+  if (workflow.workflowId === 'restock-pastry') return RUN_SCENARIOS[scenario ?? 'impl14'].defaults;
+  const sources = [...new Set(workflow.steps.map((s) => s.sourceName))];
+  return {
+    target: 'mocks',
+    baseUrls: Object.fromEntries(sources.map((s) => [s, baseUrlOf(s)])),
+    perSource: Object.fromEntries(sources.map((s) => [s, 'mock' as const])),
+    secret: '',
+    example: '',
+    detached: true,
+    inputs: Object.fromEntries(workflow.inputs.map((i) => [i.name, i.example ?? SAMPLE_INPUTS[i.name] ?? ''])),
+    validateSchemas: true,
+    timeoutMs: String(DEFAULT_RUN_TIMEOUT_MS),
+  };
 }

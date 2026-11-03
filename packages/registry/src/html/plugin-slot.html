@@ -1,0 +1,24 @@
+<!-- PluginSlot: renders the plugin contributions for one extension point, in the light DOM.
+     Contributions are wrapped in div.di-plugin-item[data-plugin-id]; style your plugin with the di-* classes. -->
+<script type="module">
+  import { getPluginHost } from './elements/mk-plugin-slot.js';
+
+  class PastryBadge extends HTMLElement {
+    set context(ctx) {
+      this.innerHTML = `<span class="di-live">pastry plugin · ${ctx.theme}</span>`;
+    }
+  }
+  customElements.define('pastry-badge', PastryBadge);
+
+  await getPluginHost().register({
+    manifest: { id: 'pastry-plugin', frontend: { tagPrefix: 'pastry-' } },
+    activate(api) {
+      api.contribute('service.header.badges', { id: 'badge', element: 'pastry-badge' });
+    },
+  });
+</script>
+
+<mk-plugin-slot point="service.header.badges" outlined>
+  <!-- Fallback shown when no plugin contributes -->
+  <p>No plugin contributes here.</p>
+</mk-plugin-slot>

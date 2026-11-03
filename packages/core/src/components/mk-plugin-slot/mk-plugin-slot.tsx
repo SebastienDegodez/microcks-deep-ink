@@ -2,19 +2,23 @@ import { Component, Element, Host, Prop, State, Watch, h } from '@stencil/core';
 import { ExtensionPointId, RegisteredContribution, SlotContext, getPluginHost } from '@microcks-deep-ink/plugin-sdk';
 
 /**
- * Extension point. Renders every plugin contribution registered for `point`
- * as its custom element, and hands it the `context` object as a property.
+ * Extension point. Renders every plugin contribution registered for `point` as its custom element
+ * and hands it the `context` object as a property.
+ *
+ * Renders in the light DOM (scoped styles, no shadow root): global tokens and the `di-*` classes
+ * reach the contributed elements. Each contribution is wrapped in
+ * `<div class="di-plugin-item" data-plugin-id="...">`.
  * @slot - Fallback shown when no plugin contributes.
  */
 @Component({
   tag: 'mk-plugin-slot',
-  shadow: true,
+  scoped: true,
   styles: `
     :host { display: contents; }
-    .item { display: block; position: relative; }
-    :host([outlined]) .item { border: 1px dashed var(--border-strong); border-radius: var(--radius-panel); padding: var(--space-3); }
-    .src { font: 400 11px/14px var(--font-mono); color: var(--text-muted); margin-bottom: 6px; }
-    .missing { font: var(--type-small); color: var(--warning); }
+    .di-plugin-item { display: block; position: relative; }
+    :host([outlined]) .di-plugin-item { border: 1px dashed var(--border-control); border-radius: var(--radius-panel); padding: var(--space-3); }
+    .di-plugin-source { font: 400 12px/16px var(--font-mono); color: var(--text-secondary); margin-bottom: 6px; }
+    .di-plugin-missing { font: var(--type-small); color: var(--warning); }
   `,
 })
 export class MkPluginSlot {
@@ -35,11 +39,14 @@ export class MkPluginSlot {
     return typeof this.context === 'string' ? JSON.parse(this.context) : this.context;
   }
 
+  private refresh = () => {
+    this.items = getPluginHost().contributionsFor(this.point, this.ctx());
+  };
+
   connectedCallback() {
     const host = getPluginHost();
-    const refresh = () => (this.items = host.contributionsFor(this.point, this.ctx()));
-    refresh();
-    this.unsubscribe = host.subscribe(refresh);
+    this.refresh();
+    this.unsubscribe = host.subscribe(this.refresh);
   }
 
   disconnectedCallback() {
@@ -49,12 +56,12 @@ export class MkPluginSlot {
   @Watch('point')
   @Watch('context')
   onChange() {
-    this.items = getPluginHost().contributionsFor(this.point, this.ctx());
+    this.refresh();
   }
 
   componentDidRender() {
     const ctx = this.ctx();
-    this.el.shadowRoot?.querySelectorAll('[data-contribution]').forEach((node) => {
+    this.el.querySelectorAll('.di-plugin-item > [data-contribution]').forEach((node) => {
       (node as HTMLElement & { context?: SlotContext }).context = ctx;
     });
   }
@@ -73,13 +80,17 @@ export class MkPluginSlot {
           const Tag = c.element as any;
           const defined = typeof customElements === 'undefined' || !!customElements.get(c.element);
           return (
-            <div class="item" key={`${c.pluginId}:${c.id}`}>
+            <div class="di-plugin-item" data-plugin-id={c.pluginId} key={`${c.pluginId}:${c.id}`}>
               {this.outlined && (
-                <div class="src">
+                <div class="di-plugin-source">
                   {c.pluginId} → {this.point}
                 </div>
               )}
-              {defined ? <Tag data-contribution {...(c.attributes ?? {})} /> : <div class="missing">&lt;{c.element}&gt; is not defined yet</div>}
+              {defined ? (
+                <Tag data-contribution {...(c.attributes ?? {})} />
+              ) : (
+                <div class="di-plugin-missing">&lt;{c.element}&gt; is not defined yet</div>
+              )}
             </div>
           );
         })}

@@ -8,3 +8,7 @@ export * from './baggage';
 export * from './poc-subset';
 export * from './run-request';
 export * from './run-filter';
+export * from './describe';
+export * from './simulation';
+export * from './progress';
+export * from './verification';

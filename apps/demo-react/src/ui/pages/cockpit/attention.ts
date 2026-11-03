@@ -1,0 +1,66 @@
+import type { Importer } from '@/domain/importing';
+import type { Protocol, ServiceSummary } from '@/domain/shared';
+
+export interface AttentionItem {
+  id: string;
+  kind: 'Failing test' | 'Failing workflow' | 'Importer error' | 'Never tested';
+  tone: 'danger' | 'warning' | 'neutral';
+  badge: Protocol | 'ARAZZO' | 'importer';
+  subject: string;
+  title: string;
+  detail: string;
+  cta: string;
+  to: string;
+}
+
+/**
+ * The "Needs attention" list: failing tests (API Pastry 2.0 fails with #119, the same price-as-string
+ * bug as Arazzo run #14), the failing workflow, importers in error, and services never tested.
+ */
+export function buildAttention(services: readonly ServiceSummary[], importers: readonly Importer[]): AttentionItem[] {
+  const items: AttentionItem[] = [];
+  const pastry2 = services.find((s) => s.id === 'pastry2');
+  if (pastry2?.testStatus === 'failed') {
+    items.push({
+      id: 'test-119', kind: 'Failing test', tone: 'danger', badge: 'REST', subject: `${pastry2.name} ${pastry2.version}`,
+      title: 'PATCH /pastries/{name} fails conformance',
+      detail: 'Test #119 · OPEN_API_SCHEMA · response body does not match schema: $.price expected number, got string. Test #118 passed 2 h earlier.',
+      cta: 'Open test #119', to: '/tests/runner/119',
+    });
+  }
+  const pastry1 = services.find((s) => s.id === 'pastry1');
+  if (pastry1?.testStatus === 'failed') {
+    items.push({
+      id: 'test-86', kind: 'Failing test', tone: 'danger', badge: 'REST', subject: `${pastry1.name} ${pastry1.version}`,
+      title: 'GET /pastries/{name}/stock fails conformance', detail: 'Test #86 · OPEN_API_SCHEMA · 2 of 3 operations conformant.',
+      cta: 'Open test #86', to: '/tests/runner/86',
+    });
+  }
+  items.push({
+    id: 'run-14', kind: 'Failing workflow', tone: 'danger', badge: 'ARAZZO', subject: 'Pastry workflows 1.2.0',
+    title: 'Workflow Restock a pastry failed on implementations · schema validation at patchPastry (3 attempts)',
+    detail:
+      'Run #14 · success criteria held ($statusCode == 200) but the response does not conform to its schema: price is the string "3.9", the schema expects a number. Stops at patchPastry, verifyPastry not run. Same bug as test #119.',
+    cta: 'Open run #14', to: '/workflows/runs/6729a1d27e4c0b5f93a8c214',
+  });
+  for (const importer of importers.filter((i) => i.health === 'failed')) {
+    items.push({
+      id: `importer-${importer.id}`, kind: 'Importer error', tone: 'warning', badge: 'importer', subject: importer.name,
+      title: `Scheduled import failed: ${importer.error?.message ?? 'error'}`,
+      detail: `${importer.error?.detail ?? ''} ${importer.error?.since ?? ''}. Mocks still serve the last imported version.`.trim(),
+      cta: 'Fix in Sources', to: `/importers/${importer.id}`,
+    });
+  }
+  const never = services.filter((s) => s.conformance === null);
+  const first = never[0];
+  if (first) {
+    const others = never.slice(1).map((s) => `${s.name} ${s.version}`);
+    items.push({
+      id: 'never', kind: 'Never tested', tone: 'neutral', badge: first.protocol, subject: `${first.name} ${first.version}`,
+      title: `${first.operationCount} operations without a conformance proof`,
+      detail: `Its mock served ${first.calls24h} requests today.${others.length ? ` ${others.join(' and ')} were never tested either.` : ''}`,
+      cta: 'Run a first test', to: `/tests/create?service=${first.id}`,
+    });
+  }
+  return items;
+}

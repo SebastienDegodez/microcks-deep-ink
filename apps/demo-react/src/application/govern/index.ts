@@ -7,9 +7,11 @@ import type {
   MembershipRequest,
   Role,
   Snapshot,
+  SnapshotImportPreviewItem,
 } from '@/domain/govern';
 import type { SecretSummary } from '@/domain/shared';
-import { NotFoundError } from '@/application/shared';
+import { validateSecretForm } from '@/domain/govern';
+import { NotFoundError, ValidationError } from '@/application/shared';
 import type { AdminRepository, HubRepository } from '@/application/ports/govern';
 import type { SecretRepository } from '@/application/ports/importing';
 
@@ -34,6 +36,8 @@ export interface GovernUseCases {
   createSecret(input: { name: string; kind: SecretSummary['kind']; description?: string; value: string }): Promise<SecretSummary>;
   deleteSecret(id: string): Promise<void>;
   exportSnapshot(serviceIds: string[]): Promise<Snapshot>;
+  previewSnapshotImport(fileName: string): Promise<SnapshotImportPreviewItem[]>;
+  importSnapshot(fileName: string): Promise<{ created: number; replaced: number }>;
   listFlags(): Promise<FeatureFlag[]>;
   setFlag(id: string, enabled: boolean): Promise<FeatureFlag>;
 }
@@ -48,6 +52,9 @@ export function createGovernUseCases({ hub, admin, secrets }: GovernPorts): Gove
       return found;
     },
     install: async (id, options, onProgress) => {
+      const current = await hub.get(id);
+      if (!current) throw new NotFoundError('Package', id);
+      if (current.installed) throw new ValidationError(`${current.name} is already installed.`);
       onProgress?.(0);
       const installed = await hub.install(id, options);
       onProgress?.(100);
@@ -60,9 +67,17 @@ export function createGovernUseCases({ hub, admin, secrets }: GovernPorts): Gove
     listRequests: () => admin.requests(),
     approveRequest: (id) => admin.approveRequest(id),
     listSecrets: () => secrets.list(),
-    createSecret: (input) => secrets.create(input),
+    createSecret: async (input) => {
+      const existing = (await secrets.list()).map((x) => x.name);
+      const errors = validateSecretForm({ name: input.name, kind: input.kind, description: input.description ?? '', secret: input.value }, existing);
+      const first = Object.values(errors)[0];
+      if (first) throw new ValidationError(first);
+      return secrets.create(input);
+    },
     deleteSecret: (id) => secrets.remove(id),
     exportSnapshot: (ids) => admin.snapshot(ids),
+    previewSnapshotImport: (name) => admin.snapshotImportPreview(name),
+    importSnapshot: (name) => admin.importSnapshot(name),
     listFlags: () => admin.flags(),
     setFlag: (id, enabled) => admin.setFlag(id, enabled),
   };

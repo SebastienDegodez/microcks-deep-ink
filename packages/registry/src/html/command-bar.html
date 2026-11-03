@@ -1,0 +1,18 @@
+<!-- CommandBar: Ctrl/⌘K. Combobox + listbox in a native modal dialog; Escape closes and focus returns to the opener. -->
+<script type="module" src="./elements/mk-command-bar.js"></script>
+
+<button type="button" id="open-commands" class="di-button">Open command bar</button>
+<mk-command-bar id="commands" label="Command bar"></mk-command-bar>
+
+<script type="module">
+  const bar = document.getElementById('commands');
+  bar.items = [
+    { id: 'test-pastry', label: 'Run a test on API Pastry 2.0', kind: 'action', keywords: ['test', 'run'] },
+    { id: 'svc-pastry', label: 'Open API Pastry 2.0', kind: 'service', protocol: 'REST', hint: 'service' },
+    { id: 'op-list', label: 'GET /pastries', kind: 'operation', hint: 'operation' },
+  ];
+  bar.addEventListener('mkCommand', (e) => console.log('run', e.detail.id));
+  document.getElementById('open-commands').addEventListener('click', () => bar.show());
+  // Ctrl/⌘K opens it too. Set bar.globalShortcut = false to turn that off.
+  // For docs, set bar.inline = true to render it in place instead of in a dialog.
+</script>

@@ -7,6 +7,7 @@ import type {
   MembershipRequest,
   Role,
   Snapshot,
+  SnapshotImportPreviewItem,
 } from '@/domain/govern';
 
 export interface HubRepository {
@@ -25,6 +26,9 @@ export interface AdminRepository {
   requests(): Promise<MembershipRequest[]>;
   approveRequest(requestId: string): Promise<void>;
   snapshot(serviceIds: string[]): Promise<Snapshot>;
+  /** What importing a snapshot file would do. */
+  snapshotImportPreview(fileName: string): Promise<SnapshotImportPreviewItem[]>;
+  importSnapshot(fileName: string): Promise<{ created: number; replaced: number }>;
   flags(): Promise<FeatureFlag[]>;
   setFlag(id: string, enabled: boolean): Promise<FeatureFlag>;
 }

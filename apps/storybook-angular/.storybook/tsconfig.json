@@ -2,10 +2,19 @@
   "extends": "../tsconfig.json",
   "compilerOptions": {
     "types": [],
+    "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true
   },
   "exclude": ["../src/test.ts", "../src/**/*.spec.ts"],
-  "include": ["../src/**/*.stories.*", "./preview.ts", "./theme.ts", "../../shared/*.ts"],
+  "include": [
+    "../src/**/*.stories.*",
+    "../src/**/_meta.ts",
+    "./preview.ts",
+    "./theme.ts",
+    "../../shared/*.ts",
+    "../../shared/copy-panel/a11y-doc.ts",
+    "../../../packages/registry/src/angular/**/*.ts"
+  ],
   "files": ["./typings.d.ts"]
 }

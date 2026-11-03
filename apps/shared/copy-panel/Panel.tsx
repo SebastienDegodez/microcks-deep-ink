@@ -107,7 +107,12 @@ function Tabs({ label, tabs, value, onChange, children, size }: { label: string;
             onKeyDown={onKey}
           >
             {t.label}
-            {t.hint ? <span className="dc-tab-hint">{t.hint}</span> : null}
+            {t.hint ? (
+              <>
+                {' '}
+                <span className="dc-tab-hint">{t.hint}</span>
+              </>
+            ) : null}
           </button>
         ))}
       </div>

@@ -3,12 +3,20 @@
     "target": "ES2022",
     "module": "ESNext",
     "moduleResolution": "bundler",
-    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
     "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,
     "noEmit": true,
-    "allowImportingTsExtensions": true
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true
   },
-  "include": ["src", ".storybook"]
+  "include": [
+    "src",
+    ".storybook"
+  ]
 }

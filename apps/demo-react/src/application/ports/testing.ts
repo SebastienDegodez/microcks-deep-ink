@@ -1,4 +1,4 @@
-import type { CreateTestInput, TestRun, TestRunSummary } from '@/domain/testing';
+import type { CreateTestInput, TestRun, TestRunSummary, TestTarget } from '@/domain/testing';
 import type { Subscribe } from '@/application/shared';
 
 export interface TestRunFilter {
@@ -17,4 +17,6 @@ export interface TestRunRepository {
   create(input: CreateTestInput): Promise<TestRun>;
   /** Streams the run while it executes: one emission per step (tick 1200 ms), last one is final. */
   watch(id: string): Subscribe<TestRun>;
+  /** What each service offers to the "Run a test" form (runners, operations, recent endpoints). */
+  targets(): Promise<TestTarget[]>;
 }

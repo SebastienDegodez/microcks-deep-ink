@@ -2,7 +2,8 @@
 // Types come from the registry sources (the code users copy), never from a published package.
 import type { OperationResult } from '@microcks-deep-ink/registry/react/conformance-band';
 import type { TabItem } from '@microcks-deep-ink/registry/react/tabs';
-import type { CommandItem, LoomSource, LoomStep, LoomThread } from '@microcks-deep-ink/registry/react/workflow-loom';
+import type { CommandItem } from '@microcks-deep-ink/registry/react/command-bar';
+import type { LoomSource, LoomStep, LoomThread } from '@microcks-deep-ink/registry/react/workflow-loom';
 
 /** Props of the <WorkflowLoom> element wrapper, minus the callbacks. */
 export interface LoomScenario {

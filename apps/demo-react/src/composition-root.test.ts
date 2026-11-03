@@ -29,9 +29,9 @@ describe('catalog use cases', () => {
   });
 
   it('simulates a request against the examples', async () => {
-    const hit = await uc.catalog.simulate('pastry2', 'get-name', { path: '/pastries/Millefeuille', params: { name: 'Millefeuille' } });
+    const hit = await uc.catalog.simulate('pastry2', 'get-name', { path: '/pastries/Millefeuille', params: {}, headers: { 'x-api-key': 'demo-7f3a' } });
     expect(hit).toMatchObject({ matched: true, exampleId: 'millefeuille' });
-    const miss = await uc.catalog.simulate('pastry2', 'get-name', { path: '/pastries/Tarte%20Tatin', params: { name: 'Tarte Tatin' } });
+    const miss = await uc.catalog.simulate('pastry2', 'get-name', { path: '/pastries/Tarte%20Tatin', params: {}, headers: { 'x-api-key': 'demo-7f3a' } });
     expect(miss.matched).toBe(false);
   });
 });
@@ -121,7 +121,8 @@ describe('testing, observe, govern and importing use cases', () => {
     const cockpit = await uc.observe.getCockpit();
     expect(cockpit.asOf).toBe('2026-11-03T09:10:04.000Z');
     expect(cockpit.kpis.services).toBe(10);
-    expect(cockpit.kpis.failingServices).toBe(3);
+    // movie, pastry1, beer and, since test #119, pastry2
+    expect(cockpit.kpis.failingServices).toBe(4);
     expect(cockpit.recentTests[0]?.id).toBe('119');
   });
 

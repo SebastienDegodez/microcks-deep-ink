@@ -1,4 +1,4 @@
-import type { DomainConformance, Invocations, Period, TraceCall, TraceFilter } from '@/domain/observe';
+import { buildUsageView, type DomainConformance, type Invocations, type Period, type TraceCall, type TraceFilter, type TraceTopology, type UsagePeriod, type UsageView } from '@/domain/observe';
 import type { ServiceSummary } from '@/domain/shared';
 import type { TestRunSummary } from '@/domain/testing';
 import type { Unsubscribe } from '@/application/shared';
@@ -42,6 +42,10 @@ export interface ObserveUseCases {
   subscribeTraces(filter: TraceFilter, listener: (call: TraceCall) => void): Unsubscribe;
   replay(callId: string): Promise<TraceCall>;
   getTrace(callId: string): Promise<TraceCall | undefined>;
+  /** Everything the Usage page shows for a service (or `all`) over a period. */
+  usage(scope: string, period: UsagePeriod): Promise<UsageView>;
+  /** Who calls what and which example answers, plus the recent calls the live stream continues from. */
+  traceTopology(): Promise<TraceTopology>;
 }
 
 export function createObserveUseCases(ports: ObservePorts): ObserveUseCases {
@@ -71,5 +75,7 @@ export function createObserveUseCases(ports: ObservePorts): ObserveUseCases {
     subscribeTraces: (filter, listener) => ports.traces.subscribe(filter, listener),
     replay: (callId) => ports.traces.replay(callId),
     getTrace: (callId) => ports.traces.get(callId),
+    usage: async (scope, period) => buildUsageView(await ports.metrics.usageData(scope), period),
+    traceTopology: () => ports.traces.topology(),
   };
 }
