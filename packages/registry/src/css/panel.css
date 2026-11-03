@@ -1,0 +1,38 @@
+@layer deep-ink.components {
+  .di-panel {
+    box-sizing: border-box;
+    min-width: 0;
+    color: var(--text);
+    background: var(--canvas);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-panel);
+  }
+
+  .di-panel-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    padding: var(--space-4) var(--space-4) 0;
+  }
+  .di-panel-title {
+    margin: 0;
+    font: var(--type-title);
+  }
+  .di-panel-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+    margin-inline-start: auto;
+  }
+
+  .di-panel-body {
+    padding: var(--space-4);
+  }
+  .di-panel[data-flush] .di-panel-body {
+    padding: 0;
+  }
+  .di-panel[data-flush] .di-panel-header {
+    padding-block-end: var(--space-3);
+  }
+}

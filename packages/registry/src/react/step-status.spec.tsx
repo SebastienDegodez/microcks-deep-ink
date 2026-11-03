@@ -31,10 +31,10 @@ describe('StepChecks', () => {
     render(<StepChecks successCriteria="passed" schemaValidation="failed" />);
     const items = screen.getAllByRole('listitem');
     expect(items).toHaveLength(2);
-    expect(items[0].textContent).toContain('Success criteria');
-    expect(items[0].textContent).toContain('Passed');
-    expect(items[1].textContent).toContain('Schema validation');
-    expect(items[1].textContent).toContain('Failed');
+    expect(items[0]?.textContent).toContain('Success criteria');
+    expect(items[0]?.textContent).toContain('Passed');
+    expect(items[1]?.textContent).toContain('Schema validation');
+    expect(items[1]?.textContent).toContain('Failed');
   });
 
   it('omits schema validation when the run does not validate schemas', () => {

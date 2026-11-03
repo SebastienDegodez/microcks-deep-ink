@@ -1,0 +1,8 @@
+@layer deep-ink.components {
+  svg.di-icon {
+    flex: none;
+    display: inline-block;
+    vertical-align: middle;
+    color: inherit;
+  }
+}

@@ -1,0 +1,20 @@
+/* Deep Ink · skeleton@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .di-skeleton-group { display: flex; flex-direction: column; gap: var(--space-2); }
+  .di-skeleton {
+    display: block;
+    height: 1em;
+    width: var(--di-skeleton-width, 100%);
+    background: var(--raised);
+    border-radius: var(--radius-control);
+    animation: di-skeleton-pulse 1.4s ease-in-out infinite;
+  }
+  .di-skeleton-group > .di-skeleton:last-child:not(:only-child) { width: 60%; }
+  @keyframes di-skeleton-pulse {
+    50% { background: var(--border); }
+  }
+  /* Static under reduced motion. */
+  @media (prefers-reduced-motion: reduce) {
+    .di-skeleton { animation: none; }
+  }
+}

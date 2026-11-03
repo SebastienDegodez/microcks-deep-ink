@@ -1,0 +1,52 @@
+/* Deep Ink · select@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .di-select {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 40px;
+    margin: 0;
+    padding: 0 36px 0 12px;
+    font: 400 15px/22px var(--font-ui);
+    color: var(--text);
+    background-color: var(--surface);
+    /* Caret drawn with gradients so it follows currentColor in both themes. */
+    background-image:
+      linear-gradient(45deg, transparent 50%, currentColor 50%),
+      linear-gradient(135deg, currentColor 50%, transparent 50%);
+    background-position:
+      calc(100% - 19px) 50%,
+      calc(100% - 14px) 50%;
+    background-size: 5px 5px;
+    background-repeat: no-repeat;
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-control);
+    appearance: none;
+    cursor: pointer;
+  }
+
+  .di-select[data-size="sm"] {
+    min-height: 32px;
+    font-size: 13px;
+  }
+
+  .di-select:hover {
+    border-color: var(--text-secondary);
+  }
+
+  .di-select[aria-invalid="true"] {
+    border-color: var(--danger);
+    box-shadow: inset 0 0 0 1px var(--danger);
+  }
+
+  .di-select:disabled {
+    border-color: var(--border);
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  /* Opaque option surface so the list stays readable in dark mode. */
+  .di-select option {
+    background: var(--canvas);
+    color: var(--text);
+  }
+}

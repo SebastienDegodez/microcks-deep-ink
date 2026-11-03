@@ -1,0 +1,34 @@
+/* Deep Ink · callout@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .di-callout {
+    --di-callout-color: var(--link);
+    --di-callout-bg: var(--info-tint);
+    display: flex;
+    gap: var(--space-3);
+    align-items: flex-start;
+    padding: var(--space-3) var(--space-4);
+    background: var(--di-callout-bg);
+    color: var(--text);
+    border: 1px solid var(--border-control);
+    border-inline-start: 4px solid var(--di-callout-color);
+    border-radius: var(--radius-panel);
+    font: var(--type-body);
+  }
+  .di-callout[data-tone="success"] { --di-callout-color: var(--success); --di-callout-bg: var(--success-tint); }
+  .di-callout[data-tone="warning"] { --di-callout-color: var(--warning); --di-callout-bg: var(--warning-tint); }
+  .di-callout[data-tone="danger"] { --di-callout-color: var(--danger); --di-callout-bg: var(--danger-tint); }
+  /* AI content: warning color, dashed edge, spark icon (README: AI content is always labelled). */
+  .di-callout[data-tone="ai"] {
+    --di-callout-color: var(--warning);
+    --di-callout-bg: var(--warning-tint);
+    border-style: dashed;
+    border-inline-start-style: solid;
+  }
+  .di-callout > .di-icon { flex: none; margin-top: 3px; color: var(--di-callout-color); }
+  .di-callout-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); }
+  .di-callout-title { margin: 0; font: var(--type-heading); color: var(--text); }
+  .di-callout-content { color: var(--text); }
+  .di-callout-content > :first-child { margin-top: 0; }
+  .di-callout-content > :last-child { margin-bottom: 0; }
+  .di-callout-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-2); }
+}

@@ -1,0 +1,25 @@
+<!--
+  Menu recipe: disclosure pattern on the native popover attribute.
+  The button toggles the popover with popovertarget. Mirror aria-expanded from the popover's
+  "toggle" event (event.newState). Escape and click outside close it natively and return focus
+  to the button. Script: ArrowDown/ArrowUp move between items, Home/End jump to the ends,
+  and the first item is focused when the menu opens.
+  Position the popover next to the trigger with script (it is fixed and has inset: auto).
+-->
+<button type="button" class="di-button" data-variant="secondary" data-size="sm" popovertarget="svc-menu" aria-expanded="false" aria-controls="svc-menu">
+  Actions
+</button>
+<div id="svc-menu" class="di-menu" popover="auto" role="group" aria-label="Actions">
+  <button type="button" class="di-menu-item">Copy service id</button>
+  <a class="di-menu-item" href="/tests/create?service=pastry2">Run a test</a>
+  <button type="button" class="di-menu-item" data-tone="danger">Delete service</button>
+</div>
+
+<script>
+  const menu = document.getElementById('svc-menu');
+  const trigger = document.querySelector('[popovertarget="svc-menu"]');
+  menu.addEventListener('toggle', (e) => {
+    trigger.setAttribute('aria-expanded', String(e.newState === 'open'));
+    if (e.newState === 'open') menu.querySelector('.di-menu-item')?.focus();
+  });
+</script>

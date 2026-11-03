@@ -9,6 +9,6 @@
     "deep-ink": "./bin/deep-ink.mjs"
   },
   "scripts": {
-    "test": "node --test test/"
+    "test": "node --test"
   }
 }

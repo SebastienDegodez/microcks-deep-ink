@@ -1,0 +1,21 @@
+/* Deep Ink · disclosure@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .di-disclosure {
+    background: var(--canvas);
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-panel);
+    color: var(--text);
+  }
+  .di-disclosure > summary {
+    min-height: 44px;
+    display: flex;
+    align-items: center;
+    padding: var(--space-2) var(--space-4);
+    font: var(--type-heading);
+    cursor: pointer;
+    border-radius: var(--radius-panel);
+  }
+  .di-disclosure > summary::marker { color: var(--text-secondary); }
+  .di-disclosure[open] > summary { border-bottom: 1px solid var(--border); border-end-start-radius: 0; border-end-end-radius: 0; }
+  .di-disclosure > :not(summary) { margin: var(--space-3) var(--space-4); }
+}

@@ -1,0 +1,115 @@
+@layer deep-ink.components {
+  .di-table-wrap {
+    position: relative;
+    overflow-x: auto;
+    color: var(--text);
+    background: var(--canvas);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-panel);
+  }
+
+  .di-table {
+    width: 100%;
+    border-collapse: collapse;
+    font: 400 14px/20px var(--font-ui);
+    color: var(--text);
+  }
+
+  .di-table caption {
+    padding: var(--space-3) var(--space-4);
+    text-align: start;
+    font: var(--type-heading);
+  }
+
+  .di-table th {
+    padding: 10px var(--space-4);
+    text-align: start;
+    white-space: nowrap;
+    font: var(--type-label);
+    letter-spacing: var(--type-label-tracking);
+    text-transform: uppercase;
+    color: var(--text-secondary);
+    background: var(--canvas);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .di-table td {
+    padding: var(--space-3) var(--space-4);
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border);
+  }
+  .di-table[data-density="compact"] td {
+    padding-block: var(--space-2);
+  }
+  .di-table tbody tr:last-child td {
+    border-bottom: 0;
+  }
+
+  .di-table [data-align="end"] {
+    text-align: end;
+  }
+  .di-table td[data-mono] {
+    font: var(--type-code);
+  }
+
+  /* Rows with a link: the link of the first cell is stretched over the whole row. */
+  .di-table tbody tr {
+    position: relative;
+  }
+  .di-table tbody tr:hover {
+    background: var(--raised);
+  }
+  .di-table-rowlink {
+    color: var(--link);
+    font-weight: 600;
+    text-decoration: underline;
+  }
+  .di-table-rowlink::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+  }
+  /* Controls inside other cells stay clickable above the stretched link. */
+  .di-table td a:not(.di-table-rowlink),
+  .di-table td button {
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Selected row: tint, a bar on the start edge (shape, not only hue), and aria-current on its link. */
+  .di-table tbody tr[data-selected] {
+    background: var(--selected);
+  }
+  .di-table tbody tr[data-selected] td:first-child {
+    box-shadow: inset 3px 0 0 var(--action);
+  }
+
+  /* Sort button inside a header cell */
+  .di-table-sort {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 4px 0;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+  .di-table-sort:hover {
+    color: var(--text);
+  }
+  .di-table th[aria-sort] .di-table-sort {
+    color: var(--text);
+  }
+
+  .di-table-empty {
+    padding: var(--space-8) var(--space-4);
+    text-align: center;
+    color: var(--text-muted);
+    white-space: normal;
+  }
+}

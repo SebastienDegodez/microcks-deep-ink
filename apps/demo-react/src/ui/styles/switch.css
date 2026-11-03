@@ -1,0 +1,58 @@
+/* Deep Ink · switch@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  /* The row layout (.di-choice) comes from the checkbox item. */
+  .di-switch {
+    appearance: none;
+    flex: none;
+    position: relative;
+    box-sizing: border-box;
+    width: 44px;
+    height: 24px;
+    margin: 0;
+    background: var(--surface);
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-pill);
+    cursor: inherit;
+  }
+  .di-switch::before {
+    content: "";
+    position: absolute;
+    inset-block-start: 3px;
+    inset-inline-start: 3px;
+    width: 16px;
+    height: 16px;
+    border-radius: 50%;
+    background: var(--text-secondary);
+    transition: transform 0.12s ease;
+  }
+  .di-switch:checked {
+    background: var(--action);
+    border-color: var(--action);
+  }
+  .di-switch:checked::before {
+    background: var(--on-action);
+    transform: translateX(20px);
+  }
+  .di-switch:disabled {
+    border-color: var(--border);
+  }
+  .di-switch:disabled::before {
+    background: var(--text-muted);
+  }
+  .di-switch:disabled:checked {
+    background: var(--text-muted);
+    border-color: var(--text-muted);
+  }
+  .di-switch:disabled:checked::before {
+    background: var(--surface);
+  }
+
+  @media (forced-colors: active) {
+    .di-switch::before {
+      background: CanvasText;
+    }
+    .di-switch:checked {
+      background: Highlight;
+    }
+  }
+}

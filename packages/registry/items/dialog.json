@@ -1,0 +1,27 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "dialog",
+  "title": "Dialog",
+  "tier": "natural",
+  "description": "Modal dialog on the native dialog element, with focus return and a described title.",
+  "registryDependencies": ["base", "button", "icon"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "Native <dialog> opened with showModal()",
+    "keyboard": [
+      ["Escape", "Closes the dialog"],
+      ["Tab / Shift+Tab", "Cycles inside the dialog (the page behind is inert)"],
+      ["Enter / Space", "Activates the focused button"]
+    ],
+    "aria": [
+      "aria-labelledby points at the title, aria-describedby at the description",
+      "The close icon button has aria-label=\"Close\"",
+      "showModal() makes the page inert and implies aria-modal",
+      "Focus moves to [data-autofocus], else the first control of the body or footer, and returns to the opener on close"
+    ],
+    "rgaa": ["7.1", "7.3", "10.7", "12.6"],
+    "wcag": ["2.1.1", "2.1.2", "2.4.3", "4.1.2"],
+    "notes": "Use data-autofocus (not React's autoFocus) to choose the first focused control. For destructive confirmations, focus the safe action. Backdrop click is off by default."
+  },
+  "stories": ["Components/Dialog"]
+}

@@ -1,0 +1,53 @@
+@layer deep-ink.components {
+  .di-menu {
+    box-sizing: border-box;
+    min-width: 12rem;
+    max-width: calc(100vw - 16px);
+    /* The popover is positioned by script next to its trigger. */
+    position: fixed;
+    inset: auto;
+    margin: 0;
+    padding: var(--space-1);
+    color: var(--text);
+    background: var(--canvas);
+    border: 1px solid var(--border-control);
+    border-radius: var(--radius-panel);
+    box-shadow: var(--shadow-overlay);
+  }
+  .di-menu:popover-open {
+    display: flex;
+    flex-direction: column;
+  }
+
+  .di-menu-item {
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    min-height: 36px;
+    margin: 0;
+    padding: 6px var(--space-3);
+    font: 400 14px/20px var(--font-ui);
+    text-align: start;
+    text-decoration: none;
+    color: var(--text);
+    background: transparent;
+    border: 0;
+    border-radius: var(--radius-control);
+    cursor: pointer;
+  }
+  .di-menu-item:hover {
+    background: var(--raised);
+  }
+  .di-menu-item[data-tone="danger"] {
+    color: var(--danger);
+  }
+  .di-menu-item:disabled,
+  .di-menu-item[aria-disabled="true"] {
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+  /* Keep the focus ring inside the rounded popover. */
+  .di-menu-item:focus-visible {
+    outline-offset: -2px;
+  }
+}

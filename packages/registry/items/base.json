@@ -1,0 +1,18 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "base",
+  "title": "Base",
+  "tier": "natural",
+  "description": "Cascade layer order, global focus ring, skip link, screen-reader helper, layout helpers and reduced motion.",
+  "cssOnly": true,
+  "registryDependencies": ["tokens"],
+  "a11y": {
+    "pattern": "Global focus-visible ring, .di-skip-link, .di-sr-only, reduced-motion media query",
+    "keyboard": [["Tab", "The skip link is the first stop and becomes visible on focus"]],
+    "aria": ["Point the skip link at the id of the main landmark (main#main)"],
+    "rgaa": ["10.7", "12.7", "13.8"],
+    "wcag": ["2.3.3", "2.4.1", "2.4.7"],
+    "notes": "Never remove the focus ring without a replacement that has at least 3:1 contrast. Component CSS lives in the deep-ink.components layer, so your unlayered CSS wins without !important."
+  },
+  "stories": ["Foundations/Focus and motion"]
+}

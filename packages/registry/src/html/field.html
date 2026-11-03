@@ -1,0 +1,17 @@
+<!--
+  Field recipe. The label is visible and tied to the control with for/id.
+  Help and error are tied with aria-describedby. Invalid: aria-invalid="true".
+  The asterisk is decorative; the control carries the required attribute.
+-->
+<div class="di-field" data-invalid>
+  <label class="di-label" for="name">Name <span class="di-required" aria-hidden="true">*</span></label>
+  <input id="name" class="di-input" type="text" required aria-invalid="true" aria-describedby="name-help name-error" />
+  <p class="di-help" id="name-help">Used in the mock URL.</p>
+  <p class="di-error" id="name-error">
+    <svg class="di-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+         stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+      <path d="M12 4l9 16H3z" /><path d="M12 10v4" /><path d="M12 17v.5" />
+    </svg>
+    <span><span class="di-sr-only">Error: </span>Enter a name.</span>
+  </p>
+</div>

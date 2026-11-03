@@ -1,0 +1,97 @@
+/*
+ * Demo-specific layout glue (prefix `demo-`). Components and the design system live in the copied
+ * `ui/styles` (classes `di-*`); this file only covers what the demo shell adds around them.
+ * Colors come from the tokens; no alpha or color-mix behind text.
+ */
+
+.demo-brand {
+  font-weight: 700;
+  text-decoration: none;
+  color: inherit;
+}
+
+.demo-topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-inline-start: auto;
+}
+
+.demo-banner {
+  margin: 0;
+  padding: 4px 10px;
+  border: 1px solid var(--warning, #f5b83d);
+  border-radius: 4px;
+  background: var(--warning-tint, transparent);
+  color: var(--text, inherit);
+  font-size: 0.875rem;
+}
+
+.demo-banner-tag {
+  letter-spacing: 0.04em;
+}
+
+.demo-nav-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.demo-nav-toggle {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  .demo-nav-toggle {
+    display: inline-flex;
+  }
+  .di-sidenav[data-collapsible]:not([data-open]) {
+    display: none;
+  }
+}
+
+.demo-page-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px 24px;
+  margin-block-end: 16px;
+}
+
+.demo-page-title-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+
+.demo-page-title {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.demo-page-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.demo-eyebrow {
+  margin: 0 0 4px;
+  color: var(--text-secondary, inherit);
+  font-size: 0.875rem;
+}
+
+.demo-placeholder {
+  max-width: 60ch;
+}
+
+.demo-map {
+  display: grid;
+  gap: 16px;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 260px), 1fr));
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}

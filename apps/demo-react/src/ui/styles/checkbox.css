@@ -1,0 +1,133 @@
+/* Deep Ink · checkbox@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .di-choice {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+    min-height: 24px;
+    color: var(--text);
+    cursor: pointer;
+  }
+  .di-choice > span {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+  .di-choice-label {
+    font: var(--type-body);
+  }
+  .di-choice-description {
+    font: var(--type-small);
+    color: var(--text-muted);
+  }
+  .di-choice:has(input:disabled) {
+    color: var(--text-muted);
+    cursor: not-allowed;
+  }
+
+  .di-checkbox,
+  .di-radio {
+    appearance: none;
+    flex: none;
+    display: grid;
+    place-content: center;
+    box-sizing: border-box;
+    width: 22px;
+    height: 22px;
+    margin: 0;
+    margin-block-start: 0;
+    background: var(--surface);
+    border: 1px solid var(--border-control);
+    cursor: inherit;
+  }
+  .di-checkbox {
+    border-radius: var(--radius-control);
+  }
+  .di-radio {
+    border-radius: 50%;
+  }
+  .di-checkbox:hover,
+  .di-radio:hover {
+    border-color: var(--text-secondary);
+  }
+
+  /* Check mark */
+  .di-checkbox::before {
+    content: "";
+    display: none;
+    width: 12px;
+    height: 12px;
+    background: var(--on-action);
+    clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
+  }
+  .di-checkbox:checked {
+    background: var(--action);
+    border-color: var(--action);
+  }
+  .di-checkbox:checked::before {
+    display: block;
+  }
+
+  /* Dot */
+  .di-radio::before {
+    content: "";
+    display: none;
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--action);
+  }
+  .di-radio:checked {
+    border-color: var(--action);
+    border-width: 2px;
+  }
+  .di-radio:checked::before {
+    display: block;
+  }
+
+  .di-checkbox:disabled,
+  .di-radio:disabled {
+    border-color: var(--border);
+    background: var(--surface);
+  }
+  .di-checkbox:disabled:checked {
+    background: var(--text-muted);
+    border-color: var(--text-muted);
+  }
+  .di-radio:disabled:checked::before {
+    background: var(--text-muted);
+  }
+
+  .di-checkbox[aria-invalid="true"],
+  .di-radio[aria-invalid="true"] {
+    border-color: var(--danger);
+  }
+
+  .di-fieldset {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    min-width: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+  .di-fieldset > legend {
+    padding: 0;
+    margin-block-end: var(--space-2);
+    font: var(--type-label);
+    letter-spacing: var(--type-label-tracking);
+    text-transform: uppercase;
+    color: var(--text-secondary);
+  }
+
+  @media (forced-colors: active) {
+    .di-checkbox:checked::before {
+      background: CanvasText;
+    }
+    .di-radio::before {
+      background: CanvasText;
+    }
+  }
+}

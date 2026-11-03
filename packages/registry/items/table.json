@@ -1,0 +1,28 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "table",
+  "title": "Data table",
+  "tier": "natural",
+  "description": "Dense data table with a caption, sortable headers, row links and a scroll region.",
+  "registryDependencies": ["base", "icon"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "Native <table> with <caption>, th scope=col, aria-sort and a focusable scroll region",
+    "keyboard": [
+      ["Tab", "Reaches the scroll region, sort buttons and row links in DOM order"],
+      ["Enter / Space", "Activates a sort button"],
+      ["Enter", "Follows the row link"],
+      ["Arrow keys", "Scroll the region when it has focus"]
+    ],
+    "aria": [
+      "<caption> names the table; the region is labelled by it",
+      "aria-sort=\"ascending|descending\" on the sorted header only",
+      "Selected row: aria-current=\"true\" on its link, or a visually hidden \"Selected\" for rows without a link",
+      "A polite live region announces \"Sorted by <column>, ascending\""
+    ],
+    "rgaa": ["5.1", "5.4", "5.6", "5.7", "7.1", "10.11"],
+    "wcag": ["1.3.1", "1.4.10", "2.1.1", "4.1.2"],
+    "notes": "No <tr onClick>: the row link is a real anchor stretched over the row. Other links or buttons in the row stay clickable. The caller sorts the rows (sortRows helper provided)."
+  },
+  "stories": ["Components/Data table"]
+}

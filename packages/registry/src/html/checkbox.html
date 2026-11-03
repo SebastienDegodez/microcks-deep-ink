@@ -1,0 +1,23 @@
+<!--
+  Checkbox and radio recipes. The input sits inside its label, so the whole row is the click target.
+  A group of radios (or related checkboxes) is a fieldset with a legend.
+-->
+<label class="di-choice">
+  <input type="checkbox" class="di-checkbox" name="validate" checked aria-describedby="validate-desc" />
+  <span>
+    <span class="di-choice-label">Validate each response against its OpenAPI schema</span>
+    <span class="di-choice-description" id="validate-desc">Adds a Schema validation check to every step.</span>
+  </span>
+</label>
+
+<fieldset class="di-fieldset">
+  <legend>Run against</legend>
+  <label class="di-choice">
+    <input type="radio" class="di-radio" name="target" value="mocks" checked />
+    <span><span class="di-choice-label">Mocks</span></span>
+  </label>
+  <label class="di-choice">
+    <input type="radio" class="di-radio" name="target" value="implementations" />
+    <span><span class="di-choice-label">Implementations</span></span>
+  </label>
+</fieldset>

@@ -1,0 +1,26 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "checkbox",
+  "title": "Checkbox and radio",
+  "tier": "natural",
+  "description": "Native checkbox, radio and radio group in a fieldset with a legend.",
+  "registryDependencies": ["base", "icon", "field"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "Native <input type=checkbox|radio> inside <label>; groups use <fieldset><legend>",
+    "keyboard": [
+      ["Space", "Toggles a checkbox or selects the focused radio"],
+      ["↑ / ↓ / ← / →", "Moves between radios of a group and selects (native)"],
+      ["Tab", "Enters and leaves a radio group as one stop"]
+    ],
+    "aria": [
+      "Description is linked with aria-describedby",
+      "Group error and help are linked to the fieldset with aria-describedby",
+      "Do not replace the input with a div role=checkbox"
+    ],
+    "rgaa": ["3.3", "11.1", "11.5", "11.6", "11.7"],
+    "wcag": ["1.3.1", "1.4.11", "3.3.2", "4.1.2"],
+    "notes": "The checked state is shown by a fill and a mark, not by color alone. Related controls always sit in a fieldset with a legend."
+  },
+  "stories": ["Components/Checkbox", "Components/Radio group"]
+}

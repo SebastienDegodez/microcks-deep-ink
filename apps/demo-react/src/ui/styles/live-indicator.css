@@ -1,0 +1,27 @@
+/* Deep Ink · live-indicator@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .di-live {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 4px 12px;
+    border: 1px solid var(--live);
+    border-radius: var(--radius-pill);
+    color: var(--live-text);
+    font: 400 12px/16px var(--font-mono);
+  }
+  .di-live-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: var(--radius-pill);
+    background: var(--live);
+    animation: di-live-pulse 1.6s ease-in-out infinite;
+  }
+  @keyframes di-live-pulse { 50% { opacity: 0.35; } }
+  /* Paused: hollow, static dot and neutral colors; the word "paused" is also written. */
+  .di-live[data-paused] { border-color: var(--border-control); color: var(--text-secondary); }
+  .di-live[data-paused] .di-live-dot { background: transparent; border: 2px solid var(--text-secondary); box-sizing: border-box; animation: none; }
+  @media (prefers-reduced-motion: reduce) {
+    .di-live-dot { animation: none; }
+  }
+}

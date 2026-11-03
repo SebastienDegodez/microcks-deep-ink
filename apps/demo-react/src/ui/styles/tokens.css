@@ -1,0 +1,115 @@
+/* Deep Ink · tokens@0.2.0 · copied from packages/registry. You own this file. */
+/* Microcks Deep Ink tokens, generated from tokens.json. Do not edit. */
+@import url('https://fonts.googleapis.com/css2?family=Alegreya+Sans+SC:wght@500;700;800&family=IBM+Plex+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;600&display=swap');
+
+:root {
+  --brand-blue: #2E9BF0;
+  --brand-cloud: #86CEF5;
+  --brand-deep: #0B5FA8;
+  --brand-pink: #FF2D5E;
+  --brand-ink: #070B14;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-12: 48px;
+  --radius-control: 4px;
+  --radius-badge: 6px;
+  --radius-panel: 8px;
+  --radius-node: 12px;
+  --radius-pill: 999px;
+  --font-brand: "Alegreya Sans SC", "Alegreya Sans", system-ui, sans-serif;
+  --font-ui: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-mono: "JetBrains Mono", SFMono-Regular, Menlo, Consolas, monospace;
+  --type-display: 800 44px/48px var(--font-brand);
+  --type-section: 700 28px/32px var(--font-brand);
+  --type-title: 600 20px/28px var(--font-ui);
+  --type-heading: 600 16px/22px var(--font-ui);
+  --type-body: 400 15px/22px var(--font-ui);
+  --type-small: 400 13px/18px var(--font-ui);
+  --type-label: 600 12px/16px var(--font-ui);
+  --type-label-tracking: 0.04em;
+  --type-code: 400 13px/20px var(--font-mono);
+  --type-badge: 600 12px/16px var(--font-mono);
+}
+
+:root,
+[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #070B14;
+  --canvas: #0B1220;
+  --surface: #101A2C;
+  --raised: #16233A;
+  --border: #22324F;
+  --border-strong: #2B3D5E;
+  --border-control: #6A7FA3;
+  --text: #E6EDF7;
+  --text-secondary: #B4C2DA;
+  --text-muted: #8A9AB8;
+  --action: #2E9BF0;
+  --on-action: #06101F;
+  --link: #86CEF5;
+  --selected: #0F2A47;
+  --focus-ring: rgba(46,155,240,0.25);
+  --live: #FF2D5E;
+  --live-text: #FF8AA5;
+  --success: #5BD08B;
+  --danger: #FF6B5B;
+  --warning: #F5B83D;
+  --running: #2E9BF0;
+  --success-tint: #0F2B1F;
+  --danger-tint: #3B1A17;
+  --warning-tint: #33260A;
+  --info-tint: #10294A;
+  --on-status: #06101F;
+  --proto-rest: #9BD12A;
+  --proto-soap: #4FB4EA;
+  --proto-event: #F59234;
+  --proto-grpc: #41C7C7;
+  --proto-graphql: #F45BBF;
+  --proto-direct: #B98AF5;
+  --on-proto: #06101F;
+  --shadow-focus: 0 0 0 4px rgba(46,155,240,0.25);
+  --shadow-overlay: 0 16px 40px rgba(0,0,0,0.55);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #F4F7FB;
+  --canvas: #FFFFFF;
+  --surface: #EEF3F9;
+  --raised: #E3EBF5;
+  --border: #CBD6E5;
+  --border-strong: #7A8DA8;
+  --border-control: #6B7E9B;
+  --text: #0B1220;
+  --text-secondary: #2E3D58;
+  --text-muted: #56657F;
+  --action: #0A62B3;
+  --on-action: #FFFFFF;
+  --link: #0A62B3;
+  --selected: #DCEBFA;
+  --focus-ring: rgba(10,98,179,0.25);
+  --live: #D6084A;
+  --live-text: #B0073D;
+  --success: #17733F;
+  --danger: #B23026;
+  --warning: #875B00;
+  --running: #0A62B3;
+  --success-tint: #E2F3E9;
+  --danger-tint: #FBE8E6;
+  --warning-tint: #FAEFD4;
+  --info-tint: #E2EEFB;
+  --on-status: #FFFFFF;
+  --proto-rest: #456F00;
+  --proto-soap: #0D6596;
+  --proto-event: #A34B00;
+  --proto-grpc: #176E6E;
+  --proto-graphql: #B5007A;
+  --proto-direct: #7A3FC0;
+  --on-proto: #FFFFFF;
+  --shadow-focus: 0 0 0 4px rgba(10,98,179,0.25);
+  --shadow-overlay: 0 16px 40px rgba(11,18,32,0.16);
+}
