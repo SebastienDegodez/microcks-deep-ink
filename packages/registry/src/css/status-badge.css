@@ -1,0 +1,22 @@
+@layer deep-ink.components {
+  .di-status {
+    --di-status-color: var(--text-muted);
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: var(--di-status-color);
+    font: 600 14px/20px var(--font-ui);
+  }
+  .di-status[data-size="sm"] { gap: 4px; font-size: 12px; line-height: 16px; }
+  .di-status[data-status="conformant"] { --di-status-color: var(--success); }
+  .di-status[data-status="failed"] { --di-status-color: var(--danger); }
+  .di-status[data-status="partial"] { --di-status-color: var(--warning); }
+  .di-status[data-status="running"] { --di-status-color: var(--running); }
+  .di-status[data-status="never"] { --di-status-color: var(--text-muted); }
+  .di-status > .di-icon { flex: none; }
+  .di-status[data-status="running"] > .di-icon { animation: di-status-spin 1s linear infinite; }
+  @keyframes di-status-spin { to { transform: rotate(360deg); } }
+  @media (prefers-reduced-motion: reduce) {
+    .di-status[data-status="running"] > .di-icon { animation: none; }
+  }
+}

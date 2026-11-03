@@ -1,0 +1,11 @@
+<!-- StepStatus: icon (aria-hidden) + word. Not run = dashed outline and muted text, never opacity. -->
+<span class="di-step-status" data-status="failed">
+  <svg class="di-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
+  <span>Failed</span><span class="di-step-status-attempts">· 3 attempts</span>
+</span>
+
+<!-- StepChecks: Success criteria and Schema validation, written separately. -->
+<ul class="di-checks">
+  <li data-state="passed"><span>Success criteria</span><span class="di-sr-only">:</span> <span class="di-checks-state"><svg class="di-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l5 5 9-10"/></svg>Passed</span></li>
+  <li data-state="failed"><span>Schema validation</span><span class="di-sr-only">:</span> <span class="di-checks-state"><svg class="di-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>Failed</span></li>
+</ul>

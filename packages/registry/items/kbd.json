@@ -1,0 +1,33 @@
+{
+  "name": "kbd",
+  "title": "Kbd",
+  "tier": "natural",
+  "description": "Keyboard key cap for shortcuts such as Ctrl K.",
+  "registryDependencies": [
+    "base"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Native <kbd>",
+    "keyboard": [],
+    "aria": [
+      "Native <kbd> semantics",
+      "Write combined keys as separate Kbd elements joined by \"+\" text"
+    ],
+    "rgaa": [
+      "9.3",
+      "10.7"
+    ],
+    "wcag": [
+      "1.3.1"
+    ],
+    "notes": "Static item: not focusable and no key interaction of its own. Decorative shortcut hints must not be the only way to reach a feature."
+  },
+  "stories": [
+    "Components/Kbd"
+  ]
+}

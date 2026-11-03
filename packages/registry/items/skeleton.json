@@ -1,0 +1,36 @@
+{
+  "name": "skeleton",
+  "title": "Skeleton",
+  "tier": "natural",
+  "description": "Placeholder blocks for content that is loading. Hidden from assistive technology; the container carries aria-busy.",
+  "registryDependencies": [
+    "base"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Decorative <span aria-hidden=\"true\">",
+    "keyboard": [],
+    "aria": [
+      "Skeleton is aria-hidden",
+      "Set aria-busy=\"true\" on the region that is loading, and announce completion with a live region",
+      "Pulse stops under prefers-reduced-motion"
+    ],
+    "rgaa": [
+      "4.1",
+      "13.8",
+      "10.8"
+    ],
+    "wcag": [
+      "2.2.2",
+      "4.1.2"
+    ],
+    "notes": "Static item: not focusable and no key interaction of its own. Do not use it as the only loading signal for long waits; add a text status."
+  },
+  "stories": [
+    "Components/Skeleton"
+  ]
+}

@@ -1,0 +1,11 @@
+@layer deep-ink.components {
+  .di-link {
+    color: var(--link);
+    text-decoration: underline;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 0.2em;
+  }
+  .di-link:hover { text-decoration-thickness: 2px; }
+  .di-link[data-external] { display: inline-flex; align-items: baseline; gap: 0.25em; }
+  .di-link[data-external] > .di-icon { align-self: center; flex: none; }
+}

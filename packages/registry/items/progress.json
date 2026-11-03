@@ -1,0 +1,39 @@
+{
+  "name": "progress",
+  "title": "Progress and Meter",
+  "tier": "natural",
+  "description": "Native <progress> for task progress and <meter> for a measurement within a known range, each with a visible label and value.",
+  "registryDependencies": [
+    "base"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Native <progress> and <meter> with a visible <label>",
+    "keyboard": [],
+    "aria": [
+      "Label is associated with htmlFor/id",
+      "Value is also written as text so it is not color-only",
+      "Indeterminate progress omits value",
+      "Meter regions (low, high) are described by the visible text, not by color"
+    ],
+    "rgaa": [
+      "11.1",
+      "3.2",
+      "7.1"
+    ],
+    "wcag": [
+      "1.3.1",
+      "1.4.1",
+      "1.4.11",
+      "4.1.2"
+    ],
+    "notes": "For streaming progress, announce changes in a separate throttled live region (at most every 2 s), never on the progress element itself."
+  },
+  "stories": [
+    "Components/Progress"
+  ]
+}

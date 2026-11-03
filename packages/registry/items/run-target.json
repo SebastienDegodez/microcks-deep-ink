@@ -1,0 +1,34 @@
+{
+  "name": "run-target",
+  "title": "RunTarget",
+  "tier": "microcks",
+  "description": "What a workflow run calls: Mocks, Implementations or Mixed (proposed, beyond the POC).",
+  "registryDependencies": [
+    "base",
+    "chip"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Static <span> with visible text",
+    "keyboard": [],
+    "aria": [
+      "The target is text; Mixed adds a dashed warning chip \"Proposed · beyond POC\""
+    ],
+    "rgaa": [
+      "3.1",
+      "3.2"
+    ],
+    "wcag": [
+      "1.4.1",
+      "1.4.3"
+    ],
+    "notes": "Static item: not focusable and no key interaction of its own."
+  },
+  "stories": [
+    "Microcks/RunTarget"
+  ]
+}

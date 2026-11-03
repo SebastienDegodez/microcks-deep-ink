@@ -1,0 +1,38 @@
+{
+  "name": "status-badge",
+  "title": "StatusBadge",
+  "tier": "microcks",
+  "description": "Outcome with an icon and a word, always: Conformant, Failed, Partial, Running, Never tested.",
+  "registryDependencies": [
+    "base",
+    "icon"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Static <span> with decorative icon and visible word",
+    "keyboard": [],
+    "aria": [
+      "Icon is aria-hidden; the word carries the meaning",
+      "Shapes differ: check, cross, triangle, arc, circle",
+      "Spin of the running icon stops under reduced motion",
+      "Not a live region: announce changes elsewhere if needed"
+    ],
+    "rgaa": [
+      "3.2",
+      "3.1",
+      "13.8"
+    ],
+    "wcag": [
+      "1.4.1",
+      "1.4.3"
+    ],
+    "notes": "Do not use the live indicator for a finished result."
+  },
+  "stories": [
+    "Microcks/StatusBadge"
+  ]
+}

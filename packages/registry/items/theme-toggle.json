@@ -1,0 +1,45 @@
+{
+  "name": "theme-toggle",
+  "title": "ThemeToggle",
+  "tier": "natural",
+  "description": "Icon button that switches between the dark (Deep Ink) and light (Paper) themes and remembers the choice.",
+  "registryDependencies": [
+    "base",
+    "icon",
+    "button"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Native <button aria-pressed> with aria-label=\"Light theme\"",
+    "keyboard": [
+      [
+        "Enter / Space",
+        "Toggles the light theme on or off"
+      ]
+    ],
+    "aria": [
+      "The label stays \"Light theme\"; aria-pressed=\"true\" means the light theme is active",
+      "Icon is decorative (aria-hidden)",
+      "Preference is stored under localStorage key microcks-theme and applied as data-theme on <html>",
+      "A di-theme-change event is dispatched on document"
+    ],
+    "rgaa": [
+      "7.1",
+      "11.9",
+      "10.7"
+    ],
+    "wcag": [
+      "1.3.1",
+      "2.4.7",
+      "4.1.2"
+    ],
+    "notes": "Call restoreTheme() before first paint where possible (inline script) to avoid a flash. Storage failures are ignored."
+  },
+  "stories": [
+    "Components/ThemeToggle"
+  ]
+}

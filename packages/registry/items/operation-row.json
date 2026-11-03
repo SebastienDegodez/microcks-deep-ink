@@ -1,0 +1,50 @@
+{
+  "name": "operation-row",
+  "title": "OperationRow",
+  "tier": "microcks",
+  "description": "Dense list of operations: method tag, path and meta. The selected row reveals its mock URL.",
+  "registryDependencies": [
+    "base",
+    "method-tag",
+    "mock-url"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "<ul aria-label> > <li> > <a> or <button>",
+    "keyboard": [
+      [
+        "Tab",
+        "Moves to each operation (link or button)"
+      ],
+      [
+        "Enter (link) / Enter or Space (button)",
+        "Opens or selects the operation"
+      ]
+    ],
+    "aria": [
+      "The selected operation has aria-current=\"true\"",
+      "The list has a label via OperationList label",
+      "The mock URL box sits outside the link so its copy button stays a separate control"
+    ],
+    "rgaa": [
+      "9.3",
+      "6.1",
+      "7.1",
+      "10.7"
+    ],
+    "wcag": [
+      "1.3.1",
+      "2.1.1",
+      "2.4.7",
+      "4.1.2"
+    ],
+    "notes": "Use href for navigation and onSelect for in-page selection. Do not make the whole <li> clickable."
+  },
+  "stories": [
+    "Microcks/OperationRow"
+  ]
+}

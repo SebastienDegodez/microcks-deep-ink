@@ -1,0 +1,27 @@
+<!-- DropZone. A native file input (visually hidden but focusable) named by a visible label.
+     Drag and drop is an enhancement. The status line is a polite live region ("2 files ready"). -->
+<div class="di-drop-zone" id="dz">
+  <svg class="di-icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 16V4"/><path d="M7 9l5-5 5 5"/><path d="M4 20h16"/></svg>
+  <p class="di-drop-zone-heading" id="dz-heading">Drop a contract anywhere</p>
+  <p class="di-drop-zone-hint" id="dz-hint">OpenAPI, AsyncAPI, gRPC, GraphQL, Postman, SoapUI, HAR, Arazzo</p>
+  <input id="dz-input" type="file" multiple class="di-drop-zone-input di-sr-only" aria-describedby="dz-heading dz-hint">
+  <label for="dz-input" class="di-button di-drop-zone-choose" data-variant="primary">Choose files</label>
+  <p class="di-drop-zone-status" role="status"></p>
+</div>
+
+<script>
+  (function () {
+    var zone = document.getElementById('dz');
+    var input = document.getElementById('dz-input');
+    var status = zone.querySelector('.di-drop-zone-status');
+    function take(list) {
+      if (!list || !list.length) return;
+      status.textContent = list.length + (list.length === 1 ? ' file ready' : ' files ready');
+      zone.dispatchEvent(new CustomEvent('di-files', { detail: Array.from(list), bubbles: true }));
+    }
+    input.addEventListener('change', function () { take(input.files); input.value = ''; });
+    zone.addEventListener('dragover', function (e) { e.preventDefault(); zone.setAttribute('data-dragging', ''); });
+    zone.addEventListener('dragleave', function (e) { if (!zone.contains(e.relatedTarget)) zone.removeAttribute('data-dragging'); });
+    zone.addEventListener('drop', function (e) { e.preventDefault(); zone.removeAttribute('data-dragging'); take(e.dataTransfer.files); });
+  })();
+</script>

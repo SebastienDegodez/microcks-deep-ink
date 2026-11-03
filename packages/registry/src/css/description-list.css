@@ -1,0 +1,7 @@
+@layer deep-ink.components {
+  .di-dl { margin: 0; display: grid; gap: var(--space-3) var(--space-6); grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); }
+  .di-dl > div { min-width: 0; }
+  .di-dl dt { margin: 0 0 var(--space-1); font: var(--type-label); letter-spacing: var(--type-label-tracking); text-transform: uppercase; color: var(--text-secondary); }
+  .di-dl dd { margin: 0; font: var(--type-body); color: var(--text); overflow-wrap: anywhere; }
+  .di-dl dd[data-mono] { font: var(--type-code); }
+}

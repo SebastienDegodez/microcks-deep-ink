@@ -1,0 +1,45 @@
+{
+  "name": "link",
+  "title": "Link",
+  "tier": "natural",
+  "description": "Text link, always underlined in body text. External links add an icon and a hidden \"(opens in a new tab)\" notice.",
+  "registryDependencies": [
+    "base",
+    "icon"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Native <a href>",
+    "keyboard": [
+      [
+        "Enter",
+        "Follows the link"
+      ]
+    ],
+    "aria": [
+      "Link text is explicit out of context",
+      "external adds target=\"_blank\", rel=\"noopener noreferrer\", an icon and visually hidden \"(opens in a new tab)\"",
+      "Never remove the underline in running text (color alone is not enough)"
+    ],
+    "rgaa": [
+      "6.1",
+      "6.2",
+      "13.2",
+      "10.7"
+    ],
+    "wcag": [
+      "1.4.1",
+      "2.4.4",
+      "2.4.7",
+      "3.2.5"
+    ],
+    "notes": "Use a real href. A <button> that navigates, or a <div> with a click handler, is not a link."
+  },
+  "stories": [
+    "Components/Link"
+  ]
+}

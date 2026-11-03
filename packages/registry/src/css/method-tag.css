@@ -1,0 +1,21 @@
+@layer deep-ink.components {
+  .di-method {
+    --di-method-bg: var(--proto-rest);
+    display: inline-block;
+    min-width: 3.5em;
+    box-sizing: border-box;
+    padding: 3px 7px;
+    background: var(--di-method-bg);
+    color: var(--on-proto);
+    border-radius: var(--radius-control);
+    font: var(--type-badge);
+    text-align: center;
+    white-space: nowrap;
+  }
+  .di-method[data-protocol="rest"] { --di-method-bg: var(--proto-rest); }
+  .di-method[data-protocol="soap"] { --di-method-bg: var(--proto-soap); }
+  .di-method[data-protocol="event"] { --di-method-bg: var(--proto-event); }
+  .di-method[data-protocol="grpc"] { --di-method-bg: var(--proto-grpc); }
+  .di-method[data-protocol="graphql"] { --di-method-bg: var(--proto-graphql); }
+  .di-method[data-protocol="direct"] { --di-method-bg: var(--proto-direct); }
+}

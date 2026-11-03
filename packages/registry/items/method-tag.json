@@ -1,0 +1,33 @@
+{
+  "name": "method-tag",
+  "title": "MethodTag",
+  "tier": "microcks",
+  "description": "Operation verb on the protocol color (GET, SUBSCRIBE, QUERY or an RPC name).",
+  "registryDependencies": [
+    "base"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Static <span>; the verb is the text",
+    "keyboard": [],
+    "aria": [
+      "The verb is visible text so color is never the only signal"
+    ],
+    "rgaa": [
+      "3.2",
+      "3.1"
+    ],
+    "wcag": [
+      "1.4.1",
+      "1.4.3"
+    ],
+    "notes": "Protocol is always written as text in the badge; the color only speeds up scanning."
+  },
+  "stories": [
+    "Microcks/MethodTag"
+  ]
+}

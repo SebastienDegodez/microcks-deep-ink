@@ -1,0 +1,50 @@
+{
+  "name": "mock-url",
+  "title": "MockUrl",
+  "tier": "microcks",
+  "description": "The live endpoint of a mock with a method tag, an optional snippet format group and a copy button.",
+  "registryDependencies": [
+    "base",
+    "method-tag",
+    "copy-button",
+    "segmented"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "<code> value + native buttons",
+    "keyboard": [
+      [
+        "Tab",
+        "Moves between the snippet formats and the copy button"
+      ],
+      [
+        "Enter / Space",
+        "Selects a format or copies the value"
+      ]
+    ],
+    "aria": [
+      "The format group is role=\"group\" with a label; the selected format has aria-pressed=\"true\"",
+      "The copy button announces \"Copied\" through a polite live region",
+      "The value wraps instead of truncating so nothing is lost at 320px"
+    ],
+    "rgaa": [
+      "11.9",
+      "7.1",
+      "10.7"
+    ],
+    "wcag": [
+      "1.4.10",
+      "2.1.1",
+      "4.1.2",
+      "4.1.3"
+    ],
+    "notes": "bare shows only the URL, the method tag and the copy button."
+  },
+  "stories": [
+    "Microcks/MockUrl"
+  ]
+}

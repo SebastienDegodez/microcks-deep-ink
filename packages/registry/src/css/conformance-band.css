@@ -1,0 +1,28 @@
+@layer deep-ink.components {
+  .di-conformance-wrap { display: flex; flex-direction: column; gap: var(--space-2); max-width: 420px; }
+  .di-conformance { display: flex; gap: 3px; height: 28px; }
+  .di-conformance[data-size="mini"] { height: 12px; gap: 2px; }
+  .di-conformance > span { flex: 1; min-width: 3px; border-radius: 2px; box-sizing: border-box; }
+  .di-conformance > [data-result="pass"] { background: var(--success); }
+  /* Failed: hatched as well as colored. */
+  .di-conformance > [data-result="fail"] {
+    background: repeating-linear-gradient(135deg, var(--danger) 0 4px, var(--danger-tint) 4px 8px);
+    border: 1px solid var(--danger);
+  }
+  /* Untested: outlined and empty. */
+  .di-conformance > [data-result="untested"] { background: var(--surface); border: 1px solid var(--border-control); }
+
+  .di-conformance-summary {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: var(--space-1) var(--space-3);
+    margin: 0;
+    font: var(--type-small);
+    color: var(--text-secondary);
+  }
+  .di-conformance-score { font: var(--type-display); font-size: 40px; line-height: 44px; color: var(--text); }
+  .di-conformance-score[data-level="high"] { color: var(--success); }
+  .di-conformance-score[data-level="mid"] { color: var(--warning); }
+  .di-conformance-score[data-level="low"] { color: var(--danger); }
+}

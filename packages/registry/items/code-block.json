@@ -1,0 +1,51 @@
+{
+  "name": "code-block",
+  "title": "CodeBlock",
+  "tier": "natural",
+  "description": "Figure with a scrollable, focusable code area, an optional caption, a copy button and marked bad lines.",
+  "registryDependencies": [
+    "base",
+    "icon",
+    "copy-button"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "<figure> + <figcaption> + <pre tabindex=\"0\"><code>",
+    "keyboard": [
+      [
+        "Tab",
+        "Moves focus to the code area so it can be scrolled"
+      ],
+      [
+        "Arrow keys / PageUp / PageDown",
+        "Scroll the focused code area"
+      ]
+    ],
+    "aria": [
+      "The scrollable <pre> is focusable and named by the caption (role=\"region\" + aria-label)",
+      "A bad line shows a visible ✕ marker and a visible note; the note is also read by assistive technology",
+      "The copy button announces \"Copied\" or \"Copy failed\" through a polite live region (copy-button)"
+    ],
+    "rgaa": [
+      "1.1",
+      "3.2",
+      "7.3",
+      "10.7"
+    ],
+    "wcag": [
+      "1.3.1",
+      "1.4.1",
+      "2.1.1",
+      "2.4.7",
+      "4.1.2"
+    ],
+    "notes": "Pass lines for per-line markers, or code for plain text. Long lines scroll inside the region (no loss of content at 320px)."
+  },
+  "stories": [
+    "Components/CodeBlock"
+  ]
+}

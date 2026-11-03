@@ -1,0 +1,33 @@
+{
+  "name": "run-origin",
+  "title": "RunOrigin",
+  "tier": "microcks",
+  "description": "Where a run was launched from: UI, API, Mock URL or a recorded session.",
+  "registryDependencies": [
+    "base"
+  ],
+  "npmDependencies": {
+    "react": [],
+    "angular": []
+  },
+  "elements": [],
+  "a11y": {
+    "pattern": "Static <span> with visible text",
+    "keyboard": [],
+    "aria": [
+      "The origin is text; the session id is monospace and written in full"
+    ],
+    "rgaa": [
+      "3.1",
+      "3.2"
+    ],
+    "wcag": [
+      "1.4.1",
+      "1.4.3"
+    ],
+    "notes": "Static item: not focusable and no key interaction of its own."
+  },
+  "stories": [
+    "Microcks/RunOrigin"
+  ]
+}
