@@ -14,3 +14,4 @@ a11y-report/
 /site/
 .ngc/
 tools/a11y/dist/
+*.tsbuildinfo
