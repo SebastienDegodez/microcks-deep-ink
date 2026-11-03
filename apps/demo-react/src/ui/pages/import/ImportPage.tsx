@@ -189,7 +189,7 @@ export default function ImportPage() {
                       )}
                     </Field>
                     <Checkbox label="Disable SSL validation" checked={git.insecure} onChange={(e) => setGit({ ...git, insecure: e.target.checked })} />
-                    <p className="ex-small ex-secondary">Scheduled source: Microcks re-scans the file on the global <code>services.update.interval</code> (every 2 h by default) and resolves external references. <RouterLink to="/sources">Manage sources</RouterLink></p>
+                    <p className="ex-small ex-secondary">Scheduled source: Microcks re-scans the file on the global <code>services.update.interval</code> (every hour by default) and resolves external references. <RouterLink to="/sources">Manage sources</RouterLink></p>
                     <div><Button type="submit" loading={step === 'analyzing'}>Analyze repository</Button></div>
                   </form>
                 </TabPanel>
@@ -303,7 +303,7 @@ export default function ImportPage() {
                       )}
                     </Field>
                   ) : null}
-                  {source?.kind === 'git' ? <p className="ex-small ex-secondary">The source “{source.name}” will be created, scanned and imported immediately, then re-scanned every 2 h. <RouterLink to="/sources">Manage sources</RouterLink></p> : null}
+                  {source?.kind === 'git' ? <p className="ex-small ex-secondary">The source “{source.name}” will be created, scanned and imported immediately, then re-scanned every hour. <RouterLink to="/sources">Manage sources</RouterLink></p> : null}
                 </div>
               )}
               <div className="ex-row" style={{ marginTop: 12 }}>

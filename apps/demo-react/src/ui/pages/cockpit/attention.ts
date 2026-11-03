@@ -56,7 +56,7 @@ export function buildAttention(services: readonly ServiceSummary[], importers: r
     items.push({
       id: 'agent-test-3', kind: 'Failing agent test', tone: 'danger', badge: 'A2A', subject: `${concierge.name} ${concierge.version}`,
       title: 'Agent Pastry concierge · HTTP+JSON resumes input-required on a new task',
-      detail: 'Run #3 · A2A_CONFORMANCE · order-pastry: after input-required the agent answered with a new taskId instead of resuming the same task. 10 of 12 checks passed.',
+      detail: 'Run #3 · A2A_CONFORMANCE · order-pastry: after input-required the agent answered with a new taskId instead of resuming the same task. 13 of 15 checks passed.',
       cta: `Open run #${concierge.lastTest?.runId ?? '3'}`, to: `/tests/agent/${concierge.lastTest?.runId ?? '3'}`,
     });
   }
