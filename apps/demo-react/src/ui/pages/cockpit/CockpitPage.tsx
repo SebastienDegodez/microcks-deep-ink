@@ -277,7 +277,6 @@ export default function CockpitPage() {
                         className="ex-tile"
                         data-live={isLive(s) ? '' : undefined}
                         to={`/services/${s.id}`}
-                        aria-label={`${p} ${s.name} ${s.version}, conformance ${s.conformance === null ? 'untested' : `${s.conformance}%`}${s.lastResults ? `, ${s.lastResults.filter((r) => r === 'pass').length} of ${s.operationCount} operations conformant` : ', never tested'}${isLive(s) ? ', live' : ''}`}
                       >
                         <span className="ex-row-between">
                           <span className="ex-tile-title">{s.name} <span className="ex-muted">{s.version}</span></span>
@@ -332,7 +331,6 @@ export default function CockpitPage() {
                       <li key={r.id}>
                         <RouterLink
                           to={`/tests/runner/${r.id}`}
-                          aria-label={`Test #${r.id} on ${svc?.name ?? r.serviceId}, ${ok ? 'passed' : 'failed'}, ${runCounts(r.operations)}, ${relative(r.startedAt)}`}
                           className="ex-row"
                         >
                           <Icon name={ok ? 'check' : 'cross'} size={14} />
@@ -350,7 +348,7 @@ export default function CockpitPage() {
                 <ol className="ex-plain-list">
                   {top.map((s, i) => (
                     <li key={s.id}>
-                      <RouterLink to={`/services/${s.id}`} aria-label={`${s.name} ${s.version}, ${fmt(s.calls24h)} requests today${isLive(s) ? ', live' : ''}`} className="ex-bar-row">
+                      <RouterLink to={`/services/${s.id}`} className="ex-bar-row">
                         <span className="ex-muted">{i + 1}</span>
                         <span>
                           <span className="ex-row"><ApiBadge protocol={s.protocol} size="sm" /> {s.name} <span className="ex-muted">{s.version}</span> {isLive(s) ? <LiveIndicator /> : null}</span>

@@ -96,11 +96,12 @@ navigate).
 ```bash
 pnpm build
 pnpm deep-ink init --cwd apps/demo-react --framework react --out src/ui/components/ui --css-out src/ui/styles --yes
-pnpm deep-ink add --all --tier natural,microcks --cwd apps/demo-react
+pnpm deep-ink add --all --cwd apps/demo-react
 ```
 
-`src/main.tsx` picks up `src/ui/styles/index.css` automatically as soon as it exists (`import.meta.glob`). Until the components are
-copied, `AppLayout` and the placeholders use raw markup with the `` CSS classes of the registry contract.
+`src/main.tsx` imports `src/ui/styles/index.css` (written by `deep-ink init`). `AppLayout` is built from the copied `app-shell`, `theme-toggle`
+and `command-bar` (Ctrl/Cmd+K) items; the pages use the other copied items. After a change in the registry, re-copy with
+`pnpm deep-ink add --all --cwd apps/demo-react --overwrite` (never hand-edit the copies).
 
 ## Data
 

@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router/dom';
 import { createComposition } from '@/composition-root';
 import { UseCasesProvider } from '@/ui/app';
 import { createAppRouter } from '@/ui/app/router';
-import { restoreTheme } from '@/ui/lib/theme';
+import { restoreTheme } from '@/ui/components/ui/theme-toggle.theme';
 import '@/ui/app/app.css';
 
 // Design-system styles copied by the CLI (`deep-ink init` writes src/ui/styles/index.css).

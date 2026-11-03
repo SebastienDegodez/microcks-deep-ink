@@ -1,6 +1,6 @@
 /*
  * Demo-specific layout glue (prefix `demo-`). Components and the design system live in the copied
- * `ui/styles` (classes `*`); this file only covers what the demo shell adds around them.
+ * `ui/styles` (plain class names, no prefix); this file only covers what the demo shell adds around them.
  * Colors come from the tokens; no alpha or color-mix behind text.
  */
 
@@ -8,13 +8,6 @@
   font-weight: 700;
   text-decoration: none;
   color: inherit;
-}
-
-.demo-topbar-actions {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-inline-start: auto;
 }
 
 .demo-banner {
@@ -29,25 +22,6 @@
 
 .demo-banner-tag {
   letter-spacing: 0.04em;
-}
-
-.demo-nav-list {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.demo-nav-toggle {
-  display: none;
-}
-
-@media (max-width: 767px) {
-  .demo-nav-toggle {
-    display: inline-flex;
-  }
-  .sidenav[data-collapsible]:not([data-open]) {
-    display: none;
-  }
 }
 
 .demo-page-header {

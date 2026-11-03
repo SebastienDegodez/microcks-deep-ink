@@ -32,13 +32,13 @@ function ServiceLinks({ importer }: { importer: Importer }) {
     <span className="ex-row">
       {importer.produces.map((p) => (
         p.id ? (
-          <RouterLink key={`${p.name}${p.version}`} to={`/services/${p.id}`} aria-label={`Open Service ${p.name} ${p.version}`}>
+          <RouterLink key={`${p.name}${p.version}`} to={`/services/${p.id}`}>
             <ApiBadge protocol={p.protocol} name={p.name} version={p.version} size="sm" />
           </RouterLink>
         ) : <ApiBadge key={`${p.name}${p.version}`} protocol={p.protocol} name={p.name} version={p.version} size="sm" />
       ))}
       {importer.workflows ? (
-        <RouterLink to="/workflows" aria-label={`Open ${importer.workflows} from ${importer.name}`}><ApiBadge arazzo name={importer.workflows} size="sm" /></RouterLink>
+        <RouterLink to="/workflows"><ApiBadge arazzo name={importer.workflows} size="sm" /></RouterLink>
       ) : null}
     </span>
   );
@@ -180,7 +180,7 @@ export default function SourcesPage() {
               <article key={j.id} aria-label={j.name} className="ex-source-row" aria-current={selected?.id === j.id ? 'true' : undefined}>
                 <div className="ex-row-between">
                   <Switch label={<span className="sr-only">{`Scan ${j.name} on schedule`}</span>} checked={j.active} onChange={(v) => void toggleActive(j, v)} />
-                  <RouterLink to={`/importers/${j.id}`} aria-pressed={selected?.id === j.id} className="ex-tile-title">{j.name}</RouterLink>
+                  <RouterLink to={`/importers/${j.id}`} aria-current={selected?.id === j.id ? 'true' : undefined} className="ex-tile-title">{j.name}</RouterLink>
                   {running ? <LiveIndicator label="live · importing" /> : <span className="ex-row ex-small"><Icon name={STATUS_ICON[st]} size={14} />{STATUS_WORD[st]} <span className="ex-muted">{j.lastSyncAt ? relative(j.lastSyncAt) : ''}</span></span>}
                 </div>
                 <div className="ex-small ex-secondary ex-url-line">{j.url}</div>

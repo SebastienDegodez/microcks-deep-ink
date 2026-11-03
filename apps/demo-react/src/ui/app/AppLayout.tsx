@@ -1,97 +1,98 @@
-import { useEffect, useRef, useState, type MouseEvent } from 'react';
-import { Link, Outlet, useLocation, useMatches } from 'react-router';
-import { getTheme, setTheme, subscribeTheme, type Theme } from '@/ui/lib/theme';
+import { useMemo, useState } from 'react';
+import { Link, Outlet, useMatches, useNavigate } from 'react-router';
+import type { CommandItem as CatalogCommand } from '@/domain/catalog/types';
+import { AppShell, type ShellNavItem } from '@/ui/components/ui/app-shell';
+import { Button } from '@/ui/components/ui/button';
+import { CommandBar, type CommandItem } from '@/ui/components/ui/command-bar';
+import { ThemeToggle } from '@/ui/components/ui/theme-toggle';
+import { useQuery } from './hooks';
 import { LiveAnnouncerProvider } from './announcer';
 import { DemoBanner } from './DemoBanner';
 import { NAV_ITEMS, type RouteHandle } from './nav';
+import { useUseCases } from './UseCasesProvider';
 
-function ThemeButton() {
-  const [theme, setCurrent] = useState<Theme>(getTheme());
-  useEffect(() => subscribeTheme(setCurrent), []);
-  const light = theme === 'light';
-  return (
-    <button
-      type="button"
-      className="button"
-      data-variant="ghost"
-      data-icon-only
-      aria-label="Light theme"
-      aria-pressed={light}
-      onClick={() => setTheme(light ? 'dark' : 'light')}
-    >
-      <span aria-hidden="true">{light ? '☀' : '☾'}</span>
-    </button>
-  );
+const NAV: ShellNavItem[] = NAV_ITEMS.map((item) => ({ id: item.id, label: item.label, href: item.to }));
+
+/** Domain command kinds ("Page", "Service", "Workflow") to the command bar kinds. */
+function toCommandItem(c: CatalogCommand): CommandItem {
+  const kind = c.kind === 'Service' ? 'service' : c.kind === 'Workflow' ? 'operation' : 'action';
+  return { id: c.id, label: c.kind === 'Page' ? `Go to ${c.label}` : c.label, kind, hint: c.hint ?? (c.kind === 'Page' ? 'Page' : c.kind) };
 }
 
 /**
- * Application shell, built from raw markup with the `` classes of the `app-shell` item
- * (the registry component is not copied yet; swap it in once it is):
- * skip link, banner (top bar), navigation, main landmark, live region for route announcements.
+ * Application shell: the copied `app-shell` (skip link, banner, navigation, main landmark), the `theme-toggle`
+ * and the `command-bar` (Ctrl/Cmd+K) items of the design system. The DEMO marking sits in the top bar of every page.
  *
- * Note on the skip link: with a hash router `href="#main"` would navigate, so the click is
- * intercepted and focus is moved to `<main id="main" tabindex="-1">` instead.
+ * Skip link: with a hash router `href="#main"` would navigate, so `app-shell` intercepts the click and moves
+ * focus to `<main id="main" tabindex="-1">`.
  */
 export function AppLayout() {
   const matches = useMatches();
-  const location = useLocation();
-  const [navOpen, setNavOpen] = useState(false);
-  const mainRef = useRef<HTMLElement>(null);
-  const activeNav = [...matches].reverse().map((m) => (m.handle as RouteHandle | undefined)?.nav).find(Boolean);
+  const navigate = useNavigate();
+  const uc = useUseCases();
+  const [paletteOpen, setPaletteOpen] = useState(false);
+  const activeNav = [...matches].reverse().map((m) => (m.handle as RouteHandle | undefined)?.nav).find(Boolean) ?? '';
 
-  // Close the collapsed navigation after each navigation.
-  const pathRef = useRef(location.pathname);
-  useEffect(() => {
-    if (pathRef.current !== location.pathname) {
-      pathRef.current = location.pathname;
-      setNavOpen(false);
+  const commands = useQuery(() => uc.catalog.commands(), [uc]);
+  const { items, hrefById } = useMemo(() => {
+    const byId = new Map<string, string>();
+    const list: CommandItem[] = [];
+    // Navigation to every entry of the main menu, then the catalogue commands (deduplicated by route).
+    const seen = new Set<string>();
+    for (const n of NAV_ITEMS) {
+      list.push({ id: `nav-${n.id}`, label: `Go to ${n.label}`, kind: 'action', hint: 'Page' });
+      byId.set(`nav-${n.id}`, n.to);
+      seen.add(n.to);
     }
-  }, [location.pathname]);
-
-  const skip = (event: MouseEvent<HTMLAnchorElement>) => {
-    event.preventDefault();
-    mainRef.current?.focus();
-  };
+    for (const c of commands.data ?? []) {
+      if (!c.href || seen.has(c.href)) continue;
+      list.push(toCommandItem(c));
+      byId.set(c.id, c.href);
+    }
+    return { items: list, hrefById: byId };
+  }, [commands.data]);
 
   return (
     <LiveAnnouncerProvider>
-      <a className="skip-link" href="#main" onClick={skip}>
-        Skip to content
-      </a>
-      <div className="shell">
-        <header className="topbar">
+      <AppShell
+        brand={
           <Link to="/" className="demo-brand">
             Microcks
           </Link>
-          <DemoBanner />
-          <div className="demo-topbar-actions">
-            <ThemeButton />
-            <button
-              type="button"
-              className="button demo-nav-toggle"
-              aria-expanded={navOpen}
-              aria-controls="main-nav"
-              onClick={() => setNavOpen((open) => !open)}
-            >
-              Menu
-            </button>
-          </div>
-        </header>
-        <nav id="main-nav" className="sidenav" aria-label="Main" data-collapsible data-open={navOpen || undefined}>
-          <ul className="demo-nav-list">
-            {NAV_ITEMS.map((item) => (
-              <li key={item.id}>
-                <Link to={item.to} className="sidenav-link" aria-current={item.id === activeNav ? 'page' : undefined}>
-                  {item.label}
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </nav>
-        <main id="main" ref={mainRef} tabIndex={-1} className="main">
-          <Outlet />
-        </main>
-      </div>
+        }
+        nav={NAV}
+        activeId={activeNav}
+        topbarActions={
+          <>
+            <DemoBanner />
+            <Button type="button" variant="ghost" aria-haspopup="dialog" onClick={() => setPaletteOpen(true)}>
+              Search <span aria-hidden="true">Ctrl K</span>
+            </Button>
+            <ThemeToggle />
+          </>
+        }
+        renderLink={(_item, props) => {
+          const { href, children, ...rest } = props;
+          return (
+            <Link {...rest} to={href}>
+              {children}
+            </Link>
+          );
+        }}
+      >
+        <Outlet />
+      </AppShell>
+      <CommandBar
+        items={items}
+        open={paletteOpen}
+        label="Search and commands"
+        placeholder="Search APIs, workflows and pages"
+        onClose={() => setPaletteOpen(false)}
+        onCommand={(item) => {
+          const href = hrefById.get(item.id);
+          if (href) void navigate(href);
+        }}
+      />
     </LiveAnnouncerProvider>
   );
 }

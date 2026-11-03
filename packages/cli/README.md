@@ -2,6 +2,7 @@
 
 Copies Deep Ink components from the registry into your app, shadcn-style. You own the copied files.
 Zero dependencies (Node 22 built-ins only). DEMO tooling, private, not published to npm.
+The item names are the registry names (`button`, `tabs`, `workflow-loom`...); `deep-ink list` prints them.
 
 ## Run it
 

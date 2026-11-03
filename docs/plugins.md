@@ -86,8 +86,29 @@ await getPluginHost().load('/plugins/io.github.acme.kafka-replay/kafka-replay.js
 ```
 
 Each contributed element receives a `context` property (`theme`, `service`, `operation`, `testResult`).
-Elements use the Deep Ink CSS variables, so they follow the theme with no extra work, and can use any `mk-*`
-component already defined by the shell.
+
+`<plugin-slot>` renders contributions in the **light DOM** (no shadow root). The Deep Ink custom properties
+(`--action`, `--surface`...) and the CSS classes of the design system (`.button`, `.field`, `.table`...) therefore reach
+plugin elements with no extra work, and the plugin follows the theme. The HTML recipes of the registry
+(`packages/registry/src/html/<name>.html`) are the reference for the markup of each component; a plugin can copy them
+with `pnpm deep-ink add <item> --framework html`. The tags `workflow-loom`, `command-bar` and `plugin-slot`, and every tag that
+starts with `mk-` (the Angular selector prefix of the shell), belong to the host: plugins use their own `tagPrefix`.
+
+### The CSS rule for plugins
+
+Component styles of the shell live in `@layer deep-ink`. **Unlayered CSS always beats layered CSS**, whatever the
+specificity, so a plugin stylesheet that is not scoped would silently override the shell (a plugin rule such as
+`button { border-radius: 0 }` or `.button { ... }` would restyle every button of the host). The plugin contract is
+therefore:
+
+1. **Scope every plugin selector with the plugin's `tagPrefix`** (for `tagPrefix: "acme-"`: `acme-replay-widget .row { ... }`,
+   `acme-replay-widget button { ... }`), or
+2. **keep the plugin's styles in shadow DOM** (a `<style>` inside the element's shadow root, or `adoptedStyleSheets`).
+   Shadow DOM blocks the design system classes, so such a plugin copies the CSS it needs into its own root.
+
+A plugin must not declare global selectors (`html`, `body`, `:root`, bare element or class selectors) and must not
+redefine the design tokens. To change the look of one of its own components, scope an override under the plugin tag.
+The host may reject, at install time, a bundle that injects unscoped global styles.
 
 ### Rules the host enforces
 
@@ -95,7 +116,7 @@ component already defined by the shell.
 - One shared host on `globalThis`, so the shell and every plugin bundle see the same registry even when each
   ships its own copy of the SDK.
 - Plugin events are namespaced: `api.emit('replayed')` dispatches `io.github.acme.kafka-replay:replayed`.
-- Plugin nav items are grouped under **Plugins** in `mk-side-nav`, so users know where a screen comes from.
+- Plugin nav items are grouped under **Plugins** in the application shell's navigation, so users know where a screen comes from.
 
 ## Open questions for the maintainers
 

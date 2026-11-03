@@ -355,7 +355,7 @@ function DocumentGroup({ document: doc, rows, total, serviceName, relative, onLi
                 <Icon name="warning" size={12} />
                 Not linked
               </Chip>
-              <Button size="sm" icon="link-out" onClick={() => onLink(s)} aria-label={`Link ${s.name} to an API`}>
+              <Button size="sm" icon="link-out" onClick={() => onLink(s)} aria-label={`Link a source to ${s.name}`}>
                 Link a source
               </Button>
             </span>
@@ -479,7 +479,7 @@ function DocumentGroup({ document: doc, rows, total, serviceName, relative, onLi
             </span>
             <PageLink
               to={runPath(lastRun.id)}
-              aria-label={`Open run #${lastRun.number} of ${workflow.workflowId}, ${relative(lastRun.startedAt)}, ${outcome === 'passed' ? 'Passed' : 'Failed'}`}
+              aria-label={`#${lastRun.number} · ${relative(lastRun.startedAt)}, run of ${workflow.workflowId}, ${outcome === 'passed' ? 'Passed' : 'Failed'}`}
             >
               #{lastRun.number} · {relative(lastRun.startedAt)}
             </PageLink>

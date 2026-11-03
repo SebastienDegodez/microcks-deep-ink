@@ -7,7 +7,7 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Plugins/Slots',
-  parameters: itemParams(['plugin-slot', 'panel', 'api-badge', 'live-indicator'], 'A marketplace plugin ships a backend part (loaded by the Microcks server) and/or a frontend part: an ES module that registers custom elements into **extension points**. `plugin-slot` renders them. The demo plugin is a plain Web Component styled with the `` HTML recipes (live indicator, API badge), so it looks identical in React and Angular.'),
+  parameters: itemParams(['plugin-slot', 'panel', 'api-badge', 'live-indicator'], 'A marketplace plugin ships a backend part (loaded by the Microcks server) and/or a frontend part: an ES module that registers custom elements into **extension points**. `plugin-slot` renders them. The demo plugin is a plain Web Component styled with the Deep Ink HTML recipes (live indicator, API badge), so it looks identical in React and Angular.'),
   loaders: [async () => ({ ready: await registerDemoPlugin() })],
 } satisfies Meta;
 

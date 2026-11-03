@@ -59,7 +59,7 @@ describe('WP7 pages', () => {
   it('Catalogue: shows 10 services, filters by status and resets', async () => {
     renderAt('/services');
     await h1('APIs & Services');
-    await screen.findByRole('link', { name: 'Open API Pastry 2.0' });
+    await screen.findByRole('link', { name: /API Pastry 2\.0/ });
     expect(screen.getByTestId('result-count').textContent).toContain('10 of 10');
     fireEvent.click(screen.getByRole('button', { name: /^Failing/ }));
     await waitFor(() => expect(screen.getByTestId('result-count').textContent).toContain('4 of 10'));

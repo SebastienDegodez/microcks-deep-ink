@@ -99,7 +99,6 @@ export function RunsTab({ detail, runs, initialFilter }: RunsTabProps) {
             <RouterLink
               className={props.className}
               to={runPath(r.id)}
-              aria-label={`Open run #${r.number}, ${r.status === 'SUCCESS' ? 'Passed' : 'Failed'}, ${relative(r.startedAt)}`}
             >
               {props.children}
             </RouterLink>

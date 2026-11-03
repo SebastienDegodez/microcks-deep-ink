@@ -198,7 +198,7 @@ function History({
             rowHref={(r) => `/tests/runner/${r.id}`}
             emptyText="No run matches these filters."
             renderRowLink={(r, props) => (
-              <RouterLink className={props.className} aria-current={props['aria-current']} to={`/tests/runner/${r.id}`} aria-label={`Open run #${r.id}, ${WORD[r.result]}`}>
+              <RouterLink className={props.className} aria-current={props['aria-current']} to={`/tests/runner/${r.id}`}>
                 {props.children}
               </RouterLink>
             )}

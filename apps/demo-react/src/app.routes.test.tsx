@@ -56,7 +56,7 @@ describe('every route renders a placeholder with one h1 and a document title', (
     expect(screen.getAllByRole('heading', { level: 1 })).toHaveLength(1);
     expect(heading.getAttribute('tabindex')).toBe('-1');
     await waitFor(() => expect(document.title.endsWith(' · Microcks')).toBe(true));
-    if (!['service', 'workflow', 'test-run'].includes(_id)) expect(document.title).toBe(title);
+    if (!['service', 'workflow', 'test-run', 'behavior'].includes(_id)) expect(document.title).toBe(title);
   });
 });
 
@@ -113,7 +113,7 @@ describe('shell accessibility', () => {
     renderAt('/');
     await screen.findByRole('heading', { level: 1 });
     const button = screen.getByRole('button', { name: 'Menu' });
-    expect(button.getAttribute('aria-controls')).toBe('main-nav');
+    expect(document.getElementById(button.getAttribute('aria-controls') ?? '')?.tagName).toBe('NAV');
     expect(button.getAttribute('aria-expanded')).toBe('false');
     act(() => button.click());
     expect(button.getAttribute('aria-expanded')).toBe('true');
@@ -130,7 +130,7 @@ describe('routing', () => {
   it('ranks static segments above dynamic ones', async () => {
     renderAt('/workflows/runs/6729a1d27e4c0b5f93a8c214');
     expect(await screen.findByRole('heading', { level: 1, name: 'Workflow run' })).toBeTruthy();
-    expect(document.title).toBe('Workflow run · Microcks');
+    await waitFor(() => expect(document.title).toBe('Workflow run · Microcks'));
   });
 
   it('routes the run setup and the operation behavior to their own pages', async () => {

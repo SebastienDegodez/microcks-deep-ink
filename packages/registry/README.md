@@ -7,7 +7,7 @@ panel read the JSON this package builds. DEMO, private, Apache-2.0.
 items/<name>.json     metadata, accessibility contract (validated by registry.schema.json)
 src/css/<name>.css    styles, wrapped in @layer deep-ink.components
 src/react/<name>.tsx  React (siblings imported relatively, files land flat in the target)
-src/angular/<name>.ts Angular (written in phase 2)
+src/angular/<name>.ts Angular (standalone components and attribute directives)
 src/html/<name>.html  HTML recipe for plugins and vanilla use
 ```
 
@@ -19,14 +19,15 @@ Files are discovered by name: `^<name>(\.[a-z0-9-]+)*\.(tsx|ts|css|html)$`, excl
 ```bash
 pnpm --filter @microcks-deep-ink/tokens build
 pnpm --filter @microcks-deep-ink/registry build          # warnings for what is not written yet
-pnpm --filter @microcks-deep-ink/registry exec node scripts/build.mjs --strict   # phase 3: warnings become errors
+pnpm build:strict                                          # from the root: warnings become errors (CI)
 ```
 
 Outputs in `dist/`: `registry.json` (index), `registry.full.json` (with file contents and the tokens CSS),
 `deep-ink-components.css` (base first, then every item in dependency order; Storybook only).
 The build fails on an unknown dependency, a cycle, a missing CSS file or a schema error. Every copied file gets a header
 (`// Deep Ink · <name>@0.2.0 · copied from packages/registry. You own this file.`).
-Element items list `"elements": ["mk-…"]`; `scripts/sync-elements.mjs` copies the bundles from `packages/core/dist/elements`.
+Element items list `"elements": ["workflow-loom"]` (or `command-bar`, `plugin-slot`); `scripts/sync-elements.mjs` copies the self-contained bundles from `packages/core/dist/elements`.
+`scripts/a11y-table.mjs` prints the component to RGAA table used by `docs/accessibility.md`.
 
 Checks: `test` (Vitest + jsdom + axe-core), `typecheck` (tsc for React, ngc for Angular), `lint` (jsx-a11y strict, react-hooks, angular-eslint template a11y).
 `test/setup.ts` unmounts after each test and polyfills `<dialog>` and `popover` for jsdom; `test/axe.ts` runs axe without color contrast (checked by the tokens test and the browser smoke run).
@@ -35,7 +36,7 @@ Checks: `test` (Vitest + jsdom + axe-core), `typecheck` (tsc for React, ngc for 
 
 One root class `<name>` on a native element. Variants are `data-*` attributes. State is native or ARIA
 (`:disabled`, `[aria-invalid="true"]`, `[aria-selected="true"]`, `[aria-current="page"]`, `[aria-pressed="true"]`, `[aria-expanded="true"]`, `[aria-busy="true"]`).
-React components and file names have no prefix; the `` prefix lives only in CSS and Angular selectors.
+CSS classes, React components and file names have no prefix. Only Angular uses a `mk` selector prefix (`<mk-tabs>`, `<button mkButton>`), because the Angular style guide and `@angular-eslint` require one for element and directive selectors.
 
 ### Layers and theming
 

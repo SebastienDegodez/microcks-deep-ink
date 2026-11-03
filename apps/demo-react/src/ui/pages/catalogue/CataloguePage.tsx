@@ -156,8 +156,8 @@ export default function CataloguePage() {
           rows={data.services}
           rowKey="id"
           rowHref={(s) => `/services/${s.id}`}
-          renderRowLink={(s, props) => (
-            <RouterLink to={props.href} className={props.className} aria-current={props['aria-current']} aria-label={`Open ${s.name} ${s.version}`}>
+          renderRowLink={(_s, props) => (
+            <RouterLink to={props.href} className={props.className} aria-current={props['aria-current']}>
               {props.children}
             </RouterLink>
           )}
