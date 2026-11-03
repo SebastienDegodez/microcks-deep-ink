@@ -2,7 +2,7 @@ import { create } from 'storybook/theming/create';
 
 export const theme = create({
   base: 'dark',
-  brandTitle: 'Microcks Deep Ink · Angular',
+  brandTitle: 'DEMO · Microcks Deep Ink · Angular',
   brandUrl: 'https://github.com/sebastiendegodez/microcks-deep-ink',
   colorPrimary: '#2E9BF0',
   colorSecondary: '#2E9BF0',

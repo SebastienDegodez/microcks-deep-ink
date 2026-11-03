@@ -1,5 +1,6 @@
 {
   "name": "@microcks-deep-ink/plugin-sdk",
+  "private": true,
   "version": "0.1.0",
   "description": "Contract between the Microcks UI v2 shell and marketplace plugins: manifest types, extension points and the shared plugin host.",
   "license": "Apache-2.0",
@@ -13,7 +14,10 @@
     },
     "./microcks-plugin.schema.json": "./microcks-plugin.schema.json"
   },
-  "files": ["dist", "microcks-plugin.schema.json"],
+  "files": [
+    "dist",
+    "microcks-plugin.schema.json"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsc -p tsconfig.json"

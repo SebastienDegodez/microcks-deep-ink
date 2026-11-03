@@ -1,5 +1,6 @@
 {
   "name": "@microcks-deep-ink/angular",
+  "private": true,
   "version": "0.1.0",
   "description": "Angular standalone wrappers for the Microcks Deep Ink Web Components, with ControlValueAccessor for mk-input.",
   "license": "Apache-2.0",

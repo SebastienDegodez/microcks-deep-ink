@@ -1,5 +1,6 @@
 {
   "name": "@microcks-deep-ink/core",
+  "private": true,
   "version": "0.1.0",
   "description": "Microcks Deep Ink Web Components (Stencil). Framework-agnostic source of truth for the React and Angular wrappers.",
   "license": "Apache-2.0",

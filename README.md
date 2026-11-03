@@ -1,10 +1,12 @@
 # Microcks Deep Ink
 
+> **DEMO.** A design system proposal for the Microcks UI v2. Not an official Microcks release. **Nothing is published on npm**: all packages are marked `private`. Only the demo Storybooks are online.
+
 The **Microcks UI v2 design system**, a proposal for the maintainers, packaged for reuse by the Microcks UI and by marketplace plugins.
 
 > The contract is the source of truth; the interface makes it alive.
 
-| Storybook | URL (after the first Pages deploy) |
+| Demo Storybook | URL (after the first Pages deploy) |
 | --- | --- |
 | React | https://sebastiendegodez.github.io/microcks-deep-ink/react/ |
 | Angular | https://sebastiendegodez.github.io/microcks-deep-ink/angular/ |
@@ -52,6 +54,8 @@ different depending on the framework they use. Deep Ink writes each component **
 
 ## Use it
 
+The snippets below show the intended API. The packages are not on npm yet: build them locally (`pnpm build`) and consume them from this workspace.
+
 **React**
 
 ```tsx
@@ -77,8 +81,8 @@ import { DEEP_INK } from '@microcks-deep-ink/angular';
 **Plain HTML / any framework**
 
 ```html
-<link rel="stylesheet" href="https://unpkg.com/@microcks-deep-ink/tokens/dist/deep-ink.css" />
-<script type="module" src="https://unpkg.com/@microcks-deep-ink/core/dist/deep-ink/deep-ink.esm.js"></script>
+<link rel="stylesheet" href="packages/tokens/dist/deep-ink.css" />
+<script type="module" src="packages/core/dist/deep-ink/deep-ink.esm.js"></script>
 <mk-api-badge protocol="EVENT" name="Pastry orders" version="0.1.0"></mk-api-badge>
 ```
 

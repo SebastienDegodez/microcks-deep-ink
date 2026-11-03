@@ -1,5 +1,6 @@
 {
   "name": "@microcks-deep-ink/tokens",
+  "private": true,
   "version": "0.1.0",
   "description": "Microcks Deep Ink design tokens: CSS custom properties for the dark (Deep Ink) and light (Paper) themes.",
   "license": "Apache-2.0",
@@ -15,8 +16,13 @@
     "./deep-ink.no-fonts.css": "./dist/deep-ink.no-fonts.css",
     "./tokens.json": "./dist/tokens.json"
   },
-  "files": ["dist", "tokens.json"],
-  "sideEffects": ["*.css"],
+  "files": [
+    "dist",
+    "tokens.json"
+  ],
+  "sideEffects": [
+    "*.css"
+  ],
   "scripts": {
     "build": "node build.mjs"
   }
