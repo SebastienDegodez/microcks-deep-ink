@@ -25,7 +25,7 @@
       "The label stays \"Light theme\"; aria-pressed=\"true\" means the light theme is active",
       "Icon is decorative (aria-hidden)",
       "Preference is stored under localStorage key microcks-theme and applied as data-theme on <html>",
-      "A di-theme-change event is dispatched on document"
+      "A microcks-theme-change event is dispatched on document"
     ],
     "rgaa": [
       "7.1",

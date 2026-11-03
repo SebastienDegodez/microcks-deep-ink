@@ -23,7 +23,7 @@ export const WithDescription: StoryObj = {
 
 export const Disabled: StoryObj = {
   render: () => (
-    <div className="di-stack">
+    <div className="stack">
       <Checkbox label="Disabled, unchecked" disabled />
       <Checkbox label="Disabled, checked" disabled defaultChecked />
     </div>

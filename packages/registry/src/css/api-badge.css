@@ -1,6 +1,6 @@
 @layer deep-ink.components {
-  .di-api-badge {
-    --di-badge-proto: var(--proto-rest);
+  .api-badge {
+    --badge-proto: var(--proto-rest);
     display: inline-flex;
     vertical-align: middle;
     max-width: 100%;
@@ -10,30 +10,30 @@
     border: 1px solid var(--border-strong);
     border-radius: var(--radius-badge);
   }
-  .di-api-badge[data-protocol="rest"] { --di-badge-proto: var(--proto-rest); }
-  .di-api-badge[data-protocol="soap"] { --di-badge-proto: var(--proto-soap); }
-  .di-api-badge[data-protocol="event"] { --di-badge-proto: var(--proto-event); }
-  .di-api-badge[data-protocol="grpc"] { --di-badge-proto: var(--proto-grpc); }
-  .di-api-badge[data-protocol="graphql"] { --di-badge-proto: var(--proto-graphql); }
-  .di-api-badge[data-protocol="direct"] { --di-badge-proto: var(--proto-direct); }
+  .api-badge[data-protocol="rest"] { --badge-proto: var(--proto-rest); }
+  .api-badge[data-protocol="soap"] { --badge-proto: var(--proto-soap); }
+  .api-badge[data-protocol="event"] { --badge-proto: var(--proto-event); }
+  .api-badge[data-protocol="grpc"] { --badge-proto: var(--proto-grpc); }
+  .api-badge[data-protocol="graphql"] { --badge-proto: var(--proto-graphql); }
+  .api-badge[data-protocol="direct"] { --badge-proto: var(--proto-direct); }
 
-  .di-api-badge > span { display: inline-flex; align-items: center; padding: 5px 9px; }
-  .di-api-badge[data-size="sm"] > span { padding: 2px 6px; font-size: 11px; }
+  .api-badge > span { display: inline-flex; align-items: center; padding: 5px 9px; }
+  .api-badge[data-size="sm"] > span { padding: 2px 6px; font-size: 11px; }
 
   /* Left segment: a protocol fills with its color; a metric label sits on raised. */
-  .di-api-badge-type { background: var(--raised); color: var(--text-secondary); font-weight: 400; }
-  .di-api-badge[data-protocol] .di-api-badge-type { background: var(--di-badge-proto); color: var(--on-proto); font-weight: 600; }
+  .api-badge-type { background: var(--raised); color: var(--text-secondary); font-weight: 400; }
+  .api-badge[data-protocol] .api-badge-type { background: var(--badge-proto); color: var(--on-proto); font-weight: 600; }
   /* Workflows are not a protocol: inverted segment, never a protocol color. */
-  .di-api-badge[data-protocol="arazzo"] .di-api-badge-type { background: var(--text); color: var(--bg); font-weight: 600; }
+  .api-badge[data-protocol="arazzo"] .api-badge-type { background: var(--text); color: var(--bg); font-weight: 600; }
 
-  .di-api-badge-name { background: var(--surface); color: var(--text); }
-  .di-api-badge-version { background: var(--surface); color: var(--text-secondary); padding-inline-start: 0; }
-  .di-api-badge-name:not(:last-child) { padding-inline-end: 6px; }
+  .api-badge-name { background: var(--surface); color: var(--text); }
+  .api-badge-version { background: var(--surface); color: var(--text-secondary); padding-inline-start: 0; }
+  .api-badge-name:not(:last-child) { padding-inline-end: 6px; }
 
   /* Proof fills: icon + word are always inside; color only speeds up scanning. */
-  .di-api-badge[data-status="success"] .di-api-badge-name { background: var(--success); color: var(--on-status); font-weight: 600; }
-  .di-api-badge[data-status="danger"] .di-api-badge-name { background: var(--danger); color: var(--on-status); font-weight: 600; }
-  .di-api-badge[data-status="warning"] .di-api-badge-name { background: var(--warning); color: var(--on-status); font-weight: 600; }
-  .di-api-badge[data-status="info"] .di-api-badge-name { background: var(--link); color: var(--on-action); font-weight: 600; }
-  .di-api-badge-name > .di-icon { margin-inline-end: 4px; flex: none; }
+  .api-badge[data-status="success"] .api-badge-name { background: var(--success); color: var(--on-status); font-weight: 600; }
+  .api-badge[data-status="danger"] .api-badge-name { background: var(--danger); color: var(--on-status); font-weight: 600; }
+  .api-badge[data-status="warning"] .api-badge-name { background: var(--warning); color: var(--on-status); font-weight: 600; }
+  .api-badge[data-status="info"] .api-badge-name { background: var(--link); color: var(--on-action); font-weight: 600; }
+  .api-badge-name > .icon { margin-inline-end: 4px; flex: none; }
 }

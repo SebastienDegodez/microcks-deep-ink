@@ -17,12 +17,12 @@ const STATUS_WORD = { success: 'success', danger: 'error', warning: 'warning' } 
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent],
   host: {
-    class: 'di-api-badge',
+    class: 'api-badge',
     '[attr.data-protocol]': 'dataProtocol()',
     '[attr.data-status]': 'isProof() ? status() : null',
     '[attr.data-size]': 'size()',
   },
-  template: `<span class="di-api-badge-type">{{ type() }}</span>&ngsp;@if (main()) {<span class="di-api-badge-name">@if (proofIcon(); as p) {<svg mkIcon [name]="iconFor(p)" [size]="12"></svg>}{{ main() }}@if (proofIcon(); as p) {&ngsp;<span class="di-sr-only">({{ wordFor(p) }})</span>}</span>}&ngsp;@if (!isProof() && version()) {<span class="di-api-badge-version">{{ version() }}</span>}`,
+  template: `<span class="api-badge-type">{{ type() }}</span>&ngsp;@if (main()) {<span class="api-badge-name">@if (proofIcon(); as p) {<svg mkIcon [name]="iconFor(p)" [size]="12"></svg>}{{ main() }}@if (proofIcon(); as p) {&ngsp;<span class="sr-only">({{ wordFor(p) }})</span>}</span>}&ngsp;@if (!isProof() && version()) {<span class="api-badge-version">{{ version() }}</span>}`,
 })
 export class ApiBadgeComponent {
   /** Left segment for an API badge. Ignored when `label` or `arazzo` is set. */

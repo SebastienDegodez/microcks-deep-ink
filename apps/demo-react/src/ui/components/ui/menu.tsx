@@ -43,7 +43,7 @@ export function Menu({ label, icon, iconOnly, items, variant = 'secondary', size
   const trigger = useRef<HTMLButtonElement>(null);
   const [expanded, setExpanded] = useState(false);
 
-  const itemElements = () => Array.from(menu.current?.querySelectorAll<HTMLElement>('.di-menu-item:not(:disabled):not([aria-disabled="true"])') ?? []);
+  const itemElements = () => Array.from(menu.current?.querySelectorAll<HTMLElement>('.menu-item:not(:disabled):not([aria-disabled="true"])') ?? []);
 
   const place = () => {
     const m = menu.current;
@@ -135,7 +135,7 @@ export function Menu({ label, icon, iconOnly, items, variant = 'secondary', size
       <div
         ref={menu}
         id={menuId}
-        className="di-menu"
+        className="menu"
         popover="auto"
         role="group"
         aria-label={label}
@@ -145,7 +145,7 @@ export function Menu({ label, icon, iconOnly, items, variant = 'secondary', size
           item.href !== undefined ? (
             <a
               key={item.id}
-              className="di-menu-item"
+              className="menu-item"
               href={item.href}
               data-tone={item.danger ? 'danger' : undefined}
               aria-disabled={item.disabled ? true : undefined}
@@ -160,7 +160,7 @@ export function Menu({ label, icon, iconOnly, items, variant = 'secondary', size
             <button
               key={item.id}
               type="button"
-              className="di-menu-item"
+              className="menu-item"
               data-tone={item.danger ? 'danger' : undefined}
               disabled={item.disabled}
               onClick={() => {

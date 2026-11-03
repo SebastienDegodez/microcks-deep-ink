@@ -1,11 +1,11 @@
 <!-- PluginSlot: renders the plugin contributions for one extension point, in the light DOM.
-     Contributions are wrapped in div.di-plugin-item[data-plugin-id]; style your plugin with the di-* classes. -->
+     Contributions are wrapped in div.plugin-item[data-plugin-id]; style your plugin with the * classes. -->
 <script type="module">
-  import { getPluginHost } from './elements/mk-plugin-slot.js';
+  import { getPluginHost } from './elements/plugin-slot.js';
 
   class PastryBadge extends HTMLElement {
     set context(ctx) {
-      this.innerHTML = `<span class="di-live">pastry plugin · ${ctx.theme}</span>`;
+      this.innerHTML = `<span class="live">pastry plugin · ${ctx.theme}</span>`;
     }
   }
   customElements.define('pastry-badge', PastryBadge);
@@ -18,7 +18,7 @@
   });
 </script>
 
-<mk-plugin-slot point="service.header.badges" outlined>
+<plugin-slot point="service.header.badges" outlined>
   <!-- Fallback shown when no plugin contributes -->
   <p>No plugin contributes here.</p>
-</mk-plugin-slot>
+</plugin-slot>

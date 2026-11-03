@@ -29,7 +29,7 @@ export const WithDescription: StoryObj = {
 export const Disabled: StoryObj = {
   render: () => ({
     template: `
-      <div class="di-stack">
+      <div class="stack">
         <mk-checkbox label="Disabled, unchecked" disabled />
         <mk-checkbox label="Disabled, checked" disabled [checked]="true" />
       </div>

@@ -12,7 +12,7 @@ export const Default: StoryObj = {
   render: () => {
     const [names, setNames] = useState<string[]>([]);
     return (
-      <div className="di-stack" style={{ maxWidth: 560 }}>
+      <div className="stack" style={{ maxWidth: 560 }}>
         <DropZone heading="Import a contract" hint="OpenAPI, AsyncAPI, gRPC, GraphQL or Postman" accept=".yaml,.yml,.json,.proto,.graphql" onFiles={(f) => setNames(f.map((x) => x.name))} />
         {names.length ? <p className="sb-note">Selected: {names.join(', ')}</p> : null}
       </div>

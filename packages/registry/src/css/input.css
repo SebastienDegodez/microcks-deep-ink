@@ -1,5 +1,5 @@
 @layer deep-ink.components {
-  .di-input {
+  .input {
     box-sizing: border-box;
     width: 100%;
     min-height: 40px;
@@ -12,45 +12,45 @@
     border-radius: var(--radius-control);
   }
 
-  textarea.di-input {
+  textarea.input {
     min-height: 96px;
     padding: 8px 12px;
     resize: vertical;
   }
 
-  .di-input[data-mono] {
+  .input[data-mono] {
     font: var(--type-code);
   }
 
-  .di-input[data-size="sm"] {
+  .input[data-size="sm"] {
     min-height: 32px;
     padding-inline: 8px;
     font-size: 13px;
   }
 
-  .di-input::placeholder {
+  .input::placeholder {
     color: var(--text-muted);
     opacity: 1;
   }
 
-  .di-input:hover {
+  .input:hover {
     border-color: var(--text-secondary);
   }
 
   /* Invalid: danger border plus a thicker inner line, so it is not a hue change only. */
-  .di-input[aria-invalid="true"] {
+  .input[aria-invalid="true"] {
     border-color: var(--danger);
     box-shadow: inset 0 0 0 1px var(--danger);
   }
 
-  .di-input:disabled {
+  .input:disabled {
     background: var(--surface);
     border-color: var(--border);
     color: var(--text-muted);
     cursor: not-allowed;
   }
 
-  .di-input[readonly] {
+  .input[readonly] {
     background: var(--canvas);
   }
 }

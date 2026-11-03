@@ -19,7 +19,7 @@ const PROTOCOLS: Array<[Protocol, string, string]> = [
 
 export const Default: StoryObj = {
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       {PROTOCOLS.map(([p, n, v]) => <ApiBadge key={p} protocol={p} name={n} version={v} />)}
     </div>
   ),
@@ -36,7 +36,7 @@ export const Workflow: StoryObj = {
 
 export const Proof: StoryObj = {
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       <ApiBadge label="conformance" value="92 %" status="success" />
       <ApiBadge label="last run" value="2 failures" status="danger" />
       <ApiBadge label="drift" value="1 field" status="warning" />

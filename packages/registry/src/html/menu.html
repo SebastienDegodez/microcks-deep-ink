@@ -6,13 +6,13 @@
   and the first item is focused when the menu opens.
   Position the popover next to the trigger with script (it is fixed and has inset: auto).
 -->
-<button type="button" class="di-button" data-variant="secondary" data-size="sm" popovertarget="svc-menu" aria-expanded="false" aria-controls="svc-menu">
+<button type="button" class="button" data-variant="secondary" data-size="sm" popovertarget="svc-menu" aria-expanded="false" aria-controls="svc-menu">
   Actions
 </button>
-<div id="svc-menu" class="di-menu" popover="auto" role="group" aria-label="Actions">
-  <button type="button" class="di-menu-item">Copy service id</button>
-  <a class="di-menu-item" href="/tests/create?service=pastry2">Run a test</a>
-  <button type="button" class="di-menu-item" data-tone="danger">Delete service</button>
+<div id="svc-menu" class="menu" popover="auto" role="group" aria-label="Actions">
+  <button type="button" class="menu-item">Copy service id</button>
+  <a class="menu-item" href="/tests/create?service=pastry2">Run a test</a>
+  <button type="button" class="menu-item" data-tone="danger">Delete service</button>
 </div>
 
 <script>
@@ -20,6 +20,6 @@
   const trigger = document.querySelector('[popovertarget="svc-menu"]');
   menu.addEventListener('toggle', (e) => {
     trigger.setAttribute('aria-expanded', String(e.newState === 'open'));
-    if (e.newState === 'open') menu.querySelector('.di-menu-item')?.focus();
+    if (e.newState === 'open') menu.querySelector('.menu-item')?.focus();
   });
 </script>

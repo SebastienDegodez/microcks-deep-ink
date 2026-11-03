@@ -20,11 +20,11 @@ export function StepStatus({ status, attempts, className, ...rest }: StepStatusP
   const s = STEP[status];
   const showAttempts = attempts !== undefined && attempts > 0 && (attempts > 1 || status === 'failed');
   return (
-    <span {...rest} className={['di-step-status', className].filter(Boolean).join(' ')} data-status={status}>
+    <span {...rest} className={['step-status', className].filter(Boolean).join(' ')} data-status={status}>
       <Icon name={s.icon} size={14} />
       <span>{s.word}</span>
       {showAttempts ? (
-        <span className="di-step-status-attempts">
+        <span className="step-status-attempts">
           · {attempts} {attempts === 1 ? 'attempt' : 'attempts'}
         </span>
       ) : null}
@@ -50,9 +50,9 @@ function Check({ label, state }: { label: string; state: CheckState }) {
   return (
     <li data-state={state}>
       <span>{label}</span>
-      <span className="di-sr-only">:</span>
+      <span className="sr-only">:</span>
       {' '}
-      <span className="di-checks-state">
+      <span className="checks-state">
         <Icon name={c.icon} size={14} />
         {c.word}
       </span>
@@ -63,7 +63,7 @@ function Check({ label, state }: { label: string; state: CheckState }) {
 /** The two checks of a step, written separately: a 200 that breaks the schema still fails the step. */
 export function StepChecks({ successCriteria, schemaValidation, className, ...rest }: StepChecksProps) {
   return (
-    <ul {...rest} className={['di-checks', className].filter(Boolean).join(' ')}>
+    <ul {...rest} className={['checks', className].filter(Boolean).join(' ')}>
       <Check label="Success criteria" state={successCriteria} />
       {schemaValidation ? <Check label="Schema validation" state={schemaValidation} /> : null}
     </ul>

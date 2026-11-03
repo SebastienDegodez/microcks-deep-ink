@@ -12,7 +12,7 @@
     "angular": []
   },
   "elements": [
-    "mk-workflow-loom"
+    "workflow-loom"
   ],
   "a11y": {
     "pattern": "role=group with toggle-button nodes (aria-pressed), roving tabindex, and a Show as table view",
@@ -64,7 +64,7 @@
       "2.4.7",
       "4.1.2"
     ],
-    "notes": "Copy the element bundle with the wrapper (elements/mk-workflow-loom.js is self-contained). Angular: add schemas: [CUSTOM_ELEMENTS_SCHEMA] to the host component. No goto: Arazzo actions are limited to end and retry in the Microcks POC. The loom reads the tokens (proto-*, link, border-control, success, danger), so load tokens.css."
+    "notes": "Copy the element bundle with the wrapper (elements/workflow-loom.js is self-contained). Angular: add schemas: [CUSTOM_ELEMENTS_SCHEMA] to the host component. No goto: Arazzo actions are limited to end and retry in the Microcks POC. The loom reads the tokens (proto-*, link, border-control, success, danger), so load tokens.css."
   },
   "stories": [
     "Elements/WorkflowLoom"

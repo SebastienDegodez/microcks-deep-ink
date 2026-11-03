@@ -1,6 +1,6 @@
 /*
  * Demo-specific layout glue (prefix `demo-`). Components and the design system live in the copied
- * `ui/styles` (classes `di-*`); this file only covers what the demo shell adds around them.
+ * `ui/styles` (classes `*`); this file only covers what the demo shell adds around them.
  * Colors come from the tokens; no alpha or color-mix behind text.
  */
 
@@ -45,7 +45,7 @@
   .demo-nav-toggle {
     display: inline-flex;
   }
-  .di-sidenav[data-collapsible]:not([data-open]) {
+  .sidenav[data-collapsible]:not([data-open]) {
     display: none;
   }
 }

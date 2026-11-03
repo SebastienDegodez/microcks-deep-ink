@@ -21,13 +21,13 @@ export interface SegmentedProps {
  */
 export function Segmented({ label, options, value, onChange, className }: SegmentedProps) {
   return (
-    <div role="group" aria-label={label} className={['di-segmented', className].filter(Boolean).join(' ')}>
+    <div role="group" aria-label={label} className={['segmented', className].filter(Boolean).join(' ')}>
       {options.map((o) => (
         <button key={o.id} type="button" aria-pressed={o.id === value} onClick={() => onChange(o.id)}>
           {o.label}
           {o.count !== undefined ? (
-            <span className="di-segmented-count">
-              <span className="di-sr-only">, </span>
+            <span className="segmented-count">
+              <span className="sr-only">, </span>
               {o.count}
             </span>
           ) : null}

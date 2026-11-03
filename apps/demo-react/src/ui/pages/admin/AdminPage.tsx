@@ -99,7 +99,7 @@ function Users({ notify }: { notify: Notify }) {
     <Panel title="Users" aria-busy={users.status === 'loading'}>
       <div className="demo-scroll">
         <table className="ad-table">
-          <caption className="di-sr-only">Users and their roles</caption>
+          <caption className="sr-only">Users and their roles</caption>
           <thead><tr><th scope="col">User</th><th scope="col">Email</th><th scope="col">Groups</th><th scope="col">Role</th></tr></thead>
           <tbody>
             {users.data.map((u) => (
@@ -111,7 +111,7 @@ function Users({ notify }: { notify: Notify }) {
                   <Select aria-label={`Role of ${u.name}`} size="sm" value={u.role} disabled={u.self} onChange={(e) => change(u, e.target.value as Role)}>
                     {ROLES.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}
                   </Select>
-                  {u.self ? <span className="di-sr-only"> Your own role cannot be changed.</span> : null}
+                  {u.self ? <span className="sr-only"> Your own role cannot be changed.</span> : null}
                 </td>
               </tr>
             ))}
@@ -156,10 +156,10 @@ function Groups({ notify, requests, onChanged }: { notify: Notify; requests: num
   };
 
   return (
-    <div className="di-stack">
+    <div className="stack">
       {requests > 0 ? (
         <Panel title={`${reqs.data?.length ?? requests} pending requests`.replace(/^1 pending requests$/, '1 pending request')}>
-          <ul style={{ margin: 0, padding: 0, listStyle: 'none' }} className="di-stack">
+          <ul style={{ margin: 0, padding: 0, listStyle: 'none' }} className="stack">
             {(reqs.data ?? []).map((r) => {
               const user = users.data?.find((u) => u.id === r.userId);
               const group = groups.data?.find((g) => g.id === r.groupId);
@@ -232,8 +232,8 @@ function Secrets({ notify }: { notify: Notify }) {
     <Panel title="Secrets" actions={<Button icon="plus" onClick={() => setOpen(true)}>Create secret</Button>}>
       <div className="demo-scroll">
         <table className="ad-table">
-          <caption className="di-sr-only">Secrets. Values are masked.</caption>
-          <thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Value</th><th scope="col">Description</th><th scope="col"><span className="di-sr-only">Actions</span></th></tr></thead>
+          <caption className="sr-only">Secrets. Values are masked.</caption>
+          <thead><tr><th scope="col">Name</th><th scope="col">Type</th><th scope="col">Value</th><th scope="col">Description</th><th scope="col"><span className="sr-only">Actions</span></th></tr></thead>
           <tbody>
             {secrets.data.map((s) => (
               <tr key={s.id}>
@@ -307,9 +307,9 @@ function Snapshots({ notify }: { notify: Notify }) {
   };
 
   return (
-    <div className="di-stack">
+    <div className="stack">
       <Panel title="Export">
-        <div className="di-stack">
+        <div className="stack">
           <fieldset className="ad-members">
             <legend>Services to export</legend>
             {(services.data ?? []).map((s) => (
@@ -326,7 +326,7 @@ function Snapshots({ notify }: { notify: Notify }) {
             <span className="demo-muted" role="status">{selected.length} {selected.length === 1 ? 'service' : 'services'} selected</span>
           </div>
           {exported ? (
-            <div className="di-stack">
+            <div className="stack">
               <p>
                 <strong className="demo-mono">{exported.fileName}</strong>
                 {exported.operations ? ` · ${exported.operations} operations` : ''}
@@ -337,7 +337,7 @@ function Snapshots({ notify }: { notify: Notify }) {
         </div>
       </Panel>
       <Panel title="Import">
-        <div className="di-stack">
+        <div className="stack">
           <Field label="Snapshot file" help="Choose a JSON snapshot exported from another instance.">
             {(c) => <Input {...c} className="ad-file" type="file" accept=".json,application/json" onChange={(e) => pick(e.target.files?.[0]?.name ?? '')} />}
           </Field>
@@ -345,7 +345,7 @@ function Snapshots({ notify }: { notify: Notify }) {
             <Button onClick={() => pick('pastry-snapshot.json')}>Use the sample snapshot</Button>
           </div>
           {preview ? (
-            <div className="di-stack">
+            <div className="stack">
               <h3 style={{ margin: 0, fontSize: '1rem' }}>{fileName}: what will happen</h3>
               <ul style={{ margin: 0, paddingInlineStart: '1.25rem' }}>
                 {preview.map((p) => (
@@ -370,7 +370,7 @@ function Configuration({ notify }: { notify: Notify }) {
   if (!flags.data) return <LoadingBlock label="configuration" />;
   return (
     <Panel title="Feature flags">
-      <ul style={{ margin: 0, padding: 0, listStyle: 'none' }} className="di-stack">
+      <ul style={{ margin: 0, padding: 0, listStyle: 'none' }} className="stack">
         {flags.data.map((f) => (
           <li key={f.id}>
             <Switch

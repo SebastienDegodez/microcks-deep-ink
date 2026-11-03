@@ -157,7 +157,7 @@ describe('Hub (/hub/:packageId?)', () => {
     await screen.findByRole('heading', { level: 1, name: 'Hub' });
     const install = await screen.findByRole('button', { name: /Install/ });
     fireEvent.click(install);
-    await screen.findByText('Installed', { selector: '.di-callout *, .di-callout' }).catch(() => undefined);
+    await screen.findByText('Installed', { selector: '.callout *, .callout' }).catch(() => undefined);
     await waitFor(() => expect(screen.queryByRole('button', { name: /Install/ })).toBeNull());
   });
 

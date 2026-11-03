@@ -12,7 +12,7 @@ export default meta;
 export const Default: StoryObj = {
   render: () => ({
     template: `
-      <div class="di-inline">
+      <div class="inline">
         <span mkRunTarget target="mocks"></span>
         <span mkRunTarget target="implementations"></span>
         <span mkRunTarget target="mixed"></span>

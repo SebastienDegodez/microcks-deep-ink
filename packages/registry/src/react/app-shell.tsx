@@ -67,10 +67,10 @@ export function AppShell({ brand, nav, activeId, topbarActions, banner, skipLink
   }, []);
 
   return (
-    <div className="di-shell">
+    <div className="shell">
       {/* A hash router would treat href="#main" as a route: focus the element instead of navigating. */}
       <a
-        className="di-skip-link"
+        className="skip-link"
         href="#main"
         onClick={(e) => {
           e.preventDefault();
@@ -79,12 +79,12 @@ export function AppShell({ brand, nav, activeId, topbarActions, banner, skipLink
       >
         {skipLinkLabel}
       </a>
-      <header className="di-topbar">
+      <header className="topbar">
         <Button
           ref={menuRef}
           type="button"
           variant="ghost"
-          className="di-shell-menu"
+          className="shell-menu"
           aria-expanded={open}
           aria-controls={navId}
           onClick={() => setOpen((v) => !v)}
@@ -92,15 +92,15 @@ export function AppShell({ brand, nav, activeId, topbarActions, banner, skipLink
           <Icon name={open ? 'close' : 'menu'} size={18} />
           Menu
         </Button>
-        <div className="di-topbar-brand">{brand}</div>
-        {topbarActions ? <div className="di-topbar-actions">{topbarActions}</div> : null}
+        <div className="topbar-brand">{brand}</div>
+        {topbarActions ? <div className="topbar-actions">{topbarActions}</div> : null}
       </header>
-      {banner ? <div className="di-shell-banner">{banner}</div> : null}
-      <nav className="di-sidenav" id={navId} aria-label={navLabel} data-open={open ? 'true' : 'false'}>
+      {banner ? <div className="shell-banner">{banner}</div> : null}
+      <nav className="sidenav" id={navId} aria-label={navLabel} data-open={open ? 'true' : 'false'}>
         <ul>
           {nav.map((item) => {
             const props: ShellLinkProps = {
-              className: 'di-sidenav-link',
+              className: 'sidenav-link',
               href: item.href,
               onClick: () => setOpen(false),
               'aria-current': item.id === activeId ? 'page' : undefined,
@@ -108,7 +108,7 @@ export function AppShell({ brand, nav, activeId, topbarActions, banner, skipLink
                 <>
                   {item.icon ? <Icon name={item.icon} size={18} /> : null}
                   <span>{item.label}</span>
-                  {item.badge ? <span className="di-sidenav-badge">{item.badge}</span> : null}
+                  {item.badge ? <span className="sidenav-badge">{item.badge}</span> : null}
                 </>
               ),
             };
@@ -116,7 +116,7 @@ export function AppShell({ brand, nav, activeId, topbarActions, banner, skipLink
           })}
         </ul>
       </nav>
-      <main id="main" tabIndex={-1} className="di-main" ref={mainRef}>
+      <main id="main" tabIndex={-1} className="main" ref={mainRef}>
         {children}
       </main>
     </div>

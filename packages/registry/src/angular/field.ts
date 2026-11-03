@@ -13,17 +13,17 @@ let nextId = 0;
   selector: 'mk-field',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent],
-  host: { class: 'di-field', '[attr.data-invalid]': "error() ? '' : null" },
+  host: { class: 'field', '[attr.data-invalid]': "error() ? '' : null" },
   template: `
-    <label class="di-label" [attr.for]="controlId()">{{ label() }}@if (required()) {<span class="di-required" aria-hidden="true"> *</span>}</label>
+    <label class="label" [attr.for]="controlId()">{{ label() }}@if (required()) {<span class="required" aria-hidden="true"> *</span>}</label>
     <ng-content />
     @if (help()) {
-      <p class="di-help" [id]="helpId">{{ help() }}</p>
+      <p class="help" [id]="helpId">{{ help() }}</p>
     }
     @if (error()) {
-      <p class="di-error" [id]="errorId">
+      <p class="error" [id]="errorId">
         <svg mkIcon name="warning" [size]="16"></svg>
-        <span><span class="di-sr-only">Error: </span>{{ error() }}</span>
+        <span><span class="sr-only">Error: </span>{{ error() }}</span>
       </p>
     }
   `,

@@ -9,8 +9,8 @@ import { IconComponent } from './icon';
   selector: 'a[mkLink]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent],
-  host: { class: 'di-link', '[attr.data-external]': "external() ? '' : null" },
-  template: `<ng-content />@if (external()) {<svg mkIcon name="external" [size]="14"></svg>&ngsp;<span class="di-sr-only">(opens in a new tab)</span>}`,
+  host: { class: 'link', '[attr.data-external]': "external() ? '' : null" },
+  template: `<ng-content />@if (external()) {<svg mkIcon name="external" [size]="14"></svg>&ngsp;<span class="sr-only">(opens in a new tab)</span>}`,
 })
 export class LinkComponent {
   readonly external = input(false, { transform: booleanAttribute });

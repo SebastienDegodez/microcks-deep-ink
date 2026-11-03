@@ -256,7 +256,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
             </div>
           ) : null}
 
-          <fieldset className="di-fieldset">
+          <fieldset className="fieldset">
             <legend>Inputs</legend>
             <div className="wf-fields">
               <Field label="Example" help="Recorded in the ArazzoSources overlay. Picking one fills the inputs; the run is then judged on it.">
@@ -313,7 +313,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
             ) : null}
           </fieldset>
 
-          <fieldset className="di-fieldset">
+          <fieldset className="fieldset">
             <legend>Options</legend>
             <div className="wf-fields">
               <Checkbox

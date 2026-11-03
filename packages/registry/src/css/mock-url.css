@@ -1,6 +1,6 @@
 @layer deep-ink.components {
-  .di-segmented + .di-mock-url { margin-top: var(--space-2); }
-  .di-mock-url {
+  .segmented + .mock-url { margin-top: var(--space-2); }
+  .mock-url {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -10,7 +10,7 @@
     border: 1px solid var(--border-control);
     border-radius: var(--radius-panel);
   }
-  .di-mock-url > code {
+  .mock-url > code {
     flex: 1 1 12rem;
     min-width: 0;
     color: var(--link);

@@ -18,7 +18,7 @@ export function RouteErrorPage() {
   return (
     <>
       <PageHeader title="Something went wrong" />
-      <div role="alert" className="di-callout" data-tone="danger">
+      <div role="alert" className="callout" data-tone="danger">
         <p>{message}</p>
       </div>
     </>

@@ -12,7 +12,7 @@ export type SelectProps = Omit<SelectHTMLAttributes<HTMLSelectElement>, 'size'> 
  */
 export function Select({ size = 'md', className, children, ref, ...rest }: SelectProps) {
   return (
-    <select ref={ref} {...rest} className={['di-select', className].filter(Boolean).join(' ')} data-size={size}>
+    <select ref={ref} {...rest} className={['select', className].filter(Boolean).join(' ')} data-size={size}>
       {children}
     </select>
   );

@@ -12,7 +12,7 @@ const meta: Meta = {
   title: 'Plugins/Slots',
   decorators: [moduleMetadata({ imports: [PluginSlotDirective, PanelComponent, PanelActionsDirective], schemas: [CUSTOM_ELEMENTS_SCHEMA] })],
   loaders: [async () => ({ ready: await registerDemoPlugin() })],
-  parameters: itemParams(['plugin-slot', 'panel', 'api-badge', 'live-indicator'], "The demo plugin is a plain Web Component registered into the shared plugin host. `mk-plugin-slot` renders it in light DOM, so it looks like the app through the HTML recipes (`live-indicator`, `api-badge`). The same plugin renders in the React Storybook."),
+  parameters: itemParams(['plugin-slot', 'panel', 'api-badge', 'live-indicator'], "The demo plugin is a plain Web Component registered into the shared plugin host. `plugin-slot` renders it in light DOM, so it looks like the app through the HTML recipes (`live-indicator`, `api-badge`). The same plugin renders in the React Storybook."),
 };
 export default meta;
 
@@ -22,7 +22,7 @@ export const CockpitWidgets: StoryObj = {
     props: { ctx: EVENT_SERVICE },
     template: `
       <section mkPanel title="Cockpit" style="max-width:520px;display:block">
-        <mk-plugin-slot point="cockpit.widgets" [context]="ctx" outlined></mk-plugin-slot>
+        <plugin-slot point="cockpit.widgets" [context]="ctx" outlined></plugin-slot>
       </section>
     `,
   }),
@@ -35,10 +35,10 @@ export const ConditionalTab: StoryObj = {
     template: `
       <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:24px">
         <section mkPanel title="EVENT service">
-          <mk-plugin-slot point="service.tabs" [context]="ev" outlined><span class="sb-note">No plugin tab</span></mk-plugin-slot>
+          <plugin-slot point="service.tabs" [context]="ev" outlined><span class="sb-note">No plugin tab</span></plugin-slot>
         </section>
         <section mkPanel title="REST service">
-          <mk-plugin-slot point="service.tabs" [context]="rest" outlined><span class="sb-note">No plugin tab: the contribution's when filter only accepts EVENT services.</span></mk-plugin-slot>
+          <plugin-slot point="service.tabs" [context]="rest" outlined><span class="sb-note">No plugin tab: the contribution's when filter only accepts EVENT services.</span></plugin-slot>
         </section>
       </div>
     `,

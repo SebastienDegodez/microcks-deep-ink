@@ -1,6 +1,6 @@
 /* Deep Ink · menu@0.2.0 · copied from packages/registry. You own this file. */
 @layer deep-ink.components {
-  .di-menu {
+  .menu {
     box-sizing: border-box;
     min-width: 12rem;
     max-width: calc(100vw - 16px);
@@ -15,12 +15,12 @@
     border-radius: var(--radius-panel);
     box-shadow: var(--shadow-overlay);
   }
-  .di-menu:popover-open {
+  .menu:popover-open {
     display: flex;
     flex-direction: column;
   }
 
-  .di-menu-item {
+  .menu-item {
     box-sizing: border-box;
     display: flex;
     align-items: center;
@@ -36,19 +36,19 @@
     border-radius: var(--radius-control);
     cursor: pointer;
   }
-  .di-menu-item:hover {
+  .menu-item:hover {
     background: var(--raised);
   }
-  .di-menu-item[data-tone="danger"] {
+  .menu-item[data-tone="danger"] {
     color: var(--danger);
   }
-  .di-menu-item:disabled,
-  .di-menu-item[aria-disabled="true"] {
+  .menu-item:disabled,
+  .menu-item[aria-disabled="true"] {
     color: var(--text-muted);
     cursor: not-allowed;
   }
   /* Keep the focus ring inside the rounded popover. */
-  .di-menu-item:focus-visible {
+  .menu-item:focus-visible {
     outline-offset: -2px;
   }
 }

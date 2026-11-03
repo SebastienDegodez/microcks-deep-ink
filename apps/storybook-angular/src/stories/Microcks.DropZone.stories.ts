@@ -18,7 +18,7 @@ export const Default: StoryObj = {
       },
     },
     template: `
-      <div class="di-stack" style="max-width:560px">
+      <div class="stack" style="max-width:560px">
         <mk-drop-zone heading="Import a contract" hint="OpenAPI, AsyncAPI, gRPC, GraphQL or Postman" accept=".yaml,.yml,.json,.proto,.graphql" (files)="onFiles($event)" />
         @if (names.length) {
           <p class="sb-note">Selected: {{ names.join(', ') }}</p>

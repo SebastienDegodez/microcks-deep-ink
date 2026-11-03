@@ -49,8 +49,8 @@ export function Dialog({ open, onClose, title, description, children, footer, si
       dialog.showModal();
       const preferred =
         dialog.querySelector<HTMLElement>('[data-autofocus]') ??
-        dialog.querySelector<HTMLElement>(`.di-dialog-body ${FOCUSABLE.split(', ').join(', .di-dialog-body ')}`) ??
-        dialog.querySelector<HTMLElement>(`.di-dialog-footer ${FOCUSABLE.split(', ').join(', .di-dialog-footer ')}`);
+        dialog.querySelector<HTMLElement>(`.dialog-body ${FOCUSABLE.split(', ').join(', .dialog-body ')}`) ??
+        dialog.querySelector<HTMLElement>(`.dialog-footer ${FOCUSABLE.split(', ').join(', .dialog-footer ')}`);
       preferred?.focus();
     } else if (!open && dialog.open) {
       dialog.close();
@@ -86,28 +86,28 @@ export function Dialog({ open, onClose, title, description, children, footer, si
   return (
     <dialog
       ref={ref}
-      className={['di-dialog', className].filter(Boolean).join(' ')}
+      className={['dialog', className].filter(Boolean).join(' ')}
       data-size={size}
       aria-labelledby={titleId}
       aria-describedby={descId}
     >
       {open ? (
         <>
-          <div className="di-dialog-header">
-            <h2 className="di-dialog-title" id={titleId}>
+          <div className="dialog-header">
+            <h2 className="dialog-title" id={titleId}>
               {title}
             </h2>
             <Button variant="ghost" size="sm" iconOnly icon="close" aria-label="Close" onClick={onClose} />
           </div>
-          <div className="di-dialog-body">
+          <div className="dialog-body">
             {description ? (
-              <p className="di-dialog-description" id={descId}>
+              <p className="dialog-description" id={descId}>
                 {description}
               </p>
             ) : null}
             {children}
           </div>
-          {footer ? <div className="di-dialog-footer">{footer}</div> : null}
+          {footer ? <div className="dialog-footer">{footer}</div> : null}
         </>
       ) : null}
     </dialog>

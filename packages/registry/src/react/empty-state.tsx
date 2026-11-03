@@ -11,12 +11,12 @@ export function EmptyState({ title, headingLevel = 2, actions, className, childr
   const id = useId();
   const Heading = `h${headingLevel}` as 'h2';
   return (
-    <section {...rest} className={['di-empty', className].filter(Boolean).join(' ')} aria-labelledby={id}>
-      <Heading className="di-empty-title" id={id}>
+    <section {...rest} className={['empty', className].filter(Boolean).join(' ')} aria-labelledby={id}>
+      <Heading className="empty-title" id={id}>
         {title}
       </Heading>
-      {children ? <div className="di-empty-body">{children}</div> : null}
-      {actions ? <div className="di-empty-actions">{actions}</div> : null}
+      {children ? <div className="empty-body">{children}</div> : null}
+      {actions ? <div className="empty-actions">{actions}</div> : null}
     </section>
   );
 }

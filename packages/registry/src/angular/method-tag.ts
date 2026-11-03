@@ -8,7 +8,7 @@ const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EV
 @Component({
   selector: 'span[mkMethodTag]',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'di-method', '[attr.data-method]': 'method()', '[attr.data-protocol]': 'protocolAttr()' },
+  host: { class: 'method', '[attr.data-method]': 'method()', '[attr.data-protocol]': 'protocolAttr()' },
   template: `{{ method() }}`,
 })
 export class MethodTagComponent {

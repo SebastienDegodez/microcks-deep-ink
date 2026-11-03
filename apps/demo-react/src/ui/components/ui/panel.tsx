@@ -29,21 +29,21 @@ export function Panel({ title, headingLevel = 2, actions, flush, as = 'section',
     <Root
       ref={ref}
       {...rest}
-      className={['di-panel', className].filter(Boolean).join(' ')}
+      className={['panel', className].filter(Boolean).join(' ')}
       data-flush={flush ? '' : undefined}
       aria-labelledby={title ? titleId : rest['aria-labelledby']}
     >
       {title || actions ? (
-        <div className="di-panel-header">
+        <div className="panel-header">
           {title ? (
-            <Heading className="di-panel-title" id={titleId}>
+            <Heading className="panel-title" id={titleId}>
               {title}
             </Heading>
           ) : null}
-          {actions ? <div className="di-panel-actions">{actions}</div> : null}
+          {actions ? <div className="panel-actions">{actions}</div> : null}
         </div>
       ) : null}
-      <div className="di-panel-body">{children}</div>
+      <div className="panel-body">{children}</div>
     </Root>
   );
 }

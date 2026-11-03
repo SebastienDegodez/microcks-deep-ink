@@ -10,7 +10,7 @@ export default {
 
 export const Default: StoryObj = {
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       <Button variant="primary">Run test</Button>
       <Button>Cancel</Button>
       <Button variant="ghost">Skip</Button>
@@ -21,7 +21,7 @@ export const Default: StoryObj = {
 
 export const Sizes: StoryObj = {
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       <Button size="md">Medium (44px)</Button>
       <Button size="sm">Small (32px)</Button>
     </div>
@@ -31,7 +31,7 @@ export const Sizes: StoryObj = {
 export const WithIcon: StoryObj = {
   name: 'Icons',
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       <Button variant="primary" icon="play">Run test</Button>
       <Button icon="upload">Import</Button>
       <Button iconOnly icon="trash" aria-label="Delete example" />
@@ -41,7 +41,7 @@ export const WithIcon: StoryObj = {
 
 export const States: StoryObj = {
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       <Button disabled>Disabled</Button>
       <Button loading>Running</Button>
       <Button variant="danger" confirm>

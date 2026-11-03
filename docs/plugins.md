@@ -82,7 +82,7 @@ await getPluginHost().load('/plugins/io.github.acme.kafka-replay/kafka-replay.js
 ```
 
 ```html
-<mk-plugin-slot point="service.tabs" .context=${{ theme, service }}></mk-plugin-slot>
+<plugin-slot point="service.tabs" .context=${{ theme, service }}></plugin-slot>
 ```
 
 Each contributed element receives a `context` property (`theme`, `service`, `operation`, `testResult`).

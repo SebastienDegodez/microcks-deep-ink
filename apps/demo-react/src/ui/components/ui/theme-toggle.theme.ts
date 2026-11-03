@@ -2,7 +2,7 @@
 export type Theme = 'dark' | 'light';
 
 export const THEME_STORAGE_KEY = 'microcks-theme';
-export const THEME_EVENT = 'di-theme-change';
+export const THEME_EVENT = 'microcks-theme-change';
 
 /** Current theme, read from `data-theme` on <html>. Dark is the default. */
 export function getTheme(): Theme {
@@ -10,7 +10,7 @@ export function getTheme(): Theme {
   return document.documentElement.dataset.theme === 'light' ? 'light' : 'dark';
 }
 
-/** Applies the theme to <html>, optionally persists it, and dispatches `di-theme-change`. */
+/** Applies the theme to <html>, optionally persists it, and dispatches `microcks-theme-change`. */
 export function setTheme(theme: Theme, persist = true): void {
   if (typeof document === 'undefined') return;
   document.documentElement.dataset.theme = theme;

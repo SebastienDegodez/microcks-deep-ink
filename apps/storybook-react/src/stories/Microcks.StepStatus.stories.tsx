@@ -10,7 +10,7 @@ export default {
 
 export const Default: StoryObj = {
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       <StepStatus status="passed" />
       <StepStatus status="failed" attempts={3} />
       <StepStatus status="not-run" />

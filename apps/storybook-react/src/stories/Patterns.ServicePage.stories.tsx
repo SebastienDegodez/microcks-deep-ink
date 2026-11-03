@@ -24,7 +24,7 @@ export const Default: StoryObj = {
       <div className="sb-col" style={{ maxWidth: 960 }}>
         <header className="sb-col">
           <h1 style={{ font: 'var(--type-section)', margin: 0 }}>API Pastry</h1>
-          <div className="di-inline">
+          <div className="inline">
             <ApiBadge protocol="REST" name="API Pastry" version="2.0" />
             <StatusBadge status="partial" label="92 % conformant" />
             <ApiBadge label="last test" value="2 h ago" />

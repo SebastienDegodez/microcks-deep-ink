@@ -22,11 +22,11 @@ describe('Input, Textarea and Select', () => {
     );
     const input = screen.getByLabelText('Path');
     expect(input.tagName).toBe('INPUT');
-    expect(input.className).toBe('di-input');
+    expect(input.className).toBe('input');
     expect(input.getAttribute('data-mono')).toBe('');
     expect(input.getAttribute('data-size')).toBe('sm');
     expect(screen.getByLabelText('Notes').tagName).toBe('TEXTAREA');
-    expect(screen.getByLabelText('Runner').className).toContain('di-select');
+    expect(screen.getByLabelText('Runner').className).toContain('select');
   });
 
   it('works inside a Field for labels', () => {

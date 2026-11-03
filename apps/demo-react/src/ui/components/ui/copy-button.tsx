@@ -76,12 +76,12 @@ export function CopyButton({
         variant={variant}
         iconOnly={iconOnly}
         icon={state === 'copied' ? 'check' : 'copy'}
-        className={['di-copy-button', className].filter(Boolean).join(' ')}
+        className={['copy-button', className].filter(Boolean).join(' ')}
         onClick={copy}
       >
         {iconOnly ? null : text}
       </Button>
-      <span role="status" aria-live="polite" className="di-sr-only">
+      <span role="status" aria-live="polite" className="sr-only">
         {message}
       </span>
     </>

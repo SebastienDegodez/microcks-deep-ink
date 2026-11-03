@@ -1,13 +1,13 @@
 /* Deep Ink · code-block@0.2.0 · copied from packages/registry. You own this file. */
 @layer deep-ink.components {
-  .di-code {
+  .code {
     margin: 0;
     background: var(--surface);
     border: 1px solid var(--border-control);
     border-radius: var(--radius-panel);
     overflow: hidden;
   }
-  .di-code > figcaption {
+  .code > figcaption {
     display: flex;
     align-items: center;
     justify-content: space-between;
@@ -18,8 +18,8 @@
     color: var(--text-secondary);
     font: var(--type-small);
   }
-  .di-code-caption { min-width: 0; overflow-wrap: anywhere; }
-  .di-code > pre {
+  .code-caption { min-width: 0; overflow-wrap: anywhere; }
+  .code > pre {
     margin: 0;
     padding: var(--space-3) var(--space-4);
     overflow: auto;
@@ -27,21 +27,21 @@
     color: var(--text);
     tab-size: 2;
   }
-  .di-code code { font: inherit; }
-  .di-code-line { display: block; padding-inline: var(--space-2); margin-inline: calc(var(--space-2) * -1); white-space: pre; }
-  .di-code-line[data-bad] {
+  .code code { font: inherit; }
+  .code-line { display: block; padding-inline: var(--space-2); margin-inline: calc(var(--space-2) * -1); white-space: pre; }
+  .code-line[data-bad] {
     background: var(--danger-tint);
     border-inline-start: 3px solid var(--danger);
     padding-inline-start: calc(var(--space-2) - 3px);
   }
-  .di-code-mark {
+  .code-mark {
     display: inline-block;
     width: 1.5ch;
     margin-inline-end: 1ch;
     color: var(--danger);
     font-weight: 600;
   }
-  .di-code-note {
+  .code-note {
     display: block;
     padding-inline-start: 2.5ch;
     color: var(--danger);

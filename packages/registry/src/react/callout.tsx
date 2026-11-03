@@ -22,21 +22,21 @@ export function Callout({ tone = 'info', title, live = false, actions, className
   return (
     <div
       {...rest}
-      className={['di-callout', className].filter(Boolean).join(' ')}
+      className={['callout', className].filter(Boolean).join(' ')}
       data-tone={tone}
       role={role ?? rest.role}
       aria-labelledby={heading ? titleId : rest['aria-labelledby']}
     >
       {/* Without a title the icon carries the tone word; with one, the title does. */}
       <Icon name={ICON[tone]} size={18} label={heading ? undefined : TONE_WORD[tone]} />
-      <div className="di-callout-body">
+      <div className="callout-body">
         {heading ? (
-          <p className="di-callout-title" id={titleId}>
+          <p className="callout-title" id={titleId}>
             {heading}
           </p>
         ) : null}
-        {children ? <div className="di-callout-content">{children}</div> : null}
-        {actions ? <div className="di-callout-actions">{actions}</div> : null}
+        {children ? <div className="callout-content">{children}</div> : null}
+        {actions ? <div className="callout-actions">{actions}</div> : null}
       </div>
     </div>
   );

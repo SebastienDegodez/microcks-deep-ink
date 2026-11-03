@@ -23,7 +23,7 @@ export const Default: StoryObj = {
       ] as Array<[Protocol, string, string]>,
     },
     template: `
-      <div class="di-inline">
+      <div class="inline">
         @for (p of protocols; track p[0]) {
           <span mkApiBadge [protocol]="p[0]" [name]="p[1]" [version]="p[2]"></span>
         }
@@ -52,7 +52,7 @@ export const Workflow: StoryObj = {
 export const Proof: StoryObj = {
   render: () => ({
     template: `
-      <div class="di-inline">
+      <div class="inline">
         <span mkApiBadge label="conformance" value="92 %" status="success"></span>
         <span mkApiBadge label="last run" value="2 failures" status="danger"></span>
         <span mkApiBadge label="drift" value="1 field" status="warning"></span>

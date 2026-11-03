@@ -12,7 +12,7 @@ export default meta;
 export const Default: StoryObj = {
   render: () => ({
     template: `
-      <div class="di-inline">
+      <div class="inline">
         <span mkStepStatus status="passed"></span>
         <span mkStepStatus status="failed" [attempts]="3"></span>
         <span mkStepStatus status="not-run"></span>

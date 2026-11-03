@@ -25,10 +25,10 @@ export function CodeBlock({ code, lines, language, caption, copy = true, maxHeig
   const value = code ?? (lines ?? []).map((l) => l.text).join('\n');
   const label = caption ?? (language ? `${language} code` : 'Code');
   return (
-    <figure {...rest} className={['di-code', className].filter(Boolean).join(' ')} data-language={language}>
+    <figure {...rest} className={['code', className].filter(Boolean).join(' ')} data-language={language}>
       {caption || copy ? (
         <figcaption>
-          <span className="di-code-caption" id={captionId}>
+          <span className="code-caption" id={captionId}>
             {caption ?? ''}
           </span>
           {copy ? <CopyButton value={value} /> : null}
@@ -39,18 +39,18 @@ export function CodeBlock({ code, lines, language, caption, copy = true, maxHeig
         <code className={language ? `language-${language}` : undefined}>
           {lines
             ? lines.map((line, i) => (
-                <span className="di-code-line" data-bad={line.bad ? '' : undefined} key={i}>
+                <span className="code-line" data-bad={line.bad ? '' : undefined} key={i}>
                   {line.bad ? (
                     <>
-                      <span className="di-code-mark" aria-hidden="true">
+                      <span className="code-mark" aria-hidden="true">
                         ✕
                       </span>
-                      <span className="di-sr-only">Problem:</span>
+                      <span className="sr-only">Problem:</span>
                       {' '}
                     </>
                   ) : null}
                   {line.text}
-                  {line.note ? <span className="di-code-note">{line.note}</span> : null}
+                  {line.note ? <span className="code-note">{line.note}</span> : null}
                 </span>
               ))
             : code}

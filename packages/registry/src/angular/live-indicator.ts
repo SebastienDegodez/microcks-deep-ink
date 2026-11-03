@@ -7,8 +7,8 @@ import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@an
 @Component({
   selector: 'span[mkLiveIndicator]',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'di-live', '[attr.data-paused]': "paused() ? '' : null" },
-  template: `<span class="di-live-dot" aria-hidden="true"></span>{{ label() }}@if (paused()) {<span class="di-live-paused"> · paused</span>}`,
+  host: { class: 'live', '[attr.data-paused]': "paused() ? '' : null" },
+  template: `<span class="live-dot" aria-hidden="true"></span>{{ label() }}@if (paused()) {<span class="live-paused"> · paused</span>}`,
 })
 export class LiveIndicatorComponent {
   readonly label = input('live');

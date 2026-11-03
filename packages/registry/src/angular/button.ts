@@ -6,7 +6,7 @@ export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
 export type ButtonSize = 'md' | 'sm';
 
 /**
- * Native `<button>` or `<a>` with the `di-button` styling: `<button mkButton variant="primary">Save</button>`.
+ * Native `<button>` or `<a>` with the `button` styling: `<button mkButton variant="primary">Save</button>`.
  * Defaults to `type="button"`. Use `<a mkButton href="...">` for navigation, a button for actions.
  * `md` is 44px high; `sm` is 32px and is never used for the primary action of a page.
  */
@@ -14,7 +14,7 @@ export type ButtonSize = 'md' | 'sm';
   selector: 'button[mkButton], a[mkButton]',
   exportAs: 'mkButton',
   host: {
-    class: 'di-button',
+    class: 'button',
     '[attr.data-variant]': 'variant()',
     '[attr.data-size]': 'size()',
     '[attr.data-confirm]': "confirm() ? '' : null",

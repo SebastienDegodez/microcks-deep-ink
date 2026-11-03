@@ -40,12 +40,12 @@ let nextId = 0;
       [attr.popovertarget]="menuId"
       (keydown)="onTriggerKeyDown($event)"
     >{{ iconOnly() ? '' : label() }}</button>
-    <div #menu [id]="menuId" class="di-menu" popover="auto" role="group" [attr.aria-label]="label()" (toggle)="onToggle($event)">
+    <div #menu [id]="menuId" class="menu" popover="auto" role="group" [attr.aria-label]="label()" (toggle)="onToggle($event)">
       @for (item of items(); track item.id) {
         @if (item.href !== undefined) {
-          <a class="di-menu-item" [attr.href]="item.href" [attr.data-tone]="item.danger ? 'danger' : null" [attr.aria-disabled]="item.disabled ? 'true' : null" (click)="choose(item)">{{ item.label }}</a>
+          <a class="menu-item" [attr.href]="item.href" [attr.data-tone]="item.danger ? 'danger' : null" [attr.aria-disabled]="item.disabled ? 'true' : null" (click)="choose(item)">{{ item.label }}</a>
         } @else {
-          <button type="button" class="di-menu-item" [attr.data-tone]="item.danger ? 'danger' : null" [disabled]="!!item.disabled" (click)="choose(item)">{{ item.label }}</button>
+          <button type="button" class="menu-item" [attr.data-tone]="item.danger ? 'danger' : null" [disabled]="!!item.disabled" (click)="choose(item)">{{ item.label }}</button>
         }
       }
       <ng-content />
@@ -110,7 +110,7 @@ export class MenuComponent {
   }
 
   private itemElements(): HTMLElement[] {
-    return Array.from(this.menu().nativeElement.querySelectorAll<HTMLElement>('.di-menu-item:not(:disabled):not([aria-disabled="true"])'));
+    return Array.from(this.menu().nativeElement.querySelectorAll<HTMLElement>('.menu-item:not(:disabled):not([aria-disabled="true"])'));
   }
 
   private place(): void {

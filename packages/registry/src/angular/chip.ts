@@ -13,12 +13,12 @@ export type ChipVariant = 'solid' | 'outline' | 'dashed';
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent],
   host: {
-    class: 'di-chip',
+    class: 'chip',
     '[attr.data-tone]': 'tone()',
     '[attr.data-variant]': 'variant()',
     '[attr.aria-pressed]': 'ariaPressed()',
   },
-  template: `@if (labelKey()) {<span class="di-chip-key">{{ labelKey() }}=</span>}<ng-content />@if (removable() && !isButton) {<button type="button" class="di-chip-remove" [attr.aria-label]="removeName()" (click)="removed.emit()"><svg mkIcon name="close" [size]="12"></svg></button>}`,
+  template: `@if (labelKey()) {<span class="chip-key">{{ labelKey() }}=</span>}<ng-content />@if (removable() && !isButton) {<button type="button" class="chip-remove" [attr.aria-label]="removeName()" (click)="removed.emit()"><svg mkIcon name="close" [size]="12"></svg></button>}`,
 })
 export class ChipComponent {
   /** Key rendered before the text for `key=value` labels. */
@@ -44,7 +44,7 @@ export class ChipComponent {
       this.host.childNodes.forEach((n) => {
         const el = n as HTMLElement;
         if (n.nodeType === Node.TEXT_NODE) t += n.textContent ?? '';
-        else if (el.classList && !el.classList.contains('di-chip-key') && !el.classList.contains('di-chip-remove')) t += el.textContent ?? '';
+        else if (el.classList && !el.classList.contains('chip-key') && !el.classList.contains('chip-remove')) t += el.textContent ?? '';
       });
       this.text.set(t.trim());
     });

@@ -107,7 +107,7 @@ function History({
   const matrixRuns = runs.slice(0, 6);
 
   return (
-    <div className="di-stack">
+    <div className="stack">
       {service ? <ApiBadge protocol={service.protocol} name={service.name} version={service.version} /> : null}
 
       <Panel title="Conformance timeline">
@@ -137,7 +137,7 @@ function History({
         <Disclosure summary="Show data table">
           <div className="demo-scroll">
             <table className="ts-matrix">
-              <caption className="di-sr-only">Conformance of each test run</caption>
+              <caption className="sr-only">Conformance of each test run</caption>
               <thead>
                 <tr><th scope="col">Run</th><th scope="col">Started</th><th scope="col">Result</th><th scope="col">Conformance</th></tr>
               </thead>
@@ -157,7 +157,7 @@ function History({
       </Panel>
 
       <Panel title="Runs">
-        <div className="di-stack">
+        <div className="stack">
           <div className="ts-filters" role="group" aria-label="Filter test runs">
             <Field label="Result">
               {(c) => (
@@ -217,7 +217,7 @@ function History({
         <Panel title="Operations by run">
           <div className="demo-scroll">
             <table className="ts-matrix">
-              <caption className="di-sr-only">Result of each operation in the latest test runs</caption>
+              <caption className="sr-only">Result of each operation in the latest test runs</caption>
               <thead>
                 <tr>
                   <th scope="col">Operation</th>

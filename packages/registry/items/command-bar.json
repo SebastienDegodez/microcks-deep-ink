@@ -12,7 +12,7 @@
     "angular": []
   },
   "elements": [
-    "mk-command-bar"
+    "command-bar"
   ],
   "a11y": {
     "pattern": "WAI-ARIA 1.2 combobox with listbox popup (aria-activedescendant), in a native <dialog> opened with showModal()",

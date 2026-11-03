@@ -13,7 +13,7 @@ export const Default: StoryObj = {
   render: () => ({
     props: { methods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE'] },
     template: `
-      <div class="di-inline">
+      <div class="inline">
         @for (m of methods; track m) {
           <span mkMethodTag [method]="m"></span>
         }

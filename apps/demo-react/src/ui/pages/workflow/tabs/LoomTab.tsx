@@ -101,7 +101,7 @@ export function LoomTab({ detail, runs, run, step, onPickRun, onSelectStep, insp
               {threads.map((t) => (
                 <Chip key={`${t.expression}-${t.to}`} pressed={lensExpr === t.expression} onClick={() => setLensExpr(lensExpr === t.expression ? undefined : t.expression)}>
                   <code>{t.expression}</code>
-                  <span className="di-sr-only"> to {t.to}</span>
+                  <span className="sr-only"> to {t.to}</span>
                 </Chip>
               ))}
             </div>

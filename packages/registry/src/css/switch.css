@@ -1,6 +1,6 @@
 @layer deep-ink.components {
-  /* The row layout (.di-choice) comes from the checkbox item. */
-  .di-switch {
+  /* The row layout (.choice) comes from the checkbox item. */
+  .switch {
     appearance: none;
     flex: none;
     position: relative;
@@ -13,7 +13,7 @@
     border-radius: var(--radius-pill);
     cursor: inherit;
   }
-  .di-switch::before {
+  .switch::before {
     content: "";
     position: absolute;
     inset-block-start: 3px;
@@ -24,33 +24,33 @@
     background: var(--text-secondary);
     transition: transform 0.12s ease;
   }
-  .di-switch:checked {
+  .switch:checked {
     background: var(--action);
     border-color: var(--action);
   }
-  .di-switch:checked::before {
+  .switch:checked::before {
     background: var(--on-action);
     transform: translateX(20px);
   }
-  .di-switch:disabled {
+  .switch:disabled {
     border-color: var(--border);
   }
-  .di-switch:disabled::before {
+  .switch:disabled::before {
     background: var(--text-muted);
   }
-  .di-switch:disabled:checked {
+  .switch:disabled:checked {
     background: var(--text-muted);
     border-color: var(--text-muted);
   }
-  .di-switch:disabled:checked::before {
+  .switch:disabled:checked::before {
     background: var(--surface);
   }
 
   @media (forced-colors: active) {
-    .di-switch::before {
+    .switch::before {
       background: CanvasText;
     }
-    .di-switch:checked {
+    .switch:checked {
       background: Highlight;
     }
   }

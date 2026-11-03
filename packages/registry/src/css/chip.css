@@ -1,5 +1,5 @@
 @layer deep-ink.components {
-  .di-chip {
+  .chip {
     box-sizing: border-box;
     display: inline-flex;
     align-items: center;
@@ -13,52 +13,52 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-pill);
   }
-  .di-chip-key {
+  .chip-key {
     color: var(--text-muted);
   }
 
   /* Tones. Text and tint pairs are contrast-tested in the tokens package. */
-  .di-chip[data-tone="info"] {
+  .chip[data-tone="info"] {
     color: var(--link);
     background: var(--info-tint);
     border-color: var(--link);
   }
-  .di-chip[data-tone="success"] {
+  .chip[data-tone="success"] {
     color: var(--success);
     background: var(--success-tint);
     border-color: var(--success);
   }
-  .di-chip[data-tone="warning"] {
+  .chip[data-tone="warning"] {
     color: var(--warning);
     background: var(--warning-tint);
     border-color: var(--warning);
   }
-  .di-chip[data-tone="danger"] {
+  .chip[data-tone="danger"] {
     color: var(--danger);
     background: var(--danger-tint);
     border-color: var(--danger);
   }
 
-  .di-chip[data-variant="outline"],
-  .di-chip[data-variant="dashed"] {
+  .chip[data-variant="outline"],
+  .chip[data-variant="dashed"] {
     background: transparent;
   }
-  .di-chip[data-variant="dashed"] {
+  .chip[data-variant="dashed"] {
     border-style: dashed;
   }
-  .di-chip[data-tone="neutral"][data-variant="outline"],
-  .di-chip[data-tone="neutral"][data-variant="dashed"] {
+  .chip[data-tone="neutral"][data-variant="outline"],
+  .chip[data-tone="neutral"][data-variant="dashed"] {
     border-color: var(--border-control);
   }
 
   /* Toggle chip (filter) */
-  button.di-chip {
+  button.chip {
     cursor: pointer;
   }
-  button.di-chip:hover {
+  button.chip:hover {
     background: var(--raised);
   }
-  button.di-chip[aria-pressed="true"] {
+  button.chip[aria-pressed="true"] {
     color: var(--text);
     background: var(--selected);
     border-color: var(--action);
@@ -66,12 +66,12 @@
     font-weight: 600;
   }
   /* Pressed also adds a check mark, so the state is not carried by color alone. The empty alt hides it from screen readers. */
-  button.di-chip[aria-pressed="true"]::before {
+  button.chip[aria-pressed="true"]::before {
     content: "✓";
     content: "✓" / "";
   }
 
-  .di-chip-remove {
+  .chip-remove {
     display: inline-grid;
     place-content: center;
     box-sizing: border-box;
@@ -85,7 +85,7 @@
     border-radius: 50%;
     cursor: pointer;
   }
-  .di-chip-remove:hover {
+  .chip-remove:hover {
     background: var(--raised);
   }
 }

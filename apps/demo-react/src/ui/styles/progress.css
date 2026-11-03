@@ -1,11 +1,11 @@
 /* Deep Ink · progress@0.2.0 · copied from packages/registry. You own this file. */
 @layer deep-ink.components {
-  .di-progress-field { display: flex; flex-direction: column; gap: var(--space-1); }
-  .di-progress-head { display: flex; justify-content: space-between; gap: var(--space-3); font: var(--type-small); }
-  .di-progress-label { color: var(--text); font-weight: 600; }
-  .di-progress-value { color: var(--text-secondary); font-family: var(--font-mono); }
+  .progress-field { display: flex; flex-direction: column; gap: var(--space-1); }
+  .progress-head { display: flex; justify-content: space-between; gap: var(--space-3); font: var(--type-small); }
+  .progress-label { color: var(--text); font-weight: 600; }
+  .progress-value { color: var(--text-secondary); font-family: var(--font-mono); }
 
-  .di-progress, .di-meter {
+  .progress, .meter {
     appearance: none;
     -webkit-appearance: none;
     width: 100%;
@@ -15,17 +15,17 @@
     background: var(--surface);
     overflow: hidden;
   }
-  .di-progress::-webkit-progress-bar { background: var(--surface); }
-  .di-progress::-webkit-progress-value { background: var(--action); border-radius: var(--radius-pill); }
-  .di-progress::-moz-progress-bar { background: var(--action); border-radius: var(--radius-pill); }
+  .progress::-webkit-progress-bar { background: var(--surface); }
+  .progress::-webkit-progress-value { background: var(--action); border-radius: var(--radius-pill); }
+  .progress::-moz-progress-bar { background: var(--action); border-radius: var(--radius-pill); }
   /* Indeterminate: a static striped bar (no motion needed). */
-  .di-progress:indeterminate { background: repeating-linear-gradient(135deg, var(--action) 0 6px, var(--surface) 6px 12px); }
+  .progress:indeterminate { background: repeating-linear-gradient(135deg, var(--action) 0 6px, var(--surface) 6px 12px); }
 
-  .di-meter::-webkit-meter-bar { background: var(--surface); border: 0; height: 100%; }
-  .di-meter::-webkit-meter-optimum-value { background: var(--success); }
-  .di-meter::-webkit-meter-suboptimum-value { background: var(--warning); }
-  .di-meter::-webkit-meter-even-less-good-value { background: var(--danger); }
-  .di-meter::-moz-meter-bar { background: var(--success); }
-  .di-meter:-moz-meter-sub-optimum::-moz-meter-bar { background: var(--warning); }
-  .di-meter:-moz-meter-sub-sub-optimum::-moz-meter-bar { background: var(--danger); }
+  .meter::-webkit-meter-bar { background: var(--surface); border: 0; height: 100%; }
+  .meter::-webkit-meter-optimum-value { background: var(--success); }
+  .meter::-webkit-meter-suboptimum-value { background: var(--warning); }
+  .meter::-webkit-meter-even-less-good-value { background: var(--danger); }
+  .meter::-moz-meter-bar { background: var(--success); }
+  .meter:-moz-meter-sub-optimum::-moz-meter-bar { background: var(--warning); }
+  .meter:-moz-meter-sub-sub-optimum::-moz-meter-bar { background: var(--danger); }
 }

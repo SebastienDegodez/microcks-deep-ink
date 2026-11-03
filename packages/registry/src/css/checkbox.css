@@ -1,5 +1,5 @@
 @layer deep-ink.components {
-  .di-choice {
+  .choice {
     display: flex;
     align-items: flex-start;
     gap: var(--space-3);
@@ -7,26 +7,26 @@
     color: var(--text);
     cursor: pointer;
   }
-  .di-choice > span {
+  .choice > span {
     display: flex;
     flex-direction: column;
     gap: 2px;
     min-width: 0;
   }
-  .di-choice-label {
+  .choice-label {
     font: var(--type-body);
   }
-  .di-choice-description {
+  .choice-description {
     font: var(--type-small);
     color: var(--text-muted);
   }
-  .di-choice:has(input:disabled) {
+  .choice:has(input:disabled) {
     color: var(--text-muted);
     cursor: not-allowed;
   }
 
-  .di-checkbox,
-  .di-radio {
+  .checkbox,
+  .radio {
     appearance: none;
     flex: none;
     display: grid;
@@ -40,19 +40,19 @@
     border: 1px solid var(--border-control);
     cursor: inherit;
   }
-  .di-checkbox {
+  .checkbox {
     border-radius: var(--radius-control);
   }
-  .di-radio {
+  .radio {
     border-radius: 50%;
   }
-  .di-checkbox:hover,
-  .di-radio:hover {
+  .checkbox:hover,
+  .radio:hover {
     border-color: var(--text-secondary);
   }
 
   /* Check mark */
-  .di-checkbox::before {
+  .checkbox::before {
     content: "";
     display: none;
     width: 12px;
@@ -60,16 +60,16 @@
     background: var(--on-action);
     clip-path: polygon(14% 44%, 0 65%, 50% 100%, 100% 16%, 80% 0%, 43% 62%);
   }
-  .di-checkbox:checked {
+  .checkbox:checked {
     background: var(--action);
     border-color: var(--action);
   }
-  .di-checkbox:checked::before {
+  .checkbox:checked::before {
     display: block;
   }
 
   /* Dot */
-  .di-radio::before {
+  .radio::before {
     content: "";
     display: none;
     width: 10px;
@@ -77,33 +77,33 @@
     border-radius: 50%;
     background: var(--action);
   }
-  .di-radio:checked {
+  .radio:checked {
     border-color: var(--action);
     border-width: 2px;
   }
-  .di-radio:checked::before {
+  .radio:checked::before {
     display: block;
   }
 
-  .di-checkbox:disabled,
-  .di-radio:disabled {
+  .checkbox:disabled,
+  .radio:disabled {
     border-color: var(--border);
     background: var(--surface);
   }
-  .di-checkbox:disabled:checked {
+  .checkbox:disabled:checked {
     background: var(--text-muted);
     border-color: var(--text-muted);
   }
-  .di-radio:disabled:checked::before {
+  .radio:disabled:checked::before {
     background: var(--text-muted);
   }
 
-  .di-checkbox[aria-invalid="true"],
-  .di-radio[aria-invalid="true"] {
+  .checkbox[aria-invalid="true"],
+  .radio[aria-invalid="true"] {
     border-color: var(--danger);
   }
 
-  .di-fieldset {
+  .fieldset {
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
@@ -112,7 +112,7 @@
     padding: 0;
     border: 0;
   }
-  .di-fieldset > legend {
+  .fieldset > legend {
     padding: 0;
     margin-block-end: var(--space-2);
     font: var(--type-label);
@@ -122,10 +122,10 @@
   }
 
   @media (forced-colors: active) {
-    .di-checkbox:checked::before {
+    .checkbox:checked::before {
       background: CanvasText;
     }
-    .di-radio::before {
+    .radio::before {
       background: CanvasText;
     }
   }

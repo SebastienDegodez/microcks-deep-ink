@@ -1,5 +1,5 @@
 import { DestroyRef, Directive, ElementRef, booleanAttribute, effect, inject, input, output } from '@angular/core';
-import './elements/mk-command-bar.js';
+import './elements/command-bar.js';
 
 /* Types mirror packages/core/src/utils/types.ts and the React wrapper (keep them identical). */
 export type CommandProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
@@ -14,7 +14,7 @@ export interface CommandItem {
   keywords?: string[];
 }
 
-/** The `<mk-command-bar>` element and its properties. */
+/** The `<command-bar>` element and its properties. */
 export interface CommandBarElement extends HTMLElement {
   items: CommandItem[];
   open: boolean;
@@ -27,10 +27,10 @@ export interface CommandBarElement extends HTMLElement {
 }
 
 /**
- * Command bar (Ctrl/⌘K). Add it as `<mk-command-bar [items]="…" [open]="open()" (command)="run($event)"
+ * Command bar (Ctrl/⌘K). Add it as `<command-bar [items]="…" [open]="open()" (command)="run($event)"
  * (closed)="open.set(false)" />`. The host component needs `schemas: [CUSTOM_ELEMENTS_SCHEMA]`.
  */
-@Directive({ selector: 'mk-command-bar' })
+@Directive({ selector: 'command-bar' })
 export class CommandBarDirective {
   private readonly host = inject<ElementRef<CommandBarElement>>(ElementRef);
 

@@ -108,7 +108,7 @@ function Live({ topology, services }: { topology: TraceTopology; services: { id:
   };
 
   return (
-    <div className="di-stack">
+    <div className="stack">
       <Panel
         title="Calls"
         actions={
@@ -123,7 +123,7 @@ function Live({ topology, services }: { topology: TraceTopology; services: { id:
           </div>
         }
       >
-        <div className="di-stack">
+        <div className="stack">
           <div className="tr2-filters" role="group" aria-label="Filter calls">
             <Field label="Service">
               {(c) => (
@@ -164,7 +164,7 @@ function Live({ topology, services }: { topology: TraceTopology; services: { id:
           ) : (
             <div className="demo-scroll">
               <table className="tr2-list">
-                <caption className="di-sr-only">Calls received by the mocks, newest first</caption>
+                <caption className="sr-only">Calls received by the mocks, newest first</caption>
                 <thead>
                   <tr><th scope="col">Time</th><th scope="col">Call</th><th scope="col">Service</th><th scope="col">Status</th><th scope="col">Duration</th><th scope="col">Origin</th></tr>
                 </thead>
@@ -194,7 +194,7 @@ function Live({ topology, services }: { topology: TraceTopology; services: { id:
 
       {selected ? (
         <Panel title="Call detail" aria-live="off">
-          <div className="di-stack">
+          <div className="stack">
             <p style={{ margin: 0 }}>
               <MethodTag method={selected.method} /> <span className="demo-mono">{selected.path}</span> · {statusLabel(selected)} · {selected.ms} ms
             </p>
@@ -238,7 +238,7 @@ function Live({ topology, services }: { topology: TraceTopology; services: { id:
         <p className="demo-muted">Calls in the last hour, from the clients to the endpoints and the examples that answered.</p>
         <div className="demo-scroll">
           <table className="tr2-list">
-            <caption className="di-sr-only">Calls by client, endpoint and answering example</caption>
+            <caption className="sr-only">Calls by client, endpoint and answering example</caption>
             <thead><tr><th scope="col">Client</th><th scope="col">Endpoint</th><th scope="col">Calls</th></tr></thead>
             <tbody>
               {topology.clientEdges.map((e) => {
@@ -255,7 +255,7 @@ function Live({ topology, services }: { topology: TraceTopology; services: { id:
             </tbody>
           </table>
           <table className="tr2-list">
-            <caption className="di-sr-only">Calls by endpoint and answering example</caption>
+            <caption className="sr-only">Calls by endpoint and answering example</caption>
             <thead><tr><th scope="col">Endpoint</th><th scope="col">Answering example</th><th scope="col">Calls</th></tr></thead>
             <tbody>
               {topology.exampleEdges.map((e) => {

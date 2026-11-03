@@ -5,7 +5,7 @@ import { itemParams } from './_meta';
 const meta: Meta = {
   title: 'Components/ThemeToggle',
   decorators: [moduleMetadata({ imports: [ThemeToggleComponent] })],
-  parameters: itemParams(['theme-toggle', 'button', 'icon'], "An icon-only `aria-pressed` button named \"Light theme\". It sets `data-theme` on `<html>`, remembers the choice (`microcks-theme`) and dispatches `di-theme-change`."),
+  parameters: itemParams(['theme-toggle', 'button', 'icon'], "An icon-only `aria-pressed` button named \"Light theme\". It sets `data-theme` on `<html>`, remembers the choice (`microcks-theme`) and dispatches `microcks-theme-change`."),
 };
 export default meta;
 

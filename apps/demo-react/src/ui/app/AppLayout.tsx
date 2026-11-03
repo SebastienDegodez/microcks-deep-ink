@@ -12,7 +12,7 @@ function ThemeButton() {
   return (
     <button
       type="button"
-      className="di-button"
+      className="button"
       data-variant="ghost"
       data-icon-only
       aria-label="Light theme"
@@ -25,7 +25,7 @@ function ThemeButton() {
 }
 
 /**
- * Application shell, built from raw markup with the `di-` classes of the `app-shell` item
+ * Application shell, built from raw markup with the `` classes of the `app-shell` item
  * (the registry component is not copied yet; swap it in once it is):
  * skip link, banner (top bar), navigation, main landmark, live region for route announcements.
  *
@@ -55,11 +55,11 @@ export function AppLayout() {
 
   return (
     <LiveAnnouncerProvider>
-      <a className="di-skip-link" href="#main" onClick={skip}>
+      <a className="skip-link" href="#main" onClick={skip}>
         Skip to content
       </a>
-      <div className="di-shell">
-        <header className="di-topbar">
+      <div className="shell">
+        <header className="topbar">
           <Link to="/" className="demo-brand">
             Microcks
           </Link>
@@ -68,7 +68,7 @@ export function AppLayout() {
             <ThemeButton />
             <button
               type="button"
-              className="di-button demo-nav-toggle"
+              className="button demo-nav-toggle"
               aria-expanded={navOpen}
               aria-controls="main-nav"
               onClick={() => setNavOpen((open) => !open)}
@@ -77,18 +77,18 @@ export function AppLayout() {
             </button>
           </div>
         </header>
-        <nav id="main-nav" className="di-sidenav" aria-label="Main" data-collapsible data-open={navOpen || undefined}>
+        <nav id="main-nav" className="sidenav" aria-label="Main" data-collapsible data-open={navOpen || undefined}>
           <ul className="demo-nav-list">
             {NAV_ITEMS.map((item) => (
               <li key={item.id}>
-                <Link to={item.to} className="di-sidenav-link" aria-current={item.id === activeNav ? 'page' : undefined}>
+                <Link to={item.to} className="sidenav-link" aria-current={item.id === activeNav ? 'page' : undefined}>
                   {item.label}
                 </Link>
               </li>
             ))}
           </ul>
         </nav>
-        <main id="main" ref={mainRef} tabIndex={-1} className="di-main">
+        <main id="main" ref={mainRef} tabIndex={-1} className="main">
           <Outlet />
         </main>
       </div>

@@ -33,7 +33,7 @@ describe('DataTable', () => {
 
   it('can hide the caption visually but keeps it for assistive technology', () => {
     render(<DataTable caption="Services" captionHidden columns={columns} rows={rows} rowKey="id" />);
-    expect(document.querySelector('caption')?.className).toContain('di-sr-only');
+    expect(document.querySelector('caption')?.className).toContain('sr-only');
     expect(screen.getByRole('table', { name: 'Services' })).toBeTruthy();
   });
 

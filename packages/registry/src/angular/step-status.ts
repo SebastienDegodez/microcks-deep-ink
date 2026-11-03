@@ -23,8 +23,8 @@ const CHECK: Record<CheckState, { icon: IconName; word: string }> = {
   selector: 'span[mkStepStatus]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent],
-  host: { class: 'di-step-status', '[attr.data-status]': 'status()' },
-  template: `<svg mkIcon [name]="entry().icon" [size]="14"></svg><span>{{ entry().word }}</span>@if (showAttempts()) {<span class="di-step-status-attempts">· {{ attempts() }} {{ attempts() === 1 ? 'attempt' : 'attempts' }}</span>}`,
+  host: { class: 'step-status', '[attr.data-status]': 'status()' },
+  template: `<svg mkIcon [name]="entry().icon" [size]="14"></svg><span>{{ entry().word }}</span>@if (showAttempts()) {<span class="step-status-attempts">· {{ attempts() }} {{ attempts() === 1 ? 'attempt' : 'attempts' }}</span>}`,
 })
 export class StepStatusComponent {
   readonly status = input.required<StepOutcome>();
@@ -44,14 +44,14 @@ export class StepStatusComponent {
   selector: 'ul[mkStepChecks]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent],
-  host: { class: 'di-checks' },
+  host: { class: 'checks' },
   template: `
     <li [attr.data-state]="successCriteria()">
-      <span>Success criteria</span><span class="di-sr-only">:</span>&ngsp;<span class="di-checks-state"><svg mkIcon [name]="check(successCriteria()).icon" [size]="14"></svg>{{ check(successCriteria()).word }}</span>
+      <span>Success criteria</span><span class="sr-only">:</span>&ngsp;<span class="checks-state"><svg mkIcon [name]="check(successCriteria()).icon" [size]="14"></svg>{{ check(successCriteria()).word }}</span>
     </li>
     @if (schemaValidation(); as schema) {
       <li [attr.data-state]="schema">
-        <span>Schema validation</span><span class="di-sr-only">:</span>&ngsp;<span class="di-checks-state"><svg mkIcon [name]="check(schema).icon" [size]="14"></svg>{{ check(schema).word }}</span>
+        <span>Schema validation</span><span class="sr-only">:</span>&ngsp;<span class="checks-state"><svg mkIcon [name]="check(schema).icon" [size]="14"></svg>{{ check(schema).word }}</span>
       </li>
     }
   `,

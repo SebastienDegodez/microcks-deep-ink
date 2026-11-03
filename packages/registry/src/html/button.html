@@ -3,24 +3,24 @@
   Variants: data-variant="primary | secondary | ghost | danger". Size: data-size="md | sm".
   Native <button>: Enter and Space activate it. Always set type.
 -->
-<button type="button" class="di-button" data-variant="primary" data-size="md">Run test</button>
-<button type="button" class="di-button" data-variant="secondary" data-size="md">Cancel</button>
-<button type="button" class="di-button" data-variant="ghost" data-size="sm">Details</button>
-<button type="button" class="di-button" data-variant="danger" data-size="md">Delete</button>
+<button type="button" class="button" data-variant="primary" data-size="md">Run test</button>
+<button type="button" class="button" data-variant="secondary" data-size="md">Cancel</button>
+<button type="button" class="button" data-variant="ghost" data-size="sm">Details</button>
+<button type="button" class="button" data-variant="danger" data-size="md">Delete</button>
 
 <!-- Filled danger, only inside a confirmation dialog -->
-<button type="button" class="di-button" data-variant="danger" data-confirm>Delete service</button>
+<button type="button" class="button" data-variant="danger" data-confirm>Delete service</button>
 
 <!-- Icon-only: aria-label is mandatory, the icon is decorative -->
-<button type="button" class="di-button" data-variant="ghost" data-icon-only aria-label="Close">
-  <svg class="di-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+<button type="button" class="button" data-variant="ghost" data-icon-only aria-label="Close">
+  <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
        stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
     <path d="M6 6l12 12M18 6L6 18" />
   </svg>
 </button>
 
 <!-- Busy: aria-busy and disabled -->
-<button type="button" class="di-button" data-variant="primary" aria-busy="true" disabled>Importing</button>
+<button type="button" class="button" data-variant="primary" aria-busy="true" disabled>Importing</button>
 
 <!-- Navigation looks like a button -->
-<a class="di-button" data-variant="secondary" href="/services">Open catalogue</a>
+<a class="button" data-variant="secondary" href="/services">Open catalogue</a>

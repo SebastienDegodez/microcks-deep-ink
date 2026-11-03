@@ -26,7 +26,7 @@ function deepActiveElement(): HTMLElement | null {
  * and focus returns to the opener. `inline` renders the same widget in place, for docs and embedding.
  */
 @Component({
-  tag: 'mk-command-bar',
+  tag: 'command-bar',
   shadow: true,
   styles: `
     :host { display: contents; color: var(--text); }

@@ -16,7 +16,7 @@ export function filesReadyMessage(count: number): string {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent],
   host: {
-    class: 'di-drop-zone',
+    class: 'drop-zone',
     role: 'group',
     '[attr.aria-labelledby]': 'id + "-heading"',
     '[attr.data-dragging]': "dragging() ? '' : null",
@@ -26,19 +26,19 @@ export function filesReadyMessage(count: number): string {
   },
   template: `
     <svg mkIcon name="upload" [size]="28"></svg>
-    <p class="di-drop-zone-heading" [id]="id + '-heading'">{{ heading() }}</p>
-    <p class="di-drop-zone-hint" [id]="id + '-hint'">{{ hint() }}</p>
+    <p class="drop-zone-heading" [id]="id + '-heading'">{{ heading() }}</p>
+    <p class="drop-zone-hint" [id]="id + '-hint'">{{ hint() }}</p>
     <input
       type="file"
-      class="di-drop-zone-input di-sr-only"
+      class="drop-zone-input sr-only"
       [id]="id"
       [attr.accept]="accept() ?? null"
       [multiple]="multiple()"
       [attr.aria-describedby]="id + '-heading ' + id + '-hint'"
       (change)="onChange($event)"
     />
-    <label [attr.for]="id" class="di-button di-drop-zone-choose" data-variant="primary">Choose files</label>
-    <p class="di-drop-zone-status" role="status">{{ message() }}</p>
+    <label [attr.for]="id" class="button drop-zone-choose" data-variant="primary">Choose files</label>
+    <p class="drop-zone-status" role="status">{{ message() }}</p>
   `,
 })
 export class DropZoneComponent {

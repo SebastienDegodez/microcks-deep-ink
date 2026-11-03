@@ -317,7 +317,7 @@ function TestForm({ form, initialServiceId }: { form: CreateTestForm; initialSer
             <span className="tc-step">03</span>Scope
           </legend>
           <div className="tc-scope">
-            <div className="di-stack">
+            <div className="stack">
               {isEvent ? (
                 <RadioGroup
                   legend="Operation to listen to"
@@ -331,7 +331,7 @@ function TestForm({ form, initialServiceId }: { form: CreateTestForm; initialSer
                   }))}
                 />
               ) : (
-                <fieldset className="di-fieldset" aria-describedby={show('operations') ? 'tc-ops-error' : undefined}>
+                <fieldset className="fieldset" aria-describedby={show('operations') ? 'tc-ops-error' : undefined}>
                   <legend>Operations · {selected.length} of {target.operations.length}</legend>
                   <div className="tc-ops-head">
                     <button
@@ -352,10 +352,10 @@ function TestForm({ form, initialServiceId }: { form: CreateTestForm; initialSer
                     />
                   ))}
                   {show('operations') ? (
-                    <p className="di-error" id="tc-ops-error">
+                    <p className="error" id="tc-ops-error">
                       <Icon name="warning" size={16} />
                       <span>
-                        <span className="di-sr-only">Error: </span>
+                        <span className="sr-only">Error: </span>
                         {show('operations')}
                       </span>
                     </p>
@@ -512,11 +512,11 @@ function TestForm({ form, initialServiceId }: { form: CreateTestForm; initialSer
       </form>
 
       <Panel as="aside" title="Run it from CI" className="tc-ci" aria-label={undefined}>
-        <div className="di-stack">
+        <div className="stack">
           <p className="demo-muted">The same test, as code. Once it passes here, paste it in your pipeline so every build proves the contract.</p>
           <Tabs label="CI format" items={CI_FORMATS.map((f) => ({ id: f.id, label: f.label }))} value={ciTab} onChange={(id) => setCiTab(id as CiFormat)} idPrefix="ci">
             <TabPanel id={ciTab} value={ciTab} idPrefix="ci">
-              <figure className="di-stack" style={{ margin: 0 }}>
+              <figure className="stack" style={{ margin: 0 }}>
                 <figcaption className="demo-actions-row" style={{ justifyContent: 'space-between' }}>
                   <span className="demo-muted">{ciFormat.ariaLabel}</span>
                   <CopyButton value={ciText} label="Copy" />
@@ -528,7 +528,7 @@ function TestForm({ form, initialServiceId }: { form: CreateTestForm; initialSer
                         <span className="tc-ci-mark" aria-hidden="true">
                           {l.changed ? '+' : ' '}
                         </span>
-                        {l.changed ? <span className="di-sr-only">Changed: </span> : null}
+                        {l.changed ? <span className="sr-only">Changed: </span> : null}
                         {l.text || ' '}
                       </span>
                     ))}

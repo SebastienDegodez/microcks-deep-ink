@@ -137,7 +137,7 @@ export function init({ values }) {
     if (cfg.framework === 'angular') log.line(`  1. Add "${cfg.cssOut}/index.css" to the "styles" array of angular.json`);
     else if (cfg.framework === 'react') log.line(`  1. Import "${cfg.cssOut}/index.css" once, in your entry file`);
     else log.line(`  1. Link "${cfg.cssOut}/index.css" (or tokens.css and base.css) in your <head>`);
-    log.line('  2. Put lang on <html> and a skip link as the first element: <a class="di-skip-link" href="#main">');
+    log.line('  2. Put lang on <html> and a skip link as the first element: <a class="skip-link" href="#main">');
     log.line('  3. Run `deep-ink add button tabs` to copy components');
   }
   return code;

@@ -10,7 +10,7 @@ export default {
 
 export const Default: StoryObj = {
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       <StatusBadge status="conformant" />
       <StatusBadge status="failed" />
       <StatusBadge status="partial" />
@@ -22,7 +22,7 @@ export const Default: StoryObj = {
 
 export const Small: StoryObj = {
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       <StatusBadge size="sm" status="conformant" label="92 % conformant" />
       <StatusBadge size="sm" status="failed" label="2 failed" />
     </div>

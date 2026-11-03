@@ -63,87 +63,87 @@ def main():
 
         # ---------- Loom ----------
         for theme in ('dark', 'light'):
-            page, errors = open_page(browser, base, f'el=mk-workflow-loom&fixture=run14&theme={theme}')
-            check(page.evaluate("!!customElements.get('mk-workflow-loom')"), f'loom [{theme}] registered by its bundle alone')
+            page, errors = open_page(browser, base, f'el=workflow-loom&fixture=run14&theme={theme}')
+            check(page.evaluate("!!customElements.get('workflow-loom')"), f'loom [{theme}] registered by its bundle alone')
             check(not errors, f'loom [{theme}] no console errors {errors}')
             if theme == 'dark':
-                txt = page.evaluate("document.querySelector('mk-workflow-loom').shadowRoot.textContent")
+                txt = page.evaluate("document.querySelector('workflow-loom').shadowRoot.textContent")
                 check('retry ×2 · 1 s · 3 attempts' in txt, 'loom shows "retry ×2 · 1 s · 3 attempts"')
                 check("end if $response.body#/status == 'available' · not taken" in txt, 'loom shows the end branch, not taken')
                 check('Not run' in txt, 'loom shows "Not run"')
                 check('Success criteria' in txt and 'Schema validation' in txt, 'loom shows both checks')
                 check('goto' not in txt.lower(), 'loom has no goto')
                 check('Not linked' in txt and 'not runnable' in txt, 'loom marks unlinked and AsyncAPI sources')
-                names = page.evaluate("[...document.querySelector('mk-workflow-loom').shadowRoot.querySelectorAll('button.node')].map(b => b.getAttribute('aria-label'))")
+                names = page.evaluate("[...document.querySelector('workflow-loom').shadowRoot.querySelectorAll('button.node')].map(b => b.getAttribute('aria-label'))")
                 check(names[2] == 'Step 3, patchPastry, PATCH /pastries/{name}, Failed after 3 attempts, Success criteria passed, Schema validation failed', f'node accessible name: {names[2]}')
-                check(page.evaluate("document.querySelector('mk-workflow-loom').shadowRoot.querySelector('svg.bg').getAttribute('aria-hidden')") == 'true', 'SVG is aria-hidden')
+                check(page.evaluate("document.querySelector('workflow-loom').shadowRoot.querySelector('svg.bg').getAttribute('aria-hidden')") == 'true', 'SVG is aria-hidden')
                 # keyboard: reach every node with the arrow keys
                 press(page, 'Tab')   # toggle button
                 press(page, 'Tab')   # scroll region
                 press(page, 'Tab')   # first node (roving tabindex)
                 seen = []
                 for _ in range(8):
-                    seen.append(page.evaluate("document.querySelector('mk-workflow-loom').shadowRoot.activeElement?.getAttribute('aria-label')?.split(',')[1]?.trim()"))
+                    seen.append(page.evaluate("document.querySelector('workflow-loom').shadowRoot.activeElement?.getAttribute('aria-label')?.split(',')[1]?.trim()"))
                     press(page, 'ArrowRight')
                 check(seen[:5] == ['listPastries', 'getPastry', 'patchPastry', 'verifyPastry', 'awaitRestock'] or 'awaitRestock' in seen, f'arrow keys walk the nodes: {seen}')
                 press(page, 'Home')
-                first = page.evaluate("document.querySelector('mk-workflow-loom').shadowRoot.activeElement.getAttribute('aria-label')")
+                first = page.evaluate("document.querySelector('workflow-loom').shadowRoot.activeElement.getAttribute('aria-label')")
                 check(first.startswith('Step 1,'), 'Home goes to the first node')
                 press(page, 'Enter')
                 check(page.evaluate('window.events')[-1][0] == 'mkStepSelect', 'Enter selects a step (mkStepSelect)')
-                check(page.evaluate("document.querySelector('mk-workflow-loom').shadowRoot.activeElement.getAttribute('aria-pressed')") == 'true', 'selected node has aria-pressed=true')
+                check(page.evaluate("document.querySelector('workflow-loom').shadowRoot.activeElement.getAttribute('aria-pressed')") == 'true', 'selected node has aria-pressed=true')
                 # table toggle
-                page.evaluate("document.querySelector('mk-workflow-loom').shadowRoot.querySelector('button.toggle').click()")
+                page.evaluate("document.querySelector('workflow-loom').shadowRoot.querySelector('button.toggle').click()")
                 page.wait_for_timeout(100)
-                heads = page.evaluate("[...document.querySelector('mk-workflow-loom').shadowRoot.querySelectorAll('thead th')].map(t => t.textContent)")
+                heads = page.evaluate("[...document.querySelector('workflow-loom').shadowRoot.querySelectorAll('thead th')].map(t => t.textContent)")
                 check(heads == ['#', 'Step', 'Source', 'Operation', 'Depends on', 'Status', 'Checks', 'Actions'], f'table columns {heads}')
-                rows = page.evaluate("document.querySelector('mk-workflow-loom').shadowRoot.querySelectorAll('tbody tr').length")
+                rows = page.evaluate("document.querySelector('workflow-loom').shadowRoot.querySelectorAll('tbody tr').length")
                 check(rows == 5, 'table has one row per step')
                 if SHOTS:
                     page.screenshot(path=os.path.join(SHOTS, 'loom-table-dark.png'))
-                page.evaluate("document.querySelector('mk-workflow-loom').shadowRoot.querySelector('button.toggle').click()")
+                page.evaluate("document.querySelector('workflow-loom').shadowRoot.querySelector('button.toggle').click()")
                 page.wait_for_timeout(100)
                 if SHOTS:
                     page.screenshot(path=os.path.join(SHOTS, 'loom-run14-dark.png'))
             axe(page, f'loom run14 [{theme}]')
             if theme == 'dark':
-                page.evaluate("document.querySelector('mk-workflow-loom').shadowRoot.querySelector('button.toggle').click()")
+                page.evaluate("document.querySelector('workflow-loom').shadowRoot.querySelector('button.toggle').click()")
                 page.wait_for_timeout(100)
                 axe(page, 'loom run14 table [dark]')
             page.context.close()
 
-        page, errors = open_page(browser, base, 'el=mk-workflow-loom&fixture=menu')
-        info = page.evaluate("""(() => { const r = document.querySelector('mk-workflow-loom').shadowRoot;
+        page, errors = open_page(browser, base, 'el=workflow-loom&fixture=menu')
+        info = page.evaluate("""(() => { const r = document.querySelector('workflow-loom').shadowRoot;
           const b = [...r.querySelectorAll('button.node')].map(n => [n.getAttribute('aria-label').split(',')[1].trim(), parseInt(n.style.left), parseInt(n.style.top)]);
           return b; })()""")
         lefts = {n: (x, y) for n, x, y in info}
         check(lefts['getSmall'][0] == lefts['getMedium'][0] == lefts['getLarge'][0], 'check-menu: 3 parallel branches share a column')
         check(len({lefts[n][1] for n in ('getSmall', 'getMedium', 'getLarge')}) == 3, 'check-menu: branches on 3 sub-rows')
         check(lefts['compareSizes'][0] > lefts['getSmall'][0], 'check-menu: compareSizes joins to the right')
-        edges = page.evaluate("document.querySelector('mk-workflow-loom').shadowRoot.querySelectorAll('path.edge').length")
+        edges = page.evaluate("document.querySelector('workflow-loom').shadowRoot.querySelectorAll('path.edge').length")
         check(edges == 3, f'check-menu: 3 join edges (got {edges})')
         # vertical arrows reach the parallel branches
         press(page, 'Tab'); press(page, 'Tab'); press(page, 'Tab')
         press(page, 'ArrowDown'); press(page, 'ArrowDown')
-        n = page.evaluate("document.querySelector('mk-workflow-loom').shadowRoot.activeElement.getAttribute('aria-label')")
+        n = page.evaluate("document.querySelector('workflow-loom').shadowRoot.activeElement.getAttribute('aria-label')")
         check('getLarge' in n, f'ArrowDown walks the parallel branches ({n})')
         press(page, 'ArrowRight')
-        n = page.evaluate("document.querySelector('mk-workflow-loom').shadowRoot.activeElement.getAttribute('aria-label')")
+        n = page.evaluate("document.querySelector('workflow-loom').shadowRoot.activeElement.getAttribute('aria-label')")
         check('compareSizes' in n, 'ArrowRight reaches the join step')
         if SHOTS:
             page.screenshot(path=os.path.join(SHOTS, 'loom-menu-dark.png'))
         axe(page, 'loom check-menu')
         page.context.close()
 
-        page, errors = open_page(browser, base, 'el=mk-workflow-loom&fixture=definition&theme=light', width=320, height=700)
+        page, errors = open_page(browser, base, 'el=workflow-loom&fixture=definition&theme=light', width=320, height=700)
         check(not errors, 'loom 320px no console errors')
         check(page.evaluate('document.documentElement.scrollWidth <= 320'), 'loom reflows at 320px (no page scroll)')
         page.context.close()
 
         # ---------- Command bar ----------
-        page, errors = open_page(browser, base, 'el=mk-command-bar')
+        page, errors = open_page(browser, base, 'el=command-bar')
         check(not errors, f'command bar no console errors {errors}')
-        sr = "document.querySelector('mk-command-bar').shadowRoot"
+        sr = "document.querySelector('command-bar').shadowRoot"
         page.focus('#opener')
         press(page, 'Enter')
         page.wait_for_timeout(150)
@@ -186,18 +186,18 @@ def main():
         check(not page.evaluate(f"{sr}.querySelector('dialog').open") and page.evaluate("document.activeElement.id") == 'opener', 'closes after running and returns focus')
         page.context.close()
 
-        page, errors = open_page(browser, base, 'el=mk-command-bar&inline=1&theme=light')
-        check(page.evaluate("!!document.querySelector('mk-command-bar').shadowRoot.querySelector('[role=listbox]')"), 'inline command bar renders the listbox')
+        page, errors = open_page(browser, base, 'el=command-bar&inline=1&theme=light')
+        check(page.evaluate("!!document.querySelector('command-bar').shadowRoot.querySelector('[role=listbox]')"), 'inline command bar renders the listbox')
         axe(page, 'command bar inline [light]')
         page.context.close()
 
         # ---------- Plugin slot ----------
-        page, errors = open_page(browser, base, 'el=mk-plugin-slot')
+        page, errors = open_page(browser, base, 'el=plugin-slot')
         check(not errors, f'plugin slot no console errors {errors}')
-        check(page.evaluate("document.querySelector('mk-plugin-slot').shadowRoot === null"), 'plugin slot renders in the light DOM')
-        check(page.evaluate("!!document.querySelector('mk-plugin-slot > .di-plugin-item[data-plugin-id=probe] > probe-widget')"), 'contribution wrapped in div.di-plugin-item[data-plugin-id]')
+        check(page.evaluate("document.querySelector('plugin-slot').shadowRoot === null"), 'plugin slot renders in the light DOM')
+        check(page.evaluate("!!document.querySelector('plugin-slot > .plugin-item[data-plugin-id=probe] > probe-widget')"), 'contribution wrapped in div.plugin-item[data-plugin-id]')
         check('probe dark' in page.evaluate("document.querySelector('probe-widget').textContent"), 'context handed to the contributed element')
-        check(page.evaluate("!!document.querySelector('probe-widget .di-live')"), 'light DOM content can use di-* classes')
+        check(page.evaluate("!!document.querySelector('probe-widget .live')"), 'light DOM content can use * classes')
         check(page.evaluate("document.getElementById('fallback') !== null && document.getElementById('fallback').offsetParent !== null"), 'fallback slot kept when nothing contributes')
         axe(page, 'plugin slot')
         page.context.close()

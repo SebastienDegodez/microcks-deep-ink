@@ -41,7 +41,7 @@ export function MockUrl({ url, method = 'GET', mcpTool, bare, className, ...rest
   return (
     <>
       {bare ? null : <Segmented label="Snippet format" options={options} value={format} onChange={(id) => setChosen(id as Format)} />}
-      <div {...rest} className={['di-mock-url', className].filter(Boolean).join(' ')}>
+      <div {...rest} className={['mock-url', className].filter(Boolean).join(' ')}>
         <MethodTag method={method} />
         <code>{text}</code>
         <CopyButton value={text} label={copyLabel} />

@@ -168,7 +168,7 @@ export default function CopilotPage() {
           <div className="ex-stack">
             <Panel title="1 · Operation">
               <fieldset className="ex-fieldset">
-                <legend className="di-sr-only">Operation</legend>
+                <legend className="sr-only">Operation</legend>
                 {operations.map((o) => {
                   const c = counts(o.id);
                   return (

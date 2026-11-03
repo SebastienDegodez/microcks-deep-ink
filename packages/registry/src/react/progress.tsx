@@ -14,14 +14,14 @@ export function Progress({ label, value, max = 100, className, id, ...rest }: Pr
   const fieldId = id ?? auto;
   const percent = value === undefined ? undefined : Math.round((value / max) * 100);
   return (
-    <div className="di-progress-field">
-      <div className="di-progress-head">
-        <label className="di-progress-label" htmlFor={fieldId}>
+    <div className="progress-field">
+      <div className="progress-head">
+        <label className="progress-label" htmlFor={fieldId}>
           {label}
         </label>
-        <span className="di-progress-value">{percent === undefined ? 'In progress' : `${percent}%`}</span>
+        <span className="progress-value">{percent === undefined ? 'In progress' : `${percent}%`}</span>
       </div>
-      <progress {...rest} id={fieldId} className={['di-progress', className].filter(Boolean).join(' ')} value={value} max={max} />
+      <progress {...rest} id={fieldId} className={['progress', className].filter(Boolean).join(' ')} value={value} max={max} />
     </div>
   );
 }
@@ -43,17 +43,17 @@ export function Meter({ label, value, min = 0, max, low, high, optimum, valueTex
   const auto = useId();
   const fieldId = id ?? auto;
   return (
-    <div className="di-progress-field">
-      <div className="di-progress-head">
-        <label className="di-progress-label" htmlFor={fieldId}>
+    <div className="progress-field">
+      <div className="progress-head">
+        <label className="progress-label" htmlFor={fieldId}>
           {label}
         </label>
-        <span className="di-progress-value">{valueText ?? `${value} / ${max}`}</span>
+        <span className="progress-value">{valueText ?? `${value} / ${max}`}</span>
       </div>
       <meter
         {...rest}
         id={fieldId}
-        className={['di-meter', className].filter(Boolean).join(' ')}
+        className={['meter', className].filter(Boolean).join(' ')}
         value={value}
         min={min}
         max={max}

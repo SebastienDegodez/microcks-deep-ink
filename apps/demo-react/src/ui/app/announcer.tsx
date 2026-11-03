@@ -24,7 +24,7 @@ export function LiveAnnouncerProvider({ children }: { children: ReactNode }) {
   return (
     <AnnouncerContext.Provider value={announce}>
       {children}
-      <div role="status" aria-live="polite" aria-atomic="true" className="di-sr-only" data-testid="live-region">
+      <div role="status" aria-live="polite" aria-atomic="true" className="sr-only" data-testid="live-region">
         {message}
       </div>
     </AnnouncerContext.Provider>

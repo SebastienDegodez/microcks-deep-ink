@@ -1,6 +1,6 @@
 /* Deep Ink · run-origin@0.2.0 · copied from packages/registry. You own this file. */
 @layer deep-ink.components {
-  .di-run-origin {
+  .run-origin {
     display: inline-flex;
     align-items: center;
     gap: var(--space-1);
@@ -10,5 +10,5 @@
     color: var(--text);
     font: 600 13px/18px var(--font-ui);
   }
-  .di-run-origin code { font: 400 12px/16px var(--font-mono); color: var(--text-secondary); }
+  .run-origin code { font: 400 12px/16px var(--font-mono); color: var(--text-secondary); }
 }

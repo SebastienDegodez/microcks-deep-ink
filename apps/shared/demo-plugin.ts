@@ -1,6 +1,6 @@
 // A demo plugin, written as a plain Web Component, registered into the shared host.
 // It proves the contract is framework-agnostic: the same plugin renders in both Storybooks.
-// Since <mk-plugin-slot> renders in light DOM, the plugin styles itself with the di- CSS API
+// Since <plugin-slot> renders in light DOM, the plugin styles itself with the  CSS API
 // and the HTML recipes of the registry (live-indicator, api-badge): no shadow DOM, no mk-* tags.
 import { definePlugin, getPluginHost, type SlotContext } from '@microcks-deep-ink/plugin-sdk';
 import { SAMPLE_MANIFEST } from './fixtures';
@@ -20,17 +20,17 @@ class AcmeReplayWidget extends HTMLElement {
     const svc = this._ctx?.service;
     // HTML recipes: live-indicator and api-badge (packages/registry/src/html).
     this.innerHTML = `
-      <div class="di-stack" style="--di-gap: var(--space-2, 8px)">
-        <div class="di-inline">
+      <div class="stack" style="--gap: var(--space-2, 8px)">
+        <div class="inline">
           <strong>Kafka Replay</strong>
-          <span class="di-live"><span class="di-live-dot" aria-hidden="true"></span>recording</span>
+          <span class="live"><span class="live-dot" aria-hidden="true"></span>recording</span>
         </div>
         <span style="color: var(--text-secondary)">
           ${svc ? `Replaying traffic of ${esc(svc.name)} ${esc(svc.version)}` : 'No service in context'}
         </span>
-        <span class="di-api-badge">
-          <span class="di-api-badge-type">replayed</span>
-          <span class="di-api-badge-name">1,204 msgs</span>
+        <span class="api-badge">
+          <span class="api-badge-type">replayed</span>
+          <span class="api-badge-name">1,204 msgs</span>
         </span>
       </div>`;
   }

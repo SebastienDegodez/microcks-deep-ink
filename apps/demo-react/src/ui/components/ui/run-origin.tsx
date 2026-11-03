@@ -14,7 +14,7 @@ const WORD = { ui: 'UI', api: 'API', 'mock-url': 'Mock URL', session: 'Session' 
 /** Where a run was launched from. */
 export function RunOrigin({ origin, sessionId, className, ...rest }: RunOriginProps) {
   return (
-    <span {...rest} className={['di-run-origin', className].filter(Boolean).join(' ')} data-origin={origin}>
+    <span {...rest} className={['run-origin', className].filter(Boolean).join(' ')} data-origin={origin}>
       {WORD[origin]}
       {origin === 'session' && sessionId ? <code>{sessionId}</code> : null}
     </span>

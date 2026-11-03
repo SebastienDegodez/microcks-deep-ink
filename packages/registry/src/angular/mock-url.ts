@@ -28,7 +28,7 @@ export function snippetFor(format: MockUrlFormat, url: string, method: string, m
     @if (!bare()) {
       <mk-segmented label="Snippet format" [options]="options()" [value]="format()" (valueChange)="chosen.set($any($event))" />
     }
-    <div class="di-mock-url">
+    <div class="mock-url">
       <span mkMethodTag [method]="method()"></span>
       <code>{{ text() }}</code>
       <mk-copy-button [value]="text()" [label]="copyLabel()" />

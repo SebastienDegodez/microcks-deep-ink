@@ -12,8 +12,8 @@ export default meta;
 export const Default: StoryObj = {
   render: () => ({
     template: `
-      <div class="di-stack" style="max-width:320px">
-        <label class="di-label" for="sel-1">Dispatcher</label>
+      <div class="stack" style="max-width:320px">
+        <label class="label" for="sel-1">Dispatcher</label>
         <select mkSelect id="sel-1">
           <option value="URI_PARTS" selected>URI_PARTS</option>
           <option value="URI_PARAMS">URI_PARAMS</option>
@@ -28,8 +28,8 @@ export const Default: StoryObj = {
 export const Small: StoryObj = {
   render: () => ({
     template: `
-      <div class="di-stack" style="max-width:320px">
-        <label class="di-label" for="sel-2">Rows per page</label>
+      <div class="stack" style="max-width:320px">
+        <label class="label" for="sel-2">Rows per page</label>
         <select mkSelect id="sel-2" size="sm">
           <option>10</option>
           <option selected>25</option>

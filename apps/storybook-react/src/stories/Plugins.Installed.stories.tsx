@@ -27,7 +27,7 @@ export const Default: StoryObj = {
             <div className="sb-col">
               <span className="sb-note">{m.id} · {m.version} · Microcks {m.microcks}</span>
               <span>{m.description}</span>
-              <div className="di-inline">
+              <div className="inline">
                 {m.protocols?.map((p) => <ApiBadge key={p} protocol={p} name={m.name} version={m.version} />)}
                 {m.backend ? <ApiBadge label="backend" value={m.backend.extensions.map((e) => e.point).join(', ')} /> : null}
                 {m.frontend ? <ApiBadge label="frontend" value={m.frontend.contributes.join(', ')} /> : null}

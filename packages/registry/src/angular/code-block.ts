@@ -17,17 +17,17 @@ export interface CodeLine {
   selector: 'figure[mkCodeBlock]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [CopyButtonComponent],
-  host: { class: 'di-code', '[attr.data-language]': 'language() || null' },
+  host: { class: 'code', '[attr.data-language]': 'language() || null' },
   template: `
     @if (caption() || copy()) {
       <figcaption>
-        <span class="di-code-caption" [id]="captionId">{{ caption() ?? '' }}</span>
+        <span class="code-caption" [id]="captionId">{{ caption() ?? '' }}</span>
         @if (copy()) {
           <mk-copy-button [value]="value()" />
         }
       </figcaption>
     }
-    <pre tabindex="0" role="region" [attr.aria-label]="name()" [style.max-height]="maxHeight() ?? null"><code [class]="language() ? 'language-' + language() : ''">@if (lines(); as ls) {@for (line of ls; track $index) {<span class="di-code-line" [attr.data-bad]="line.bad ? '' : null">@if (line.bad) {<span class="di-code-mark" aria-hidden="true">✕</span><span class="di-sr-only">Problem:</span> }{{ line.text }}@if (line.note) {<span class="di-code-note">{{ line.note }}</span>}</span>}} @else {{{ code() }}}</code></pre>
+    <pre tabindex="0" role="region" [attr.aria-label]="name()" [style.max-height]="maxHeight() ?? null"><code [class]="language() ? 'language-' + language() : ''">@if (lines(); as ls) {@for (line of ls; track $index) {<span class="code-line" [attr.data-bad]="line.bad ? '' : null">@if (line.bad) {<span class="code-mark" aria-hidden="true">✕</span><span class="sr-only">Problem:</span> }{{ line.text }}@if (line.note) {<span class="code-note">{{ line.note }}</span>}</span>}} @else {{{ code() }}}</code></pre>
   `,
 })
 export class CodeBlockComponent {

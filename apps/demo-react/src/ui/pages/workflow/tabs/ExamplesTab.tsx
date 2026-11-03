@@ -77,7 +77,7 @@ export function ExamplesTab({ detail, runs, examples }: ExamplesTabProps) {
                     </p>
                   </div>
                   <ButtonRouterLink to={`${runSetupPath(document.id, workflow.workflowId)}?example=${ex.id}`} icon="play">
-                    Run this example<span className="di-sr-only"> {ex.id}</span>
+                    Run this example<span className="sr-only"> {ex.id}</span>
                   </ButtonRouterLink>
                 </div>
                 <dl className="wf-kv">

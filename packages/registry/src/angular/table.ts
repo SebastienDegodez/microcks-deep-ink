@@ -59,7 +59,7 @@ export function sortRows<T>(rows: readonly T[], sort: SortState | undefined, val
 /** Styles a plain native table: `<table mkTable density="compact">` with your own `<caption>` and `<th scope>`. */
 @Directive({
   selector: 'table[mkTable]',
-  host: { class: 'di-table', '[attr.data-density]': 'density()' },
+  host: { class: 'table', '[attr.data-density]': 'density()' },
 })
 export class TableDirective {
   readonly density = input<'comfortable' | 'compact'>('comfortable');
@@ -75,15 +75,15 @@ export class TableDirective {
   imports: [IconComponent, NgTemplateOutlet],
   styles: [':host { display: block; }'],
   template: `
-    <div class="di-table-wrap" role="region" [attr.aria-labelledby]="captionId" tabindex="0">
-      <table class="di-table" [attr.data-density]="density()">
-        <caption [id]="captionId" [class.di-sr-only]="captionHidden()">{{ caption() }}</caption>
+    <div class="table-wrap" role="region" [attr.aria-labelledby]="captionId" tabindex="0">
+      <table class="table" [attr.data-density]="density()">
+        <caption [id]="captionId" [class.sr-only]="captionHidden()">{{ caption() }}</caption>
         <thead>
           <tr>
             @for (c of columns(); track c.key) {
               <th scope="col" [attr.data-align]="c.align === 'end' ? 'end' : null" [attr.aria-sort]="c.sortable ? activeDirection(c.key) : null">
                 @if (c.sortable) {
-                  <button type="button" class="di-table-sort" (click)="sort.set(nextSort(c.key))">
+                  <button type="button" class="table-sort" (click)="sort.set(nextSort(c.key))">
                     {{ c.header }}
                     <svg mkIcon [name]="sortIcon(c.key)" [size]="12"></svg>
                   </button>
@@ -97,7 +97,7 @@ export class TableDirective {
         <tbody>
           @if (rows().length === 0) {
             <tr>
-              <td class="di-table-empty" [attr.colspan]="columns().length || 1">{{ emptyText() }}</td>
+              <td class="table-empty" [attr.colspan]="columns().length || 1">{{ emptyText() }}</td>
             </tr>
           } @else {
             @for (row of rows(); track keyOf(row)) {
@@ -108,16 +108,16 @@ export class TableDirective {
                       @if (rowLinkTemplate(); as link) {
                         <ng-container
                           [ngTemplateOutlet]="link"
-                          [ngTemplateOutletContext]="{ $implicit: row, href: rowHref()!(row), class: 'di-table-rowlink', current: isSelected(row) ? 'true' : null, content: cell, contentContext: { $implicit: row, column: c } }"
+                          [ngTemplateOutletContext]="{ $implicit: row, href: rowHref()!(row), class: 'table-rowlink', current: isSelected(row) ? 'true' : null, content: cell, contentContext: { $implicit: row, column: c } }"
                         />
                       } @else {
-                        <a class="di-table-rowlink" [attr.href]="rowHref()!(row)" [attr.aria-current]="isSelected(row) ? 'true' : null">
+                        <a class="table-rowlink" [attr.href]="rowHref()!(row)" [attr.aria-current]="isSelected(row) ? 'true' : null">
                           <ng-container [ngTemplateOutlet]="cell" [ngTemplateOutletContext]="{ $implicit: row, column: c }" />
                         </a>
                       }
                     } @else {
                       @if (i === 0 && isSelected(row)) {
-                        <span class="di-sr-only">Selected: </span>
+                        <span class="sr-only">Selected: </span>
                       }
                       <ng-container [ngTemplateOutlet]="cell" [ngTemplateOutletContext]="{ $implicit: row, column: c }" />
                     }
@@ -128,7 +128,7 @@ export class TableDirective {
           }
         </tbody>
       </table>
-      <span role="status" aria-live="polite" class="di-sr-only">{{ sortMessage() }}</span>
+      <span role="status" aria-live="polite" class="sr-only">{{ sortMessage() }}</span>
     </div>
     <ng-template #cell let-row let-column="column">
       @if (cellTemplate(column.key); as tpl) {

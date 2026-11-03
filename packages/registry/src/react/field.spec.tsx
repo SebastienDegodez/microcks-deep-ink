@@ -29,7 +29,7 @@ describe('Field', () => {
       </Field>,
     );
     expect(screen.getByText('Error:').textContent).toBe('Error: ');
-    expect(document.querySelector('.di-error svg')?.getAttribute('aria-hidden')).toBe('true');
+    expect(document.querySelector('.error svg')?.getAttribute('aria-hidden')).toBe('true');
   });
 
   it('hides the required asterisk from assistive technology', () => {
@@ -38,7 +38,7 @@ describe('Field', () => {
         {(control) => <Input {...control} />}
       </Field>,
     );
-    expect(document.querySelector('.di-required')?.getAttribute('aria-hidden')).toBe('true');
+    expect(document.querySelector('.required')?.getAttribute('aria-hidden')).toBe('true');
   });
 
   it('adds no description or invalid state when valid', () => {

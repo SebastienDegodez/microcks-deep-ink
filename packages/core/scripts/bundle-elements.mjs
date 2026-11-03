@@ -8,11 +8,11 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'dist', 'elements');
-const TAGS = ['mk-workflow-loom', 'mk-command-bar', 'mk-plugin-slot'];
+const TAGS = ['workflow-loom', 'command-bar', 'plugin-slot'];
 
 // Extra exports of a bundle (the plugin slot re-exports the shared plugin host accessor).
 const EXTRA_EXPORT = {
-  'mk-plugin-slot': {
+  'plugin-slot': {
     js: "export { getPluginHost } from '@microcks-deep-ink/plugin-sdk';",
     dts: `export interface PluginHost {
   readonly apiVersion: number;

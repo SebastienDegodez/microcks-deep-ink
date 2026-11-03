@@ -36,7 +36,7 @@ export default function UsagePage() {
   return (
     <>
       <PageHeader title="Usage & conformance" eyebrow="Observe" />
-      <div className="di-stack">
+      <div className="stack">
         <div className="demo-actions-row" role="group" aria-label="View options">
           <Field label="Service">
             {(c) => (
@@ -55,7 +55,7 @@ export default function UsagePage() {
         {usage.status === 'loading' && !view ? <LoadingBlock label="usage" /> : null}
         {usage.status === 'error' ? <ErrorBlock error={usage.error} what="Usage" onRetry={usage.reload} /> : null}
         {view ? (
-          <div className="di-stack" aria-busy={usage.status === 'loading'}>
+          <div className="stack" aria-busy={usage.status === 'loading'}>
             <Kpis view={view} />
             <Bars key={`${view.scope}-${view.period}`} view={view} />
             <Heatmap key={`h-${view.scope}`} view={view} />
@@ -65,7 +65,7 @@ export default function UsagePage() {
         ) : null}
         {domains.data ? (
           <Panel title="Conformance by domain">
-            <div className="di-stack">
+            <div className="stack">
               {domains.data.map((d) => (
                 <section key={d.domain} aria-label={d.domain}>
                   <h3 style={{ margin: '0 0 6px', fontSize: '0.9375rem' }}>
@@ -93,7 +93,7 @@ export default function UsagePage() {
               <Disclosure summary="Show data table">
                 <div className="demo-scroll">
                   <table className="us-table">
-                    <caption className="di-sr-only">Conformance by service</caption>
+                    <caption className="sr-only">Conformance by service</caption>
                     <thead>
                       <tr><th scope="col">Domain</th><th scope="col">Service</th><th scope="col" data-num="">Operations</th><th scope="col" data-num="">Score</th><th scope="col" data-num="">Index</th></tr>
                     </thead>
@@ -183,7 +183,7 @@ function Bars({ view }: { view: UsageView }) {
       <Disclosure summary="Show data table">
         <div className="demo-scroll">
           <table className="us-table">
-            <caption className="di-sr-only">{chart.title}</caption>
+            <caption className="sr-only">{chart.title}</caption>
             <thead><tr><th scope="col">{chart.unit === 'hour' ? 'Hour' : 'Day'}</th><th scope="col" data-num="">Invocations</th></tr></thead>
             <tbody>
               {chart.points.map((p, i) => (
@@ -239,7 +239,7 @@ function Heatmap({ view }: { view: UsageView }) {
       <Disclosure summary="Show data table">
         <div className="demo-scroll">
           <table className="us-table">
-            <caption className="di-sr-only">Invocations per week and weekday</caption>
+            <caption className="sr-only">Invocations per week and weekday</caption>
             <thead>
               <tr>
                 <th scope="col">Week of</th>
@@ -268,7 +268,7 @@ function Table({ view }: { view: UsageView }) {
       <p className="demo-muted">{table.subtitle}</p>
       <div className="demo-scroll">
         <table className="us-table">
-          <caption className="di-sr-only">{table.title}</caption>
+          <caption className="sr-only">{table.title}</caption>
           <thead>
             <tr>
               <th scope="col">{table.firstColumn}</th>

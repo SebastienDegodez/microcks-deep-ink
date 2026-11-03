@@ -10,8 +10,8 @@ export default {
 
 export const Default: StoryObj = {
   render: () => (
-    <div className="di-stack" style={{ maxWidth: 420 }}>
-      <label className="di-label" htmlFor="in-1">Search services</label>
+    <div className="stack" style={{ maxWidth: 420 }}>
+      <label className="label" htmlFor="in-1">Search services</label>
       <Input id="in-1" placeholder="API Pastry" />
     </div>
   ),
@@ -19,8 +19,8 @@ export const Default: StoryObj = {
 
 export const Mono: StoryObj = {
   render: () => (
-    <div className="di-stack" style={{ maxWidth: 420 }}>
-      <label className="di-label" htmlFor="in-2">Operation path</label>
+    <div className="stack" style={{ maxWidth: 420 }}>
+      <label className="label" htmlFor="in-2">Operation path</label>
       <Input id="in-2" mono defaultValue="/pastries/{name}" />
     </div>
   ),
@@ -28,11 +28,11 @@ export const Mono: StoryObj = {
 
 export const Invalid: StoryObj = {
   render: () => (
-    <div className="di-stack" style={{ maxWidth: 420 }}>
-      <label className="di-label" htmlFor="in-3">Port</label>
+    <div className="stack" style={{ maxWidth: 420 }}>
+      <label className="label" htmlFor="in-3">Port</label>
       <Input id="in-3" aria-invalid="true" aria-describedby="in-3-e" defaultValue="80a" />
-      <p className="di-error" id="in-3-e">
-        <span className="di-sr-only">Error: </span>The port must be a number.
+      <p className="error" id="in-3-e">
+        <span className="sr-only">Error: </span>The port must be a number.
       </p>
     </div>
   ),
@@ -40,8 +40,8 @@ export const Invalid: StoryObj = {
 
 export const Multiline: StoryObj = {
   render: () => (
-    <div className="di-stack" style={{ maxWidth: 420 }}>
-      <label className="di-label" htmlFor="in-4">Payload</label>
+    <div className="stack" style={{ maxWidth: 420 }}>
+      <label className="label" htmlFor="in-4">Payload</label>
       <Textarea id="in-4" mono rows={4} defaultValue={'{\n  "name": "Millefeuille"\n}'} />
     </div>
   ),
@@ -49,8 +49,8 @@ export const Multiline: StoryObj = {
 
 export const Disabled: StoryObj = {
   render: () => (
-    <div className="di-stack" style={{ maxWidth: 420 }}>
-      <label className="di-label" htmlFor="in-5">Dispatcher</label>
+    <div className="stack" style={{ maxWidth: 420 }}>
+      <label className="label" htmlFor="in-5">Dispatcher</label>
       <Input id="in-5" disabled defaultValue="URI_PARTS" />
     </div>
   ),

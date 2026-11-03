@@ -26,16 +26,16 @@ export function conformanceLabel(outcomes: OperationResult[]): string {
     @if (size() === 'mini') {
       <ng-container [ngTemplateOutlet]="band" />
     } @else {
-      <div class="di-conformance-wrap">
+      <div class="conformance-wrap">
         <ng-container [ngTemplateOutlet]="band" />
-        <p class="di-conformance-summary">
-          <span class="di-conformance-score" [attr.data-level]="level()">{{ score() }}%</span>
+        <p class="conformance-summary">
+          <span class="conformance-score" [attr.data-level]="level()">{{ score() }}%</span>
           <span>{{ text() }}</span>
         </p>
       </div>
     }
     <ng-template #band>
-      <div class="di-conformance" [attr.data-size]="size()" role="img" [attr.aria-label]="text()">
+      <div class="conformance" [attr.data-size]="size()" role="img" [attr.aria-label]="text()">
         @for (result of outcomes(); track $index) {
           <span [attr.data-result]="result"></span>
         }

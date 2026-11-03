@@ -7,7 +7,7 @@ import { detailOf, itemParams } from './_meta';
 
 export default {
   title: 'Elements/CommandBar',
-  parameters: itemParams(['command-bar', 'button', 'kbd'], 'An ARIA 1.2 combobox with a listbox: the input keeps focus and `aria-activedescendant` follows the highlighted option. Results are grouped by kind and the count is announced ("5 results"). The modal mode uses a native `<dialog>` and returns focus to the opener. `<mk-command-bar>` is a Web Component.'),
+  parameters: itemParams(['command-bar', 'button', 'kbd'], 'An ARIA 1.2 combobox with a listbox: the input keeps focus and `aria-activedescendant` follows the highlighted option. Results are grouped by kind and the count is announced ("5 results"). The modal mode uses a native `<dialog>` and returns focus to the opener. `<command-bar>` is a Web Component.'),
 } satisfies Meta;
 
 export const Default: StoryObj = {

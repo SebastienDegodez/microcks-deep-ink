@@ -6,7 +6,7 @@ import { Directive, input } from '@angular/core';
  */
 @Directive({
   selector: 'select[mkSelect]',
-  host: { class: 'di-select', '[attr.data-size]': 'size()' },
+  host: { class: 'select', '[attr.data-size]': 'size()' },
 })
 export class SelectDirective {
   readonly size = input<'md' | 'sm'>('md');

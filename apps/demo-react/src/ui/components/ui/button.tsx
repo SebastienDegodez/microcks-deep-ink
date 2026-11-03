@@ -54,11 +54,11 @@ function contents(icon: IconName | undefined, size: ButtonSize, children: ReactN
 }
 
 function classes(className?: string) {
-  return ['di-button', className].filter(Boolean).join(' ');
+  return ['button', className].filter(Boolean).join(' ');
 }
 
 /**
- * Native `<button>` with the `di-button` styling. Defaults to `type="button"`.
+ * Native `<button>` with the `button` styling. Defaults to `type="button"`.
  */
 export function Button({
   variant = 'secondary',

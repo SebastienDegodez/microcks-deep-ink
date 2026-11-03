@@ -125,7 +125,7 @@ export default function ImportPage() {
         {STEPS.map((label, i) => (
           <li key={label} aria-current={i === stepIndex ? 'step' : undefined}>
             <span aria-hidden="true">{i < stepIndex ? <Icon name="check" size={14} /> : i + 1}</span> {label}
-            {i < stepIndex ? <span className="di-sr-only"> (done)</span> : null}
+            {i < stepIndex ? <span className="sr-only"> (done)</span> : null}
           </li>
         ))}
       </ol>

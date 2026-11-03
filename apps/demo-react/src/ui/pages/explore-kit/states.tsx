@@ -9,7 +9,7 @@ import { Skeleton } from '@/ui/components/ui/skeleton';
 export function LoadingBlock({ label, lines = 5 }: { label: string; lines?: number }) {
   return (
     <div aria-busy="true">
-      <p role="status" className="di-sr-only">
+      <p role="status" className="sr-only">
         Loading {label}
       </p>
       <Skeleton lines={lines} />

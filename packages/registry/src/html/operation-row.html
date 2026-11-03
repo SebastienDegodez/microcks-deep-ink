@@ -1,25 +1,25 @@
 <!-- OperationRow. A labelled list; each row is a link or a button. The selected row has aria-current="true".
      The mock URL box sits outside the link so its copy button stays a separate control. -->
-<ul class="di-operation-list" aria-label="Operations of API Pastry 2.0">
-  <li class="di-operation-row" data-selected>
-    <a class="di-operation-link" href="#/services/pastry/pastries" aria-current="true">
-      <span class="di-method" data-method="GET" data-protocol="rest">GET</span>
-      <span class="di-operation-path">/pastries</span>
-      <span class="di-operation-meta">3 examples · URI_PARTS</span>
+<ul class="operation-list" aria-label="Operations of API Pastry 2.0">
+  <li class="operation-row" data-selected>
+    <a class="operation-link" href="#/services/pastry/pastries" aria-current="true">
+      <span class="method" data-method="GET" data-protocol="rest">GET</span>
+      <span class="operation-path">/pastries</span>
+      <span class="operation-meta">3 examples · URI_PARTS</span>
     </a>
-    <div class="di-operation-mock">
-      <div class="di-mock-url">
-        <span class="di-method" data-method="GET" data-protocol="rest">GET</span>
+    <div class="operation-mock">
+      <div class="mock-url">
+        <span class="method" data-method="GET" data-protocol="rest">GET</span>
         <code>https://microcks.example.com/rest/API+Pastry/2.0/pastries</code>
-        <button type="button" class="di-button di-copy-button" data-size="sm">Copy URL</button>
+        <button type="button" class="button copy-button" data-size="sm">Copy URL</button>
       </div>
     </div>
   </li>
-  <li class="di-operation-row">
-    <a class="di-operation-link" href="#/services/pastry/pastries/name">
-      <span class="di-method" data-method="PATCH" data-protocol="rest">PATCH</span>
-      <span class="di-operation-path">/pastries/{name}</span>
-      <span class="di-operation-meta">1 example</span>
+  <li class="operation-row">
+    <a class="operation-link" href="#/services/pastry/pastries/name">
+      <span class="method" data-method="PATCH" data-protocol="rest">PATCH</span>
+      <span class="operation-path">/pastries/{name}</span>
+      <span class="operation-meta">1 example</span>
     </a>
   </li>
 </ul>

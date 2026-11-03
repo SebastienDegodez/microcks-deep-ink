@@ -6,7 +6,7 @@ import { MockUrlComponent } from './mock-url';
 /** `<ul mkOperationList label="Operations of API Pastry 2.0">`: a named list of operation rows. */
 @Directive({
   selector: 'ul[mkOperationList]',
-  host: { class: 'di-operation-list', '[attr.aria-label]': 'label()' },
+  host: { class: 'operation-list', '[attr.aria-label]': 'label()' },
 })
 export class OperationListDirective {
   /** Accessible name of the list, e.g. "Operations of API Pastry 2.0". */
@@ -21,35 +21,35 @@ export class OperationListDirective {
   selector: 'li[mkOperationRow]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [MethodTagComponent, MockUrlComponent],
-  host: { class: 'di-operation-row', '[attr.data-selected]': "selected() ? '' : null" },
+  host: { class: 'operation-row', '[attr.data-selected]': "selected() ? '' : null" },
   template: `
     @if (href()) {
-      <a class="di-operation-link" [attr.href]="href()" [attr.aria-current]="selected() ? 'true' : null">
+      <a class="operation-link" [attr.href]="href()" [attr.aria-current]="selected() ? 'true' : null">
         <span mkMethodTag [method]="method()" [protocol]="protocol()"></span>
-        <span class="di-operation-path">{{ path() }}</span>
+        <span class="operation-path">{{ path() }}</span>
         @if (meta()) {
-          <span class="di-operation-meta">{{ meta() }}</span>
+          <span class="operation-meta">{{ meta() }}</span>
         }
       </a>
     } @else if (interactive()) {
-      <button type="button" class="di-operation-link" [attr.aria-current]="selected() ? 'true' : null" (click)="rowSelect.emit()">
+      <button type="button" class="operation-link" [attr.aria-current]="selected() ? 'true' : null" (click)="rowSelect.emit()">
         <span mkMethodTag [method]="method()" [protocol]="protocol()"></span>
-        <span class="di-operation-path">{{ path() }}</span>
+        <span class="operation-path">{{ path() }}</span>
         @if (meta()) {
-          <span class="di-operation-meta">{{ meta() }}</span>
+          <span class="operation-meta">{{ meta() }}</span>
         }
       </button>
     } @else {
-      <div class="di-operation-link">
+      <div class="operation-link">
         <span mkMethodTag [method]="method()" [protocol]="protocol()"></span>
-        <span class="di-operation-path">{{ path() }}</span>
+        <span class="operation-path">{{ path() }}</span>
         @if (meta()) {
-          <span class="di-operation-meta">{{ meta() }}</span>
+          <span class="operation-meta">{{ meta() }}</span>
         }
       </div>
     }
     @if (selected() && mockUrl()) {
-      <div class="di-operation-mock"><mk-mock-url [url]="mockUrl()!" [method]="method()" bare /></div>
+      <div class="operation-mock"><mk-mock-url [url]="mockUrl()!" [method]="method()" bare /></div>
     }
   `,
 })

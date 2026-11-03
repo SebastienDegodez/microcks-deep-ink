@@ -9,11 +9,11 @@ import { ChangeDetectionStrategy, Component, computed, input } from '@angular/co
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     'aria-hidden': 'true',
-    '[class.di-skeleton]': 'lines() <= 1',
-    '[class.di-skeleton-group]': 'lines() > 1',
-    '[style.--di-skeleton-width]': 'cssWidth()',
+    '[class.skeleton]': 'lines() <= 1',
+    '[class.skeleton-group]': 'lines() > 1',
+    '[style.--skeleton-width]': 'cssWidth()',
   },
-  template: `@if (lines() > 1) { @for (n of range(); track n) {<span class="di-skeleton"></span>} }`,
+  template: `@if (lines() > 1) { @for (n of range(); track n) {<span class="skeleton"></span>} }`,
 })
 export class SkeletonComponent {
   /** Number of text-like lines. */

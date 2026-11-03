@@ -80,8 +80,8 @@ export function Tabs({ label, items, value, onChange, activation = 'automatic', 
 
   return (
     <PrefixContext.Provider value={prefix}>
-      <div className={['di-tabs', className].filter(Boolean).join(' ')}>
-        <div role="tablist" className="di-tablist" aria-label={label}>
+      <div className={['tabs', className].filter(Boolean).join(' ')}>
+        <div role="tablist" className="tablist" aria-label={label}>
           {items.map((t, i) => {
             const selected = i === selectedIndex;
             return (
@@ -92,7 +92,7 @@ export function Tabs({ label, items, value, onChange, activation = 'automatic', 
                 }}
                 type="button"
                 role="tab"
-                className="di-tab"
+                className="tab"
                 id={tabId(prefix, t.id)}
                 aria-selected={selected}
                 aria-controls={panelId(prefix, t.id)}
@@ -103,8 +103,8 @@ export function Tabs({ label, items, value, onChange, activation = 'automatic', 
               >
                 {t.label}
                 {t.count !== undefined ? (
-                  <span className="di-tab-count">
-                    <span className="di-sr-only">, </span>
+                  <span className="tab-count">
+                    <span className="sr-only">, </span>
                     {t.count}
                   </span>
                 ) : null}
@@ -138,7 +138,7 @@ export function TabPanel({ id, value, idPrefix, children, className }: TabPanelP
       role="tabpanel"
       id={panelId(prefix, id)}
       aria-labelledby={tabId(prefix, id)}
-      className={['di-tabpanel', className].filter(Boolean).join(' ')}
+      className={['tabpanel', className].filter(Boolean).join(' ')}
       tabIndex={0}
       hidden={!active}
     >

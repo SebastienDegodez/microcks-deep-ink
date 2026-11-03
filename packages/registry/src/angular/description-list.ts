@@ -10,7 +10,7 @@ export interface DescriptionItem {
 @Component({
   selector: 'dl[mkDescriptionList]',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'di-dl' },
+  host: { class: 'dl' },
   template: `@for (item of items(); track item.term) {<div><dt>{{ item.term }}</dt><dd [attr.data-mono]="item.mono ? '' : null">{{ item.value }}</dd></div>}`,
 })
 export class DescriptionListComponent {

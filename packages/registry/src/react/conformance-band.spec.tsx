@@ -21,7 +21,7 @@ describe('ConformanceBand', () => {
 
   it('writes the score and counts as visible text in the full size', () => {
     const { container } = render(<ConformanceBand outcomes={twelve} />);
-    const summary = container.querySelector('.di-conformance-summary');
+    const summary = container.querySelector('.conformance-summary');
     expect(summary?.textContent).toContain('92%');
     expect(summary?.textContent).toContain('11 of 12 operations pass, 1 fails');
   });
@@ -29,6 +29,6 @@ describe('ConformanceBand', () => {
   it('renders one cell per operation and no summary in the mini size', () => {
     const { container } = render(<ConformanceBand outcomes={['pass', 'untested', 'fail']} size="mini" />);
     expect(container.querySelectorAll('[data-result]')).toHaveLength(3);
-    expect(container.querySelector('.di-conformance-summary')).toBeNull();
+    expect(container.querySelector('.conformance-summary')).toBeNull();
   });
 });

@@ -20,7 +20,7 @@ export default function ScreenMapPage() {
           <p>{phase.verb}</p>
           <ul className="demo-map">
             {phase.screens.map((screen) => (
-              <li key={screen.n} className="di-panel">
+              <li key={screen.n} className="panel">
                 <h3>
                   <span>{screen.n}</span> · <Link to={screen.href}>{screen.title}</Link>
                 </h3>

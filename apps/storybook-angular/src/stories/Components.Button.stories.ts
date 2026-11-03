@@ -12,7 +12,7 @@ export default meta;
 export const Default: StoryObj = {
   render: () => ({
     template: `
-      <div class="di-inline">
+      <div class="inline">
         <button mkButton variant="primary">Run test</button>
         <button mkButton>Cancel</button>
         <button mkButton variant="ghost">Skip</button>
@@ -25,7 +25,7 @@ export const Default: StoryObj = {
 export const Sizes: StoryObj = {
   render: () => ({
     template: `
-      <div class="di-inline">
+      <div class="inline">
         <button mkButton size="md">Medium (44px)</button>
         <button mkButton size="sm">Small (32px)</button>
       </div>
@@ -37,7 +37,7 @@ export const WithIcon: StoryObj = {
   name: "Icons",
   render: () => ({
     template: `
-      <div class="di-inline">
+      <div class="inline">
         <button mkButton variant="primary" icon="play">Run test</button>
         <button mkButton icon="upload">Import</button>
         <button mkButton iconOnly icon="trash" aria-label="Delete example"></button>
@@ -49,7 +49,7 @@ export const WithIcon: StoryObj = {
 export const States: StoryObj = {
   render: () => ({
     template: `
-      <div class="di-inline">
+      <div class="inline">
         <button mkButton disabled>Disabled</button>
         <button mkButton loading>Running</button>
         <button mkButton variant="danger" confirm>Confirm delete</button>

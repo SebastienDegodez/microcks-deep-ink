@@ -117,7 +117,7 @@ describe('CSS rules', () => {
 
 describe('registry validation', () => {
   const scratch = (setup: (root: string) => void) => {
-    const root = mkdtempSync(join(tmpdir(), 'di-reg-'));
+    const root = mkdtempSync(join(tmpdir(), 'reg-'));
     try {
       cpSync(join(ROOT, 'registry.schema.json'), join(root, 'registry.schema.json'));
       cpSync(join(ROOT, 'package.json'), join(root, 'package.json'));
@@ -176,7 +176,7 @@ describe('registry validation', () => {
     const loose = scratch(setup);
     expect(loose.ok).toBe(true);
     expect(loose.warnings.join('\n')).toContain('a: no react, angular, html files yet');
-    const root = mkdtempSync(join(tmpdir(), 'di-reg-'));
+    const root = mkdtempSync(join(tmpdir(), 'reg-'));
     try {
       cpSync(join(ROOT, 'registry.schema.json'), join(root, 'registry.schema.json'));
       cpSync(join(ROOT, 'package.json'), join(root, 'package.json'));

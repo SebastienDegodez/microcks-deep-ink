@@ -13,7 +13,7 @@ const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EV
 /** The verb is the text, so color is never the only signal. */
 export function MethodTag({ method, protocol = 'REST', className, ...rest }: MethodTagProps) {
   return (
-    <span {...rest} className={['di-method', className].filter(Boolean).join(' ')} data-method={method} data-protocol={PROTOCOL_ATTR[protocol]}>
+    <span {...rest} className={['method', className].filter(Boolean).join(' ')} data-method={method} data-protocol={PROTOCOL_ATTR[protocol]}>
       {method}
     </span>
   );

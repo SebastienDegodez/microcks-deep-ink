@@ -7,7 +7,7 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Elements/PluginSlot',
-  parameters: itemParams(['plugin-slot', 'panel'], 'Renders the contributions of installed plugins for an extension point, in light DOM, so the `di-` classes and the tokens reach plugin elements. Each contribution is wrapped in `<div class="di-plugin-item" data-plugin-id>`. Slot children are the fallback when nothing contributes.'),
+  parameters: itemParams(['plugin-slot', 'panel'], 'Renders the contributions of installed plugins for an extension point, in light DOM, so the `` classes and the tokens reach plugin elements. Each contribution is wrapped in `<div class="plugin-item" data-plugin-id>`. Slot children are the fallback when nothing contributes.'),
   loaders: [async () => ({ ready: await registerDemoPlugin() })],
 } satisfies Meta;
 

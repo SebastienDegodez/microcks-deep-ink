@@ -1,7 +1,7 @@
-<!-- WorkflowLoom: Arazzo workflow as a loom. The bundle registers <mk-workflow-loom>; data goes in as properties. -->
-<script type="module" src="./elements/mk-workflow-loom.js"></script>
+<!-- WorkflowLoom: Arazzo workflow as a loom. The bundle registers <workflow-loom>; data goes in as properties. -->
+<script type="module" src="./elements/workflow-loom.js"></script>
 
-<mk-workflow-loom id="run14" label="restock-pastry, run 14"></mk-workflow-loom>
+<workflow-loom id="run14" label="restock-pastry, run 14"></workflow-loom>
 
 <script type="module">
   const loom = document.getElementById('run14');
@@ -28,7 +28,7 @@
 </script>
 
 <!-- Parallel branches (Arazzo 1.1 step-level dependsOn): steps without dependsOn run in parallel and join. -->
-<mk-workflow-loom id="menu" label="check-menu"></mk-workflow-loom>
+<workflow-loom id="menu" label="check-menu"></workflow-loom>
 <script type="module">
   const loom = document.getElementById('menu');
   const source = 'apiPastry';

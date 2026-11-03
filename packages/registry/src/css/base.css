@@ -27,7 +27,7 @@
   }
 
   /* Visually hidden, still announced by screen readers. */
-  .di-sr-only {
+  .sr-only {
     position: absolute;
     width: 1px;
     height: 1px;
@@ -41,7 +41,7 @@
   }
 
   /* First focusable element of a page. Hidden until it receives focus. */
-  .di-skip-link {
+  .skip-link {
     position: absolute;
     inset-block-start: var(--space-2);
     inset-inline-start: var(--space-2);
@@ -54,24 +54,24 @@
     text-decoration: underline;
     transform: translateY(-200%);
   }
-  .di-skip-link:focus,
-  .di-skip-link:focus-visible {
+  .skip-link:focus,
+  .skip-link:focus-visible {
     transform: none;
     outline: 2px solid var(--on-action);
     outline-offset: 2px;
   }
 
-  /* Layout helpers. Set --di-gap to change the spacing. */
-  .di-stack {
+  /* Layout helpers. Set --gap to change the spacing. */
+  .stack {
     display: flex;
     flex-direction: column;
-    gap: var(--di-gap, var(--space-4));
+    gap: var(--gap, var(--space-4));
   }
-  .di-inline {
+  .inline {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: var(--di-gap, var(--space-2));
+    gap: var(--gap, var(--space-2));
   }
 }
 

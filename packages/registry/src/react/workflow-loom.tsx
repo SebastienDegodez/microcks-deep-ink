@@ -1,6 +1,6 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import type { DetailedHTMLProps, HTMLAttributes, Ref } from 'react';
-import './elements/mk-workflow-loom.js';
+import './elements/workflow-loom.js';
 
 /* Types mirror packages/core/src/utils/types.ts (a parity test keeps them identical). */
 export type LoomProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
@@ -39,7 +39,7 @@ export interface LoomThread {
   expression: string;
 }
 
-/** The `<mk-workflow-loom>` element and its properties. */
+/** The `<workflow-loom>` element and its properties. */
 export interface WorkflowLoomElement extends HTMLElement {
   sources: LoomSource[];
   steps: LoomStep[];
@@ -55,7 +55,7 @@ declare module 'react' {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      'mk-workflow-loom': DetailedHTMLProps<HTMLAttributes<WorkflowLoomElement>, WorkflowLoomElement>;
+      'workflow-loom': DetailedHTMLProps<HTMLAttributes<WorkflowLoomElement>, WorkflowLoomElement>;
     }
   }
 }
@@ -84,7 +84,7 @@ function assignRef<T>(ref: Ref<T> | undefined, value: T | null) {
 /**
  * Arazzo workflow as a loom: lanes per source, step nodes, data threads, parallel branches
  * (dependsOn), `end` and `retry` actions. Keyboard operable, with a built-in "Show as table" view.
- * Wrapper around the self-registering `<mk-workflow-loom>` element in ./elements.
+ * Wrapper around the self-registering `<workflow-loom>` element in ./elements.
  */
 export function WorkflowLoom({
   sources,
@@ -139,7 +139,7 @@ export function WorkflowLoom({
   }, []);
 
   return (
-    <mk-workflow-loom
+    <workflow-loom
       {...rest}
       ref={(node) => {
         el.current = node;

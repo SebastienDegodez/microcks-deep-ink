@@ -10,10 +10,10 @@ const uid = (prefix: string) => `${prefix}-${++nextId}`;
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [':host { display: contents; }'],
   template: `
-    <label class="di-choice">
+    <label class="choice">
       <input
         type="checkbox"
-        class="di-checkbox"
+        class="checkbox"
         [checked]="checked()"
         [disabled]="disabled()"
         [required]="required()"
@@ -24,9 +24,9 @@ const uid = (prefix: string) => `${prefix}-${++nextId}`;
         (change)="checked.set($any($event.target).checked)"
       />
       <span>
-        <span class="di-choice-label" [id]="labelId">{{ label() }}</span>
+        <span class="choice-label" [id]="labelId">{{ label() }}</span>
         @if (description()) {
-          <span class="di-choice-description" [id]="descId">{{ description() }}</span>
+          <span class="choice-description" [id]="descId">{{ description() }}</span>
         }
       </span>
     </label>
@@ -53,10 +53,10 @@ export class CheckboxComponent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [':host { display: contents; }'],
   template: `
-    <label class="di-choice">
+    <label class="choice">
       <input
         type="radio"
-        class="di-radio"
+        class="radio"
         [checked]="checked()"
         [disabled]="disabled()"
         [required]="required()"
@@ -67,9 +67,9 @@ export class CheckboxComponent {
         (change)="checked.set($any($event.target).checked)"
       />
       <span>
-        <span class="di-choice-label" [id]="labelId">{{ label() }}</span>
+        <span class="choice-label" [id]="labelId">{{ label() }}</span>
         @if (description()) {
-          <span class="di-choice-description" [id]="descId">{{ description() }}</span>
+          <span class="choice-description" [id]="descId">{{ description() }}</span>
         }
       </span>
     </label>
@@ -104,13 +104,13 @@ export interface RadioOption {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [RadioComponent, IconComponent],
   host: {
-    class: 'di-fieldset',
+    class: 'fieldset',
     '[attr.aria-describedby]': 'describedBy()',
     '[attr.aria-invalid]': "error() ? 'true' : null",
     '[attr.data-invalid]': "error() ? '' : null",
   },
   template: `
-    <legend>{{ legend() }}@if (required()) {<span class="di-required" aria-hidden="true"> *</span>}</legend>
+    <legend>{{ legend() }}@if (required()) {<span class="required" aria-hidden="true"> *</span>}</legend>
     @for (o of options(); track o.value) {
       <mk-radio
         [name]="groupName()"
@@ -124,12 +124,12 @@ export interface RadioOption {
       />
     }
     @if (help()) {
-      <p class="di-help" [id]="helpId">{{ help() }}</p>
+      <p class="help" [id]="helpId">{{ help() }}</p>
     }
     @if (error()) {
-      <p class="di-error" [id]="errorId">
+      <p class="error" [id]="errorId">
         <svg mkIcon name="warning" [size]="16"></svg>
-        <span><span class="di-sr-only">Error: </span>{{ error() }}</span>
+        <span><span class="sr-only">Error: </span>{{ error() }}</span>
       </p>
     }
   `,

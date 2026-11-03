@@ -26,7 +26,7 @@ export const Default: StoryObj = {
       <div class="sb-col" style="max-width:1100px">
         <header class="sb-col">
           <h1 style="font:var(--type-section);margin:0">restock-pastry · run #14</h1>
-          <div class="di-inline">
+          <div class="inline">
             <span mkApiBadge arazzo name="restock-pastry"></span>
             <span mkStatusBadge status="failed" label="Failed at patchPastry"></span>
             <span mkRunTarget target="mocks"></span>
@@ -34,7 +34,7 @@ export const Default: StoryObj = {
           </div>
         </header>
         <mk-callout tone="danger" title="Schema validation failed">{{ failure.summary }}</mk-callout>
-        <mk-workflow-loom [label]="s.label" [sources]="s.sources" [steps]="s.steps" [threads]="s.threads" [inputs]="s.inputs ?? []" [outputs]="s.outputs ?? []" validatesSchemas selectedStep="patchPastry"></mk-workflow-loom>
+        <workflow-loom [label]="s.label" [sources]="s.sources" [steps]="s.steps" [threads]="s.threads" [inputs]="s.inputs ?? []" [outputs]="s.outputs ?? []" validatesSchemas selectedStep="patchPastry"></workflow-loom>
         <section mkPanel title="patchPastry" [headingLevel]="2">
           <div class="sb-col">
             <span mkStepStatus status="failed" [attempts]="3"></span>

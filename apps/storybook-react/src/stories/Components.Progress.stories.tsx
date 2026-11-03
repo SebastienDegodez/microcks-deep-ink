@@ -10,7 +10,7 @@ export default {
 
 export const Default: StoryObj = {
   render: () => (
-    <div className="di-stack" style={{ maxWidth: 420 }}>
+    <div className="stack" style={{ maxWidth: 420 }}>
       <Progress label="Importing contract" value={65} />
       <Progress label="Waiting for the broker" />
     </div>
@@ -20,7 +20,7 @@ export const Default: StoryObj = {
 export const MeterStory: StoryObj = {
   name: 'Meter',
   render: () => (
-    <div className="di-stack" style={{ maxWidth: 420 }}>
+    <div className="stack" style={{ maxWidth: 420 }}>
       <Meter label="Operations passing" value={11} max={12} low={8} high={11} optimum={12} valueText="11 of 12" />
       <Meter label="Operations passing" value={5} max={12} low={8} high={11} optimum={12} valueText="5 of 12" />
     </div>

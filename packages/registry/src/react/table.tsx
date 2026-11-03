@@ -96,9 +96,9 @@ export function DataTable<T>({
   const sortedColumn = sort ? columns.find((c) => c.key === sort.key) : undefined;
 
   return (
-    <div className={['di-table-wrap', className].filter(Boolean).join(' ')} role="region" aria-labelledby={captionId} tabIndex={0}>
-      <table className="di-table" data-density={density}>
-        <caption id={captionId} className={captionHidden ? 'di-sr-only' : undefined}>
+    <div className={['table-wrap', className].filter(Boolean).join(' ')} role="region" aria-labelledby={captionId} tabIndex={0}>
+      <table className="table" data-density={density}>
+        <caption id={captionId} className={captionHidden ? 'sr-only' : undefined}>
           {caption}
         </caption>
         <thead>
@@ -108,7 +108,7 @@ export function DataTable<T>({
               return (
                 <th key={c.key} scope="col" data-align={c.align === 'end' ? 'end' : undefined} aria-sort={c.sortable ? active : undefined}>
                   {c.sortable ? (
-                    <button type="button" className="di-table-sort" onClick={() => onSortChange?.(nextSort(c.key))}>
+                    <button type="button" className="table-sort" onClick={() => onSortChange?.(nextSort(c.key))}>
                       {c.header}
                       <Icon name={active === 'descending' ? 'arrow-down' : active === 'ascending' ? 'arrow-up' : 'dash'} size={12} />
                     </button>
@@ -123,7 +123,7 @@ export function DataTable<T>({
         <tbody>
           {rows.length === 0 ? (
             <tr>
-              <td className="di-table-empty" colSpan={Math.max(columns.length, 1)}>
+              <td className="table-empty" colSpan={Math.max(columns.length, 1)}>
                 {emptyText}
               </td>
             </tr>
@@ -139,7 +139,7 @@ export function DataTable<T>({
                     let inner: ReactNode = content;
                     if (i === 0 && href !== undefined) {
                       const props: RowLinkProps = {
-                        className: 'di-table-rowlink',
+                        className: 'table-rowlink',
                         href,
                         'aria-current': selected ? 'true' : undefined,
                         children: content,
@@ -154,7 +154,7 @@ export function DataTable<T>({
                     } else if (i === 0 && selected) {
                       inner = (
                         <>
-                          <span className="di-sr-only">Selected: </span>
+                          <span className="sr-only">Selected: </span>
                           {content}
                         </>
                       );
@@ -172,7 +172,7 @@ export function DataTable<T>({
         </tbody>
       </table>
       {/* Announces a sort change; the sorted header also exposes aria-sort. */}
-      <span role="status" aria-live="polite" className="di-sr-only">
+      <span role="status" aria-live="polite" className="sr-only">
         {sort && sortedColumn ? `Sorted by ${sortedColumn.header}, ${sort.direction}` : ''}
       </span>
     </div>

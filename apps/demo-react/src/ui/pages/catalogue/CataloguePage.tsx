@@ -174,7 +174,7 @@ export default function CataloguePage() {
               </span>
               <span className="ex-row">{s.labels.map((l) => <Chip key={labelToString(l)} variant="outline" labelKey={l.key}>{l.value}</Chip>)}</span>
               <span className="ex-small ex-secondary">{callsText(s)} / 24 h · {relative(s.updatedAt)}</span>
-              <RouterLink to={`/services/${s.id}`}>Open service<span className="di-sr-only"> {s.name} {s.version}</span></RouterLink>
+              <RouterLink to={`/services/${s.id}`}>Open service<span className="sr-only"> {s.name} {s.version}</span></RouterLink>
             </article>
           ))}
         </div>

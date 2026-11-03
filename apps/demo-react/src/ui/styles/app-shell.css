@@ -1,6 +1,6 @@
 /* Deep Ink · app-shell@0.2.0 · copied from packages/registry. You own this file. */
 @layer deep-ink.components {
-  .di-shell {
+  .shell {
     display: grid;
     grid-template-columns: 240px minmax(0, 1fr);
     grid-template-rows: auto auto 1fr;
@@ -12,7 +12,7 @@
     font: var(--type-body);
   }
 
-  .di-topbar {
+  .topbar {
     grid-area: top;
     position: sticky;
     top: 0;
@@ -26,21 +26,21 @@
     background: var(--canvas);
     border-bottom: 1px solid var(--border);
   }
-  .di-topbar-brand { display: flex; align-items: center; gap: var(--space-2); min-width: 0; font: 800 22px/1 var(--font-brand); color: var(--text); }
-  .di-topbar-actions { margin-inline-start: auto; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
-  .di-shell-menu { display: none; }
+  .topbar-brand { display: flex; align-items: center; gap: var(--space-2); min-width: 0; font: 800 22px/1 var(--font-brand); color: var(--text); }
+  .topbar-actions { margin-inline-start: auto; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+  .shell-menu { display: none; }
 
-  .di-shell-banner { grid-area: banner; min-width: 0; }
+  .shell-banner { grid-area: banner; min-width: 0; }
 
-  .di-sidenav {
+  .sidenav {
     grid-area: nav;
     background: var(--canvas);
     border-inline-end: 1px solid var(--border);
     padding: var(--space-3) var(--space-2);
     min-width: 0;
   }
-  .di-sidenav > ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
-  .di-sidenav-link {
+  .sidenav > ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  .sidenav-link {
     display: flex;
     align-items: center;
     gap: var(--space-3);
@@ -51,16 +51,16 @@
     text-decoration: none;
     font: 500 14px/20px var(--font-ui);
   }
-  .di-sidenav-link:hover { background: var(--raised); color: var(--text); }
-  .di-sidenav-link[aria-current="page"] {
+  .sidenav-link:hover { background: var(--raised); color: var(--text); }
+  .sidenav-link[aria-current="page"] {
     background: var(--selected);
     color: var(--text);
     font-weight: 600;
     box-shadow: inset 3px 0 0 var(--action);
   }
-  .di-sidenav-badge { margin-inline-start: auto; font: 400 11px/16px var(--font-mono); color: var(--text-secondary); }
+  .sidenav-badge { margin-inline-start: auto; font: 400 11px/16px var(--font-mono); color: var(--text-secondary); }
 
-  .di-main {
+  .main {
     grid-area: main;
     min-width: 0;
     padding: var(--space-6) var(--space-8);
@@ -69,18 +69,18 @@
     gap: var(--space-6);
   }
   /* Focus lands here from the skip link: keep the base focus ring, drawn inside the box. */
-  .di-main:focus-visible { outline-offset: -2px; }
+  .main:focus-visible { outline-offset: -2px; }
 
   /* Below 768px: one column; the nav sits behind the Menu disclosure button. */
   @media (max-width: 767px) {
-    .di-shell {
+    .shell {
       grid-template-columns: minmax(0, 1fr);
       grid-template-areas: "top" "banner" "nav" "main";
       grid-template-rows: auto auto auto 1fr;
     }
-    .di-shell-menu { display: inline-flex; }
-    .di-sidenav { border-inline-end: 0; border-bottom: 1px solid var(--border); }
-    .di-sidenav:not([data-open="true"]) { display: none; }
-    .di-main { padding: var(--space-4); }
+    .shell-menu { display: inline-flex; }
+    .sidenav { border-inline-end: 0; border-bottom: 1px solid var(--border); }
+    .sidenav:not([data-open="true"]) { display: none; }
+    .main { padding: var(--space-4); }
   }
 }

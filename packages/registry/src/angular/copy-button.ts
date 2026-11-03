@@ -40,7 +40,7 @@ async function writeClipboard(text: string): Promise<boolean> {
     <button
       type="button"
       mkButton
-      class="di-copy-button"
+      class="copy-button"
       [variant]="variant()"
       [size]="size()"
       [iconOnly]="iconOnly()"
@@ -48,7 +48,7 @@ async function writeClipboard(text: string): Promise<boolean> {
       [attr.aria-label]="iconOnly() ? text() : null"
       (click)="copy()"
     >{{ iconOnly() ? '' : text() }}</button>
-    <span role="status" aria-live="polite" class="di-sr-only">{{ message() }}</span>
+    <span role="status" aria-live="polite" class="sr-only">{{ message() }}</span>
   `,
 })
 export class CopyButtonComponent {

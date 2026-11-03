@@ -23,7 +23,7 @@ export class CalloutActionsDirective {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent],
   host: {
-    class: 'di-callout',
+    class: 'callout',
     '[attr.data-tone]': 'tone()',
     '[attr.role]': 'role()',
     '[attr.aria-labelledby]': 'heading() ? titleId : null',
@@ -32,13 +32,13 @@ export class CalloutActionsDirective {}
   },
   template: `
     <svg mkIcon [name]="icon()" [size]="18" [label]="heading() ? undefined : toneWord()"></svg>
-    <div class="di-callout-body">
+    <div class="callout-body">
       @if (heading()) {
-        <p class="di-callout-title" [id]="titleId">{{ heading() }}</p>
+        <p class="callout-title" [id]="titleId">{{ heading() }}</p>
       }
-      <div class="di-callout-content"><ng-content /></div>
+      <div class="callout-content"><ng-content /></div>
       @if (actions()) {
-        <div class="di-callout-actions"><ng-content select="[mkCalloutActions]" /></div>
+        <div class="callout-actions"><ng-content select="[mkCalloutActions]" /></div>
       }
     </div>
   `,

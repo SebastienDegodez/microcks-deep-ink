@@ -10,7 +10,7 @@ const WORD: Record<RunTargetKind, string> = { mocks: 'Mocks', implementations: '
   selector: 'span[mkRunTarget]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ChipComponent],
-  host: { class: 'di-run-target', '[attr.data-target]': 'target()' },
+  host: { class: 'run-target', '[attr.data-target]': 'target()' },
   template: `{{ word() }}@if (target() === 'mixed') {<span mkChip tone="warning" variant="dashed">Proposed · beyond POC</span>}`,
 })
 export class RunTargetComponent {

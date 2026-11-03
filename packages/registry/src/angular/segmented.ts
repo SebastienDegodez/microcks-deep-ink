@@ -14,8 +14,8 @@ export interface SegmentedOption {
 @Component({
   selector: 'mk-segmented',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'di-segmented', role: 'group', '[attr.aria-label]': 'label()' },
-  template: `@for (o of options(); track o.id) {<button type="button" [attr.aria-pressed]="o.id === value()" (click)="value.set(o.id)">{{ o.label }}@if (o.count !== undefined) {<span class="di-segmented-count"><span class="di-sr-only">, </span>{{ o.count }}</span>}</button>}`,
+  host: { class: 'segmented', role: 'group', '[attr.aria-label]': 'label()' },
+  template: `@for (o of options(); track o.id) {<button type="button" [attr.aria-pressed]="o.id === value()" (click)="value.set(o.id)">{{ o.label }}@if (o.count !== undefined) {<span class="segmented-count"><span class="sr-only">, </span>{{ o.count }}</span>}</button>}`,
 })
 export class SegmentedComponent {
   /** Accessible name of the group ("Result"). */

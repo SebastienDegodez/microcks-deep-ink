@@ -1,5 +1,5 @@
 @layer deep-ink.components {
-  svg.di-icon {
+  svg.icon {
     flex: none;
     display: inline-block;
     vertical-align: middle;

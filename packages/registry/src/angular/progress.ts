@@ -8,12 +8,12 @@ let nextId = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [':host { display: contents; }'],
   template: `
-    <div class="di-progress-field">
-      <div class="di-progress-head">
-        <label class="di-progress-label" [attr.for]="fieldId">{{ label() }}</label>
-        <span class="di-progress-value">{{ percent() === undefined ? 'In progress' : percent() + '%' }}</span>
+    <div class="progress-field">
+      <div class="progress-head">
+        <label class="progress-label" [attr.for]="fieldId">{{ label() }}</label>
+        <span class="progress-value">{{ percent() === undefined ? 'In progress' : percent() + '%' }}</span>
       </div>
-      <progress class="di-progress" [id]="fieldId" [attr.value]="value() ?? null" [attr.max]="max()"></progress>
+      <progress class="progress" [id]="fieldId" [attr.value]="value() ?? null" [attr.max]="max()"></progress>
     </div>
   `,
 })
@@ -37,12 +37,12 @@ export class ProgressComponent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [':host { display: contents; }'],
   template: `
-    <div class="di-progress-field">
-      <div class="di-progress-head">
-        <label class="di-progress-label" [attr.for]="fieldId">{{ label() }}</label>
-        <span class="di-progress-value">{{ valueText() ?? value() + ' / ' + max() }}</span>
+    <div class="progress-field">
+      <div class="progress-head">
+        <label class="progress-label" [attr.for]="fieldId">{{ label() }}</label>
+        <span class="progress-value">{{ valueText() ?? value() + ' / ' + max() }}</span>
       </div>
-      <meter class="di-meter" [id]="fieldId" [attr.value]="value()" [attr.min]="min()" [attr.max]="max()" [attr.low]="low() ?? null" [attr.high]="high() ?? null" [attr.optimum]="optimum() ?? max()"></meter>
+      <meter class="meter" [id]="fieldId" [attr.value]="value()" [attr.min]="min()" [attr.max]="max()" [attr.low]="low() ?? null" [attr.high]="high() ?? null" [attr.optimum]="optimum() ?? max()"></meter>
     </div>
   `,
 })

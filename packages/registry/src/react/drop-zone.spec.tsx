@@ -15,7 +15,7 @@ describe('DropZone', () => {
     expect(input.getAttribute('aria-describedby')).toBeTruthy();
     // Visually hidden but not removed from the tab order.
     expect(input.tabIndex).not.toBe(-1);
-    expect(input.className).toContain('di-sr-only');
+    expect(input.className).toContain('sr-only');
   });
 
   it('announces how many files are ready and calls onFiles', () => {
@@ -31,7 +31,7 @@ describe('DropZone', () => {
   it('accepts dropped files', () => {
     const onFiles = vi.fn();
     const { container } = render(<DropZone heading="Drop" hint="hint" onFiles={onFiles} />);
-    const zone = container.querySelector('.di-drop-zone') as HTMLElement;
+    const zone = container.querySelector('.drop-zone') as HTMLElement;
     fireEvent.dragOver(zone);
     expect(zone.hasAttribute('data-dragging')).toBe(true);
     fireEvent.drop(zone, { dataTransfer: { files: [file('c.json')] } });

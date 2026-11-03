@@ -10,8 +10,8 @@ export default {
 
 export const Default: StoryObj = {
   render: () => (
-    <div className="di-stack" style={{ maxWidth: 320 }}>
-      <label className="di-label" htmlFor="sel-1">Dispatcher</label>
+    <div className="stack" style={{ maxWidth: 320 }}>
+      <label className="label" htmlFor="sel-1">Dispatcher</label>
       <Select id="sel-1" defaultValue="URI_PARTS">
         <option value="URI_PARTS">URI_PARTS</option>
         <option value="URI_PARAMS">URI_PARAMS</option>
@@ -24,8 +24,8 @@ export const Default: StoryObj = {
 
 export const Small: StoryObj = {
   render: () => (
-    <div className="di-stack" style={{ maxWidth: 320 }}>
-      <label className="di-label" htmlFor="sel-2">Rows per page</label>
+    <div className="stack" style={{ maxWidth: 320 }}>
+      <label className="label" htmlFor="sel-2">Rows per page</label>
       <Select id="sel-2" size="sm" defaultValue="25">
         <option>10</option>
         <option>25</option>

@@ -148,7 +148,7 @@ function RunView({
         </span>
         {totals.ms > 0 ? <span>Duration {formatDuration(totals.ms)}</span> : null}
       </p>
-      <p className="di-sr-only" role="status" aria-live="polite" aria-atomic="true">
+      <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
         {message}
       </p>
 
@@ -194,8 +194,8 @@ function RunView({
               </dl>
               <h2 className="wf-h2">Workflow outputs</h2>
               {outputs.length > 0 ? (
-                <table className="di-table">
-                  <caption className="di-sr-only">Workflow outputs</caption>
+                <table className="table">
+                  <caption className="sr-only">Workflow outputs</caption>
                   <thead>
                     <tr>
                       <th scope="col">Output</th>
@@ -351,8 +351,8 @@ function StepItem({ index, step, phase, run, workflow, baggage }: { index: numbe
                     <code className="wf-mono">{step.request.url}</code>
                   </p>
                   {Object.keys(step.request.params).length > 0 ? (
-                    <table className="di-table">
-                      <caption className="di-sr-only">Parameters of {step.stepId}</caption>
+                    <table className="table">
+                      <caption className="sr-only">Parameters of {step.stepId}</caption>
                       <thead>
                         <tr>
                           <th scope="col">Parameter</th>
@@ -411,8 +411,8 @@ function StepItem({ index, step, phase, run, workflow, baggage }: { index: numbe
 
               <StepChecks successCriteria={criteriaState} schemaValidation={schemaState} />
               {step.criteria.length > 0 ? (
-                <table className="di-table">
-                  <caption className="di-sr-only">Success criteria of {step.stepId}</caption>
+                <table className="table">
+                  <caption className="sr-only">Success criteria of {step.stepId}</caption>
                   <thead>
                     <tr>
                       <th scope="col">Criterion</th>

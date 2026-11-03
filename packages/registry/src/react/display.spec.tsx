@@ -9,7 +9,7 @@ import { Segmented } from './segmented';
 describe('Chip', () => {
   it('is a plain span when static', () => {
     render(<Chip labelKey="domain">pastry</Chip>);
-    const el = screen.getByText('pastry').closest('.di-chip')!;
+    const el = screen.getByText('pastry').closest('.chip')!;
     expect(el.tagName).toBe('SPAN');
     expect(el.textContent).toBe('domain=pastry');
   });

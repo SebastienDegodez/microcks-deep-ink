@@ -10,7 +10,7 @@ export function Link({ external, className, children, rel, target, ...rest }: Li
   return (
     <a
       {...rest}
-      className={['di-link', className].filter(Boolean).join(' ')}
+      className={['link', className].filter(Boolean).join(' ')}
       data-external={external ? '' : undefined}
       target={external ? '_blank' : target}
       rel={external ? 'noopener noreferrer' : rel}
@@ -20,7 +20,7 @@ export function Link({ external, className, children, rel, target, ...rest }: Li
         <>
           <Icon name="external" size={14} />
           {' '}
-          <span className="di-sr-only">(opens in a new tab)</span>
+          <span className="sr-only">(opens in a new tab)</span>
         </>
       ) : null}
     </a>

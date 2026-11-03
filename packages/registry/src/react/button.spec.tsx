@@ -9,7 +9,7 @@ describe('Button', () => {
     const b = screen.getByRole('button', { name: 'Run test' });
     expect(b.tagName).toBe('BUTTON');
     expect(b.getAttribute('type')).toBe('button');
-    expect(b.className).toContain('di-button');
+    expect(b.className).toContain('button');
     expect(b.getAttribute('data-variant')).toBe('primary');
     expect(b.getAttribute('data-size')).toBe('md');
   });
@@ -22,7 +22,7 @@ describe('Button', () => {
         Go
       </Button>,
     );
-    expect(ref.current?.className).toBe('di-button mine');
+    expect(ref.current?.className).toBe('button mine');
     expect(ref.current?.type).toBe('submit');
     fireEvent.click(screen.getByRole('button', { name: 'Go' }));
     expect(onClick).toHaveBeenCalled();
@@ -51,13 +51,13 @@ describe('Button', () => {
       </Button>,
     );
     const link = screen.getByRole('link', { name: 'Open' });
-    expect(link.className).toContain('di-button');
+    expect(link.className).toContain('button');
     expect(link.getAttribute('data-variant')).toBe('primary');
   });
 
   it('ButtonLink renders an anchor', () => {
     render(<ButtonLink href="/x">Go</ButtonLink>);
-    expect(screen.getByRole('link', { name: 'Go' }).className).toContain('di-button');
+    expect(screen.getByRole('link', { name: 'Go' }).className).toContain('button');
   });
 
   it('has no axe violations', async () => {

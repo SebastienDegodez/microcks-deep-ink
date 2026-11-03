@@ -14,7 +14,7 @@ export interface ShellNavItem {
 }
 
 /**
- * Context of the `linkTemplate` (router links). Render your link with the `di-sidenav-link` class,
+ * Context of the `linkTemplate` (router links). Render your link with the `sidenav-link` class,
  * `[attr.aria-current]="current"`, `(click)="navigate()"`, and put the item content inside it:
  * `<ng-container [ngTemplateOutlet]="content" [ngTemplateOutletContext]="{ $implicit: item }" />`.
  */
@@ -35,27 +35,27 @@ let nextId = 0;
   selector: 'mk-app-shell',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ButtonDirective, IconComponent, NgTemplateOutlet],
-  host: { class: 'di-shell', '(document:keydown.escape)': 'onEscape()' },
+  host: { class: 'shell', '(document:keydown.escape)': 'onEscape()' },
   template: `
     <!-- A hash router would treat href="#main" as a route: focus the element instead of navigating. -->
-    <a class="di-skip-link" href="#main" (click)="skip($event)">{{ skipLinkLabel() }}</a>
-    <header class="di-topbar">
-      <button #menuButton type="button" mkButton variant="ghost" class="di-shell-menu" [attr.aria-expanded]="open()" [attr.aria-controls]="navId" (click)="open.set(!open())">
+    <a class="skip-link" href="#main" (click)="skip($event)">{{ skipLinkLabel() }}</a>
+    <header class="topbar">
+      <button #menuButton type="button" mkButton variant="ghost" class="shell-menu" [attr.aria-expanded]="open()" [attr.aria-controls]="navId" (click)="open.set(!open())">
         <svg mkIcon [name]="open() ? 'close' : 'menu'" [size]="18"></svg>
         Menu
       </button>
-      <div class="di-topbar-brand">{{ brand() }}<ng-content select="[mkShellBrand]" /></div>
-      <div class="di-topbar-actions"><ng-content select="[mkShellActions]" /></div>
+      <div class="topbar-brand">{{ brand() }}<ng-content select="[mkShellBrand]" /></div>
+      <div class="topbar-actions"><ng-content select="[mkShellActions]" /></div>
     </header>
-    <div class="di-shell-banner"><ng-content select="[mkShellBanner]" /></div>
-    <nav class="di-sidenav" [id]="navId" [attr.aria-label]="navLabel()" [attr.data-open]="open() ? 'true' : 'false'">
+    <div class="shell-banner"><ng-content select="[mkShellBanner]" /></div>
+    <nav class="sidenav" [id]="navId" [attr.aria-label]="navLabel()" [attr.data-open]="open() ? 'true' : 'false'">
       <ul>
         @for (item of nav(); track item.id) {
           <li>
             @if (linkTemplate(); as tpl) {
               <ng-container [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="linkContext(item)" />
             } @else {
-              <a class="di-sidenav-link" [attr.href]="item.href" [attr.aria-current]="item.id === activeId() ? 'page' : null" (click)="open.set(false)">
+              <a class="sidenav-link" [attr.href]="item.href" [attr.aria-current]="item.id === activeId() ? 'page' : null" (click)="open.set(false)">
                 <ng-container [ngTemplateOutlet]="content" [ngTemplateOutletContext]="{ $implicit: item }" />
               </a>
             }
@@ -63,14 +63,14 @@ let nextId = 0;
         }
       </ul>
     </nav>
-    <main #main id="main" tabindex="-1" class="di-main"><ng-content /></main>
+    <main #main id="main" tabindex="-1" class="main"><ng-content /></main>
     <ng-template #content let-item>
       @if (item.icon) {
         <svg mkIcon [name]="item.icon" [size]="18"></svg>
       }
       <span>{{ item.label }}</span>
       @if (item.badge) {
-        <span class="di-sidenav-badge">{{ item.badge }}</span>
+        <span class="sidenav-badge">{{ item.badge }}</span>
       }
     </ng-template>
   `,

@@ -157,7 +157,7 @@ export function StepsTable({ workflow, document, run, loomLink }: StepsTableProp
       key: 'inspect',
       header: 'Inspect',
       render: ({ step }) => (
-        <RouterLink className="di-link" to={loomLink(step.stepId)} aria-label={`Inspect ${step.stepId} on the loom`}>
+        <RouterLink className="link" to={loomLink(step.stepId)} aria-label={`Inspect ${step.stepId} on the loom`}>
           On the loom
         </RouterLink>
       ),

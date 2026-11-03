@@ -11,7 +11,7 @@ export default {
 export const Default: StoryObj = {
   render: () => (
     <div aria-busy="true" style={{ maxWidth: 420 }}>
-      <p className="di-sr-only" role="status">Loading services</p>
+      <p className="sr-only" role="status">Loading services</p>
       <Skeleton lines={3} />
     </div>
   ),

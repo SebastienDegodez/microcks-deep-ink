@@ -8,7 +8,7 @@ export interface OperationListProps extends HTMLAttributes<HTMLUListElement> {
 }
 
 export function OperationList({ label, className, ...rest }: OperationListProps) {
-  return <ul {...rest} aria-label={label} className={['di-operation-list', className].filter(Boolean).join(' ')} />;
+  return <ul {...rest} aria-label={label} className={['operation-list', className].filter(Boolean).join(' ')} />;
 }
 
 export interface OperationRowProps extends Omit<HTMLAttributes<HTMLLIElement>, 'onSelect'> {
@@ -30,26 +30,26 @@ export function OperationRow({ method, path, protocol = 'REST', meta, mockUrl, s
   const content = (
     <>
       <MethodTag method={method} protocol={protocol} />
-      <span className="di-operation-path">{path}</span>
-      {meta ? <span className="di-operation-meta">{meta}</span> : null}
+      <span className="operation-path">{path}</span>
+      {meta ? <span className="operation-meta">{meta}</span> : null}
     </>
   );
   const current = selected ? ('true' as const) : undefined;
   return (
-    <li {...rest} className={['di-operation-row', className].filter(Boolean).join(' ')} data-selected={selected ? '' : undefined}>
+    <li {...rest} className={['operation-row', className].filter(Boolean).join(' ')} data-selected={selected ? '' : undefined}>
       {href ? (
-        <a className="di-operation-link" href={href} aria-current={current}>
+        <a className="operation-link" href={href} aria-current={current}>
           {content}
         </a>
       ) : onSelect ? (
-        <button type="button" className="di-operation-link" aria-current={current} onClick={onSelect}>
+        <button type="button" className="operation-link" aria-current={current} onClick={onSelect}>
           {content}
         </button>
       ) : (
-        <div className="di-operation-link">{content}</div>
+        <div className="operation-link">{content}</div>
       )}
       {selected && mockUrl ? (
-        <div className="di-operation-mock">
+        <div className="operation-mock">
           <MockUrl url={mockUrl} method={method} bare />
         </div>
       ) : null}

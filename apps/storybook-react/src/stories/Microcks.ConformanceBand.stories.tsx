@@ -15,7 +15,7 @@ export const Default: StoryObj = {
 
 export const Mini: StoryObj = {
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       <ConformanceBand size="mini" outcomes={CONFORMANCE} />
       <ConformanceBand size="mini" outcomes={['pass', 'pass', 'untested', 'untested']} />
     </div>

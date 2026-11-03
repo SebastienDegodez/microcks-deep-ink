@@ -32,7 +32,7 @@ export function ThemeToggle(props: ThemeToggleProps) {
       type="button"
       variant="ghost"
       iconOnly
-      className="di-theme-toggle"
+      className="theme-toggle"
       aria-label="Light theme"
       aria-pressed={theme === 'light'}
       onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}

@@ -73,7 +73,7 @@ describe('Menu', () => {
 
   it('uses native elements for items', () => {
     const { menu } = setup();
-    const items = menu.querySelectorAll('.di-menu-item');
+    const items = menu.querySelectorAll('.menu-item');
     expect(Array.from(items).map((i) => i.tagName)).toEqual(['BUTTON', 'A', 'BUTTON', 'BUTTON']);
     expect(menu.querySelector('[role="menu"], [role="menuitem"]')).toBeNull();
   });

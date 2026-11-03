@@ -10,7 +10,7 @@ export default {
 
 export const Default: StoryObj = {
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       {['GET', 'POST', 'PUT', 'PATCH', 'DELETE'].map((m) => <MethodTag key={m} method={m} />)}
       <MethodTag method="SUBSCRIBE" protocol="EVENT" />
       <MethodTag method="PUBLISH" protocol="EVENT" />

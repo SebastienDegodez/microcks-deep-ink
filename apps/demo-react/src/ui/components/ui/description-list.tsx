@@ -13,7 +13,7 @@ export interface DescriptionListProps extends Omit<HTMLAttributes<HTMLDListEleme
 
 export function DescriptionList({ items, className, ...rest }: DescriptionListProps) {
   return (
-    <dl {...rest} className={['di-dl', className].filter(Boolean).join(' ')}>
+    <dl {...rest} className={['dl', className].filter(Boolean).join(' ')}>
       {items.map((item) => (
         <div key={item.term}>
           <dt>{item.term}</dt>

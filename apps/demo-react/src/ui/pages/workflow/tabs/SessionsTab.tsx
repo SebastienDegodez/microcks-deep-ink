@@ -221,7 +221,7 @@ export function SessionsTab({ detail, sessions, runs, onChanged }: SessionsTabPr
             <Field label="Application under test" required>
               {(c) => <Input {...c} value={app} onChange={(e) => setApp(e.target.value)} />}
             </Field>
-            <fieldset className="di-fieldset">
+            <fieldset className="fieldset">
               <legend>Inputs</legend>
               <div className="wf-fields">
                 {workflow.inputs.map((input) => (

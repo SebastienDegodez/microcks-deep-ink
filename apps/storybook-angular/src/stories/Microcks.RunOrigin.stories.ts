@@ -12,7 +12,7 @@ export default meta;
 export const Default: StoryObj = {
   render: () => ({
     template: `
-      <div class="di-inline">
+      <div class="inline">
         <span mkRunOrigin origin="ui"></span>
         <span mkRunOrigin origin="api"></span>
         <span mkRunOrigin origin="mock-url"></span>

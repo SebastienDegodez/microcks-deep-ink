@@ -26,7 +26,7 @@ export const Default: StoryObj = {
       <div className="sb-col" style={{ maxWidth: 1040 }}>
         <header className="sb-col">
           <h1 style={{ font: 'var(--type-section)', margin: 0 }}>Run #14</h1>
-          <div className="di-inline">
+          <div className="inline">
             <ApiBadge arazzo name="restock-pastry" />
             <StatusBadge status="failed" label="Failed at patchPastry" />
             <RunTarget target="mocks" />
@@ -45,7 +45,7 @@ export const Default: StoryObj = {
                   { term: 'Attempts', value: String(step.attempts ?? 0) },
                 ]}
               />
-              <div className="di-inline">
+              <div className="inline">
                 <StepStatus status={step.status ?? 'not-run'} attempts={step.attempts && step.attempts > 1 ? step.attempts : undefined} />
                 {step.checks ? <StepChecks successCriteria={step.checks.successCriteria} schemaValidation={step.checks.schemaValidation} /> : null}
               </div>

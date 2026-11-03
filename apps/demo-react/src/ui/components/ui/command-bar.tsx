@@ -1,7 +1,7 @@
 // Deep Ink · command-bar@0.2.0 · copied from packages/registry. You own this file.
 import { useEffect, useLayoutEffect, useRef } from 'react';
 import type { DetailedHTMLProps, HTMLAttributes, Ref } from 'react';
-import './elements/mk-command-bar.js';
+import './elements/command-bar.js';
 
 /* Types mirror packages/core/src/utils/types.ts (a parity test keeps them identical). */
 export type CommandProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
@@ -16,7 +16,7 @@ export interface CommandItem {
   keywords?: string[];
 }
 
-/** The `<mk-command-bar>` element and its properties. */
+/** The `<command-bar>` element and its properties. */
 export interface CommandBarElement extends HTMLElement {
   items: CommandItem[];
   open: boolean;
@@ -32,7 +32,7 @@ declare module 'react' {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      'mk-command-bar': DetailedHTMLProps<HTMLAttributes<CommandBarElement>, CommandBarElement>;
+      'command-bar': DetailedHTMLProps<HTMLAttributes<CommandBarElement>, CommandBarElement>;
     }
   }
 }
@@ -61,7 +61,7 @@ function assignRef<T>(ref: Ref<T> | undefined, value: T | null) {
 
 /**
  * Command bar (Ctrl/⌘K): WAI-ARIA combobox with a listbox, in a native modal <dialog>.
- * Wrapper around the self-registering `<mk-command-bar>` element in ./elements.
+ * Wrapper around the self-registering `<command-bar>` element in ./elements.
  */
 export function CommandBar({
   items,
@@ -114,7 +114,7 @@ export function CommandBar({
   }, []);
 
   return (
-    <mk-command-bar
+    <command-bar
       {...rest}
       ref={(node) => {
         el.current = node;

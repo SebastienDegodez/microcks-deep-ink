@@ -13,10 +13,10 @@ export interface LiveIndicatorProps extends HTMLAttributes<HTMLSpanElement> {
  */
 export function LiveIndicator({ label = 'live', paused, className, ...rest }: LiveIndicatorProps) {
   return (
-    <span {...rest} className={['di-live', className].filter(Boolean).join(' ')} data-paused={paused ? '' : undefined}>
-      <span className="di-live-dot" aria-hidden="true" />
+    <span {...rest} className={['live', className].filter(Boolean).join(' ')} data-paused={paused ? '' : undefined}>
+      <span className="live-dot" aria-hidden="true" />
       {label}
-      {paused ? <span className="di-live-paused"> · paused</span> : null}
+      {paused ? <span className="live-paused"> · paused</span> : null}
     </span>
   );
 }

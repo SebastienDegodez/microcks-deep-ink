@@ -15,14 +15,14 @@ export type { Theme } from './theme-toggle.theme';
   imports: [IconComponent],
   host: {
     type: 'button',
-    class: 'di-button di-theme-toggle',
+    class: 'button theme-toggle',
     'data-variant': 'ghost',
     'data-size': 'md',
     'data-icon-only': '',
     'aria-label': 'Light theme',
     '[attr.aria-pressed]': "light() ? 'true' : 'false'",
     '(click)': 'toggle()',
-    '(document:di-theme-change)': 'light.set(isLight())',
+    '(document:microcks-theme-change)': 'light.set(isLight())',
   },
   template: `<svg mkIcon name="sun" [size]="18"></svg>`,
 })

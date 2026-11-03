@@ -33,9 +33,9 @@ Checks: `test` (Vitest + jsdom + axe-core), `typecheck` (tsc for React, ngc for 
 
 ## CSS class API
 
-One root class `di-<name>` on a native element. Variants are `data-*` attributes. State is native or ARIA
+One root class `<name>` on a native element. Variants are `data-*` attributes. State is native or ARIA
 (`:disabled`, `[aria-invalid="true"]`, `[aria-selected="true"]`, `[aria-current="page"]`, `[aria-pressed="true"]`, `[aria-expanded="true"]`, `[aria-busy="true"]`).
-React components and file names have no prefix; the `di-` prefix lives only in CSS and Angular selectors.
+React components and file names have no prefix; the `` prefix lives only in CSS and Angular selectors.
 
 ### Layers and theming
 
@@ -44,7 +44,7 @@ React components and file names have no prefix; the `di-` prefix lives only in C
 overrides win without `!important`:
 
 ```css
-.di-button[data-variant="primary"] { border-radius: 999px; }   /* wins, no matter the specificity */
+.button[data-variant="primary"] { border-radius: 999px; }   /* wins, no matter the specificity */
 ```
 
 Theme with the tokens: `data-theme="dark" | "light"` on `<html>` and the custom properties of `tokens.css`
@@ -55,31 +55,31 @@ Reduced motion is an unlayered block in `base.css`, so no component can opt out 
 
 | Class | Purpose |
 |---|---|
-| `.di-sr-only` | Visually hidden, still announced. Keeps a focusable input usable (clip pattern) |
-| `.di-skip-link` | First focusable element; visible on focus; points at `#main` |
-| `.di-stack` | Column, gap `--di-gap` |
-| `.di-inline` | Wrapping row, gap `--di-gap` |
+| `.sr-only` | Visually hidden, still announced. Keeps a focusable input usable (clip pattern) |
+| `.skip-link` | First focusable element; visible on focus; points at `#main` |
+| `.stack` | Column, gap `--gap` |
+| `.inline` | Wrapping row, gap `--gap` |
 | `:focus-visible` | 2px `--action` outline, 2px offset, `--shadow-focus` |
 
 ### Natural items
 
 | Item | Markup and hooks |
 |---|---|
-| `icon` | `svg.di-icon`; decorative = `aria-hidden`, informative = `role="img" aria-label` |
-| `button` | `.di-button[data-variant=primary\|secondary\|ghost\|danger][data-size=md\|sm][data-confirm][data-icon-only]`; works on `<button>`, `<a>` and `<label>`; `aria-pressed="true"` and `aria-busy="true"` are styled |
-| `copy-button` | `.di-button.di-copy-button` plus a sibling `role="status"` live region |
-| `field` | `.di-field[data-invalid] > .di-label (.di-required) + control + .di-help + .di-error` |
-| `input` | `input.di-input[data-mono][data-size]`, `textarea.di-input` |
-| `select` | `select.di-select[data-size]` |
-| `checkbox` | `.di-choice > input.di-checkbox / input.di-radio + span (.di-choice-label, .di-choice-description)`; `fieldset.di-fieldset > legend` |
-| `switch` | `.di-choice > input[type=checkbox][role=switch].di-switch + span` |
-| `tabs` | `.di-tabs > [role=tablist].di-tablist[aria-label] > button[role=tab].di-tab[aria-selected][aria-controls] > .di-tab-count`; `[role=tabpanel].di-tabpanel[tabindex=0]` |
-| `chip` | `.di-chip[data-tone=neutral\|info\|success\|warning\|danger][data-variant=solid\|outline\|dashed]`, `.di-chip-key`, `.di-chip-remove`; `button.di-chip[aria-pressed]` for filters |
-| `panel` | `.di-panel[data-flush] > .di-panel-header > .di-panel-title + .di-panel-actions`, `.di-panel-body` |
-| `table` | `.di-table-wrap[role=region][tabindex=0] > table.di-table[data-density] > caption`; `th[scope=col][aria-sort]`; `td[data-align=end][data-mono]`; `.di-table-sort`, `.di-table-rowlink`, `.di-table-empty`; `tr[data-selected]` |
-| `dialog` | `dialog.di-dialog[data-size] > .di-dialog-header (.di-dialog-title) / .di-dialog-body (.di-dialog-description) / .di-dialog-footer`; `::backdrop` |
-| `menu` | `button.di-button[popovertarget][aria-expanded] + div.di-menu[popover] > .di-menu-item[data-tone=danger]` |
-| `segmented` | `.di-segmented > button[aria-pressed] > .di-segmented-count` |
+| `icon` | `svg.icon`; decorative = `aria-hidden`, informative = `role="img" aria-label` |
+| `button` | `.button[data-variant=primary\|secondary\|ghost\|danger][data-size=md\|sm][data-confirm][data-icon-only]`; works on `<button>`, `<a>` and `<label>`; `aria-pressed="true"` and `aria-busy="true"` are styled |
+| `copy-button` | `.button.copy-button` plus a sibling `role="status"` live region |
+| `field` | `.field[data-invalid] > .label (.required) + control + .help + .error` |
+| `input` | `input.input[data-mono][data-size]`, `textarea.input` |
+| `select` | `select.select[data-size]` |
+| `checkbox` | `.choice > input.checkbox / input.radio + span (.choice-label, .choice-description)`; `fieldset.fieldset > legend` |
+| `switch` | `.choice > input[type=checkbox][role=switch].switch + span` |
+| `tabs` | `.tabs > [role=tablist].tablist[aria-label] > button[role=tab].tab[aria-selected][aria-controls] > .tab-count`; `[role=tabpanel].tabpanel[tabindex=0]` |
+| `chip` | `.chip[data-tone=neutral\|info\|success\|warning\|danger][data-variant=solid\|outline\|dashed]`, `.chip-key`, `.chip-remove`; `button.chip[aria-pressed]` for filters |
+| `panel` | `.panel[data-flush] > .panel-header > .panel-title + .panel-actions`, `.panel-body` |
+| `table` | `.table-wrap[role=region][tabindex=0] > table.table[data-density] > caption`; `th[scope=col][aria-sort]`; `td[data-align=end][data-mono]`; `.table-sort`, `.table-rowlink`, `.table-empty`; `tr[data-selected]` |
+| `dialog` | `dialog.dialog[data-size] > .dialog-header (.dialog-title) / .dialog-body (.dialog-description) / .dialog-footer`; `::backdrop` |
+| `menu` | `button.button[popovertarget][aria-expanded] + div.menu[popover] > .menu-item[data-tone=danger]` |
+| `segmented` | `.segmented > button[aria-pressed] > .segmented-count` |
 
 Content, layout and Microcks items (callout, code-block, skeleton, progress, kbd, link, disclosure, description-list,
 empty-state, app-shell, theme-toggle, api-badge, method-tag, status-badge, live-indicator, conformance-band, mock-url,

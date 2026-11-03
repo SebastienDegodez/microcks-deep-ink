@@ -1,10 +1,10 @@
 /* Deep Ink · copy-button@0.2.0 · copied from packages/registry. You own this file. */
 @layer deep-ink.components {
-  /* Extends .di-button: add both classes to the element. */
-  .di-copy-button {
+  /* Extends .button: add both classes to the element. */
+  .copy-button {
     min-width: 5.5rem;
   }
-  .di-copy-button[data-icon-only] {
+  .copy-button[data-icon-only] {
     min-width: 32px;
   }
 }

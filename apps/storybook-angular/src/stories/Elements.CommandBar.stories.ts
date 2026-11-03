@@ -17,7 +17,7 @@ export const Inline: StoryObj = {
     props: { commands: COMMANDS, last: 'none' },
     template: `
       <div style="max-width:560px">
-        <mk-command-bar inline [items]="commands" placeholder="Search services, operations and commands" (command)="last = $event.label"></mk-command-bar>
+        <command-bar inline [items]="commands" placeholder="Search services, operations and commands" (command)="last = $event.label"></command-bar>
         <p role="status" class="sb-note">Last command: {{ last }}</p>
       </div>
     `,
@@ -29,7 +29,7 @@ export const Modal: StoryObj = {
     props: { commands: COMMANDS, open: false },
     template: `
       <button mkButton variant="primary" (click)="open = true">Open the command bar</button>
-      <mk-command-bar [items]="commands" [open]="open" [globalShortcut]="false" (command)="open = false" (closed)="open = false"></mk-command-bar>
+      <command-bar [items]="commands" [open]="open" [globalShortcut]="false" (command)="open = false" (closed)="open = false"></command-bar>
     `,
   }),
 };

@@ -13,7 +13,7 @@ export const Default: StoryObj = {
   render: () => ({
     template: `
       <div aria-busy="true" style="max-width:420px">
-        <p class="di-sr-only" role="status">Loading services</p>
+        <p class="sr-only" role="status">Loading services</p>
         <span mkSkeleton [lines]="3"></span>
       </div>
     `,

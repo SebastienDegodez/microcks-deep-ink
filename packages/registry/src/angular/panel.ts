@@ -14,7 +14,7 @@ export class PanelActionsDirective {}
   selector: 'section[mkPanel], div[mkPanel], article[mkPanel], aside[mkPanel]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'di-panel',
+    class: 'panel',
     '[attr.data-flush]': "flush() ? '' : null",
     '[attr.aria-labelledby]': 'title() ? titleId : null',
     '[attr.role]': "title() && isDiv ? 'region' : null",
@@ -23,23 +23,23 @@ export class PanelActionsDirective {}
   },
   template: `
     @if (title() || actions()) {
-      <div class="di-panel-header">
+      <div class="panel-header">
         @if (title()) {
           @switch (headingLevel()) {
-            @case (1) { <h1 class="di-panel-title" [id]="titleId">{{ title() }}</h1> }
-            @case (3) { <h3 class="di-panel-title" [id]="titleId">{{ title() }}</h3> }
-            @case (4) { <h4 class="di-panel-title" [id]="titleId">{{ title() }}</h4> }
-            @case (5) { <h5 class="di-panel-title" [id]="titleId">{{ title() }}</h5> }
-            @case (6) { <h6 class="di-panel-title" [id]="titleId">{{ title() }}</h6> }
-            @default { <h2 class="di-panel-title" [id]="titleId">{{ title() }}</h2> }
+            @case (1) { <h1 class="panel-title" [id]="titleId">{{ title() }}</h1> }
+            @case (3) { <h3 class="panel-title" [id]="titleId">{{ title() }}</h3> }
+            @case (4) { <h4 class="panel-title" [id]="titleId">{{ title() }}</h4> }
+            @case (5) { <h5 class="panel-title" [id]="titleId">{{ title() }}</h5> }
+            @case (6) { <h6 class="panel-title" [id]="titleId">{{ title() }}</h6> }
+            @default { <h2 class="panel-title" [id]="titleId">{{ title() }}</h2> }
           }
         }
         @if (actions()) {
-          <div class="di-panel-actions"><ng-content select="[mkPanelActions]" /></div>
+          <div class="panel-actions"><ng-content select="[mkPanelActions]" /></div>
         }
       </div>
     }
-    <div class="di-panel-body"><ng-content /></div>
+    <div class="panel-body"><ng-content /></div>
   `,
 })
 export class PanelComponent {

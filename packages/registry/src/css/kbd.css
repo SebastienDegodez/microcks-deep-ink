@@ -1,5 +1,5 @@
 @layer deep-ink.components {
-  .di-kbd {
+  .kbd {
     display: inline-block;
     min-width: 1.6em;
     padding: 1px 6px;

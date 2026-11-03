@@ -11,23 +11,23 @@ export class EmptyActionsDirective {}
   selector: 'section[mkEmptyState]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'di-empty',
+    class: 'empty',
     '[attr.aria-labelledby]': 'titleId',
     // `title` is an input here: do not leave it on the element as a tooltip.
     '[attr.title]': 'null',
   },
   template: `
     @switch (headingLevel()) {
-      @case (1) { <h1 class="di-empty-title" [id]="titleId">{{ title() }}</h1> }
-      @case (3) { <h3 class="di-empty-title" [id]="titleId">{{ title() }}</h3> }
-      @case (4) { <h4 class="di-empty-title" [id]="titleId">{{ title() }}</h4> }
-      @case (5) { <h5 class="di-empty-title" [id]="titleId">{{ title() }}</h5> }
-      @case (6) { <h6 class="di-empty-title" [id]="titleId">{{ title() }}</h6> }
-      @default { <h2 class="di-empty-title" [id]="titleId">{{ title() }}</h2> }
+      @case (1) { <h1 class="empty-title" [id]="titleId">{{ title() }}</h1> }
+      @case (3) { <h3 class="empty-title" [id]="titleId">{{ title() }}</h3> }
+      @case (4) { <h4 class="empty-title" [id]="titleId">{{ title() }}</h4> }
+      @case (5) { <h5 class="empty-title" [id]="titleId">{{ title() }}</h5> }
+      @case (6) { <h6 class="empty-title" [id]="titleId">{{ title() }}</h6> }
+      @default { <h2 class="empty-title" [id]="titleId">{{ title() }}</h2> }
     }
-    <div #body class="di-empty-body" [hidden]="!hasBody()"><ng-content /></div>
+    <div #body class="empty-body" [hidden]="!hasBody()"><ng-content /></div>
     @if (actions()) {
-      <div class="di-empty-actions"><ng-content select="[mkEmptyActions]" /></div>
+      <div class="empty-actions"><ng-content select="[mkEmptyActions]" /></div>
     }
   `,
 })

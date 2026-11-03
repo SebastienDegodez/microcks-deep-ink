@@ -71,30 +71,30 @@ export function DropZone({ heading, hint, accept, multiple = true, onFiles, clas
       {...rest}
       role="group"
       aria-labelledby={`${id}-heading`}
-      className={['di-drop-zone', className].filter(Boolean).join(' ')}
+      className={['drop-zone', className].filter(Boolean).join(' ')}
       data-dragging={dragging ? '' : undefined}
       ref={zoneRef}
     >
       <Icon name="upload" size={28} />
-      <p className="di-drop-zone-heading" id={`${id}-heading`}>
+      <p className="drop-zone-heading" id={`${id}-heading`}>
         {heading}
       </p>
-      <p className="di-drop-zone-hint" id={`${id}-hint`}>
+      <p className="drop-zone-hint" id={`${id}-hint`}>
         {hint}
       </p>
       <input
         id={id}
         type="file"
-        className="di-drop-zone-input di-sr-only"
+        className="drop-zone-input sr-only"
         accept={accept}
         multiple={multiple}
         aria-describedby={`${id}-heading ${id}-hint`}
         onChange={onChange}
       />
-      <label htmlFor={id} className="di-button di-drop-zone-choose" data-variant="primary">
+      <label htmlFor={id} className="button drop-zone-choose" data-variant="primary">
         Choose files
       </label>
-      <p className="di-drop-zone-status" role="status">
+      <p className="drop-zone-status" role="status">
         {message}
       </p>
     </div>

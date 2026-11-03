@@ -1,11 +1,11 @@
 @layer deep-ink.components {
-  .di-disclosure {
+  .disclosure {
     background: var(--canvas);
     border: 1px solid var(--border-control);
     border-radius: var(--radius-panel);
     color: var(--text);
   }
-  .di-disclosure > summary {
+  .disclosure > summary {
     min-height: 44px;
     display: flex;
     align-items: center;
@@ -14,7 +14,7 @@
     cursor: pointer;
     border-radius: var(--radius-panel);
   }
-  .di-disclosure > summary::marker { color: var(--text-secondary); }
-  .di-disclosure[open] > summary { border-bottom: 1px solid var(--border); border-end-start-radius: 0; border-end-end-radius: 0; }
-  .di-disclosure > :not(summary) { margin: var(--space-3) var(--space-4); }
+  .disclosure > summary::marker { color: var(--text-secondary); }
+  .disclosure[open] > summary { border-bottom: 1px solid var(--border); border-end-start-radius: 0; border-end-end-radius: 0; }
+  .disclosure > :not(summary) { margin: var(--space-3) var(--space-4); }
 }

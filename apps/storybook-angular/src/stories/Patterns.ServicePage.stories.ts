@@ -36,7 +36,7 @@ export const Default: StoryObj = {
       <div class="sb-col" style="max-width:960px">
         <header class="sb-col">
           <h1 style="font:var(--type-section);margin:0">API Pastry</h1>
-          <div class="di-inline">
+          <div class="inline">
             <span mkApiBadge protocol="REST" name="API Pastry" version="2.0"></span>
             <span mkStatusBadge status="partial" label="92 % conformant"></span>
             <span mkApiBadge label="last test" value="2 h ago"></span>

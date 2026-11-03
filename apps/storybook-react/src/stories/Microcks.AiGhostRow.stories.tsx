@@ -13,7 +13,7 @@ export const Default: StoryObj = {
   render: () => {
     const [msg, setMsg] = useState('');
     return (
-      <div className="di-stack" style={{ maxWidth: 720 }}>
+      <div className="stack" style={{ maxWidth: 720 }}>
         <AiGhostRow name="getPastry example" onAccept={() => setMsg('Accepted')} onEdit={() => setMsg('Editing')} onReject={() => setMsg('Rejected')}>
           <MethodTag method="GET" /> <code>/pastries/Eclair</code> → 200 <code>{'{ "name": "Eclair" }'}</code>
         </AiGhostRow>

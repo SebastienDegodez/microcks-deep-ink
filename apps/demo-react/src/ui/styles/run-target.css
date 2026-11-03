@@ -1,6 +1,6 @@
 /* Deep Ink · run-target@0.2.0 · copied from packages/registry. You own this file. */
 @layer deep-ink.components {
-  .di-run-target {
+  .run-target {
     display: inline-flex;
     flex-wrap: wrap;
     align-items: center;
@@ -11,5 +11,5 @@
     color: var(--text);
     font: 600 13px/18px var(--font-ui);
   }
-  .di-run-target[data-target="mixed"] { border-style: dashed; }
+  .run-target[data-target="mixed"] { border-style: dashed; }
 }

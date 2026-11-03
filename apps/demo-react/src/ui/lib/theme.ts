@@ -1,13 +1,13 @@
 /**
  * Theme handling, same contract as the `theme-toggle` registry item (`theme.ts`):
- * key `microcks-theme`, `document.documentElement.dataset.theme`, event `di-theme-change`.
+ * key `microcks-theme`, `document.documentElement.dataset.theme`, event `microcks-theme-change`.
  * Kept here so the shell works before the registry items are copied in; it can be replaced by the
  * copied file without changing the callers.
  */
 export type Theme = 'dark' | 'light';
 
 export const THEME_KEY = 'microcks-theme';
-export const THEME_EVENT = 'di-theme-change';
+export const THEME_EVENT = 'microcks-theme-change';
 
 function readStored(): Theme | null {
   try {

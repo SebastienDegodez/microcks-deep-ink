@@ -1,5 +1,5 @@
 @layer deep-ink.components {
-  .di-operation-list {
+  .operation-list {
     list-style: none;
     margin: 0;
     padding: 0;
@@ -8,11 +8,11 @@
     border-radius: var(--radius-panel);
     overflow: hidden;
   }
-  .di-operation-row { border-bottom: 1px solid var(--border); }
-  .di-operation-row:last-child { border-bottom: 0; }
-  .di-operation-row[data-selected] { background: var(--selected); }
+  .operation-row { border-bottom: 1px solid var(--border); }
+  .operation-row:last-child { border-bottom: 0; }
+  .operation-row[data-selected] { background: var(--selected); }
 
-  .di-operation-link {
+  .operation-link {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
@@ -30,14 +30,14 @@
     text-align: start;
     text-decoration: none;
   }
-  a.di-operation-link, button.di-operation-link { cursor: pointer; }
-  a.di-operation-link:hover, button.di-operation-link:hover { background: var(--raised); }
-  .di-operation-link:focus-visible { outline-offset: -2px; }
+  a.operation-link, button.operation-link { cursor: pointer; }
+  a.operation-link:hover, button.operation-link:hover { background: var(--raised); }
+  .operation-link:focus-visible { outline-offset: -2px; }
   /* Selected: fill, a leading bar and a heavier path, on top of aria-current. */
-  .di-operation-row[data-selected] .di-operation-link { box-shadow: inset 3px 0 0 var(--action); }
-  .di-operation-row[data-selected] .di-operation-path { font-weight: 600; }
+  .operation-row[data-selected] .operation-link { box-shadow: inset 3px 0 0 var(--action); }
+  .operation-row[data-selected] .operation-path { font-weight: 600; }
 
-  .di-operation-path { min-width: 0; font: var(--type-code); overflow-wrap: anywhere; }
-  .di-operation-meta { margin-inline-start: auto; font: var(--type-small); color: var(--text-secondary); }
-  .di-operation-mock { padding: 0 var(--space-4) var(--space-3); }
+  .operation-path { min-width: 0; font: var(--type-code); overflow-wrap: anywhere; }
+  .operation-meta { margin-inline-start: auto; font: var(--type-small); color: var(--text-secondary); }
+  .operation-mock { padding: 0 var(--space-4) var(--space-3); }
 }

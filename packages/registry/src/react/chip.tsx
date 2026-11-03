@@ -35,10 +35,10 @@ function textOf(node: ReactNode): string {
  * with `onRemove` they get a remove button named "Remove <text>".
  */
 export function Chip({ labelKey, tone = 'neutral', variant = 'solid', pressed, onRemove, removeLabel, className, children, ref, onClick, ...rest }: ChipProps) {
-  const cls = ['di-chip', className].filter(Boolean).join(' ');
+  const cls = ['chip', className].filter(Boolean).join(' ');
   const body = (
     <>
-      {labelKey ? <span className="di-chip-key">{labelKey}=</span> : null}
+      {labelKey ? <span className="chip-key">{labelKey}=</span> : null}
       {children}
     </>
   );
@@ -65,7 +65,7 @@ export function Chip({ labelKey, tone = 'neutral', variant = 'solid', pressed, o
     <span ref={ref as Ref<HTMLSpanElement>} {...rest} className={cls} data-tone={tone} data-variant={variant}>
       {body}
       {onRemove ? (
-        <button type="button" className="di-chip-remove" aria-label={name} onClick={onRemove}>
+        <button type="button" className="chip-remove" aria-label={name} onClick={onRemove}>
           <Icon name="close" size={12} />
         </button>
       ) : null}

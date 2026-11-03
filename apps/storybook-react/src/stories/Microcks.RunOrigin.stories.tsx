@@ -10,7 +10,7 @@ export default {
 
 export const Default: StoryObj = {
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       <RunOrigin origin="ui" />
       <RunOrigin origin="api" />
       <RunOrigin origin="mock-url" />

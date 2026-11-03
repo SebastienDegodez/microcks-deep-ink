@@ -1,6 +1,6 @@
 /* Deep Ink · panel@0.2.0 · copied from packages/registry. You own this file. */
 @layer deep-ink.components {
-  .di-panel {
+  .panel {
     box-sizing: border-box;
     min-width: 0;
     color: var(--text);
@@ -9,31 +9,31 @@
     border-radius: var(--radius-panel);
   }
 
-  .di-panel-header {
+  .panel-header {
     display: flex;
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-3);
     padding: var(--space-4) var(--space-4) 0;
   }
-  .di-panel-title {
+  .panel-title {
     margin: 0;
     font: var(--type-title);
   }
-  .di-panel-actions {
+  .panel-actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-2);
     margin-inline-start: auto;
   }
 
-  .di-panel-body {
+  .panel-body {
     padding: var(--space-4);
   }
-  .di-panel[data-flush] .di-panel-body {
+  .panel[data-flush] .panel-body {
     padding: 0;
   }
-  .di-panel[data-flush] .di-panel-header {
+  .panel[data-flush] .panel-header {
     padding-block-end: var(--space-3);
   }
 }

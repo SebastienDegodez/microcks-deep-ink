@@ -12,7 +12,7 @@ const WORD = { mocks: 'Mocks', implementations: 'Implementations', mixed: 'Mixed
 /** What a workflow run calls. Mixed is a proposal beyond the POC and says so. */
 export function RunTarget({ target, className, ...rest }: RunTargetProps) {
   return (
-    <span {...rest} className={['di-run-target', className].filter(Boolean).join(' ')} data-target={target}>
+    <span {...rest} className={['run-target', className].filter(Boolean).join(' ')} data-target={target}>
       {WORD[target]}
       {target === 'mixed' ? (
         <Chip tone="warning" variant="dashed">

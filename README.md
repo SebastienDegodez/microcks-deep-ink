@@ -47,10 +47,10 @@ different depending on the framework they use. Deep Ink writes each component **
 | Feedback | `mk-status-badge`, `mk-live-indicator` |
 | Contract | `mk-mock-url`, `mk-operation-row`, `mk-ai-ghost-row`, `mk-drop-zone` |
 | Proof | `mk-conformance-band`, `mk-data-table` |
-| Navigation | `mk-command-bar` (⌘K) |
-| Workflows | `mk-workflow-loom` (Arazzo) |
+| Navigation | `command-bar` (⌘K) |
+| Workflows | `workflow-loom` (Arazzo) |
 | Shell | `mk-app-shell`, `mk-top-bar`, `mk-side-nav`, `mk-theme-toggle`, `mk-panel`, `mk-icon` |
-| Plugins | `mk-plugin-slot` |
+| Plugins | `plugin-slot` |
 
 ## Use it
 

@@ -8,7 +8,7 @@ const WORD: Record<RunOriginKind, string> = { ui: 'UI', api: 'API', 'mock-url': 
 @Component({
   selector: 'span[mkRunOrigin]',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'di-run-origin', '[attr.data-origin]': 'origin()' },
+  host: { class: 'run-origin', '[attr.data-origin]': 'origin()' },
   template: `{{ word() }}@if (origin() === 'session' && sessionId()) {<code>{{ sessionId() }}</code>}`,
 })
 export class RunOriginComponent {

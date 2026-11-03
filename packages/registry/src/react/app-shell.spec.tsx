@@ -30,7 +30,7 @@ describe('AppShell', () => {
     const { container } = shell();
     const skip = screen.getByText('Skip to content') as HTMLAnchorElement;
     expect(skip.getAttribute('href')).toBe('#main');
-    expect(container.querySelector('.di-shell')?.firstElementChild).toBe(skip);
+    expect(container.querySelector('.shell')?.firstElementChild).toBe(skip);
     const main = screen.getByRole('main');
     expect(main.id).toBe('main');
     expect(main.getAttribute('tabindex')).toBe('-1');

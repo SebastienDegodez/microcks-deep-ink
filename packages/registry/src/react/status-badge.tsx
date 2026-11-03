@@ -22,7 +22,7 @@ const MAP = {
 export function StatusBadge({ status, label, size = 'md', className, ...rest }: StatusBadgeProps) {
   const s = MAP[status] ?? MAP.never;
   return (
-    <span {...rest} className={['di-status', className].filter(Boolean).join(' ')} data-status={status} data-size={size}>
+    <span {...rest} className={['status', className].filter(Boolean).join(' ')} data-status={status} data-size={size}>
       <Icon name={s.icon} size={size === 'sm' ? 14 : 16} />
       <span>{label ?? s.word}</span>
     </span>

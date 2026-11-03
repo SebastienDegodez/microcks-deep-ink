@@ -37,25 +37,25 @@ export function ApiBadge({ protocol, arazzo, name, version, label, value, status
   return (
     <span
       {...rest}
-      className={['di-api-badge', className].filter(Boolean).join(' ')}
+      className={['api-badge', className].filter(Boolean).join(' ')}
       data-protocol={dataProtocol}
       data-status={isProof ? status : undefined}
       data-size={size}
     >
-      <span className="di-api-badge-type">{type}</span>{' '}
+      <span className="api-badge-type">{type}</span>{' '}
       {main ? (
-        <span className="di-api-badge-name">
+        <span className="api-badge-name">
           {proofIcon ? <Icon name={STATUS_ICON[proofIcon]} size={12} /> : null}
           {main}
           {proofIcon ? (
             <>
               {' '}
-              <span className="di-sr-only">({STATUS_WORD[proofIcon]})</span>
+              <span className="sr-only">({STATUS_WORD[proofIcon]})</span>
             </>
           ) : null}
         </span>
       ) : null}{' '}
-      {!isProof && version ? <span className="di-api-badge-version">{version}</span> : null}
+      {!isProof && version ? <span className="api-badge-version">{version}</span> : null}
     </span>
   );
 }

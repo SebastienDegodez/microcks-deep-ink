@@ -17,7 +17,7 @@ export const Run14: StoryObj = {
     props: { s: LOOM_RESTOCK_RUN14, sel: 'patchPastry' },
     template: `
       <div style="max-width:1100px">
-        <mk-workflow-loom [label]="s.label" [sources]="s.sources" [steps]="s.steps" [threads]="s.threads" [inputs]="s.inputs ?? []" [outputs]="s.outputs ?? []" [validatesSchemas]="!!s.validatesSchemas" [selectedStep]="sel" (stepSelect)="sel = $event.stepId"></mk-workflow-loom>
+        <workflow-loom [label]="s.label" [sources]="s.sources" [steps]="s.steps" [threads]="s.threads" [inputs]="s.inputs ?? []" [outputs]="s.outputs ?? []" [validatesSchemas]="!!s.validatesSchemas" [selectedStep]="sel" (stepSelect)="sel = $event.stepId"></workflow-loom>
         <p role="status" class="sb-note">Selected step: {{ sel }}</p>
       </div>
     `,
@@ -30,7 +30,7 @@ export const CheckMenu: StoryObj = {
     props: { s: LOOM_CHECK_MENU, sel: undefined as string | undefined },
     template: `
       <div style="max-width:1100px">
-        <mk-workflow-loom [label]="s.label" [sources]="s.sources" [steps]="s.steps" [threads]="s.threads" [inputs]="s.inputs ?? []" [outputs]="s.outputs ?? []" [validatesSchemas]="!!s.validatesSchemas" [selectedStep]="sel" (stepSelect)="sel = $event.stepId"></mk-workflow-loom>
+        <workflow-loom [label]="s.label" [sources]="s.sources" [steps]="s.steps" [threads]="s.threads" [inputs]="s.inputs ?? []" [outputs]="s.outputs ?? []" [validatesSchemas]="!!s.validatesSchemas" [selectedStep]="sel" (stepSelect)="sel = $event.stepId"></workflow-loom>
         <p role="status" class="sb-note">Selected step: {{ sel }}</p>
       </div>
     `,

@@ -68,12 +68,12 @@ export function iconPaths(name: IconName): readonly string[] {
 }
 
 /**
- * Builds a decorative `<svg class="di-icon">` element. Used by directives (for example `diButton`)
+ * Builds a decorative `<svg class="icon">` element. Used by directives (for example `diButton`)
  * that cannot project a component into their host element.
  */
 export function createIconElement(name: IconName, size = 16): SVGSVGElement {
   const svg = document.createElementNS(SVG_NS, 'svg');
-  svg.setAttribute('class', 'di-icon');
+  svg.setAttribute('class', 'icon');
   svg.setAttribute('width', String(size));
   svg.setAttribute('height', String(size));
   svg.setAttribute('viewBox', '0 0 24 24');
@@ -100,7 +100,7 @@ export function createIconElement(name: IconName, size = 16): SVGSVGElement {
   selector: 'svg[mkIcon]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'di-icon',
+    class: 'icon',
     viewBox: '0 0 24 24',
     fill: 'none',
     stroke: 'currentColor',

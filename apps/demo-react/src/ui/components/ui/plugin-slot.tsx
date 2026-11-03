@@ -1,10 +1,10 @@
 // Deep Ink · plugin-slot@0.2.0 · copied from packages/registry. You own this file.
 import { useLayoutEffect, useRef } from 'react';
 import type { DetailedHTMLProps, HTMLAttributes, ReactNode, Ref } from 'react';
-import './elements/mk-plugin-slot.js';
+import './elements/plugin-slot.js';
 
-export { getPluginHost } from './elements/mk-plugin-slot.js';
-export type { PluginHost } from './elements/mk-plugin-slot.js';
+export { getPluginHost } from './elements/plugin-slot.js';
+export type { PluginHost } from './elements/plugin-slot.js';
 
 type SlotProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
 
@@ -28,7 +28,7 @@ export interface SlotContext {
   [key: string]: unknown;
 }
 
-/** The `<mk-plugin-slot>` element and its properties. */
+/** The `<plugin-slot>` element and its properties. */
 export interface PluginSlotElement extends HTMLElement {
   point: ExtensionPointId;
   context: SlotContext;
@@ -39,7 +39,7 @@ declare module 'react' {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      'mk-plugin-slot': DetailedHTMLProps<HTMLAttributes<PluginSlotElement>, PluginSlotElement>;
+      'plugin-slot': DetailedHTMLProps<HTMLAttributes<PluginSlotElement>, PluginSlotElement>;
     }
   }
 }
@@ -63,8 +63,8 @@ function assignRef<T>(ref: Ref<T> | undefined, value: T | null) {
 
 /**
  * Extension point: renders every plugin contribution for `point` in the light DOM, each wrapped in
- * `<div class="di-plugin-item" data-plugin-id="...">`. Contributed elements receive `context` as a property.
- * Wrapper around the self-registering `<mk-plugin-slot>` element in ./elements.
+ * `<div class="plugin-item" data-plugin-id="...">`. Contributed elements receive `context` as a property.
+ * Wrapper around the self-registering `<plugin-slot>` element in ./elements.
  */
 export function PluginSlot({ point, context = DEFAULT_CONTEXT, outlined, children, ref, ...rest }: PluginSlotProps) {
   const el = useRef<PluginSlotElement | null>(null);
@@ -80,7 +80,7 @@ export function PluginSlot({ point, context = DEFAULT_CONTEXT, outlined, childre
   }, [outlined]);
 
   return (
-    <mk-plugin-slot
+    <plugin-slot
       {...rest}
       ref={(node) => {
         el.current = node;
@@ -88,6 +88,6 @@ export function PluginSlot({ point, context = DEFAULT_CONTEXT, outlined, childre
       }}
     >
       {children}
-    </mk-plugin-slot>
+    </plugin-slot>
   );
 }

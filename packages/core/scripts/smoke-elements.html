@@ -10,7 +10,7 @@
 <body>
   <main id="app"><h1>Element smoke page</h1></main>
   <script type="module">
-    // ?el=mk-workflow-loom|mk-command-bar|mk-plugin-slot  &fixture=run14|menu|definition  &theme=dark|light
+    // ?el=workflow-loom|command-bar|plugin-slot  &fixture=run14|menu|definition  &theme=dark|light
     const q = new URLSearchParams(location.search);
     document.documentElement.dataset.theme = q.get('theme') || 'dark';
     const tag = q.get('el');
@@ -56,13 +56,13 @@
       threads: [],
     };
 
-    if (tag === 'mk-workflow-loom') {
+    if (tag === 'workflow-loom') {
       const f = { run14, menu, definition }[q.get('fixture') || 'run14'];
-      const el = document.createElement('mk-workflow-loom');
+      const el = document.createElement('workflow-loom');
       Object.assign(el, f);
       el.addEventListener('mkStepSelect', (e) => window.events.push(['mkStepSelect', e.detail]));
       app.append(el);
-    } else if (tag === 'mk-command-bar') {
+    } else if (tag === 'command-bar') {
       const items = [
         { id: 'test-pastry', label: 'Run a test on API Pastry 2.0', kind: 'action', keywords: ['test', 'run'] },
         { id: 'import', label: 'Import a contract', kind: 'action', keywords: ['import'] },
@@ -72,30 +72,30 @@
       ];
       const opener = document.createElement('button');
       opener.id = 'opener'; opener.textContent = 'Open command bar';
-      const el = document.createElement('mk-command-bar');
+      const el = document.createElement('command-bar');
       el.items = items;
       if (q.get('inline')) el.inline = true;
       el.addEventListener('mkCommand', (e) => window.events.push(['mkCommand', e.detail.id]));
       el.addEventListener('mkClose', () => window.events.push(['mkClose']));
       opener.addEventListener('click', () => { el.open = true; });
       app.append(opener, el);
-    } else if (tag === 'mk-plugin-slot') {
-      const { getPluginHost } = await import('../dist/elements/mk-plugin-slot.js');
+    } else if (tag === 'plugin-slot') {
+      const { getPluginHost } = await import('../dist/elements/plugin-slot.js');
       class Probe extends HTMLElement {
         set context(v) { this._c = v; this.render(); }
         connectedCallback() { this.render(); }
-        render() { this.innerHTML = '<span class="di-live">probe ' + (this._c?.theme ?? '?') + '</span>'; }
+        render() { this.innerHTML = '<span class="live">probe ' + (this._c?.theme ?? '?') + '</span>'; }
       }
       customElements.define('probe-widget', Probe);
       await getPluginHost().register({
         manifest: { id: 'probe', frontend: { tagPrefix: 'probe-' } },
         activate(api) { api.contribute('service.tabs', { id: 'p', element: 'probe-widget', title: 'Probe' }); },
       });
-      const slot = document.createElement('mk-plugin-slot');
+      const slot = document.createElement('plugin-slot');
       slot.point = 'service.tabs';
       slot.context = { theme: 'dark' };
       slot.outlined = true;
-      const empty = document.createElement('mk-plugin-slot');
+      const empty = document.createElement('plugin-slot');
       empty.point = 'cockpit.widgets';
       empty.innerHTML = '<p id="fallback">No plugin contributes here.</p>';
       app.append(slot, empty);

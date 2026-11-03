@@ -10,7 +10,7 @@ export default {
 
 export const Default: StoryObj = {
   render: () => (
-    <div style={{ maxWidth: 560 }} className="di-stack">
+    <div style={{ maxWidth: 560 }} className="stack">
       <Disclosure summary="Advanced options">
         <p style={{ margin: 0 }}>Dispatcher rules, constraints and delays.</p>
       </Disclosure>

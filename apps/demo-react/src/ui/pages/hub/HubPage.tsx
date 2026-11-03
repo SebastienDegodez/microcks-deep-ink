@@ -33,7 +33,7 @@ export default function HubPage() {
       <PageHeader title="Hub" eyebrow="Govern" />
       <div className="hb-grid">
         <Panel title="Packages" as="section">
-          <div className="di-stack">
+          <div className="stack">
             <Field label="Search packages">
               {(c) => <Input {...c} type="search" autoComplete="off" value={search} onChange={(e) => setSearch(e.target.value)} />}
             </Field>
@@ -125,7 +125,7 @@ function Detail({ pkg, onInstalled }: { pkg: HubPackage; onInstalled: () => void
 
   return (
     <Panel title={pkg.name} as="section" aria-busy={status === 'installing'}>
-      <div className="di-stack">
+      <div className="stack">
         <p>{pkg.description}</p>
         <p className="demo-muted">
           {pkg.category} · {pkg.apiCount} {pkg.apiCount === 1 ? 'API' : 'APIs'} · {totals.operations} operations · {totals.examples} examples{pkg.updated ? ` · ${pkg.updated}` : ''}
@@ -171,7 +171,7 @@ function Detail({ pkg, onInstalled }: { pkg: HubPackage; onInstalled: () => void
           <p className="demo-muted">{preview.subtitle}</p>
           <div className="demo-scroll">
             <table className="hb-table">
-              <caption className="di-sr-only">{preview.title}</caption>
+              <caption className="sr-only">{preview.title}</caption>
               <thead><tr><th scope="col">Effect</th><th scope="col">API</th><th scope="col">Version</th><th scope="col">Samples</th><th scope="col">Conformance</th></tr></thead>
               <tbody>
                 {preview.rows.map((r) => (

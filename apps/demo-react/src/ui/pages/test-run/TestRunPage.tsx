@@ -120,7 +120,7 @@ function RunView({ base }: { base: TestRun }) {
   const ci = ciCommandForRun(apiRef, base.endpoint, base.runner, waitSec);
 
   return (
-    <div className="di-stack">
+    <div className="stack">
       <Panel title="Verdict" aria-busy={running}>
         <div className="tr-verdict">
           <div className="tr-verdict-main">
@@ -213,7 +213,7 @@ function RunView({ base }: { base: TestRun }) {
           {!selected ? (
             <p className="demo-muted">Select a step to compare the contract with the actual response.</p>
           ) : (
-            <div className="di-stack">
+            <div className="stack">
               <p style={{ margin: 0 }}>
                 <MethodTag method={selected.method} /> <span className="demo-mono">{selected.path}</span> · HTTP {selected.httpStatus ?? 200} · {selected.ms} ms ·{' '}
                 {selected.result === 'passed' ? 'body valid' : `${selected.violations.length} ${selected.violations.length === 1 ? 'violation' : 'violations'}`}
@@ -232,7 +232,7 @@ function RunView({ base }: { base: TestRun }) {
                         {diff.left.map((r) => (
                           <span key={r.n} className="tr-row" data-bad={r.bad ? '' : undefined}>
                             <span className="tr-row-n" aria-hidden="true">{r.n}</span>
-                            {r.bad ? <span className="di-sr-only">Mismatch: </span> : null}
+                            {r.bad ? <span className="sr-only">Mismatch: </span> : null}
                             {r.text}
                           </span>
                         ))}
@@ -246,7 +246,7 @@ function RunView({ base }: { base: TestRun }) {
                         {diff.right.map((r) => (
                           <span key={r.n} className="tr-row" data-bad={r.bad ? '' : undefined}>
                             <span className="tr-row-n" aria-hidden="true">{r.n}</span>
-                            {r.bad ? <span className="di-sr-only">Mismatch: </span> : null}
+                            {r.bad ? <span className="sr-only">Mismatch: </span> : null}
                             {r.text}
                           </span>
                         ))}
@@ -296,7 +296,7 @@ function RunView({ base }: { base: TestRun }) {
       <Panel title="Add to CI" as="section">
         <Switch label="Show the CI command for this run" checked={showCi} onChange={setShowCi} />
         {showCi ? (
-          <div className="di-stack" style={{ marginBlockStart: 12 }}>
+          <div className="stack" style={{ marginBlockStart: 12 }}>
             <div className="demo-actions-row" style={{ justifyContent: 'space-between' }}>
               <span className="demo-muted">microcks-cli</span>
               <CopyButton value={ci} label="Copy" />

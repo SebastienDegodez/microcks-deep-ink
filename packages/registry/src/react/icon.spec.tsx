@@ -9,7 +9,7 @@ describe('Icon', () => {
     expect(svg.getAttribute('aria-hidden')).toBe('true');
     expect(svg.getAttribute('focusable')).toBe('false');
     expect(svg.hasAttribute('role')).toBe(false);
-    expect(svg.getAttribute('class')).toBe('di-icon');
+    expect(svg.getAttribute('class')).toBe('icon');
   });
 
   it('is an image when it has a label', () => {

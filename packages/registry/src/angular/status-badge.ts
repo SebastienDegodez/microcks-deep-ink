@@ -17,7 +17,7 @@ const MAP: Record<Outcome, { icon: IconName; word: string }> = {
   selector: 'span[mkStatusBadge]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent],
-  host: { class: 'di-status', '[attr.data-status]': 'status()', '[attr.data-size]': 'size()' },
+  host: { class: 'status', '[attr.data-status]': 'status()', '[attr.data-size]': 'size()' },
   template: `<svg mkIcon [name]="entry().icon" [size]="size() === 'sm' ? 14 : 16"></svg><span>{{ label() ?? entry().word }}</span>`,
 })
 export class StatusBadgeComponent {

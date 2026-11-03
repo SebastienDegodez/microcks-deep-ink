@@ -10,7 +10,7 @@ export default {
 
 export const Default: StoryObj = {
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       <RunTarget target="mocks" />
       <RunTarget target="implementations" />
       <RunTarget target="mixed" />

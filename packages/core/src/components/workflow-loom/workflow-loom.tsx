@@ -51,7 +51,7 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
  * A built-in "Show as table" toggle switches to an equivalent Steps table.
  */
 @Component({
-  tag: 'mk-workflow-loom',
+  tag: 'workflow-loom',
   shadow: true,
   styles: `
     :host { display: block; color: var(--text); font: var(--type-body); }

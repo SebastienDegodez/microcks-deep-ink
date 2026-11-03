@@ -23,7 +23,7 @@ export const Mini: StoryObj = {
   render: () => ({
     props: { outcomes: CONFORMANCE, partial: ['pass', 'pass', 'untested', 'untested'] },
     template: `
-      <div class="di-inline">
+      <div class="inline">
         <mk-conformance-band size="mini" [outcomes]="outcomes" />
         <mk-conformance-band size="mini" [outcomes]="partial" />
       </div>

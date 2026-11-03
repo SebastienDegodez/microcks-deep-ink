@@ -1,5 +1,5 @@
 import { DestroyRef, Directive, ElementRef, booleanAttribute, effect, inject, input, output } from '@angular/core';
-import './elements/mk-workflow-loom.js';
+import './elements/workflow-loom.js';
 
 /* Types mirror packages/core/src/utils/types.ts and the React wrapper (keep them identical). */
 export type LoomProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
@@ -38,7 +38,7 @@ export interface LoomThread {
   expression: string;
 }
 
-/** The `<mk-workflow-loom>` element and its properties. */
+/** The `<workflow-loom>` element and its properties. */
 export interface WorkflowLoomElement extends HTMLElement {
   sources: LoomSource[];
   steps: LoomStep[];
@@ -51,10 +51,10 @@ export interface WorkflowLoomElement extends HTMLElement {
 }
 
 /**
- * Arazzo workflow as a loom. Add it to a template as `<mk-workflow-loom [sources]="…" [steps]="…" [threads]="…"
+ * Arazzo workflow as a loom. Add it to a template as `<workflow-loom [sources]="…" [steps]="…" [threads]="…"
  * label="…" (stepSelect)="…" />`. The host component needs `schemas: [CUSTOM_ELEMENTS_SCHEMA]`.
  */
-@Directive({ selector: 'mk-workflow-loom' })
+@Directive({ selector: 'workflow-loom' })
 export class WorkflowLoomDirective {
   private readonly host = inject<ElementRef<WorkflowLoomElement>>(ElementRef);
 

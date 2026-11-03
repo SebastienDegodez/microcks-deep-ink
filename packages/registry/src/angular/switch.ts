@@ -11,11 +11,11 @@ let nextId = 0;
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [':host { display: contents; }'],
   template: `
-    <label class="di-choice">
+    <label class="choice">
       <input
         type="checkbox"
         role="switch"
-        class="di-switch"
+        class="switch"
         [checked]="checked()"
         [attr.aria-checked]="checked()"
         [disabled]="disabled()"
@@ -25,9 +25,9 @@ let nextId = 0;
         (change)="checked.set($any($event.target).checked)"
       />
       <span>
-        <span class="di-choice-label" [id]="labelId">{{ label() }}</span>
+        <span class="choice-label" [id]="labelId">{{ label() }}</span>
         @if (description()) {
-          <span class="di-choice-description" [id]="descId">{{ description() }}</span>
+          <span class="choice-description" [id]="descId">{{ description() }}</span>
         }
       </span>
     </label>

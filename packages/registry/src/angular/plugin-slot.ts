@@ -1,8 +1,8 @@
 import { Directive, ElementRef, booleanAttribute, effect, inject, input } from '@angular/core';
-import './elements/mk-plugin-slot.js';
+import './elements/plugin-slot.js';
 
-export { getPluginHost } from './elements/mk-plugin-slot.js';
-export type { PluginHost } from './elements/mk-plugin-slot.js';
+export { getPluginHost } from './elements/plugin-slot.js';
+export type { PluginHost } from './elements/plugin-slot.js';
 
 type SlotProtocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT';
 
@@ -26,7 +26,7 @@ export interface SlotContext {
   [key: string]: unknown;
 }
 
-/** The `<mk-plugin-slot>` element and its properties. */
+/** The `<plugin-slot>` element and its properties. */
 export interface PluginSlotElement extends HTMLElement {
   point: ExtensionPointId;
   context: SlotContext;
@@ -36,11 +36,11 @@ export interface PluginSlotElement extends HTMLElement {
 const DEFAULT_CONTEXT: SlotContext = { theme: 'dark' };
 
 /**
- * Extension point: `<mk-plugin-slot point="service.tabs" [context]="ctx">fallback</mk-plugin-slot>`.
- * Contributions render in the light DOM, wrapped in `div.di-plugin-item[data-plugin-id]`.
+ * Extension point: `<plugin-slot point="service.tabs" [context]="ctx">fallback</plugin-slot>`.
+ * Contributions render in the light DOM, wrapped in `div.plugin-item[data-plugin-id]`.
  * The host component needs `schemas: [CUSTOM_ELEMENTS_SCHEMA]`.
  */
-@Directive({ selector: 'mk-plugin-slot' })
+@Directive({ selector: 'plugin-slot' })
 export class PluginSlotDirective {
   private readonly host = inject<ElementRef<PluginSlotElement>>(ElementRef);
 

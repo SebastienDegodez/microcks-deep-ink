@@ -179,14 +179,14 @@ export default function SourcesPage() {
             return (
               <article key={j.id} aria-label={j.name} className="ex-source-row" aria-current={selected?.id === j.id ? 'true' : undefined}>
                 <div className="ex-row-between">
-                  <Switch label={<span className="di-sr-only">{`Scan ${j.name} on schedule`}</span>} checked={j.active} onChange={(v) => void toggleActive(j, v)} />
+                  <Switch label={<span className="sr-only">{`Scan ${j.name} on schedule`}</span>} checked={j.active} onChange={(v) => void toggleActive(j, v)} />
                   <RouterLink to={`/importers/${j.id}`} aria-pressed={selected?.id === j.id} className="ex-tile-title">{j.name}</RouterLink>
                   {running ? <LiveIndicator label="live · importing" /> : <span className="ex-row ex-small"><Icon name={STATUS_ICON[st]} size={14} />{STATUS_WORD[st]} <span className="ex-muted">{j.lastSyncAt ? relative(j.lastSyncAt) : ''}</span></span>}
                 </div>
                 <div className="ex-small ex-secondary ex-url-line">{j.url}</div>
                 <div className="ex-row ex-small">
                   <Chip>{j.role}</Chip><Chip variant="outline">{j.artifactLabel}</Chip>
-                  {j.secretName ? <Chip variant="outline"><span className="di-sr-only">Secret </span><Icon name="link" size={12} /> {j.secretName}</Chip> : null}
+                  {j.secretName ? <Chip variant="outline"><span className="sr-only">Secret </span><Icon name="link" size={12} /> {j.secretName}</Chip> : null}
                   <span className="ex-muted">{j.active ? `next scan ${formatHourMinute(schedule.nextScanAt)}` : 'scans paused'}</span>
                 </div>
                 <ServiceLinks importer={j} />

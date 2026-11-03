@@ -12,7 +12,7 @@ export default meta;
 export const Default: StoryObj = {
   render: () => ({
     template: `
-      <div class="di-inline">
+      <div class="inline">
         <span mkStatusBadge status="conformant"></span>
         <span mkStatusBadge status="failed"></span>
         <span mkStatusBadge status="partial"></span>
@@ -26,7 +26,7 @@ export const Default: StoryObj = {
 export const Small: StoryObj = {
   render: () => ({
     template: `
-      <div class="di-inline">
+      <div class="inline">
         <span mkStatusBadge size="sm" status="conformant" label="92 % conformant"></span>
         <span mkStatusBadge size="sm" status="failed" label="2 failed"></span>
       </div>

@@ -15,7 +15,7 @@ const run = (args, opts = {}) =>
 
 const temp = [];
 function project(pkg = { dependencies: { react: '19' } }) {
-  const dir = mkdtempSync(join(tmpdir(), 'di-cli-'));
+  const dir = mkdtempSync(join(tmpdir(), 'cli-'));
   temp.push(dir);
   writeFileSync(join(dir, 'package.json'), JSON.stringify(pkg));
   return dir;

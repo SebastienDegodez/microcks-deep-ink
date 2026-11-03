@@ -17,16 +17,16 @@ let nextId = 0;
 @Component({
   selector: 'mk-tabs',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'di-tabs' },
+  host: { class: 'tabs' },
   styles: [':host { display: block; }'],
   template: `
-    <div role="tablist" class="di-tablist" [attr.aria-label]="label()">
+    <div role="tablist" class="tablist" [attr.aria-label]="label()">
       @for (t of items(); track t.id; let i = $index) {
         <button
           #tab
           type="button"
           role="tab"
-          class="di-tab"
+          class="tab"
           [id]="tabId(t.id)"
           [attr.aria-selected]="i === selectedIndex()"
           [attr.aria-controls]="panelId(t.id)"
@@ -34,7 +34,7 @@ let nextId = 0;
           [disabled]="!!t.disabled"
           (click)="value.set(t.id)"
           (keydown)="onKeyDown($event, i)"
-        >{{ t.label }}@if (t.count !== undefined) {<span class="di-tab-count"><span class="di-sr-only">, </span>{{ t.count }}</span>}</button>
+        >{{ t.label }}@if (t.count !== undefined) {<span class="tab-count"><span class="sr-only">, </span>{{ t.count }}</span>}</button>
       }
     </div>
     <ng-content />
@@ -101,7 +101,7 @@ export class TabsComponent {
   selector: 'div[mkTabPanel]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
-    class: 'di-tabpanel',
+    class: 'tabpanel',
     role: 'tabpanel',
     tabindex: '0',
     '[attr.id]': 'panelId()',

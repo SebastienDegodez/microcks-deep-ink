@@ -38,7 +38,7 @@ export class DialogFooterDirective {}
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [ButtonDirective],
   host: {
-    class: 'di-dialog',
+    class: 'dialog',
     '[attr.data-size]': 'size()',
     '[attr.aria-labelledby]': 'titleId',
     '[attr.aria-describedby]': 'description() ? descId : null',
@@ -49,18 +49,18 @@ export class DialogFooterDirective {}
   },
   template: `
     @if (open()) {
-      <div class="di-dialog-header">
-        <h2 class="di-dialog-title" [id]="titleId">{{ title() }}</h2>
+      <div class="dialog-header">
+        <h2 class="dialog-title" [id]="titleId">{{ title() }}</h2>
         <button type="button" mkButton variant="ghost" size="sm" iconOnly icon="close" aria-label="Close" (click)="requestClose()"></button>
       </div>
-      <div class="di-dialog-body">
+      <div class="dialog-body">
         @if (description()) {
-          <p class="di-dialog-description" [id]="descId">{{ description() }}</p>
+          <p class="dialog-description" [id]="descId">{{ description() }}</p>
         }
         <ng-content />
       </div>
       @if (footer()) {
-        <div class="di-dialog-footer"><ng-content select="[mkDialogFooter]" /></div>
+        <div class="dialog-footer"><ng-content select="[mkDialogFooter]" /></div>
       }
     }
   `,
@@ -103,8 +103,8 @@ export class DialogComponent {
         const el = this.el;
         const preferred =
           el.querySelector<HTMLElement>('[data-autofocus]') ??
-          el.querySelector<HTMLElement>(FOCUSABLE.split(', ').map((s) => `.di-dialog-body ${s}`).join(', ')) ??
-          el.querySelector<HTMLElement>(FOCUSABLE.split(', ').map((s) => `.di-dialog-footer ${s}`).join(', '));
+          el.querySelector<HTMLElement>(FOCUSABLE.split(', ').map((s) => `.dialog-body ${s}`).join(', ')) ??
+          el.querySelector<HTMLElement>(FOCUSABLE.split(', ').map((s) => `.dialog-footer ${s}`).join(', '));
         preferred?.focus();
       },
       { injector: this.injector },

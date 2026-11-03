@@ -100,7 +100,7 @@ pnpm deep-ink add --all --tier natural,microcks --cwd apps/demo-react
 ```
 
 `src/main.tsx` picks up `src/ui/styles/index.css` automatically as soon as it exists (`import.meta.glob`). Until the components are
-copied, `AppLayout` and the placeholders use raw markup with the `di-` CSS classes of the registry contract.
+copied, `AppLayout` and the placeholders use raw markup with the `` CSS classes of the registry contract.
 
 ## Data
 

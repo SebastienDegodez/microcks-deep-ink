@@ -10,7 +10,7 @@ export default {
 
 export const Default: StoryObj = {
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       <Chip>neutral</Chip>
       <Chip tone="info">info</Chip>
       <Chip tone="success">success</Chip>
@@ -22,7 +22,7 @@ export const Default: StoryObj = {
 
 export const Variants: StoryObj = {
   render: () => (
-    <div className="di-inline">
+    <div className="inline">
       <Chip variant="solid" tone="info">solid</Chip>
       <Chip variant="outline" tone="info">outline</Chip>
       <Chip variant="dashed" tone="warning">Proposed · beyond POC</Chip>
@@ -42,7 +42,7 @@ export const Removable: StoryObj = {
   render: () => {
     const [tags, setTags] = useState(['pastry', 'bakery', 'v2']);
     return (
-      <div className="di-inline">
+      <div className="inline">
         {tags.map((t) => (
           <Chip key={t} onRemove={() => setTags(tags.filter((x) => x !== t))}>{t}</Chip>
         ))}

@@ -15,7 +15,7 @@ export const Default: StoryObj = {
     props: { ctx: { theme: 'dark', service: { id: 'pastry', name: 'API Pastry', version: '2.0', protocol: 'REST' as const } } },
     template: `
       <div style="max-width:520px">
-        <mk-plugin-slot point="service.tabs" [context]="ctx" outlined><span class="sb-note">No plugin contributes to this slot.</span></mk-plugin-slot>
+        <plugin-slot point="service.tabs" [context]="ctx" outlined><span class="sb-note">No plugin contributes to this slot.</span></plugin-slot>
       </div>
     `,
   }),

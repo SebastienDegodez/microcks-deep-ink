@@ -14,7 +14,7 @@ export const Default: StoryObj = {
   render: () => ({
     props: { msg: '', body: '{ "name": "Eclair" }' },
     template: `
-      <div class="di-stack" style="max-width:720px">
+      <div class="stack" style="max-width:720px">
         <mk-ai-ghost-row name="getPastry example" (accept)="msg = 'Accepted'" (edit)="msg = 'Editing'" (reject)="msg = 'Rejected'">
           <span mkMethodTag method="GET"></span>&ngsp;<code>/pastries/Eclair</code> → 200 <code>{{ body }}</code>
         </mk-ai-ghost-row>

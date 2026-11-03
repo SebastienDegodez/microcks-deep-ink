@@ -87,7 +87,7 @@ export function StepStrip({ statuses, count, never }: { statuses?: readonly Step
 export function LoadingBlock({ label, rows = 3 }: { label: string; rows?: number }) {
   return (
     <div aria-busy="true" className="wf-loading">
-      <p className="di-sr-only" role="status">
+      <p className="sr-only" role="status">
         {label}
       </p>
       {Array.from({ length: rows }, (_, i) => (
@@ -114,7 +114,7 @@ export function ErrorBlock({ error, onRetry, title = 'Something went wrong' }: {
 /** Router link styled like a link. */
 export function PageLink({ to, children, ...rest }: { to: string; children: ReactNode; 'aria-label'?: string; title?: string }) {
   return (
-    <RouterLink to={to} className="di-link" {...rest}>
+    <RouterLink to={to} className="link" {...rest}>
       {children}
     </RouterLink>
   );

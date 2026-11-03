@@ -18,24 +18,24 @@ export function Switch({ label, description, checked, onChange, className, ref, 
   const descId = description ? `${uid}-desc` : undefined;
   const labelId = `${uid}-label`;
   return (
-    <label className="di-choice">
+    <label className="choice">
       <input
         ref={ref}
         {...rest}
         type="checkbox"
         role="switch"
         aria-labelledby={labelId}
-        className={['di-switch', className].filter(Boolean).join(' ')}
+        className={['switch', className].filter(Boolean).join(' ')}
         checked={checked}
         onChange={(e) => onChange(e.currentTarget.checked)}
         aria-describedby={[rest['aria-describedby'], descId].filter(Boolean).join(' ') || undefined}
       />
       <span>
-        <span className="di-choice-label" id={labelId}>
+        <span className="choice-label" id={labelId}>
           {label}
         </span>
         {description ? (
-          <span className="di-choice-description" id={descId}>
+          <span className="choice-description" id={descId}>
             {description}
           </span>
         ) : null}

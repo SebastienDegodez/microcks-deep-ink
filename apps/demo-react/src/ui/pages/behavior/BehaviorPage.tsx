@@ -151,7 +151,7 @@ export default function BehaviorPage() {
           <Panel title="Dispatcher" id="sec-dispatcher" actions={<a href="https://microcks.io/documentation/explanations/dispatching/" target="_blank" rel="noreferrer">Dispatching reference</a>}>
             <p className="ex-secondary" style={{ marginTop: 0 }}>Turns an incoming request into dispatch criteria, then into the example to return.</p>
             <fieldset className="ex-fieldset">
-              <legend className="di-sr-only">Dispatcher type</legend>
+              <legend className="sr-only">Dispatcher type</legend>
               <div className="ex-radio-cards">
                 {CARDS.map((c) => (
                   <label key={c.id} className="ex-radio-card" aria-disabled={c.disabled || undefined}>
@@ -258,8 +258,8 @@ export default function BehaviorPage() {
           <Panel title="Parameter constraints" id="sec-constraints" actions={<span className="ex-small ex-secondary">{draft.constraints.length} {draft.constraints.length === 1 ? 'constraint' : 'constraints'}</span>}>
             <p className="ex-secondary" style={{ marginTop: 0 }}>Expectations the contract cannot express. A violated constraint returns 400 before dispatching.</p>
             <div className="ex-small" style={{ overflowX: 'auto' }}>
-              <table className="di-table" aria-label="Parameter constraints">
-                <thead><tr><th scope="col">In</th><th scope="col">Name</th><th scope="col">Required</th><th scope="col">Recopy</th><th scope="col">Must match regexp</th><th scope="col"><span className="di-sr-only">Remove</span></th></tr></thead>
+              <table className="table" aria-label="Parameter constraints">
+                <thead><tr><th scope="col">In</th><th scope="col">Name</th><th scope="col">Required</th><th scope="col">Recopy</th><th scope="col">Must match regexp</th><th scope="col"><span className="sr-only">Remove</span></th></tr></thead>
                 <tbody>
                   {draft.constraints.map((c, i) => {
                     const invalid = Boolean(c.mustMatchRegexp) && !isValidRegExp(c.mustMatchRegexp ?? '');
@@ -268,8 +268,8 @@ export default function BehaviorPage() {
                       <tr key={i}>
                         <td><Select aria-label={`Location of ${who}`} value={c.in} onChange={(e) => setConstraint(i, { in: e.target.value as ParameterConstraint['in'] })}><option value="header">header</option><option value="query">query</option></Select></td>
                         <td><Input aria-label={`Name of ${who}`} placeholder="parameter name" value={c.name} onChange={(e) => setConstraint(i, { name: e.target.value })} /></td>
-                        <td><Checkbox label={<span className="di-sr-only">{`${who} is required`}</span>} checked={c.required} onChange={(e) => setConstraint(i, { required: e.target.checked })} /></td>
-                        <td><Checkbox label={<span className="di-sr-only">{`Recopy ${who}`}</span>} checked={Boolean(c.recopy)} onChange={(e) => setConstraint(i, { recopy: e.target.checked })} /></td>
+                        <td><Checkbox label={<span className="sr-only">{`${who} is required`}</span>} checked={c.required} onChange={(e) => setConstraint(i, { required: e.target.checked })} /></td>
+                        <td><Checkbox label={<span className="sr-only">{`Recopy ${who}`}</span>} checked={Boolean(c.recopy)} onChange={(e) => setConstraint(i, { recopy: e.target.checked })} /></td>
                         <td>
                           <Input aria-label={`Regular expression for ${who}`} placeholder="no pattern" aria-invalid={invalid || undefined} value={c.mustMatchRegexp ?? ''} onChange={(e) => setConstraint(i, { mustMatchRegexp: e.target.value || undefined })} />
                           {invalid ? <span className="ex-small"><Icon name="warning" size={12} /> Invalid regular expression</span> : null}

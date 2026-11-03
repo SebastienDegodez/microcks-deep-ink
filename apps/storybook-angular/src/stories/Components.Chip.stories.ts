@@ -12,7 +12,7 @@ export default meta;
 export const Default: StoryObj = {
   render: () => ({
     template: `
-      <div class="di-inline">
+      <div class="inline">
         <span mkChip>neutral</span>
         <span mkChip tone="info">info</span>
         <span mkChip tone="success">success</span>
@@ -26,7 +26,7 @@ export const Default: StoryObj = {
 export const Variants: StoryObj = {
   render: () => ({
     template: `
-      <div class="di-inline">
+      <div class="inline">
         <span mkChip variant="solid" tone="info">solid</span>
         <span mkChip variant="outline" tone="info">outline</span>
         <span mkChip variant="dashed" tone="warning">Proposed · beyond POC</span>
@@ -54,7 +54,7 @@ export const Removable: StoryObj = {
       },
     },
     template: `
-      <div class="di-inline">
+      <div class="inline">
         @for (t of tags; track t) {
           <span mkChip removable (removed)="remove(t)">{{ t }}</span>
         }

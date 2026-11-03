@@ -2,15 +2,15 @@
   Data table recipe.
   - The scroll wrapper is a focusable region named by the caption, so keyboard users can scroll it.
   - th scope="col" on headers; aria-sort only on the sorted column, with a button inside the th.
-  - A row link is the first cell's <a class="di-table-rowlink">, stretched over the row. No clickable <tr>.
+  - A row link is the first cell's <a class="table-rowlink">, stretched over the row. No clickable <tr>.
 -->
-<div class="di-table-wrap" role="region" aria-labelledby="svc-caption" tabindex="0">
-  <table class="di-table" data-density="comfortable">
+<div class="table-wrap" role="region" aria-labelledby="svc-caption" tabindex="0">
+  <table class="table" data-density="comfortable">
     <caption id="svc-caption">Services</caption>
     <thead>
       <tr>
-        <th scope="col" aria-sort="ascending"><button type="button" class="di-table-sort">Name
-          <svg class="di-icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+        <th scope="col" aria-sort="ascending"><button type="button" class="table-sort">Name
+          <svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
             <path d="M12 19V5" /><path d="M6 11l6-6 6 6" />
           </svg></button></th>
@@ -20,12 +20,12 @@
     </thead>
     <tbody>
       <tr data-selected>
-        <td><a class="di-table-rowlink" href="/services/pastry2" aria-current="true">API Pastry</a></td>
+        <td><a class="table-rowlink" href="/services/pastry2" aria-current="true">API Pastry</a></td>
         <td data-mono>2.0</td>
         <td data-align="end" data-mono>1,204</td>
       </tr>
       <tr>
-        <td><a class="di-table-rowlink" href="/services/orders">Orders API</a></td>
+        <td><a class="table-rowlink" href="/services/orders">Orders API</a></td>
         <td data-mono>0.1.0</td>
         <td data-align="end" data-mono>388</td>
       </tr>

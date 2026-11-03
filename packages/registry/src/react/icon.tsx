@@ -90,7 +90,7 @@ export function Icon({ name, size = 16, label, className, ref, ...rest }: IconPr
       focusable="false"
       {...a11y}
       {...rest}
-      className={['di-icon', className].filter(Boolean).join(' ')}
+      className={['icon', className].filter(Boolean).join(' ')}
     >
       {paths.map((d) => (
         <path key={d} d={d} />

@@ -21,21 +21,21 @@ function Choice({ kind, label, description, className, ref, ...rest }: ChoicePro
   const descId = description ? `${uid}-desc` : undefined;
   const labelId = `${uid}-label`;
   return (
-    <label className="di-choice">
+    <label className="choice">
       <input
         ref={ref}
         {...rest}
         type={kind}
         aria-labelledby={labelId}
-        className={cx(kind === 'checkbox' ? 'di-checkbox' : 'di-radio', className)}
+        className={cx(kind === 'checkbox' ? 'checkbox' : 'radio', className)}
         aria-describedby={cx(rest['aria-describedby'], descId) || undefined}
       />
       <span>
-        <span className="di-choice-label" id={labelId}>
+        <span className="choice-label" id={labelId}>
           {label}
         </span>
         {description ? (
-          <span className="di-choice-description" id={descId}>
+          <span className="choice-description" id={descId}>
             {description}
           </span>
         ) : null}
@@ -85,7 +85,7 @@ export function RadioGroup({ legend, options, value, onChange, name, required, h
   const errorId = error ? `${uid}-error` : undefined;
   return (
     <fieldset
-      className={cx('di-fieldset', className)}
+      className={cx('fieldset', className)}
       aria-describedby={cx(helpId, errorId) || undefined}
       aria-invalid={error ? true : undefined}
       data-invalid={error ? '' : undefined}
@@ -93,7 +93,7 @@ export function RadioGroup({ legend, options, value, onChange, name, required, h
       <legend>
         {legend}
         {required ? (
-          <span className="di-required" aria-hidden="true">
+          <span className="required" aria-hidden="true">
             {' '}
             *
           </span>
@@ -113,15 +113,15 @@ export function RadioGroup({ legend, options, value, onChange, name, required, h
         />
       ))}
       {help ? (
-        <p className="di-help" id={helpId}>
+        <p className="help" id={helpId}>
           {help}
         </p>
       ) : null}
       {error ? (
-        <p className="di-error" id={errorId}>
+        <p className="error" id={errorId}>
           <Icon name="warning" size={16} />
           <span>
-            <span className="di-sr-only">Error: </span>
+            <span className="sr-only">Error: </span>
             {error}
           </span>
         </p>

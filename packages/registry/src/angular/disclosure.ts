@@ -4,7 +4,7 @@ import { afterNextRender, booleanAttribute, ChangeDetectionStrategy, Component, 
 @Component({
   selector: 'details[mkDisclosure]',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  host: { class: 'di-disclosure' },
+  host: { class: 'disclosure' },
   template: `<summary>{{ summary() }}</summary><ng-content />`,
 })
 export class DisclosureComponent {

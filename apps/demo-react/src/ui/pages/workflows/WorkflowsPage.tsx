@@ -242,7 +242,7 @@ export default function WorkflowsPage() {
                     >
                       {unlinked ? <Icon name="warning" size={12} /> : null}
                       {unlinked ? `${source.name} · not linked` : linkedTo ? `${linkedTo.name} ${linkedTo.version}` : source.name}
-                      <span className="di-sr-only">, {count} {count === 1 ? 'workflow' : 'workflows'}</span>
+                      <span className="sr-only">, {count} {count === 1 ? 'workflow' : 'workflows'}</span>
                       <span aria-hidden="true"> {count}</span>
                     </Chip>
                   );
@@ -439,7 +439,7 @@ function DocumentGroup({ document: doc, rows, total, serviceName, relative, onLi
                 <Chip key={n} variant={notLinked ? 'dashed' : 'outline'} tone={notLinked ? 'warning' : 'neutral'}>
                   {notLinked ? <Icon name="warning" size={12} /> : null}
                   {n}
-                  <span className="di-sr-only">{notLinked ? ' (not linked)' : svc ? ` (linked to ${svc.name} ${svc.version})` : ''}</span>
+                  <span className="sr-only">{notLinked ? ' (not linked)' : svc ? ` (linked to ${svc.name} ${svc.version})` : ''}</span>
                 </Chip>
               );
             })}
@@ -523,12 +523,12 @@ function DocumentGroup({ document: doc, rows, total, serviceName, relative, onLi
       render: ({ workflow, document }) =>
         workflow.runnability.runnable ? (
           <ButtonRouterLink to={runSetupPath(document.id, workflow.workflowId)} icon="play">
-            Run<span className="di-sr-only"> {workflow.workflowId}</span>
+            Run<span className="sr-only"> {workflow.workflowId}</span>
           </ButtonRouterLink>
         ) : (
           <span className="wf-cell-stack">
             <Button disabled icon="play" title={workflow.runnability.message} aria-describedby={`wf-reason-${workflow.workflowId}`}>
-              Run<span className="di-sr-only"> {workflow.workflowId}</span>
+              Run<span className="sr-only"> {workflow.workflowId}</span>
             </Button>
             <span id={`wf-reason-${workflow.workflowId}`} className="wf-reason">
               {workflow.runnability.message}

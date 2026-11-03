@@ -35,11 +35,11 @@ export function Field({ label, help, error, required, children, className }: Fie
   const describedBy = [helpId, errorId].filter(Boolean).join(' ') || undefined;
 
   return (
-    <div className={['di-field', className].filter(Boolean).join(' ')} data-invalid={error ? '' : undefined}>
-      <label className="di-label" htmlFor={id}>
+    <div className={['field', className].filter(Boolean).join(' ')} data-invalid={error ? '' : undefined}>
+      <label className="label" htmlFor={id}>
         {label}
         {required ? (
-          <span className="di-required" aria-hidden="true">
+          <span className="required" aria-hidden="true">
             {' '}
             *
           </span>
@@ -47,15 +47,15 @@ export function Field({ label, help, error, required, children, className }: Fie
       </label>
       {children({ id, 'aria-describedby': describedBy, 'aria-invalid': error ? true : undefined, required: required || undefined })}
       {help ? (
-        <p className="di-help" id={helpId}>
+        <p className="help" id={helpId}>
           {help}
         </p>
       ) : null}
       {error ? (
-        <p className="di-error" id={errorId}>
+        <p className="error" id={errorId}>
           <Icon name="warning" size={16} />
           <span>
-            <span className="di-sr-only">Error: </span>
+            <span className="sr-only">Error: </span>
             {error}
           </span>
         </p>
