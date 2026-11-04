@@ -1,5 +1,4 @@
 /* Screen 18 · header: chips beside the badge title, labels + import line, proof badges. */
-.agent-projection { font: 400 11px/1.4 var(--font-mono); color: var(--text-muted); border: 1px dashed var(--border-strong); border-radius: 4px; padding: 3px 8px; }
 .agent-head-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .agent-head-row[data-gap='badges'] { gap: 10px; }
 .agent-import-line { font-size: 12px; color: var(--text-muted); }

@@ -30,16 +30,6 @@ export function RunBadges({ workflowId, documentLabel, to, chip }: { workflowId:
   );
 }
 
-/** One "label value" pair of the meta line under the title. */
-export function MetaItem({ label, children }: { label: string; children: ReactNode }) {
-  return (
-    <span className="wfr-meta-item">
-      <span className="wfr-meta-label">{label}</span>
-      {children}
-    </span>
-  );
-}
-
 /** "apiPastry → https://pastry.staging.acme.io/v2" for the implementations of a run or a form. */
 export function implementationsText(baseUrls: Record<string, string>): string {
   return Object.entries(baseUrls)

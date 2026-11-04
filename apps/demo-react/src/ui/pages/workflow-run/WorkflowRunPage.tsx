@@ -24,8 +24,9 @@ import { Facts } from '@/ui/components/ui/facts';
 import { Icon } from '@/ui/components/ui/icon';
 import { DataTable } from '@/ui/components/ui/table';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
+import { RunMeta } from '@/ui/components/ui/run-meta';
 import { ButtonRouterLink, ErrorBlock, LoadingBlock, runPath, runSetupPath, workflowPath } from '../workflows/shared';
-import { MetaItem, RunApiPanel, RunBadges, Verdict, implementationsText, runBreadcrumb } from './run-parts';
+import { RunApiPanel, RunBadges, Verdict, implementationsText, runBreadcrumb } from './run-parts';
 import { RunSteps, phaseOf } from './RunSteps';
 import './workflow-run.css';
 
@@ -219,7 +220,7 @@ function RunView({
       </span>
     </span>
   ) : (
-    <ApiBadge label="result" value={passed ? 'passed' : 'failed'} status={passed ? 'success' : 'danger'} />
+    <ApiBadge label="result" value={passed ? 'passed' : 'failed'} status={passed ? 'success' : 'danger'} icon={passed ? 'check' : 'close-sm'} />
   );
 
   return (
@@ -228,33 +229,7 @@ function RunView({
         title={`Run #${run.number}`}
         breadcrumb={runBreadcrumb(detail ? `${detail.document.title} - ${detail.document.version}` : undefined, workflowTo, runsTo, `Run #${run.number}`)}
         badge={<RunBadges workflowId={run.workflowId} documentLabel={documentLabel} to={workflowTo} chip={chip} />}
-        descriptionTone="secondary"
-        descriptionWidth={900}
         align="start"
-        description={
-          <span className="wfr-meta">
-            {detail ? (
-              <MetaItem label="Document">
-                <RouterLink to={workflowPath(run.documentId, run.workflowId, 'source')} className="wfr-meta-file">
-                  {detail.document.file}
-                </RouterLink>
-              </MetaItem>
-            ) : null}
-            <MetaItem label="Run against">
-              <span className="wfr-meta-value">{targetLine(run)}</span>
-            </MetaItem>
-            <MetaItem label="Started">
-              <span className="wfr-meta-value">{relative(run.startedAt)}</span>
-              <span className="wfr-meta-clock">{formatClock(run.startedAt)}</span>
-            </MetaItem>
-            <MetaItem label={running ? 'Elapsed' : 'Duration'}>
-              <span className="wfr-meta-mono">{formatDuration(totals.ms)}</span>
-            </MetaItem>
-            <MetaItem label="Launched by">
-              <span className="wfr-meta-value">{launchedBy(run)}</span>
-            </MetaItem>
-          </span>
-        }
         actions={
           running ? (
             <>
@@ -276,7 +251,30 @@ function RunView({
             </>
           )
         }
-      />
+      >
+        <RunMeta
+          className="wfr-run-meta"
+          items={[
+            ...(detail
+              ? [
+                  {
+                    term: 'Document',
+                    kind: 'url' as const,
+                    value: (
+                      <RouterLink to={workflowPath(run.documentId, run.workflowId, 'source')} className="wfr-meta-file">
+                        {detail.document.file}
+                      </RouterLink>
+                    ),
+                  },
+                ]
+              : []),
+            { term: 'Run against', value: targetLine(run) },
+            { term: 'Started', value: relative(run.startedAt), detail: formatClock(run.startedAt) },
+            { term: running ? 'Elapsed' : 'Duration', kind: 'mono' as const, value: formatDuration(totals.ms) },
+            { term: 'Launched by', value: launchedBy(run) },
+          ]}
+        />
+      </PageHeader>
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
         {message}
       </p>

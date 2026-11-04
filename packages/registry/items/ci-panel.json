@@ -1,0 +1,25 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "ci-panel",
+  "title": "CiPanel",
+  "tier": "microcks",
+  "description": "\"Run it from CI\" panel: a title (with an optional pill), a hint, a Copy button, the command and a footnote, shown by a toggle button. Used on TestRun and AgentTestRun.",
+  "registryDependencies": ["base", "button", "copy-button"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "A <section> region named by its title, disclosed by a native <button aria-expanded aria-controls>",
+    "keyboard": [
+      ["Enter / Space", "On the toggle: shows or hides the panel"],
+      ["Tab", "Reaches the Copy button inside the panel"]
+    ],
+    "aria": [
+      "The toggle carries aria-expanded and aria-controls; its expanded look (action border on selected) is not the only cue",
+      "Copy announces \"Copied\" in a polite live region (copy-button)",
+      "The command wraps (pre-wrap), so the panel never scrolls sideways"
+    ],
+    "rgaa": ["7.1", "7.5", "11.9"],
+    "wcag": ["4.1.2", "1.3.1", "4.1.3"],
+    "notes": "Muted hint and footnote keep 4.5:1 on the surface fill. Put the toggle class on the Button: class=\"ci-panel-toggle\"."
+  },
+  "stories": ["Microcks/CiPanel"]
+}

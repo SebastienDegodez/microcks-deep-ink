@@ -1,0 +1,12 @@
+<!--
+  RunMeta. The meta line under a run header, in a native <dl>: each pair is a div with a muted <dt> and a <dd>.
+  dd data-kind="mono | url | chip" (url: mono link colour, wrap it in <a href> when it navigates; chip: the runner name).
+  A second <dd class="run-meta-detail"> adds the absolute date (mono 12px muted).
+-->
+<dl class="run-meta">
+  <div class="run-meta-item"><dt>Endpoint</dt><dd data-kind="url">https://concierge.acme.io/a2a</dd></div>
+  <div class="run-meta-item"><dt>Runner</dt><dd data-kind="chip">A2A_CONFORMANCE</dd></div>
+  <div class="run-meta-item"><dt>Started</dt><dd>just now</dd><dd class="run-meta-detail">Nov 3, 2026 14:12:08</dd></div>
+  <div class="run-meta-item"><dt>Duration</dt><dd data-kind="mono">4.2 s</dd></div>
+  <div class="run-meta-item"><dt>Launched by</dt><dd>MA</dd></div>
+</dl>

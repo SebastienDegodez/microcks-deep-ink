@@ -60,6 +60,7 @@ export const SurfaceAndGap: StoryObj = {
         columns={2}
         boxed="surface"
         gap="10px 16px"
+        size="sm"
         items={[
           { term: 'Client', value: 'microcks-arazzo · 10.0.2.8', mono: true },
           { term: 'Dispatcher', value: 'URI_PARTS', mono: true },

@@ -1,0 +1,23 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "result-box",
+  "title": "ResultBox",
+  "tier": "microcks",
+  "description": "Framed result or feedback line in a role=\"status\" box: a tone icon, an optional title, the text, an optional action and an optional dismiss button. Used for the Admin toast and export result, the Sources undo banner, the Workflows warning block, the Traces replay feedback and the Workflow validation band.",
+  "registryDependencies": ["base", "icon"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "<div role=\"status\"> (polite live region) holding an aria-hidden tone icon, the text, and real <button>/<a> actions",
+    "keyboard": [["Tab", "Reaches the action and the dismiss button"], ["Enter / Space", "Activates them"]],
+    "aria": [
+      "role=\"status\" announces the new text politely, without moving focus",
+      "The tone icon is decorative; the words say what happened (\"Imported\", \"cannot run\")",
+      "The dismiss button is named \"Dismiss message\" (dismissLabel)",
+      "live=\"off\" removes the role for a box that is static page content, not feedback"
+    ],
+    "rgaa": ["7.5", "3.1", "11.9"],
+    "wcag": ["4.1.3", "1.4.1", "2.1.1"],
+    "notes": "A live region only announces changes: keep the box mounted (or its container role=\"status\") before the result arrives, or announce the result elsewhere. If it hides itself (toast after 4 s), move focus nowhere and keep the result reachable on the page."
+  },
+  "stories": ["Microcks/ResultBox"]
+}
