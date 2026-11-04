@@ -27,6 +27,7 @@ export interface Fact {
     '[attr.data-strong]': "strong() ? '' : null",
     '[style.--facts-term]': 'termWidth() ?? null',
     '[style.--facts-gap]': 'gap() ?? null',
+    '[attr.data-size]': "size() === 'lg' ? 'lg' : null",
     '[style.--facts-cols]': "columns() ? 'repeat(' + columns() + ', minmax(0, 1fr))' : null",
   },
   template: `@for (f of items(); track $index) {<div class="facts-row"><dt>{{ f.term }}</dt><dd [attr.data-mono]="f.mono ? '' : null" [attr.data-tone]="f.tone ?? null">@if (f.sub) {<span>{{ f.value }}</span><span class="facts-sub">{{ f.sub }}</span>} @else {{{ f.value }}}</dd></div>}<ng-content />`,
@@ -45,4 +46,6 @@ export class FactsComponent {
   readonly columns = input<number>();
   /** `inline` and `columns`: the grid gap, row then column (default `8px 16px`; WorkflowRun `9px 12px`). */
   readonly gap = input<string>();
+  /** `lg` (rows): 14px rows, padding 8px 0, mono values 14px (Service Properties). */
+  readonly size = input<'md' | 'lg'>('md');
 }

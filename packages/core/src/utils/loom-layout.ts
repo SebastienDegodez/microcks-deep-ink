@@ -1,4 +1,4 @@
-import type { LoomDrop, LoomSource, LoomStep, LoomThread } from './types';
+import type { CheckState, LoomCheck, LoomDrop, LoomSource, LoomStep, LoomThread } from './types';
 
 export interface LoomPlacement {
   stepId: string;
@@ -183,4 +183,34 @@ export function weaveThreads(threads: LoomThread[]): WovenThread[] {
     woven.push({ id, from: t.from, expression: t.expression, value: t.value, missing: t.missing, drops: [...drops] });
   }
   return woven;
+}
+
+/** One check row of a node, normalized: `state` drives the icon and colour, `word` is the spoken state. */
+export interface CheckRow {
+  label: string;
+  state: CheckState;
+  word: string;
+}
+
+const ROW_STATE: Record<LoomCheck['state'], { state: CheckState; word: string }> = {
+  pass: { state: 'passed', word: 'passed' },
+  fail: { state: 'failed', word: 'failed' },
+  skip: { state: 'off', word: 'skipped' },
+  idle: { state: 'not-evaluated', word: 'not evaluated' },
+};
+const WORD: Record<CheckState, string> = { passed: 'passed', failed: 'failed', off: 'off', 'not-evaluated': 'not evaluated' };
+
+/**
+ * Check rows of a step: a generic `{ label, state }[]` list is drawn as given; the legacy
+ * `{ successCriteria, schemaValidation }` pair is drawn only when the run validates schemas.
+ */
+export function checkRows(checks: LoomStep['checks'], validatesSchemas: boolean): CheckRow[] {
+  if (Array.isArray(checks)) return checks.map((c) => ({ label: c.label, ...(ROW_STATE[c.state] ?? ROW_STATE.idle) }));
+  if (!validatesSchemas) return [];
+  const sc = checks?.successCriteria ?? 'not-evaluated';
+  const sv = checks?.schemaValidation ?? 'not-evaluated';
+  return [
+    { label: 'Success criteria', state: sc, word: WORD[sc] },
+    { label: 'Schema validation', state: sv, word: WORD[sv] },
+  ];
 }

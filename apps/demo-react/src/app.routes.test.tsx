@@ -127,13 +127,13 @@ describe('routing', () => {
 
   it('ranks static segments above dynamic ones', async () => {
     renderAt('/workflows/runs/6729a1d27e4c0b5f93a8c214');
-    expect(await screen.findByRole('heading', { level: 1, name: 'Workflow run' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Run #14' })).toBeTruthy();
     await waitFor(() => expect(document.title).toBe('Workflow run · Microcks'));
   });
 
   it('routes the run setup and the operation behavior to their own pages', async () => {
     const first = renderAt('/workflows/pastry/restock-pastry/run');
-    await screen.findByRole('heading', { level: 1, name: 'Run a workflow' });
+    await screen.findByRole('heading', { level: 1, name: 'Run workflow' });
     first.unmount();
     const second = renderAt('/services/pastry2/operations/get-name');
     await screen.findByRole('heading', { level: 1, name: '/pastries/{name}' });

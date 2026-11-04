@@ -29,6 +29,8 @@ export interface FactsProps extends Omit<HTMLAttributes<HTMLDListElement>, 'chil
   columns?: number;
   /** `inline` and `columns`: the grid gap, row then column (default `8px 16px`; WorkflowRun `9px 12px`). */
   gap?: string;
+  /** `lg` (rows): 14px rows, padding 8px 0, mono values 14px (Service Properties). Default 13px / 7px / mono 12px. */
+  size?: 'md' | 'lg';
   /** Extra `FactRow`s after the items. */
   children?: ReactNode;
 }
@@ -61,7 +63,7 @@ export function FactRow({ term, sub, mono, tone, className, children, ...rest }:
 }
 
 /** Key/value facts of an object in a native `<dl>`. */
-export function Facts({ items = [], layout = 'rows', boxed, strong, termWidth, columns, gap, className, style, children, ...rest }: FactsProps) {
+export function Facts({ items = [], layout = 'rows', boxed, strong, termWidth, columns, gap, size = 'md', className, style, children, ...rest }: FactsProps) {
   const vars: Record<string, string> = {};
   if (termWidth) vars['--facts-term'] = termWidth;
   if (gap) vars['--facts-gap'] = gap;
@@ -72,6 +74,7 @@ export function Facts({ items = [], layout = 'rows', boxed, strong, termWidth, c
       className={['facts', className].filter(Boolean).join(' ')}
       data-layout={layout === 'rows' ? undefined : layout}
       data-boxed={boxed === 'surface' ? 'surface' : boxed ? '' : undefined}
+      data-size={size === 'lg' ? 'lg' : undefined}
       data-strong={strong ? '' : undefined}
       style={{ ...(vars as CSSProperties), ...style }}
     >

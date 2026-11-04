@@ -1,5 +1,6 @@
+import { resolveExpression, type EvaluationContext } from './expression';
 import type { StepResult, StepStatus, WorkflowRun } from './run';
-import type { Action, Criterion, Step } from './workflow';
+import type { Action, Criterion, Step, WorkflowExample } from './workflow';
 
 /** "$statusCode == 200" or "status is …"; several criteria are joined with " and ". */
 export function criteriaText(criteria: readonly Criterion[] | undefined): string {
@@ -94,19 +95,144 @@ export function verdictExplanation(run: WorkflowRun): string {
   return `${head}: ${reason}. The workflow stopped there and produced no outputs.`;
 }
 
-/** Counts used by the summary: "2 passed · 1 failed · 1 not run". */
+/** Counts used by the summary: "2 passed · 1 failed · 1 not run" (a count of zero is left out, except passed). */
 export function stepsTally(run: Pick<WorkflowRun, 'steps'>): string {
   const count = (status: StepStatus) => run.steps.filter((s) => s.status === status).length;
-  return `${count('passed')} passed · ${count('failed')} failed · ${count('not-run')} not run`;
+  const failed = count('failed');
+  const notRun = count('not-run');
+  return [`${count('passed')} passed`, ...(failed ? [`${failed} failed`] : []), ...(notRun ? [`${notRun} not run`] : [])].join(' · ');
 }
 
-/** Total number of calls (all attempts of all steps) and the sum of their durations. */
+/** What the runner spends around each call (resolving expressions, checking criteria), in ms. */
+export const CALL_OVERHEAD_MS = 12;
+
+/** Time one attempt takes on the run clock: the retryAfter wait before it, the call and the overhead. */
+const attemptSpan = (a: { ms: number; waitMs?: number }) => (a.waitMs ?? 0) + a.ms + CALL_OVERHEAD_MS;
+
+/** Total number of calls (all attempts of all steps) and the run duration (calls, retry waits and overhead). */
 export function callTotals(run: Pick<WorkflowRun, 'steps'>): { calls: number; ms: number } {
   let calls = 0;
   let ms = 0;
   for (const s of run.steps) {
     calls += s.attempts.length;
-    for (const a of s.attempts) ms += a.ms;
+    for (const a of s.attempts) ms += attemptSpan(a);
   }
   return { calls, ms };
+}
+
+/** When each step starts, in ms from the start of the run ("at +94 ms"). A step that did not run starts where the run stopped. */
+export function stepOffsets(run: Pick<WorkflowRun, 'steps'>): number[] {
+  let clock = 0;
+  return run.steps.map((s) => {
+    const start = clock;
+    for (const a of s.attempts) clock += attemptSpan(a);
+    return start;
+  });
+}
+
+/** "Stops at patchPastry", "Stops at getPastry · ended early" or "Runs to its end". */
+export function endLabel(run: Pick<WorkflowRun, 'steps' | 'status'>): string {
+  const stopped = stoppedStep(run);
+  if (!stopped) return 'Runs to its end';
+  return `Stops at ${stopped.stepId}${run.status === 'SUCCESS' ? ' · ended early' : ''}`;
+}
+
+/* ------------------------------------------------------------------------------------- hand-overs */
+
+/** A value one step hands over to the next: "firstName = "Eclair Cafe" → path name of patchPastry". */
+export interface Handover {
+  /** Name of the value: the last segment of its runtime expression (`firstName`, `size`). */
+  name: string;
+  value: unknown;
+  /** Where it goes: "query size of listPastries", "body /price of patchPastry". */
+  target: string;
+  expression: string;
+}
+
+const lastSegment = (expression: string) => expression.split('.').pop() ?? expression;
+
+/** The runtime values a step receives from the inputs and the earlier steps, resolved in `ctx`. */
+export function handoversOf(step: Pick<Step, 'stepId' | 'parameters' | 'requestBody'>, ctx: EvaluationContext): Handover[] {
+  const fromParams = step.parameters
+    .filter((p) => p.value.startsWith('$'))
+    .map((p) => ({ name: lastSegment(p.value), value: resolveExpression(p.value, ctx), target: `${p.in} ${p.name} of ${step.stepId}`, expression: p.value }));
+  const fromBody = [...(step.requestBody ?? '').matchAll(/"([^"]+)"\s*:\s*"\{(\$[^}]+)\}"/g)].map(([, key = '', expression = '']) => ({
+    name: lastSegment(expression),
+    value: resolveExpression(expression, ctx),
+    target: `body /${key} of ${step.stepId}`,
+    expression,
+  }));
+  return [...fromParams, ...fromBody];
+}
+
+/** Evaluation context of a finished run: its inputs and the outputs of the steps it reached. */
+export function runContext(run: Pick<WorkflowRun, 'options' | 'steps'>): EvaluationContext {
+  return { inputs: run.options.inputs, steps: Object.fromEntries(run.steps.map((s) => [s.stepId, { outputs: s.outputs }])) };
+}
+
+/* -------------------------------------------------------------------------------- example judging */
+
+export interface ExampleExpectation {
+  kind: 'Step' | 'End' | 'Output';
+  expected: string;
+  got: string;
+  met: boolean;
+}
+
+const json = (value: unknown) => JSON.stringify(value);
+
+/**
+ * Judges a finished run on the example it played: each expected step status (and step outputs), where the
+ * run ends, and the workflow outputs. `unmet` lists the expectations that do not hold, in words.
+ */
+export function judgeExample(
+  run: Pick<WorkflowRun, 'steps' | 'status' | 'outputs'>,
+  example: Pick<WorkflowExample, 'steps' | 'stopsAt' | 'outputs'>,
+): { rows: ExampleExpectation[]; unmet: string[]; matches: boolean } {
+  const rows: ExampleExpectation[] = [];
+  const unmet: string[] = [];
+  for (const e of example.steps) {
+    const step = run.steps.find((s) => s.stepId === e.stepId);
+    const ran = step !== undefined && step.status !== 'not-run';
+    const code = ran ? step.attempts[step.attempts.length - 1]?.httpStatus : undefined;
+    let met = ran && code === e.status;
+    if (!ran) unmet.push(`Step ${e.stepId}: expected to run but was not run`);
+    else if (code !== e.status) unmet.push(`Step ${e.stepId}: expecting ${e.status} but got ${code}`);
+    const outs = Object.entries(e.outputs ?? {});
+    const seen: string[] = [];
+    if (ran) {
+      for (const [k, v] of outs) {
+        const got = step.outputs[k];
+        seen.push(`${k} = ${got === undefined ? 'absent' : json(got)}`);
+        if (got === undefined || json(got) !== json(v)) {
+          met = false;
+          unmet.push(`Step ${e.stepId} output ${k}: expected ${json(v)} but was ${got === undefined ? 'absent' : json(got)}`);
+        }
+      }
+    }
+    const expectedOuts = outs.map(([k, v]) => `${k} = ${json(v)}`).join(' · ');
+    rows.push({
+      kind: 'Step',
+      expected: `${e.stepId} ${e.status}${expectedOuts ? ` · ${expectedOuts}` : ''}`,
+      got: ran ? `${code}${seen.length ? ` · ${seen.join(' · ')}` : ''}` : 'Not run',
+      met,
+    });
+  }
+  const stoppedAt = stoppedStep(run)?.stepId;
+  const endMet = example.stopsAt ? stoppedAt === example.stopsAt : !stoppedAt;
+  if (!endMet) {
+    unmet.push(
+      example.stopsAt
+        ? `Expected to stop at ${example.stopsAt} but ${stoppedAt ? `stopped at ${stoppedAt}` : 'the workflow ran to its end'}`
+        : `Expected to run to its end but stopped at ${stoppedAt}`,
+    );
+  }
+  rows.push({ kind: 'End', expected: example.stopsAt ? `Stops at ${example.stopsAt}` : 'Runs to its end', got: endLabel(run), met: endMet });
+  for (const [k, v] of Object.entries(example.outputs)) {
+    const got = run.outputs[k];
+    const met = got !== undefined && json(got) === json(v);
+    if (!met) unmet.push(`Output ${k}: expected ${json(v)} but was ${got === undefined ? 'absent' : json(got)}`);
+    rows.push({ kind: 'Output', expected: `${k} = ${json(v)}`, got: got === undefined ? 'absent' : `${k} = ${json(got)}`, met });
+  }
+  return { rows, unmet, matches: unmet.length === 0 };
 }

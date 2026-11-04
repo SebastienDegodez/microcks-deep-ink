@@ -36,6 +36,8 @@ export interface AgentTestDefaults {
   transports: { id: TransportId; label: string; sub: string; url: string; preferred: boolean }[];
   conversations: AgentTestConversation[];
   secrets: { name: string; help: string; matches: boolean }[];
+  /** Number the next run will get ("Run #4" on a fresh setup). */
+  nextRunId?: string;
 }
 
 /** One executed check: a cell of the matrix. `transport` is `*` for a check made once. */
@@ -44,11 +46,16 @@ export interface AgentCheck {
   transport: TransportId | '*';
   result: AgentCheckResult;
   ms: number;
+  /** Runner log text of the check: "agent card valid · 3 skills · 3 interfaces". */
+  note?: string;
 }
 
 export interface AgentTestRun {
   id: string;
   setup: AgentTestSetup;
+  /** ISO start time. */
+  startedAt: string;
+  launchedBy: string;
   /** In execution order. */
   checks: AgentCheck[];
 }
@@ -108,6 +115,66 @@ export function agentRunPassed(checks: readonly AgentCheck[]): boolean {
   return checks.every((c) => c.result !== 'fail');
 }
 
+export const AGENT_TRANSPORT_NAMES: Record<TransportId, string> = { jsonrpc: 'JSON-RPC', http: 'HTTP+JSON', grpc: 'gRPC' };
+const CARD_ROW_NAMES: Record<string, string> = { schema: 'Card schema', iface: 'Interface reachable', caps: 'Capabilities honoured', sig: 'Card signature' };
+
+/** "HTTP+JSON × eclair-size-m", "Card schema", "gRPC × Interface reachable". */
+export function agentCellName(row: string, transport: TransportId | '*'): string {
+  const name = CARD_ROW_NAMES[row] ?? row;
+  return transport === '*' ? name : `${AGENT_TRANSPORT_NAMES[transport]} × ${name}`;
+}
+
+/** Elapsed time of a run after `shown` checks: 120 ms of setup, then each check and 40 ms between checks. */
+export function agentElapsedMs(checks: readonly AgentCheck[], shown = checks.length): number {
+  return 120 + checks.slice(0, shown).reduce((a, c) => a + c.ms + 40, 0);
+}
+
+export type AgentLogLevel = 'INFO' | 'SEND' | 'PASS' | 'FAIL' | 'WARN' | 'WAIT';
+export interface AgentLogLine {
+  time: string;
+  level: AgentLogLevel;
+  text: string;
+  tone?: 'emphasis' | 'error';
+}
+
+const fmtSeconds = (ms: number): string => (ms >= 1000 ? `${(ms / 1000).toFixed(2)} s` : `${ms} ms`);
+
+/** Runner log after `shown` checks; `running` adds the WAIT line of the current check. Clock times start at `startedAt`. */
+export function agentRunnerLog(run: AgentTestRun, shown: number, running: boolean): AgentLogLine[] {
+  const start = new Date(run.startedAt).getTime();
+  let now = start + 214;
+  const two = (n: number, w = 2) => String(n).padStart(w, '0');
+  const clock = (t: number) => {
+    const d = new Date(t);
+    return `${two(d.getUTCHours())}:${two(d.getUTCMinutes())}:${two(d.getUTCSeconds())}.${two(d.getUTCMilliseconds(), 3)}`;
+  };
+  const lines: AgentLogLine[] = [];
+  const log = (level: AgentLogLevel, text: string, tone?: AgentLogLine['tone']) => lines.push({ time: clock(now), level, text, tone });
+  const { transports, conversations, cardUrl } = run.setup;
+  log('INFO', `Test #${run.id} started · runner A2A_CONFORMANCE · ${transports.length} transports · ${conversations.length} conversations`, 'emphasis');
+  now += 36;
+  log('SEND', `→ GET ${cardUrl}`);
+  now += 84;
+  const n = run.checks.length;
+  for (let i = 0; i <= Math.min(shown, n - 1); i++) {
+    const c = run.checks[i];
+    if (!c) break;
+    const name = agentCellName(c.row, c.transport);
+    if (i < shown) {
+      now += c.ms + 40;
+      log(c.result === 'pass' ? 'PASS' : c.result === 'fail' ? 'FAIL' : 'WARN', c.note ? `${name} · ${c.note}` : name, c.result === 'fail' ? 'error' : undefined);
+    } else if (running) {
+      log('WAIT', `${name} · waiting for the agent…`);
+    }
+  }
+  if (!running && shown >= n) {
+    const t = totalsOf(run.checks);
+    log('INFO', `Test #${run.id} completed in ${fmtSeconds(agentElapsedMs(run.checks))} · ${t.conversationPassed}/${t.conversationTotal} conversation checks passed`, 'emphasis');
+    if (t.conversationFailed) log('FAIL', `Result: FAILED · ${t.conversationFailed} conversation checks broke the A2A task contract`, 'error');
+  }
+  return lines;
+}
+
 export function cellKey(row: string, transport: string): string {
   return `${row}|${transport}`;
 }
@@ -143,6 +210,12 @@ export interface Exchange {
   response: ExchangeLine[];
 }
 
+/** Why a cell failed: a title and an explanation. Text between backticks is code. */
+export interface DetailVerdict {
+  title: string;
+  body: string;
+}
+
 export interface StreamEventData {
   at: string;
   kind: string;
@@ -156,8 +229,14 @@ export interface StreamEventData {
 /** What the detail pane shows for a cell of the matrix. */
 export type AgentCheckDetail =
   | { kind: 'summary'; title: string; sub: string; rows: DetailRow[]; note: string }
-  | { kind: 'lanes'; title: string; sub: string; lanes: { label: string; sub: string; tone: 'ok' | 'bad'; nodes: LaneNodeData[] }[]; exchanges: Exchange[] }
-  | { kind: 'stream'; title: string; sub: string; events: StreamEventData[] };
+  | {
+      kind: 'lanes'; title: string; sub: string; lanes: { label: string; sub: string; tone: 'ok' | 'bad'; nodes: LaneNodeData[] }[];
+      /** Note under the actual lane ("Illegal continuation: …"). */
+      note?: string;
+      verdict?: DetailVerdict;
+      exchanges: Exchange[];
+    }
+  | { kind: 'stream'; title: string; sub: string; events: StreamEventData[]; verdict?: DetailVerdict };
 
 export interface AgentTestRunWithDetails extends AgentTestRun {
   /** Detail of each finished cell, by `cellKey(row, transport)`. */

@@ -47,7 +47,7 @@ export const Default: StoryObj = {
               />
               <div className="inline">
                 <StepStatus status={step.status ?? 'not-run'} attempts={step.attempts && step.attempts > 1 ? step.attempts : undefined} />
-                {step.checks ? <StepChecks successCriteria={step.checks.successCriteria} schemaValidation={step.checks.schemaValidation} /> : null}
+                {step.checks && !Array.isArray(step.checks) ? <StepChecks successCriteria={step.checks.successCriteria} schemaValidation={step.checks.schemaValidation} /> : null}
               </div>
               {step.stepId === 'patchPastry' ? <CodeBlock caption={`${RUN14_FAILURE.request} · response`} language="json" lines={RUN14_FAILURE.response} /> : null}
             </div>
