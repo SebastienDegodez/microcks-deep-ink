@@ -1,6 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-export type RunnerLevel = 'INFO' | 'SEND' | 'PASS' | 'FAIL' | 'WAIT';
+export type RunnerLevel = 'INFO' | 'SEND' | 'PASS' | 'FAIL' | 'WARN' | 'WAIT';
 export interface RunnerLine {
   time: string;
   level: RunnerLevel;

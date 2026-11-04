@@ -93,3 +93,24 @@ export const ChangedLines: StoryObj = {
     template: `<div style="max-width: 360px"><figure mkCodeBlock caption="contract-tests.yml" [tabs]="tabs" [(tab)]="tab" [lines]="lines"></figure></div>`,
   }),
 };
+
+export const SchemaMismatch: StoryObj = {
+  name: "Narrow gutter, danger frame (schema mismatch)",
+  render: () => ({
+    props: { lines: [{ text: '{' }, { text: '  "name": "Eclair Cafe",' }, { text: '  "price": "3.9"', bad: true, note: 'schema: number' }, { text: '}' }] },
+    template: `<figure mkCodeBlock variant="plain" caption="Response body" lineNumbers gutter="narrow" tone="danger" [lines]="lines"></figure>`,
+  }),
+};
+
+export const RegionLabel: StoryObj = {
+  name: "Same caption, distinct region names",
+  render: () => ({
+    props: { a: `curl -X POST https://agent.acme.io/a2a -d '{"jsonrpc":"2.0","method":"message/send"}'`, b: 'curl -X POST https://agent.acme.io/v1/message:send' },
+    template: `
+      <div class="stack">
+        <figure mkCodeBlock caption="SendMessage · curl" label="SendMessage · curl, JSON-RPC binding" [code]="a"></figure>
+        <figure mkCodeBlock caption="SendMessage · curl" label="SendMessage · curl, HTTP+JSON binding" [code]="b"></figure>
+      </div>
+    `,
+  }),
+};

@@ -8,6 +8,8 @@ export { useQuery, useSubscription } from './hooks';
 export type { QueryResult, QueryState, SubscriptionOptions, SubscriptionResult } from './hooks';
 export { usePageTitle, PAGE_TITLE_ID } from './usePageTitle';
 export { useAnnounce, LiveAnnouncerProvider } from './announcer';
+export { useReturnFocus, useAutoFocus, moveFocus } from './focus';
+export type { FocusTarget } from './focus';
 export { PageHeader } from './PageHeader';
 export type { PageHeaderProps } from './PageHeader';
 export { AppLayout } from './AppLayout';
