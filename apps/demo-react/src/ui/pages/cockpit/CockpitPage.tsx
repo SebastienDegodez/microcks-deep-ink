@@ -43,6 +43,10 @@ function usageText(s: ServiceSummary) {
 const runCounts = (r: { operations?: OperationOutcome[]; runner: string; passed: number; total: number }) =>
   r.runner === 'A2A_CONFORMANCE' ? `${r.passed}/${r.total} checks` : r.operations ? `${r.operations.filter((o) => o === 'pass').length}/${r.operations.length} ops` : '';
 
+/** Third part of the runner line: the transports of an agent test, the broker of an event test. */
+const runDetail = (r: { runner: string; endpoint: string }) =>
+  r.runner === 'A2A_CONFORMANCE' ? '3 transports' : r.endpoint.startsWith('kafka') ? 'Kafka' : '';
+
 export default function CockpitPage() {
   usePageTitle('Cockpit · Microcks');
   const uc = useUseCases();
@@ -124,6 +128,7 @@ export default function CockpitPage() {
   const stepsDone = START_STEPS.filter((s) => done[s.id]).length;
   const firstOpen = START_STEPS.findIndex((s) => !done[s.id]);
   const tests = empty ? [] : data.recentTests;
+  const calls = [...ticker.value, ...data.recentCalls.filter((c) => !ticker.value.some((t) => t.callId === c.callId))].slice(0, 5);
   const passedRuns = empty ? 0 : 14;
   const failedRuns = empty ? 0 : 7;
 
@@ -327,108 +332,130 @@ export default function CockpitPage() {
             </ul>
           </section>
 
-          <div className="ex-grid ex-grid-2-even">
-            <Panel title="Needs attention" actions={<span className="ex-small ex-secondary">{pluralize(attention.length, 'item')}</span>}>
-              {attention.length === 0 ? <p>Nothing needs your attention.</p> : null}
+          <div className="cockpit-panels">
+            <section aria-labelledby="attn-title" className="cockpit-panel">
+              <div className="cockpit-panel-head">
+                <h2 id="attn-title" className="cockpit-panel-title">Needs attention</h2>
+                <span className="cockpit-panel-meta">{pluralize(attention.length, 'item')}</span>
+              </div>
+              {attention.length === 0 ? <p className="cockpit-panel-empty">Nothing needs your attention.</p> : null}
               {attention.map((a) => (
-                <div key={a.id} className="ex-attn">
-                  <Icon name={a.tone === 'danger' ? 'cross' : a.tone === 'warning' ? 'warning' : 'circle'} size={18} />
-                  <div className="ex-stack" style={{ gap: 4 }}>
-                    <span className="ex-row">
-                      <strong>{a.kind}</strong>
-                      {a.badge === 'ARAZZO' ? <ApiBadge arazzo name={a.subject} size="sm" /> : a.badge === 'importer' ? <Chip>importer · {a.subject}</Chip> : <ApiBadge protocol={a.badge} name={a.subject} size="sm" />}
+                <div key={a.id} className="attn" data-tone={a.tone}>
+                  <Icon className="attn-icon" name={a.tone === 'danger' ? 'x-circle' : a.tone === 'warning' ? 'warning' : 'never-tested'} size={18} />
+                  <div className="attn-text">
+                    <span className="attn-kind-row">
+                      <span className="attn-kind">{a.kind}</span>
+                      {a.badge === 'ARAZZO' ? (
+                        <ApiBadge arazzo name={a.subject} size="sm" />
+                      ) : a.badge === 'importer' ? (
+                        <ApiBadge label="importer" value={a.subject} size="sm" />
+                      ) : (
+                        <ApiBadge protocol={a.badge} name={a.subject} size="sm" />
+                      )}
                     </span>
-                    <span>{a.title}</span>
-                    <span className="ex-small ex-secondary">{a.detail}</span>
+                    <span className="attn-title">{a.title}</span>
+                    <span className="attn-detail">{a.detail}</span>
                   </div>
-                  <div className="ex-attn-actions">
-                    <Button asChild variant="secondary" size="sm">
-                      <RouterLink to={a.to}>{a.cta}</RouterLink>
-                    </Button>
-                  </div>
+                  <RouterLink className="attn-cta" to={a.to}>
+                    {a.cta}
+                    <Icon name="chevron" size={13} />
+                  </RouterLink>
                 </div>
               ))}
-            </Panel>
+            </section>
 
-            <div className="ex-stack">
-              <Panel title="Recent tests" actions={<RouterLink to="/tests/service/pastry2">All tests</RouterLink>}>
-                <ul className="ex-plain-list">
-                  {tests.map((r) => {
-                    const svc = byId.get(r.serviceId);
-                    const ok = r.result === 'passed';
-                    return (
-                      <li key={r.id}>
-                        <RouterLink
-                          to={testRunHref(r)}
-                          className="ex-row"
-                        >
-                          <Icon name={ok ? 'check' : 'cross'} size={14} />
-                          <strong>{ok ? 'Passed' : 'Failed'}</strong>
-                          {svc ? <ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} size="sm" /> : null}
-                          <span className="ex-small ex-secondary">#{r.id} · {r.runner} · {runCounts(r)} · {relative(r.startedAt)}</span>
-                        </RouterLink>
-                      </li>
-                    );
-                  })}
-                </ul>
-              </Panel>
+            <section aria-labelledby="tests-title" className="cockpit-panel" data-gap="tight">
+              <div className="cockpit-panel-head" data-pad="">
+                <h2 id="tests-title" className="cockpit-panel-title">Recent tests</h2>
+                <RouterLink className="cockpit-panel-link" to="/tests/service/pastry2">All tests</RouterLink>
+              </div>
+              {tests.map((r) => {
+                const svc = byId.get(r.serviceId);
+                const ok = r.result === 'passed';
+                const counts = runCounts(r);
+                return (
+                  <RouterLink key={r.id} to={testRunHref(r)} className="recent-test" data-ok={ok ? '' : undefined}>
+                    <span className="recent-test-result">
+                      <Icon name={ok ? 'check-circle' : 'x-circle'} size={15} />
+                      {ok ? 'Passed' : 'Failed'}
+                    </span>
+                    <span className="recent-test-what">
+                      {svc ? <ApiBadge protocol={svc.protocol} name={`${svc.name} ${svc.version}`} size="sm" /> : null}
+                      <span className="recent-test-runner">{[`#${r.id}`, r.runner, runDetail(r)].filter(Boolean).join(' · ')}</span>
+                    </span>
+                    <span className="recent-test-figures">
+                      {counts ? <span>{counts}</span> : null}
+                      <span className="recent-test-when">{relative(r.startedAt)}</span>
+                    </span>
+                  </RouterLink>
+                );
+              })}
+            </section>
 
-              <Panel title="Most called mocks today" actions={<span className="ex-small ex-secondary">requests</span>}>
-                <ol className="ex-plain-list">
-                  {top.map((s, i) => (
-                    <li key={s.id}>
-                      <RouterLink to={`/services/${s.id}`} className="ex-bar-row">
-                        <span className="ex-muted">{i + 1}</span>
-                        <span>
-                          <span className="ex-row"><ApiBadge protocol={s.protocol} size="sm" /> {s.name} <span className="ex-muted">{s.version}</span> {isLive(s) ? <LiveIndicator /> : null}</span>
-                          <span className="ex-meter" aria-hidden="true"><span style={{ width: `${Math.max(2, Math.round((s.calls24h / tMax) * 100))}%` }} /></span>
+            <section aria-labelledby="top-title" className="cockpit-panel">
+              <div className="cockpit-panel-head">
+                <h2 id="top-title" className="cockpit-panel-title">Most called mocks today</h2>
+                <span className="cockpit-panel-meta">requests</span>
+              </div>
+              <ol className="top-list">
+                {top.map((s, i) => (
+                  <li key={s.id}>
+                    <RouterLink to={`/services/${s.id}`} className="top-row" data-protocol={PROTOCOL_ATTR[s.protocol]}>
+                      <span className="top-row-line">
+                        <span className="top-rank">{i + 1}</span>
+                        <span className="top-name">
+                          <span className="top-proto">{s.protocol}</span>
+                          <span className="top-label">{s.name} <span className="top-version">{s.version}</span></span>
+                          {isLive(s) ? <span className="top-live" aria-label="live" role="img" /> : null}
                         </span>
-                        <span>{fmt(s.calls24h)}</span>
-                      </RouterLink>
-                    </li>
-                  ))}
-                </ol>
-                <p className="ex-small ex-secondary">
-                  Event APIs publish on their own schedule and are counted apart. <RouterLink to="/usage">Usage &amp; conformance</RouterLink>
-                </p>
-              </Panel>
+                        <span className="top-count">{fmt(s.calls24h)}</span>
+                      </span>
+                      <span className="top-bar" aria-hidden="true">
+                        <span data-first={i === 0 ? '' : undefined} style={{ width: `${Math.max(2, Math.round((s.calls24h / tMax) * 100))}%` }} />
+                      </span>
+                    </RouterLink>
+                  </li>
+                ))}
+              </ol>
+              <div className="cockpit-panel-foot">
+                <span>Event APIs publish on their own schedule and are counted apart.</span>
+                <RouterLink to="/usage">Usage &amp; conformance<Icon name="chevron" size={13} /></RouterLink>
+              </div>
+            </section>
 
-              <Panel
-                title="Live traces"
-                actions={
-                  <span className="ex-row">
-                    <LiveIndicator paused={ticker.paused} />
-                    <Button
-                      size="sm"
-                      variant="secondary"
-                      icon={ticker.paused ? 'play' : 'pause'}
-                      aria-pressed={ticker.paused}
-                      onClick={() => {
-                        ticker.toggle();
-                        announce(ticker.paused ? 'Live traces resumed.' : 'Live traces paused.');
-                      }}
-                    >
-                      {ticker.paused ? 'Resume' : 'Pause'}
-                    </Button>
-                  </span>
-                }
-              >
-                <div role="log" aria-live="off" aria-label="Latest mock calls" className="ex-trace-log">
-                  {ticker.value.length === 0 ? <span className="ex-muted">Waiting for the next call…</span> : null}
-                  {ticker.value.map((t, i) => (
-                    <div key={t.callId} className="ex-trace" data-new={i === 0 && !ticker.paused ? '' : undefined}>
-                      <span>{t.at.slice(11, 19)}</span>
-                      <span>{t.method}</span>
-                      <span className="ex-trace-path">{t.path}</span>
-                      <span>{t.status} · {t.ms} ms</span>
-                    </div>
-                  ))}
+            <section aria-labelledby="traces-title" className="cockpit-panel">
+              <div className="cockpit-panel-head" data-align="center">
+                <div className="cockpit-panel-heading">
+                  <h2 id="traces-title" className="cockpit-panel-title">Live traces</h2>
+                  <LiveIndicator size="sm" paused={ticker.paused} />
                 </div>
-                <p className="ex-small ex-secondary">
-                  Requests and responses as the mocks serve them, with the dispatcher's decision. <RouterLink to="/traces">Open live traces</RouterLink>
-                </p>
-              </Panel>
-            </div>
+                <button
+                  type="button"
+                  className="traces-pause"
+                  aria-pressed={ticker.paused}
+                  onClick={() => {
+                    ticker.toggle();
+                    announce(ticker.paused ? 'Live traces resumed.' : 'Live traces paused.');
+                  }}
+                >
+                  {ticker.paused ? 'Resume' : 'Pause'}
+                </button>
+              </div>
+              <div role="log" aria-live="off" aria-label="Latest mock calls" className="trace-log">
+                {calls.map((t, i) => (
+                  <div key={t.callId} className="trace-row" data-new={i === 0 && !ticker.paused ? '' : undefined}>
+                    <span className="trace-time">{t.at.slice(11, 19)}</span>
+                    <span className="trace-verb" data-protocol={PROTOCOL_ATTR[t.protocol]}>{t.method}</span>
+                    <span className="trace-path">{t.path}</span>
+                    <span className="trace-status" data-ok={t.status < 400 ? '' : undefined}>{t.protocol === 'EVENT' ? '1 msg' : `${t.status} · ${t.ms} ms`}</span>
+                  </div>
+                ))}
+              </div>
+              <div className="cockpit-panel-foot">
+                <span>Requests and responses as the mocks serve them, with the dispatcher&apos;s decision.</span>
+                <RouterLink to="/traces">Open live traces<Icon name="chevron" size={13} /></RouterLink>
+              </div>
+            </section>
           </div>
         </>
       )}
