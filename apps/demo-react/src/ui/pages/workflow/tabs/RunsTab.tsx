@@ -244,7 +244,7 @@ export function RunsTab({ detail, runs, sessions = [], initialFilter }: RunsTabP
       <div className="wf-runs-pipeline">
         <span className="wf-runs-pipeline-label">Run it from a pipeline</span>
         <span className="wf-runs-api">
-          <MethodTag method="POST" />
+          <MethodTag size="xs" method="POST" />
           {api}
         </span>
         <Button

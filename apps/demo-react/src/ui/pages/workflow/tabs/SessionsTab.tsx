@@ -104,7 +104,7 @@ export function SessionsTab({ detail, sessions, runs }: SessionsTabProps) {
       render: (c) => (
         <span className="wf-se-stack">
           <span className="wf-se-req">
-            <MethodTag method={c.method} />
+            <MethodTag size="xs" method={c.method} />
             {c.path}
           </span>
           <span className="wf-se-status">→ {c.httpStatus}</span>
@@ -179,7 +179,7 @@ export function SessionsTab({ detail, sessions, runs }: SessionsTabProps) {
                 </span>
               </span>
               <span className="wf-se-api-path">
-                {a.method ? <MethodTag method={a.method} /> : null}
+                {a.method ? <MethodTag size="xs" method={a.method} /> : null}
                 <span>{a.path}</span>
               </span>
               <span className="wf-se-api-text">{a.text}</span>
@@ -279,7 +279,7 @@ export function SessionsTab({ detail, sessions, runs }: SessionsTabProps) {
           <section aria-labelledby="wf-req-title" className="wf-se-panel" data-size="half" data-gap="tight">
             <div className="wf-se-req-head">
               <h2 id="wf-req-title">
-                <MethodTag method="POST" />
+                <MethodTag size="xs" method="POST" />
                 <span className="wf-se-mono wf-se-req-path">/api/arazzo/sessions</span>
               </h2>
               <div className="wf-se-req-actions">

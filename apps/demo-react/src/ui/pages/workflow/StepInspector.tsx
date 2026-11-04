@@ -211,13 +211,13 @@ export function StepInspector({ workflow, document, run, step, failedStepId, ser
         <p className="wf-ins-desc">{step.description}</p>
         {linked ? (
           <Link to={`/services/${linked.serviceId}`} className="wf-ins-op">
-            <MethodTag method={step.method} protocol={linked.protocol} />
+            <MethodTag size="sm" method={step.method} protocol={linked.protocol} />
             <span className="wf-ins-path">{step.path}</span>
             {service ? <span className="wf-ins-service">{service}</span> : null}
           </Link>
         ) : (
           <span className="wf-ins-op">
-            <MethodTag method={step.method} protocol={source?.type === 'asyncapi' ? 'EVENT' : 'REST'} />
+            <MethodTag size="sm" method={step.method} protocol={source?.type === 'asyncapi' ? 'EVENT' : 'REST'} />
             <span className="wf-ins-path">{step.path}</span>
           </span>
         )}

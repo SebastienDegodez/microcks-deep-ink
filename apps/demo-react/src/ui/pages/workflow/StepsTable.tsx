@@ -66,7 +66,7 @@ export function StepsTable({ workflow, document, run, loomLink }: StepsTableProp
         return (
           <span className="wf-st-stack">
             <span className="wf-st-op">
-              <MethodTag method={step.method} protocol={link?.protocol ?? (src?.type === 'asyncapi' ? 'EVENT' : 'REST')} />
+              <MethodTag size="xs" method={step.method} protocol={link?.protocol ?? (src?.type === 'asyncapi' ? 'EVENT' : 'REST')} />
               {link ? (
                 <Link to={`/services/${link.serviceId}`} className="wf-st-path">
                   {step.path}
