@@ -1,0 +1,15 @@
+<!--
+  Stepper. data-variant="progress" (default: numbered dots) | "list" (numbered instructions).
+  Progress: data-state="done" on done steps (+ sr-only ", done"), aria-current="step" on the current step.
+  data-direction="vertical" stacks the progress dots.
+-->
+<ol class="stepper" data-variant="progress" aria-label="Progress">
+  <li data-state="done"><span class="stepper-dot">1</span>Source<span class="sr-only">, done</span></li>
+  <li aria-current="step"><span class="stepper-dot">2</span>Preview</li>
+  <li><span class="stepper-dot">3</span>Live mock</li>
+</ol>
+
+<ol class="stepper" data-variant="list" aria-label="Before you paste">
+  <li><span class="stepper-n" aria-hidden="true">1.</span><span>Add MICROCKS_URL and the service account secret to the repository.</span></li>
+  <li><span class="stepper-n" aria-hidden="true">2.</span><span>Paste the job in .github/workflows/contract-tests.yml.</span></li>
+</ol>

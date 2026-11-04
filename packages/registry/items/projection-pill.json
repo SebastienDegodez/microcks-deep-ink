@@ -1,0 +1,21 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "projection-pill",
+  "title": "ProjectionPill",
+  "tier": "microcks",
+  "description": "Dashed muted pill that marks a screen or a block as a projection (\"Projection · v2 module\"): a proposed feature, not available today. Used on Agent, AgentTestRun, Import and Sources.",
+  "registryDependencies": ["base"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "A plain <span> with visible text; the title attribute only adds detail",
+    "keyboard": [],
+    "aria": [
+      "The visible words carry the meaning (\"Projection · v2 module\"), never the dashed border alone",
+      "The title is a supplementary tooltip: it is not keyboard reachable, so do not put required information only there"
+    ],
+    "rgaa": ["3.2", "10.13"],
+    "wcag": ["1.4.3", "1.4.13"],
+    "notes": "Muted 11px mono text keeps 4.5:1 on the canvas, surface and page backgrounds in both themes. Static item: not focusable."
+  },
+  "stories": ["Microcks/ProjectionPill"]
+}

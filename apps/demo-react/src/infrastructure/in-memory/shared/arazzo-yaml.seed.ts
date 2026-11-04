@@ -101,6 +101,7 @@ workflows:
       pastryName: $steps.listPastries.outputs.firstName
       oldPrice: $steps.getPastry.outputs.oldPrice
       newPrice: $steps.patchPastry.outputs.newPrice
+  # order-pastry, compare-prices, check-menu: 3 more workflows (lines 103-222)
 `;
 
 export const PASTRY_OVERLAY_YAML = `apiVersion: mocks.microcks.io/v1alpha1

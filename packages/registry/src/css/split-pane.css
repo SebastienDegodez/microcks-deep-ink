@@ -1,0 +1,35 @@
+@layer deep-ink.components {
+  /*
+   * List + detail. The side pane grows from --split-side (260px) up to --split-side-max (360px); the main pane
+   * starts at --split-main (520px) and takes the rest (flex-grow 999), so it wraps under the side pane first.
+   */
+  .split-pane {
+    --split-side: 260px;
+    --split-side-max: 360px;
+    --split-main: 520px;
+    --split-gap: 20px;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: var(--split-gap);
+    min-width: 0;
+  }
+  .split-pane[data-align="stretch"] { align-items: stretch; }
+  /* Balanced: both panes grow alike (Sources: list 520px / detail 440px). */
+  .split-pane[data-balanced] > .split-pane-main { flex-grow: 1; }
+  .split-pane > .split-pane-side {
+    flex: 1 1 var(--split-side);
+    max-width: var(--split-side-max);
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  .split-pane > .split-pane-main {
+    flex: 999 1 var(--split-main);
+    min-width: 0;
+    box-sizing: border-box;
+  }
+  /* The side pane is allowed to fill the row once the main pane has wrapped under it. */
+  @media (max-width: 720px) {
+    .split-pane > .split-pane-side { max-width: none; }
+  }
+}
