@@ -4,6 +4,7 @@ import { timeoutOrDefault, validateRunRequest, type FieldError } from '@/domain/
 import { isRunScenario, type RunSetup, type StartRunInput } from '@/application/arazzo';
 import { Link as RouterLink } from 'react-router';
 import { PageHeader, useAnnounce, usePageTitle, useQuery, useUseCases } from '@/ui/app';
+import { Chip } from '@/ui/components/ui/chip';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
@@ -242,7 +243,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
                     label={
                       <>
                         {t.label}
-                        {t.proposed ? <span className="wfr-proposed">Proposed · beyond POC</span> : null}
+                        {t.proposed ? <Chip size="sm" variant="dashed" tone="warning" className="wfr-proposed">Proposed · beyond POC</Chip> : null}
                       </>
                     }
                     description={t.description}

@@ -39,5 +39,6 @@
   .run-progress-counts [data-kind="pending"] { color: var(--text-muted); }
   .run-progress-counts [data-kind="pending"] .icon { stroke-width: 2; }
   .run-progress-action { margin-inline-start: auto; }
-  .run-progress-note { margin: 0; font: 400 13px/1.5 var(--font-ui); color: var(--text-muted); }
+  /* The note is before the foot in the DOM (read before the step control) and shown after it. */
+  .run-progress-note { order: 1; margin: 0; font: 400 13px/1.5 var(--font-ui); color: var(--text-muted); }
 }

@@ -1,6 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link as RouterLink } from 'react-router';
 import type { ArazzoPreview, AgentPreview, ImportPreview } from '@/domain/importing';
+import { Chip } from '@/ui/components/ui/chip';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Field } from '@/ui/components/ui/field';
@@ -111,7 +112,7 @@ function ArtifactCard({ icon, name, origin, status, format, badge, extra }: { ic
         {status ? <span role="status" className="artifact-card-status">{status}</span> : null}
       </div>
       <div className="artifact-card-badges">
-        {format ? <span className="format-pill"><Icon name="check" size={12} />{format}</span> : null}
+        {format ? <Chip><Icon name="check" size={12} /> {format}</Chip> : null}
         {badge}
         {extra}
       </div>
@@ -140,7 +141,7 @@ function ArazzoBody({ preview, arazzo }: { preview: ImportPreview; arazzo: Arazz
                 <span className="boxed-list-title">{w.name}</span>
                 <span className="boxed-list-sub">workflowId: {w.workflowId}</span>
               </span>
-              {w.note ? <span className="note-pill" data-tone={w.blocked ? 'warning' : undefined}>{w.blocked ? <Icon name="warning" size={12} /> : null}{w.note}</span> : null}
+              {w.note ? <Chip variant="outline" tone={w.blocked ? 'warning' : 'neutral'}>{w.blocked ? <><Icon name="warning" size={12} /> </> : null}{w.note}</Chip> : null}
               <span className="boxed-list-end">{w.steps} steps</span>
             </li>
           ))}
@@ -213,7 +214,7 @@ function AgentBody({ preview, agent }: { preview: ImportPreview; agent: AgentPre
                 <span className="boxed-list-sub">skill id: {k.id}{k.modes ? ` · ${k.modes}` : ''}</span>
               </span>
               <span className="boxed-list-op"><Icon name="arrow-right" size={13} />operation {k.id}</span>
-              {k.note ? <span className="note-pill">{k.note}</span> : null}
+              {k.note ? <Chip variant="outline">{k.note}</Chip> : null}
             </li>
           ))}
         </ul>
@@ -226,7 +227,7 @@ function AgentBody({ preview, agent }: { preview: ImportPreview; agent: AgentPre
               <li key={i.binding}>
                 <span className="boxed-list-binding">{i.binding}</span>
                 <span className="boxed-list-url">{i.url}</span>
-                {i.preferred ? <span className="preferred-pill">preferred</span> : null}
+                {i.preferred ? <Chip size="sm" variant="outline" tone="info">preferred</Chip> : null}
                 <span className="sr-only">{`Mock: ${agent.mockInterfaces[n]?.url ?? ''}`}</span>
               </li>
             ))}

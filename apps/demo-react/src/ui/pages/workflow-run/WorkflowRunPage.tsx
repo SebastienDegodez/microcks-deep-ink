@@ -18,13 +18,16 @@ import {
 import { formatClock, formatDuration } from '@/domain/shared';
 import { RUN_SCENARIOS, type RunScenario } from '@/application/arazzo';
 import { PageHeader, useQuery, useRelativeTime, useSubscription, useUseCases, usePageTitle } from '@/ui/app';
+import { Chip } from '@/ui/components/ui/chip';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Facts } from '@/ui/components/ui/facts';
 import { Icon } from '@/ui/components/ui/icon';
+import { StatusBadge } from '@/ui/components/ui/status-badge';
 import { DataTable } from '@/ui/components/ui/table';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { RunMeta } from '@/ui/components/ui/run-meta';
+import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { ButtonRouterLink, runPath, runSetupPath, workflowPath } from '../workflows/shared';
 import { RunApiPanel, RunBadges, Verdict, implementationsText, runBreadcrumb } from './run-parts';
@@ -214,11 +217,12 @@ function RunView({
   const chip = running ? (
     <span className="wfr-running">
       <LiveIndicator paused={paused} />
-      <span className="wfr-running-label" role="status">
-        <Icon name="running" size={14} strokeWidth={2.6} className="wfr-spin" />
-        Running · step {Math.min(currentIndex + 1, total)} of {total}
-        {run.current && run.current.attempt > 1 ? ` · attempt ${run.current.attempt}` : ''}
-      </span>
+      <StatusBadge
+        shape="bare"
+        status="running"
+        role="status"
+        label={`Running · step ${Math.min(currentIndex + 1, total)} of ${total}${run.current && run.current.attempt > 1 ? ` · attempt ${run.current.attempt}` : ''}`}
+      />
     </span>
   ) : (
     <ApiBadge label="result" value={passed ? 'passed' : 'failed'} status={passed ? 'success' : 'danger'} icon={passed ? 'check' : 'close-sm'} />
@@ -347,41 +351,34 @@ function Progress({ run, workflow, currentIndex, validated, paused, onStepForwar
   const def = workflow?.steps.find((s) => s.stepId === current?.stepId);
   const target = current?.request ? `${current.request.method} ${current.request.url}` : def ? `${def.method} ${resolvedUrl(run, def)}` : '';
   const nowLabel = !current ? 'All steps ended · computing the result…' : retrying ? `retryAfter → ${target}` : target;
-  const label = (i: number) => {
-    const ph = phaseOf(run, i);
-    return ph === 'running' ? 'running' : ph === 'waiting' ? 'queued' : run.steps[i]?.status === 'not-run' ? 'not run' : (run.steps[i]?.status ?? '');
-  };
   return (
-    <section aria-label="Progress" className="wfr-card wfr-progress" aria-busy="true">
-      <div className="wfr-progress-head">
-        <p className="wfr-progress-count">
-          <span className="wfr-progress-big">{ended}</span>
-          <span className="wfr-progress-of">/{total}</span>
-          <span className="wfr-progress-word">steps ended</span>
-        </p>
-        <p className="wfr-progress-now">
-          <span className="wfr-progress-now-title">{nowTitle}</span>
-          <span className="wfr-progress-now-label">{nowLabel}</span>
-        </p>
-      </div>
-      <div className="wfr-segments" role="img" aria-label={`Progress: ${run.steps.map((s, i) => `${s.stepId} ${label(i)}`).join(', ')}`}>
-        {run.steps.map((s, i) => {
-          const ph = phaseOf(run, i);
-          return <span key={s.stepId} className="wfr-segment" data-status={ph === 'done' ? s.status : ph === 'running' ? 'running' : 'queued'} />;
-        })}
-      </div>
-      <div className="wfr-progress-foot">
-        <p className="wfr-progress-note">
-          Steps run in list order. Each step resolves its runtime expressions, calls its operation, then checks its success criteria
-          {validated ? ' and validates its response against its OpenAPI schema' : ''}.
-        </p>
-        {paused ? (
+    <RunProgress
+      aria-busy="true"
+      done={ended}
+      total={total}
+      caption="steps ended"
+      nowLabel={nowTitle}
+      now={nowLabel}
+      segments={run.steps.map((s, i): RunSegment => {
+        const ph = phaseOf(run, i);
+        if (ph === 'running') return 'current';
+        if (ph !== 'done') return 'queued';
+        return s.status === 'passed' ? 'done' : s.status === 'failed' ? 'failed' : 'queued';
+      })}
+      action={
+        paused ? (
           <Button size="sm" icon="chevron" onClick={onStepForward} aria-disabled={onStepForward ? undefined : true}>
             Step forward
           </Button>
-        ) : null}
-      </div>
-    </section>
+        ) : undefined
+      }
+      note={
+        <>
+          Steps run in list order. Each step resolves its runtime expressions, calls its operation, then checks its success criteria
+          {validated ? ' and validates its response against its OpenAPI schema' : ''}.
+        </>
+      }
+    />
   );
 }
 
@@ -647,7 +644,7 @@ function Properties({ run, detail, example }: { run: WorkflowRun; detail?: Detai
           <strong>{run.target.kind === 'mocks' ? 'Microcks mocks' : run.target.kind === 'implementations' ? 'Implementations' : 'Mixed'}</strong>
           {run.target.kind === 'implementations' ? <span className="wfr-target-url">{implementationsText(run.target.baseUrls)}</span> : null}
           {run.target.kind === 'mocks' ? <span className="wfr-target-url">{mockSources(run)}</span> : null}
-          {run.target.kind === 'mixed' ? <span className="wfr-proposed">Proposed · beyond POC</span> : null}
+          {run.target.kind === 'mixed' ? <Chip size="sm" variant="dashed" tone="warning" className="wfr-proposed">Proposed · beyond POC</Chip> : null}
         </span>
       ),
     },

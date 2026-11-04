@@ -2,6 +2,7 @@ import './agent-skills.css';
 import { useId, useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 import type { AgentProfile, AgentTaskState, Conversation, ScriptPart, ScriptStep } from '@/domain/agents';
+import { Chip } from '@/ui/components/ui/chip';
 import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { SectionLabel } from '@/ui/components/ui/section-label';
 import { SkillList, type SkillItem } from '@/ui/components/ui/skill-list';
@@ -205,16 +206,16 @@ export function AgentSkillsTab({ agent }: { agent: AgentProfile }) {
             <div className="agent-modes">
               <div className="agent-mode">
                 <span className="agent-mode-label">inputModes</span>
-                <span className="agent-mode-chips">{skill.inputModes.map((m) => <span key={m} className="agent-mime">{m}</span>)}</span>
+                <span className="agent-mode-chips">{skill.inputModes.map((m) => <Chip key={m}>{m}</Chip>)}</span>
               </div>
               <span className="agent-mode-arrow"><Icon name="arrow-right-long" size={18} /></span>
               <div className="agent-mode">
                 <span className="agent-mode-label">outputModes</span>
-                <span className="agent-mode-chips">{skill.outputModes.map((m) => <span key={m} className="agent-mime">{m}</span>)}</span>
+                <span className="agent-mode-chips">{skill.outputModes.map((m) => <Chip key={m}>{m}</Chip>)}</span>
               </div>
               <div className="agent-mode">
                 <span className="agent-mode-label">tags</span>
-                <span className="agent-mode-chips">{skill.tags.map((m) => <span key={m} className="agent-tag">{m}</span>)}</span>
+                <span className="agent-mode-chips">{skill.tags.map((m) => <Chip key={m} variant="outline">{m}</Chip>)}</span>
               </div>
             </div>
             <div className="agent-prompts-block">

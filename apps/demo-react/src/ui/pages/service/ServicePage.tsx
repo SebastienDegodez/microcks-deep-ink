@@ -526,7 +526,7 @@ function ApiServicePage() {
                           {tone === 'passed' ? 'Passed' : tone === 'running' ? 'Running' : 'Failed'}
                         </span>
                         <span className="run-list-score">{r.passed}/{r.total}</span>
-                        <span className="run-list-env">{r.environment}</span>
+                        <Chip size="sm" className="run-list-env">{r.environment}</Chip>
                         <span className="run-list-when">{relative(r.startedAt)}</span>
                         <Icon name="chevron" size={14} className="run-list-chevron" />
                       </RouterLink>

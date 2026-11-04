@@ -22,8 +22,6 @@
 .agent-mode-label { font-size: 12px; color: var(--text-muted); }
 .agent-mode-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .agent-mode-arrow { align-self: flex-end; padding-bottom: 3px; color: var(--text-muted); display: inline-flex; }
-.agent-mime { font: 400 12px/normal var(--font-mono); color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: 4px; padding: 2px 8px; }
-.agent-tag { font: 400 12px/normal var(--font-mono); color: var(--text-secondary); border: 1px solid var(--border); border-radius: 999px; padding: 2px 8px; }
 
 /* Sample prompts. */
 .agent-prompts-block { display: flex; flex-direction: column; gap: 8px; }

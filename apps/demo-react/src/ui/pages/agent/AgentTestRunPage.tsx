@@ -36,6 +36,7 @@ import { ProjectionPill } from '@/ui/components/ui/projection-pill';
 import { ResultBox } from '@/ui/components/ui/result-box';
 import { RunMeta } from '@/ui/components/ui/run-meta';
 import { Icon } from '@/ui/components/ui/icon';
+import { StatusBadge } from '@/ui/components/ui/status-badge';
 import { Input } from '@/ui/components/ui/input';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
@@ -604,10 +605,7 @@ export default function AgentTestRunPage() {
       ) : running ? (
         <>
           <LiveIndicator />
-          <span className="run-running">
-            <Icon name="running" size={15} className="run-spin" />
-            Running · check {Math.min(tick + 1, n)} of {n}
-          </span>
+          <StatusBadge shape="bare" status="running" label={`Running · check ${Math.min(tick + 1, n)} of ${n}`} />
         </>
       ) : (
         <span role="status"><ApiBadge label="result" value={passed ? 'passed' : 'failed'} status={passed ? 'success' : 'danger'} icon={passed ? 'check' : 'close-sm'} /></span>
