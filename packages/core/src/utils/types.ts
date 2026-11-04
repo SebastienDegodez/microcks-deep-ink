@@ -58,6 +58,13 @@ export type LoomAction =
       runLabel?: string;
     };
 
+/** A check row drawn on a node: "Call #2", "Data passing", "Contract". */
+export interface LoomCheck {
+  label: string;
+  /** pass / fail; skip: deliberately not run (off); idle: not evaluated yet. */
+  state: 'pass' | 'fail' | 'skip' | 'idle';
+}
+
 export interface LoomStep {
   stepId: string;
   source: string;
@@ -73,7 +80,11 @@ export interface LoomStep {
   dependsOn?: string[];
   status?: StepStatus;
   attempts?: number;
-  checks?: { successCriteria: CheckState; schemaValidation?: CheckState };
+  /**
+   * Checks drawn on the node: any list of `{ label, state }` rows, or the run's two checks
+   * `{ successCriteria, schemaValidation? }` (drawn when `validatesSchemas` is set).
+   */
+  checks?: LoomCheck[] | { successCriteria: CheckState; schemaValidation?: CheckState };
   actions?: LoomAction[];
 }
 

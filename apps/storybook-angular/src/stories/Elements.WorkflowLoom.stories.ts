@@ -1,7 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { WorkflowLoomDirective } from '@microcks-deep-ink/registry/angular/workflow-loom';
-import { LOOM_CHECK_MENU, LOOM_RESTOCK_RUN14 } from '@microcks-deep-ink/storybook-shared/fixtures';
+import { LOOM_CHECK_MENU, LOOM_RESTOCK_RUN14, LOOM_SESSION_RUN13 } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { itemParams } from './_meta';
 
 const meta: Meta = {
@@ -39,6 +39,15 @@ export const WithoutTableToggle: StoryObj = {
   name: 'Without the table toggle',
   render: () => ({
     props: { s: LOOM_RESTOCK_RUN14, sel: 'patchPastry' as string | undefined, lens: undefined as string | undefined, toggle: false },
+    template: TEMPLATE,
+  }),
+};
+
+/** A session run: each node lists generic checks (`checks: { label, state }[]`): Call #N, Data passing, Contract. */
+export const SessionChecks: StoryObj = {
+  name: 'Session run #13 (generic checks)',
+  render: () => ({
+    props: { s: LOOM_SESSION_RUN13, sel: 'patchPastry' as string | undefined, lens: undefined as string | undefined, toggle: true },
     template: TEMPLATE,
   }),
 };
