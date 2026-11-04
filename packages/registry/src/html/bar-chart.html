@@ -28,3 +28,14 @@
     <tr><th scope="row">#118</th><td>Failed</td><td>1.84 s</td></tr>
   </tbody>
 </table>
+
+<!--
+  Other hooks:
+  - A faded bar (outside the filter): data-faded on its .bar-chart-cell.
+  - A value above a capped bar ("12 s"), first in its cell and decorative:
+    <span class="bar-chart-cap" aria-hidden="true" style="bottom: calc(100% + 2px)">12 s</span>
+  - A second measure drawn over the bars, after .bar-chart-bars inside .bar-chart-plot:
+    <div class="bar-chart-overlay" aria-hidden="true"><svg viewBox="0 0 100 100" preserveAspectRatio="none"><polyline points="0,60 50,40 100,20" /></svg></div>
+  - Its axis on the right, after .bar-chart-main, in --link:
+    <div class="bar-chart-axis" data-side="end" aria-hidden="true"><span>40</span><span>20</span><span>0</span></div>
+-->

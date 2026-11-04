@@ -15,3 +15,9 @@
   // On click: await navigator.clipboard.writeText(button.dataset.copy), then put "Copied"
   // (or "Copy failed") in the status span and clear it after 2 seconds.
 </script>
+
+<!--
+  States, set by your script on the button: data-state="copied" (success colour, check icon) or data-state="failed"
+  (danger colour); remove it to go back to idle. The live region carries the words.
+  Icon only: data-icon-only on the button (32px minimum width), no visible text, and an aria-label such as "Copy command".
+-->
