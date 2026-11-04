@@ -483,17 +483,6 @@
   font: 800 22px/1 var(--font-brand);
 }
 
-.tc-synced {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 2px 9px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  font-family: var(--font-mono);
-  font-size: 11px;
-  color: var(--text-secondary);
-}
 
 .tc-ci-intro {
   margin: 0;
