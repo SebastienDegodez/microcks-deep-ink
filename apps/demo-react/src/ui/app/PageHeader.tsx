@@ -9,8 +9,8 @@ export interface Crumb {
 }
 
 export interface PageHeaderProps {
-  /** The page's single `<h1>`. */
-  title: string;
+  /** The page's single `<h1>`. With `variant="badge"` it is an `ApiBadge` (size `xl`): the badge is the title. */
+  title: ReactNode;
   /** Trail of parent pages, rendered as `<nav aria-label="Breadcrumb">` above the title row. */
   breadcrumb?: Crumb[];
   /** Mono pill beside the title ("11 services · 29 operations"). */
@@ -25,10 +25,15 @@ export interface PageHeaderProps {
   actions?: ReactNode;
   /** `md` = 32px title (default), `lg` = 34px. Applies to the `brand` variant. */
   size?: 'md' | 'lg';
-  /** Title font: `brand` (Alegreya Sans SC 800, default) or `plain` (IBM Plex Sans 600 28px, as on Import). */
-  variant?: 'brand' | 'plain';
+  /**
+   * Title font: `brand` (Alegreya Sans SC 800, default), `plain` (IBM Plex Sans 600 28px, as on Import) or `badge`
+   * (the title is an api-badge, as on Service, Agent and Workflow; 15px secondary description).
+   */
+  variant?: 'brand' | 'plain' | 'badge';
   /** Vertical alignment of the actions: `end` (default, bottom-aligned with the description) or `start`. */
   align?: 'end' | 'start';
+  /** Extra rows under the description, in the title column (labels, proof badges). */
+  children?: ReactNode;
 }
 
 /**
@@ -36,9 +41,9 @@ export interface PageHeaderProps {
  * focus to it when the route changes. Section headings below it are `<h2>`.
  * The wrapper is a `div`, not a `header`, so the page has exactly one banner landmark (the top bar).
  */
-export function PageHeader({ title, breadcrumb, meta, badge, description, descriptionTone = 'muted', actions, size = 'md', variant = 'brand', align = 'end' }: PageHeaderProps) {
+export function PageHeader({ title, breadcrumb, meta, badge, description, descriptionTone = 'muted', actions, size = 'md', variant = 'brand', align = 'end', children }: PageHeaderProps) {
   return (
-    <div className="demo-page-header" data-align={align}>
+    <div className="demo-page-header" data-align={align} data-variant={variant}>
       {breadcrumb && breadcrumb.length > 0 ? (
         <nav aria-label="Breadcrumb" className="demo-breadcrumb">
           <ol>
@@ -72,6 +77,7 @@ export function PageHeader({ title, breadcrumb, meta, badge, description, descri
               {description}
             </p>
           ) : null}
+          {children}
         </div>
         {actions ? <div className="demo-page-actions">{actions}</div> : null}
       </div>

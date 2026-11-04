@@ -124,6 +124,22 @@
 .demo-page-title[data-variant='plain'] {
   font: 600 28px/1.2 var(--font-ui);
 }
+/* Badge title (Service, Agent, Workflow): the h1 is the api-badge, the row centres the chips beside it. */
+.demo-page-title[data-variant='badge'] {
+  display: inline-flex;
+  font: inherit;
+}
+.demo-page-header[data-variant='badge'] .demo-page-title-row {
+  align-items: center;
+}
+.demo-page-header[data-variant='badge'] .demo-page-header-text {
+  flex-basis: 420px;
+  gap: 10px;
+}
+.demo-page-header[data-variant='badge'] .demo-page-description {
+  max-width: 760px;
+  font-size: 15px;
+}
 
 .demo-page-meta {
   padding: 2px 8px;
