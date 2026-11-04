@@ -1,0 +1,26 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "op-pick",
+  "title": "OpPick",
+  "tier": "microcks",
+  "description": "Operation picker: a stack of cards, one per operation (method tag, mono path, muted summary and meta, an end figure), one of them selected. It works as toggle buttons (Service operation rail) or as a radio group (Copilot \"1 · Operation\").",
+  "registryDependencies": ["base", "method-tag"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "toggle: <ul> of <button aria-pressed>; radio: role=radiogroup of <button role=radio aria-checked> with a roving tabindex",
+    "keyboard": [
+      ["Tab", "toggle: moves between the cards; radio: enters the group on the checked card"],
+      ["Enter / Space", "Selects the focused card"],
+      ["Arrow Up / Down (radio)", "Moves and selects the previous or next card, wrapping"],
+      ["Home / End (radio)", "Selects the first or last card"]
+    ],
+    "aria": [
+      "The list or group is named (aria-label or aria-labelledby on the section heading)",
+      "The card's name is its text: method, path, summary, meta; the end figure has a hidden prefix (\"Calls over 7 days: \")",
+      "The selected card has a border, a fill and aria-pressed/aria-checked, not colour alone"
+    ],
+    "rgaa": ["7.1", "11.9", "12.8", "3.1"],
+    "wcag": ["2.1.1", "4.1.2", "1.4.1", "1.4.11"]
+  },
+  "stories": ["Microcks/OpPick"]
+}
