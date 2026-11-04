@@ -20,3 +20,14 @@ export const CustomLabel: StoryObj = {
   name: 'Custom label',
   render: () => <LiveIndicator label="recording" />,
 };
+
+export const SizesAndPausedLabel: StoryObj = {
+  name: 'Small, inline and paused label',
+  render: () => (
+    <div className="inline">
+      <LiveIndicator size="sm" />
+      <LiveIndicator variant="inline" />
+      <LiveIndicator paused pausedLabel="paused · 2 new calls" />
+    </div>
+  ),
+};

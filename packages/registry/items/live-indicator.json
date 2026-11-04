@@ -4,7 +4,8 @@
   "tier": "microcks",
   "description": "Pink dot and label that marks a real-time stream. Not a status.",
   "registryDependencies": [
-    "base"
+    "base",
+    "icon"
   ],
   "npmDependencies": {
     "react": [],
@@ -16,7 +17,7 @@
     "keyboard": [],
     "aria": [
       "Not a live region itself",
-      "paused adds the visible word \"paused\" and stops the dot",
+      "paused swaps the dot for a pause glyph and writes the word \"paused\" (pausedLabel must contain it too)",
       "Dot pulse stops under reduced motion"
     ],
     "rgaa": [
