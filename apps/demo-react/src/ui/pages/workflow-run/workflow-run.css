@@ -37,14 +37,8 @@
 .wfr-badges { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; align-self: center; }
 .wfr-badge-link { display: inline-flex; color: inherit; text-decoration: none; border-radius: 6px; }
 .wfr-badge-link:hover { filter: brightness(1.08); }
-.wfr-meta { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px 22px; font-size: 13px; }
-.wfr-meta-item { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 8px; min-width: 0; }
-.wfr-meta-label { color: var(--text-muted); }
-.wfr-meta-value { color: var(--text); overflow-wrap: anywhere; }
-.wfr-meta-file { font: 400 12px/1.4 var(--font-mono); color: var(--link); text-decoration: none; }
+.wfr-meta-file { font-size: 12px; text-decoration: none; }
 .wfr-meta-file:hover { text-decoration: underline; }
-.wfr-meta-clock { font: 400 12px/1.4 var(--font-mono); color: var(--text-muted); }
-.wfr-meta-mono { font-family: var(--font-mono); color: var(--text); }
 .wfr-running { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
 .wfr-running-label { display: inline-flex; align-items: center; gap: 6px; font: 600 14px/1.3 var(--font-ui); color: var(--running); }
 @keyframes wfr-spin { to { transform: rotate(360deg); } }
@@ -369,3 +363,4 @@ fieldset.wfr-setup-group > legend + * { clear: both; }
 .wfr-example-table .table { min-width: 560px; }
 .wfr-example .wfr-mono-sm[data-tone="danger"] { color: var(--danger); }
 .wfr-example .wfr-mono-sm[data-tone="muted"] { color: var(--text-muted); }
+.wfr-run-meta { max-width: 900px; }

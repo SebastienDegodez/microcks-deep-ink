@@ -130,9 +130,6 @@ button.tr2-row[aria-pressed='true'] { background: var(--selected); border-left-c
 .tr2-detail-meta { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .tr2-close { display: inline-flex; flex: none; align-items: center; justify-content: center; width: 32px; height: 32px; padding: 0; color: var(--text-secondary); background: var(--surface); border: 1px solid var(--border); border-radius: 4px; cursor: pointer; }
 .tr2-close .icon { stroke-width: 2.2; }
-/* Call detail facts: the registry Facts (columns, boxed on surface); the prototype sets terms at 11px. */
-.tr2-facts > .facts-row > dt { font-size: 11px; line-height: normal; }
-.tr2-facts > .facts-row > dd { font-size: 12px; line-height: normal; }
 .tr2-facts .tr2-status { align-items: flex-start; white-space: normal; }
 .tr2-facts .tr2-status > span { min-width: 0; }
 .tr2-facts .tr2-status > .icon { margin-top: 1px; }

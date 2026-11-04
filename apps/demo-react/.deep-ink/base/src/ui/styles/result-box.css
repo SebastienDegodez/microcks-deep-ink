@@ -1,0 +1,52 @@
+/* Deep Ink · result-box@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  /* Success (default): success frame on the surface (Admin toast and export result). */
+  .result-box {
+    --result-box-tone: var(--success);
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 12px;
+    padding: 10px 12px;
+    border: 1px solid var(--result-box-tone);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text-secondary);
+    font: 400 13px/1.5 var(--font-ui);
+  }
+  .result-box[data-size="md"] { font-size: 14px; color: var(--text); }
+  .result-box[data-tone="warning"] { --result-box-tone: var(--warning); }
+  .result-box[data-tone="danger"] { --result-box-tone: var(--danger); }
+  /* Neutral: thin frame on the page background (Workflows warning block). */
+  .result-box[data-tone="neutral"] { border-color: var(--border); background: var(--bg); }
+  /* Info: strong frame on the raised fill, radius 8 (Sources undo banner). */
+  .result-box[data-tone="info"] { border-color: var(--border-strong); background: var(--raised); border-radius: 8px; }
+
+  .result-box-icon { flex: none; display: inline-flex; color: var(--result-box-tone); }
+  .result-box-icon > svg { width: 15px; height: 15px; }
+  .result-box[data-tone="neutral"] .result-box-icon { color: var(--warning); }
+  .result-box[data-tone="info"] .result-box-icon { color: var(--text-muted); }
+  .result-box:has(.result-box-title) .result-box-icon > svg { width: 18px; height: 18px; }
+
+  .result-box-body { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .result-box-title { margin: 0; font: 600 14px/1.4 var(--font-ui); color: var(--text); }
+  .result-box-body strong { font-weight: 600; color: var(--text); }
+  .result-box-action { flex: none; display: inline-flex; align-items: center; gap: 8px; }
+
+  .result-box-dismiss {
+    flex: none;
+    display: inline-grid;
+    place-content: center;
+    width: 28px;
+    height: 28px;
+    margin: -4px -4px -4px 0;
+    padding: 0;
+    border: 0;
+    border-radius: 4px;
+    background: transparent;
+    color: var(--text-muted);
+    cursor: pointer;
+  }
+  .result-box-dismiss:hover { color: var(--text); background: var(--raised); }
+}

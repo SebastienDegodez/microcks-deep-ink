@@ -1,7 +1,7 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex -- scrollable code regions must be reachable by keyboard (WCAG 2.1.1) */
 import '../explore-kit/explore.css';
 import './agent-test.css';
-import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink, useParams, useSearchParams } from 'react-router';
 import {
   AGENT_TRANSPORT_NAMES,
@@ -29,8 +29,10 @@ import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
 import { Checkbox, Radio } from '@/ui/components/ui/checkbox';
 import { ConformanceMatrix, type CheckResult, type MatrixGroup, type MatrixRow } from '@/ui/components/ui/conformance-matrix';
-import { CopyButton } from '@/ui/components/ui/copy-button';
+import { CiPanel } from '@/ui/components/ui/ci-panel';
 import { Field } from '@/ui/components/ui/field';
+import { ProjectionPill } from '@/ui/components/ui/projection-pill';
+import { RunMeta } from '@/ui/components/ui/run-meta';
 import { Icon } from '@/ui/components/ui/icon';
 import { Input } from '@/ui/components/ui/input';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
@@ -462,29 +464,28 @@ function Results({ run, phase, tick, conversationSubs, onStep, onReplay, onEdit 
               <Button asChild variant="primary"><RouterLink to={`/services/${run.setup.serviceId}`}>Open agent</RouterLink></Button>
               <Button icon="play" onClick={onReplay}>Run again</Button>
               <Button asChild><RouterLink to={`/tests/service/${run.setup.serviceId}`}>All runs</RouterLink></Button>
-              <Button icon="code" className="ci-toggle" aria-expanded={ciOpen} aria-controls="ci-panel" onClick={() => setCiOpen(!ciOpen)}>Run it from CI</Button>
+              <Button icon="code" className="ci-panel-toggle" aria-expanded={ciOpen} aria-controls="ci-panel" onClick={() => setCiOpen(!ciOpen)}>Run it from CI</Button>
             </div>
             {ciOpen ? (
-              <div id="ci-panel" role="region" aria-label="Run it from CI" className="ci-panel">
-                <div className="ci-panel-head">
-                  <span className="ci-panel-title">
-                    <span className="ci-panel-name">
-                      Run this test in your pipeline
-                      <ApiBadge label="cli" value="proposed" status="warning" size="sm" />
-                    </span>
-                    <span className="ci-panel-hint">
-                      Proposed, not available today: the existing <span className="mono">microcks test</span> command, unchanged, with the new runner name{' '}
-                      <span className="mono">A2A_CONFORMANCE</span> that the A2A module would register. It exits non-zero when a check fails.
-                    </span>
-                  </span>
-                  <CopyButton value={CLI} label="Copy command" />
-                </div>
-                <pre className="ci-panel-code" tabIndex={0} aria-label="Proposed microcks CLI command"><code>{CLI}</code></pre>
-                <span className="ci-panel-hint">
-                  Add <span className="mono">--keycloakClientId</span> and <span className="mono">--keycloakClientSecret</span> when your Microcks instance has authentication on.
-                  The agent's OAuth2 token comes from the secret bound to the test, as in this run.
-                </span>
-              </div>
+              <CiPanel
+                id="ci-panel"
+                dashed
+                title="Run this test in your pipeline"
+                pill={<ApiBadge label="cli" value="proposed" status="warning" size="sm" />}
+                hint={
+                  <>
+                    Proposed, not available today: the existing <span className="mono">microcks test</span> command, unchanged, with the new runner name{' '}
+                    <span className="mono">A2A_CONFORMANCE</span> that the A2A module would register. It exits non-zero when a check fails.
+                  </>
+                }
+                command={CLI}
+                footnote={
+                  <>
+                    Add <span className="mono">--keycloakClientId</span> and <span className="mono">--keycloakClientSecret</span> when your Microcks instance has authentication on.
+                    The agent's OAuth2 token comes from the secret bound to the test, as in this run.
+                  </>
+                }
+              />
             ) : null}
           </section>
         )}
@@ -600,7 +601,7 @@ export default function AgentTestRunPage() {
       <RouterLink to={`/services/${serviceId}`} className="run-badge-link">
         <ApiBadge protocol="A2A" name="Pastry concierge 1.0" size="lg" />
       </RouterLink>
-      <span className="projection-pill" title="A2A does not exist in Microcks today: this screen projects a protocol module for v2">Projection · v2 module</span>
+      <ProjectionPill title="A2A does not exist in Microcks today: this screen projects a protocol module for v2" />
       {!hasRun ? (
         <span role="status"><ApiBadge label="status" value="not started" /></span>
       ) : running ? (
@@ -612,26 +613,24 @@ export default function AgentTestRunPage() {
           </span>
         </>
       ) : (
-        <span role="status"><ApiBadge label="result" value={passed ? 'passed' : 'failed'} status={passed ? 'success' : 'danger'} /></span>
+        <span role="status"><ApiBadge label="result" value={passed ? 'passed' : 'failed'} status={passed ? 'success' : 'danger'} icon={passed ? 'check' : 'close-sm'} /></span>
       )}
     </span>
   );
-  const meta: ReactNode = (
-    <span className="run-meta">
-      <span><span className="run-meta-key">Endpoint</span><span className="run-meta-endpoint">{cardUrl}</span></span>
-      <span><span className="run-meta-key">Runner</span><span className="run-meta-runner">A2A_CONFORMANCE</span></span>
-      {hasRun && current ? (
-        <>
-          <span>
-            <span className="run-meta-key">Started</span>
-            <span>{relative(current.startedAt)}</span>
-            <span className="run-meta-date">{formatClock(current.startedAt)}</span>
-          </span>
-          <span><span className="run-meta-key">{running ? 'Elapsed' : 'Duration'}</span><span className="run-meta-mono">{fmtMs(elapsed)}</span></span>
-        </>
-      ) : null}
-      <span><span className="run-meta-key">Launched by</span><span>{current?.launchedBy ?? 'MA'}</span></span>
-    </span>
+  const meta = (
+    <RunMeta
+      items={[
+        { term: 'Endpoint', value: cardUrl, kind: 'url' },
+        { term: 'Runner', value: 'A2A_CONFORMANCE', kind: 'chip' },
+        ...(hasRun && current
+          ? [
+              { term: 'Started', value: relative(current.startedAt), detail: formatClock(current.startedAt) },
+              { term: running ? 'Elapsed' : 'Duration', id: 'duration', value: fmtMs(elapsed), kind: 'mono' as const },
+            ]
+          : []),
+        { term: 'Launched by', value: current?.launchedBy ?? 'MA' },
+      ]}
+    />
   );
   const header = (
     <PageHeader
@@ -639,7 +638,6 @@ export default function AgentTestRunPage() {
       breadcrumb={[{ label: 'Tests', to: `/tests/service/${serviceId}` }, { label: 'Pastry concierge 1.0', to: `/services/${serviceId}` }, { label: `Run #${id}` }]}
       badge={badges}
       align="start"
-      description={meta}
       actions={
         hasRun ? (
           <>
@@ -648,7 +646,9 @@ export default function AgentTestRunPage() {
           </>
         ) : undefined
       }
-    />
+    >
+      {meta}
+    </PageHeader>
   );
 
   if (defaults.status === 'error' && !defaults.data) return <div className="agent-test">{header}<ErrorBlock error={defaults.error} what="The agent" onRetry={defaults.reload} /></div>;

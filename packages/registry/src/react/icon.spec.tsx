@@ -22,7 +22,7 @@ describe('Icon', () => {
   });
 
   it('ships the names required by the contract', () => {
-    for (const n of ['spark', 'retry', 'end', 'branch', 'link-out', 'play', 'pause', 'pause-narrow', 'trash', 'trash-plain', 'undo', 'check', 'cross', 'dash', 'warning', 'info', 'external', 'chevron-down', 'menu', 'search', 'close', 'copy', 'upload', 'tests', 'sun', 'moon', 'download', 'check-circle', 'x-circle', 'never-tested', 'more-vertical', 'arrow-right', 'chevron-left', 'list', 'badge-wall', 'reset', 'replay', 'skip', 'pencil', 'clock']) {
+    for (const n of ['spark', 'retry', 'end', 'branch', 'link-out', 'play', 'pause', 'pause-narrow', 'trash', 'trash-plain', 'undo', 'check', 'cross', 'dash', 'warning', 'info', 'external', 'chevron-down', 'menu', 'search', 'close', 'copy', 'upload', 'tests', 'sun', 'moon', 'download', 'check-circle', 'x-circle', 'never-tested', 'more-vertical', 'arrow-right', 'chevron-left', 'list', 'badge-wall', 'reset', 'replay', 'skip', 'pencil', 'clock', 'early-end', 'lens']) {
       expect(ICON_NAMES).toContain(n);
     }
   });
