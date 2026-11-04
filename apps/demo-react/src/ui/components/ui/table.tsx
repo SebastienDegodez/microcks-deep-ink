@@ -11,6 +11,8 @@ export interface SortState {
 export interface DataTableColumn<T> {
   key: string;
   header: string;
+  /** Keeps the header for assistive technology only (an icon-only "Open" column). */
+  headerHidden?: boolean;
   align?: 'start' | 'end';
   mono?: boolean;
   /** Keeps the cells of this column on one line. Cells wrap by default. */
@@ -115,6 +117,8 @@ export function DataTable<T>({
                       {c.header}
                       <Icon name={active === 'descending' ? 'arrow-down' : active === 'ascending' ? 'arrow-up' : 'dash'} size={12} />
                     </button>
+                  ) : c.headerHidden ? (
+                    <span className="sr-only">{c.header}</span>
                   ) : (
                     c.header
                   )}

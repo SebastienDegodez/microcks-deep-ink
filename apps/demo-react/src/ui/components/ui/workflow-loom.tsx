@@ -117,7 +117,15 @@ export interface WorkflowLoomElement extends HTMLElement {
   outputNote?: string;
   validatesSchemas: boolean;
   selectedStep?: string;
+  lens?: string;
+  tableToggle: boolean;
   label: string;
+}
+
+/** Detail of `mkLensSelect`: the traced thread id, undefined when the lens is cleared. */
+export interface LoomLensDetail {
+  id?: string;
+  expression?: string;
 }
 
 declare module 'react' {
@@ -142,10 +150,16 @@ export interface WorkflowLoomProps extends Omit<HTMLAttributes<WorkflowLoomEleme
   /** The run validates schemas: every step shows "Success criteria" and "Schema validation". */
   validatesSchemas?: boolean;
   selectedStep?: string;
+  /** Id of the traced thread (expression lens); inputs, outputs and thread labels toggle it. */
+  lens?: string;
+  /** Shows the built-in "Show as table" button (default true). Pass false when the page has its own Steps table. */
+  tableToggle?: boolean;
   /** Accessible name of the loom. */
   label: string;
-  /** Called with `{ stepId }` when a step is selected (click, Enter, Space). */
-  onStepSelect?: (detail: { stepId: string }) => void;
+  /** Called with `{ stepId }` when a step is selected (click, Enter, Space); `stepId` is undefined when the selected step is pressed again. */
+  onStepSelect?: (detail: { stepId?: string }) => void;
+  /** Called with `{ id, expression }` when an input, an output or a thread label is pressed; `id` is undefined when the lens is cleared. */
+  onLensSelect?: (detail: LoomLensDetail) => void;
   ref?: Ref<WorkflowLoomElement>;
 }
 
@@ -168,16 +182,21 @@ export function WorkflowLoom({
   outputNote,
   validatesSchemas,
   selectedStep,
+  lens,
+  tableToggle,
   label,
   onStepSelect,
+  onLensSelect,
   ref,
   ...rest
 }: WorkflowLoomProps) {
   const el = useRef<WorkflowLoomElement | null>(null);
   const handler = useRef(onStepSelect);
+  const lensHandler = useRef(onLensSelect);
 
   useLayoutEffect(() => {
     handler.current = onStepSelect;
+    lensHandler.current = onLensSelect;
   });
   useLayoutEffect(() => {
     if (el.current) el.current.sources = sources;
@@ -204,15 +223,26 @@ export function WorkflowLoom({
     if (el.current) el.current.selectedStep = selectedStep;
   }, [selectedStep]);
   useLayoutEffect(() => {
+    if (el.current) el.current.lens = lens;
+  }, [lens]);
+  useLayoutEffect(() => {
+    if (el.current) el.current.tableToggle = tableToggle ?? true;
+  }, [tableToggle]);
+  useLayoutEffect(() => {
     if (el.current) el.current.label = label;
   }, [label]);
 
   useEffect(() => {
     const node = el.current;
     if (!node) return;
-    const listener = (e: Event) => handler.current?.((e as CustomEvent<{ stepId: string }>).detail);
+    const listener = (e: Event) => handler.current?.((e as CustomEvent<{ stepId?: string }>).detail);
+    const lensListener = (e: Event) => lensHandler.current?.((e as CustomEvent<LoomLensDetail>).detail);
     node.addEventListener('mkStepSelect', listener);
-    return () => node.removeEventListener('mkStepSelect', listener);
+    node.addEventListener('mkLensSelect', lensListener);
+    return () => {
+      node.removeEventListener('mkStepSelect', listener);
+      node.removeEventListener('mkLensSelect', lensListener);
+    };
   }, []);
 
   return (

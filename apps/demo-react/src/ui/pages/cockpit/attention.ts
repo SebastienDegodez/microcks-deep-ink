@@ -32,7 +32,8 @@ export function buildAttention(services: readonly ServiceSummary[], importers: r
   if (pastry1?.testStatus === 'failed') {
     items.push({
       id: 'test-86', kind: 'Failing test', tone: 'danger', badge: 'REST', subject: `${pastry1.name} ${pastry1.version}`,
-      title: 'GET /pastries/{name}/stock fails conformance', detail: 'Test #86 · OPEN_API_SCHEMA · 2 of 3 operations conformant.',
+      title: 'PATCH /pastries/{name} fails conformance',
+      detail: 'Test #86 · OPEN_API_SCHEMA · response body does not match schema: $.price expected number, got string.',
       cta: 'Open test #86', to: '/tests/runner/86',
     });
   }
@@ -40,14 +41,17 @@ export function buildAttention(services: readonly ServiceSummary[], importers: r
     id: 'run-14', kind: 'Failing workflow', tone: 'danger', badge: 'ARAZZO', subject: 'Pastry workflows 1.2.0',
     title: 'Workflow Restock a pastry failed on implementations · schema validation at patchPastry (3 attempts)',
     detail:
-      'Run #14 · success criteria held ($statusCode == 200) but the response does not conform to its schema: price is the string "3.9", the schema expects a number. Stops at patchPastry, verifyPastry not run. Same bug as test #119.',
+      'Run #14 · Implementations (https://pastry.staging.acme.io/v2) · success criteria held ($statusCode == 200) but the response does not conform to its schema: price is the string "3.9", the schema expects a number. Stops at patchPastry, verifyPastry not run. Same bug as test #119.',
     cta: 'Open run #14', to: '/workflows/runs/6729a1d27e4c0b5f93a8c214',
   });
   for (const importer of importers.filter((i) => i.health === 'failed')) {
+    const host = hostOf(importer.url);
+    const lastGood = importer.error?.servedSince?.split(' · ')[1];
+    const secret = importer.secretName ? `Secret ${importer.secretName} was rejected${host ? ` by ${host}` : ''}` : (importer.error?.detail ?? '');
     items.push({
       id: `importer-${importer.id}`, kind: 'Importer error', tone: 'warning', badge: 'importer', subject: importer.name,
-      title: `Scheduled import failed: ${importer.error?.message ?? 'error'}`,
-      detail: `${importer.error?.detail ?? ''} ${importer.error?.since ?? ''}. Mocks still serve the last imported version.`.trim(),
+      title: `Scheduled import failed: ${importer.error?.message.split(' — ')[0] ?? 'error'}`,
+      detail: `${secret}${importer.error?.since ? ` · ${importer.error.since}` : ''}.${lastGood ? ` Last successful scan today at ${lastGood};` : ''} mocks still serve that version.`,
       cta: 'Fix in Sources', to: `/sources/${importer.id}`,
     });
   }
@@ -67,9 +71,17 @@ export function buildAttention(services: readonly ServiceSummary[], importers: r
     items.push({
       id: 'never', kind: 'Never tested', tone: 'neutral', badge: first.protocol, subject: `${first.name} ${first.version}`,
       title: `${first.operationCount} ${first.protocol === 'A2A' ? 'skills' : 'operations'} without a conformance proof`,
-      detail: `Its mock served ${first.calls24h} requests today.${others.length ? ` ${others.join(' and ')} were never tested either.` : ''}`,
+      detail: `Its mock served ${first.calls24h} requests today.${others.length ? ` ${others.join(' and ')} neither.` : ''}`,
       cta: 'Run a first test', to: `/tests/create?service=${first.id}`,
     });
   }
   return items;
+}
+
+function hostOf(url: string): string | undefined {
+  try {
+    return new URL(url).host;
+  } catch {
+    return undefined;
+  }
 }

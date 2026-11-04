@@ -3,7 +3,7 @@
 import type { OperationResult } from '@microcks-deep-ink/registry/react/conformance-band';
 import type { TabItem } from '@microcks-deep-ink/registry/react/tabs';
 import type { CommandItem } from '@microcks-deep-ink/registry/react/command-bar';
-import type { LoomSource, LoomStep, LoomThread } from '@microcks-deep-ink/registry/react/workflow-loom';
+import type { LoomInput, LoomOutput, LoomSource, LoomStep, LoomThread } from '@microcks-deep-ink/registry/react/workflow-loom';
 import type { MatrixColumn, MatrixGroup } from '@microcks-deep-ink/registry/react/conformance-matrix';
 import type { SkillItem } from '@microcks-deep-ink/registry/react/skill-list';
 import type { TaskLane, TaskTimelineNode } from '@microcks-deep-ink/registry/react/task-timeline';
@@ -14,8 +14,9 @@ export interface LoomScenario {
   sources: LoomSource[];
   steps: LoomStep[];
   threads: LoomThread[];
-  inputs?: string[];
-  outputs?: string[];
+  inputs?: (string | LoomInput)[];
+  outputs?: (string | LoomOutput)[];
+  outputNote?: string;
   validatesSchemas?: boolean;
 }
 
@@ -89,9 +90,13 @@ export const CATALOGUE_ROWS: CatalogueRow[] = [
 export const LOOM_RESTOCK_RUN14: LoomScenario = {
   label: 'restock-pastry, run #14',
   validatesSchemas: true,
-  inputs: ['pastryName', 'newPrice'],
-  outputs: ['restocked'],
-  sources: [{ name: 'apiPastry', type: 'openapi', protocol: 'REST', linked: true }],
+  inputs: [
+    { name: 'size', value: '"M"' },
+    { name: 'newPrice', value: '3.9' },
+  ],
+  outputs: [{ name: 'pastryName' }, { name: 'oldPrice' }, { name: 'newPrice' }],
+  outputNote: 'No outputs: #14 failed.',
+  sources: [{ name: 'apiPastry', type: 'openapi', protocol: 'REST', linked: true, serviceLabel: 'API Pastry 2.0' }],
   steps: [
     {
       stepId: 'listPastries',
@@ -99,6 +104,7 @@ export const LOOM_RESTOCK_RUN14: LoomScenario = {
       operation: 'GET /pastries',
       status: 'passed',
       attempts: 1,
+      result: '200 · 212 ms',
       checks: { successCriteria: 'passed', schemaValidation: 'passed' },
     },
     {
@@ -107,6 +113,7 @@ export const LOOM_RESTOCK_RUN14: LoomScenario = {
       operation: 'GET /pastries/{name}',
       status: 'passed',
       attempts: 1,
+      result: '200 · 188 ms',
       checks: { successCriteria: 'passed', schemaValidation: 'passed' },
       actions: [
         {
@@ -114,6 +121,8 @@ export const LOOM_RESTOCK_RUN14: LoomScenario = {
           name: 'alreadyAvailable',
           on: 'success',
           criteria: "$response.body#/status == 'available'",
+          label: "status == 'available'",
+          runLabel: '#14',
           taken: false,
         },
       ],
@@ -124,23 +133,36 @@ export const LOOM_RESTOCK_RUN14: LoomScenario = {
       operation: 'PATCH /pastries/{name}',
       status: 'failed',
       attempts: 3,
+      result: '200 · 3 attempts · 5.4 s',
       checks: { successCriteria: 'passed', schemaValidation: 'failed' },
-      actions: [{ type: 'retry', name: 'retryPatch', on: 'failure', retryAfter: 1, retryLimit: 2, applied: true }],
+      actions: [{ type: 'retry', name: 'retryPatch', on: 'failure', retryAfter: 1, retryLimit: 2, applied: true, runLabel: '#14' }],
     },
     {
       stepId: 'verifyPastry',
       source: 'apiPastry',
       operation: 'GET /pastries/{name}',
       status: 'not-run',
+      result: 'Not run',
       checks: { successCriteria: 'not-evaluated', schemaValidation: 'not-evaluated' },
     },
   ],
   threads: [
-    { from: '$inputs', to: 'getPastry', expression: '$inputs.pastryName → name' },
-    { from: 'listPastries', to: 'getPastry', expression: '$steps.listPastries.outputs.firstName → name' },
-    { from: '$inputs', to: 'patchPastry', expression: '$inputs.newPrice → body.price' },
-    { from: 'patchPastry', to: 'verifyPastry', expression: '$steps.patchPastry.outputs.name → name' },
-    { from: 'verifyPastry', to: '$outputs', expression: '$steps.verifyPastry.outputs.status → restocked' },
+    { id: 'size', from: '$inputs', expression: '$inputs.size', value: '"M"', drops: [{ to: 'listPastries', label: 'size · query' }] },
+    {
+      id: 'firstName',
+      from: 'listPastries',
+      expression: '$steps.listPastries.outputs.firstName',
+      value: '"Eclair Cafe"',
+      drops: [
+        { to: 'getPastry', label: 'name · path' },
+        { to: 'patchPastry', label: 'name · path' },
+        { to: 'verifyPastry', label: 'name · path', idle: true },
+        { to: '$outputs', label: 'pastryName', idle: true },
+      ],
+    },
+    { id: 'newPriceIn', from: '$inputs', expression: '$inputs.newPrice', value: '3.9', drops: [{ to: 'patchPastry', label: '/price · body' }] },
+    { id: 'oldPrice', from: 'getPastry', expression: '$steps.getPastry.outputs.oldPrice', value: '2.4', drops: [{ to: '$outputs', label: 'oldPrice', idle: true }] },
+    { id: 'newPrice', from: 'patchPastry', expression: '$steps.patchPastry.outputs.newPrice', missing: true, drops: [{ to: '$outputs', label: 'newPrice', idle: true }] },
   ],
 };
 

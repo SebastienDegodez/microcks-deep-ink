@@ -1,36 +1,41 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex -- scrollable code and log regions must be reachable by keyboard (WCAG 2.1.1) */
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router';
+import { formatClock } from '@/domain/shared';
 import {
   buildContractDiff,
   buildRunnerLog,
   ciCommandForRun,
   elapsedMs,
-  operationLabel,
-  runConformance,
+  type DiffRow,
   type TestRun,
   type TestStepResult,
 } from '@/domain/testing';
-import { PageHeader, useAnnounce, usePageTitle, useQuery, useSubscription, useUseCases } from '@/ui/app';
+import { PageHeader, useAnnounce, usePageTitle, useQuery, useRelativeTime, useUseCases } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
 import { ConformanceBand, type OperationResult } from '@/ui/components/ui/conformance-band';
 import { CopyButton } from '@/ui/components/ui/copy-button';
-import { Disclosure } from '@/ui/components/ui/disclosure';
-import { Icon } from '@/ui/components/ui/icon';
+import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { MethodTag } from '@/ui/components/ui/method-tag';
-import { Panel } from '@/ui/components/ui/panel';
-import { Progress } from '@/ui/components/ui/progress';
-import { StatusBadge, type Outcome } from '@/ui/components/ui/status-badge';
-import { StepStatus } from '@/ui/components/ui/step-status';
-import { Switch } from '@/ui/components/ui/switch';
 import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
 import { useThrottledAnnounce } from '../tests/useThrottledAnnounce';
 import './test-run.css';
 
-const OUTCOME: Record<TestRun['result'], Outcome> = { passed: 'conformant', failed: 'failed', timeout: 'partial', running: 'running' };
+/** The run "executes" one step every 1.3 s, as in the prototype. */
+const STEP_MS = 1300;
+/** A live run opens with 3 steps already finished (the prototype's baseline). */
+const LIVE_START = 3;
+
+type StepState = 'pass' | 'fail' | 'run' | 'pend';
+const LOOK: Record<StepState, { word: string; icon: IconName }> = {
+  pass: { word: 'Passed', icon: 'check' },
+  fail: { word: 'Failed', icon: 'cross' },
+  run: { word: 'Running', icon: 'running' },
+  pend: { word: 'Queued', icon: 'circle' },
+};
+const RESULT_WORD: Record<TestRun['result'], string> = { passed: 'passed', failed: 'failed', timeout: 'timed out', running: 'running' };
 
 export default function TestRunPage() {
   const { testRunId = '' } = useParams();
@@ -39,56 +44,97 @@ export default function TestRunPage() {
   const query = useQuery(() => uc.testing.get(testRunId), [testRunId]);
   const base = query.data;
 
+  if (base) return <RunView key={base.id} base={base} />;
   return (
     <>
-      <PageHeader
-        title={`Test run #${testRunId}`}
-        actions={
-          base ? (
-            <Button asChild variant="ghost">
-              <RouterLink to={`/tests/service/${base.serviceId}`}>Test history</RouterLink>
-            </Button>
-          ) : undefined
-        }
-      />
-      {query.status === 'loading' && !base ? <LoadingBlock label="the test run" /> : null}
+      <PageHeader title={`Run #${testRunId}`} breadcrumb={[{ label: 'Tests', to: '/tests' }, { label: `Run #${testRunId}` }]} />
+      {query.status === 'loading' ? <LoadingBlock label="the test run" /> : null}
       {query.status === 'error' ? <ErrorBlock error={query.error} what="Test run" onRetry={query.reload} /> : null}
-      {base ? <RunView key={base.id} base={base} /> : null}
     </>
   );
 }
 
+function hostOf(url: string): string {
+  try {
+    return new URL(url).host;
+  } catch {
+    return url;
+  }
+}
+function basePath(url: string): string {
+  try {
+    const p = new URL(url).pathname;
+    return p === '/' ? '' : p.replace(/\/$/, '');
+  } catch {
+    return '';
+  }
+}
+
 function RunView({ base }: { base: TestRun }) {
   const uc = useUseCases();
+  const relative = useRelativeTime();
   const announce = useAnnounce();
   const throttled = useThrottledAnnounce(2000);
   const form = useQuery(() => uc.testing.getCreateForm(base.serviceId), [base.serviceId]);
-  const stream = useSubscription<TestRun>(base.live ? (listener) => uc.testing.watch(base.id, listener) : undefined, [base.id, base.live]);
-  const [selectedId, setSelectedId] = useState<string | undefined>();
-  const [showCi, setShowCi] = useState(false);
-
-  const streamed = stream.value;
-  const run: TestRun = useMemo(
-    () => (base.live ? (streamed ?? { ...base, steps: [], passed: 0, result: 'running' as const }) : base),
-    [base, streamed],
-  );
+  const timeline = useQuery(() => uc.testing.timeline(base.serviceId), [base.serviceId]);
   const total = base.steps.length;
-  const finished = run.steps.length;
-  const running = run.result === 'running';
-  const service = form.data?.services.find((s) => s.id === base.serviceId);
+  const [play, setPlay] = useState<{ phase: 'running' | 'done'; tick: number }>(
+    base.live ? { phase: 'running', tick: Math.min(LIVE_START, total) } : { phase: 'done', tick: total },
+  );
+  const { phase, tick } = play;
+  /** `null` follows the run (latest finished step while running, the first failed one when done); '' = all closed. */
+  const [sel, setSel] = useState<string | null>(null);
+  const [ciOpen, setCiOpen] = useState(false);
+  const running = phase === 'running';
+  const done = !running;
+  const finished = done ? total : tick;
 
-  const lastAnnounced = useRef(0);
+  /** One step further; after the last step the run computes its verdict. */
+  const advance = useCallback(
+    () => setPlay((p) => (p.phase !== 'running' ? p : p.tick >= total ? { phase: 'done', tick: total } : { phase: 'running', tick: p.tick + 1 })),
+    [total],
+  );
   useEffect(() => {
-    if (!base.live || finished === 0 || finished === lastAnnounced.current) return;
-    lastAnnounced.current = finished;
-    const step = run.steps[finished - 1];
-    if (!step) return;
-    if (finished === total && !running) {
-      announce(`Test run #${run.id} ${run.result}: ${run.passed} of ${total} steps passed.`);
-    } else {
-      throttled(`Step ${finished} of ${total}: ${step.name} ${step.result}.`);
+    if (!running) return undefined;
+    const timer = setInterval(advance, STEP_MS);
+    return () => clearInterval(timer);
+  }, [running, advance]);
+
+  const replay = () => {
+    setPlay({ phase: 'running', tick: 0 });
+    setSel(null);
+    setCiOpen(false);
+  };
+  const skip = () => {
+    setPlay({ phase: 'done', tick: total });
+    setSel(null);
+  };
+
+  const service = form.data?.services.find((s) => s.id === base.serviceId);
+  const serviceLabel = service ? `${service.name} ${service.version}` : base.serviceId;
+
+  const stateOf = (i: number): StepState => {
+    const s = base.steps[i];
+    if (i < finished && s) return s.result === 'passed' ? 'pass' : 'fail';
+    return i === tick && running ? 'run' : 'pend';
+  };
+  const states = base.steps.map((_, i) => stateOf(i));
+  const passCount = states.filter((s) => s === 'pass').length;
+  const failCount = states.filter((s) => s === 'fail').length;
+  const queuedCount = total - passCount - failCount;
+
+  // Announce progress (throttled) and the verdict.
+  const previousProgress = useRef({ finished, done });
+  useEffect(() => {
+    const prev = previousProgress.current;
+    previousProgress.current = { finished, done };
+    if (done && !prev.done) {
+      announce(`Test run #${base.id} ${RESULT_WORD[base.result]}: ${passCount} of ${total} steps passed.`);
+    } else if (!done && finished > prev.finished) {
+      const step = base.steps[finished - 1];
+      if (step) throttled(`Step ${finished} of ${total}: ${step.name} ${step.result}.`);
     }
-  }, [finished, base.live, run, total, running, announce, throttled]);
+  }, [finished, done, base, total, passCount, announce, throttled]);
 
   const operations = useMemo(() => {
     const labels = base.operationLabels ?? [];
@@ -96,216 +142,495 @@ function RunView({ base }: { base: TestRun }) {
     return ids.map((id) => {
       const label = labels.find((l) => l.id === id);
       const first = base.steps.find((s) => s.operationId === id);
-      return {
-        id,
-        title: label ? operationLabel(label) : first ? `${first.method} ${first.path}` : id,
-        method: label?.method ?? first?.method ?? 'GET',
-        steps: run.steps.filter((s) => s.operationId === id),
-      };
+      const idx = base.steps.flatMap((s, i) => (s.operationId === id ? [i] : []));
+      return { id, method: label?.method ?? first?.method ?? 'GET', path: label?.path ?? first?.path ?? id, idx };
     });
-  }, [base, run.steps]);
+  }, [base]);
+  const opStates = operations.map((op): StepState => {
+    const st = op.idx.map((i) => states[i]);
+    const fin = st.filter((s) => s === 'pass' || s === 'fail').length;
+    if (fin === st.length) return st.includes('fail') ? 'fail' : 'pass';
+    return st.includes('run') || fin > 0 ? 'run' : 'pend';
+  });
 
-  const outcomes: OperationResult[] = operations.map((op) =>
-    op.steps.length === 0 ? 'untested' : op.steps.some((s) => s.result === 'failed') ? 'fail' : 'pass',
-  );
+  const firstFailed = base.steps.find((s) => s.result === 'failed');
+  const autoSel = done ? (firstFailed ?? base.steps[total - 1])?.id : base.steps[tick - 1]?.id;
+  const selId = sel === null ? autoSel : sel;
 
-  const firstFailed = run.steps.find((s) => s.result === 'failed');
-  const selected: TestStepResult | undefined = run.steps.find((s) => s.id === selectedId) ?? firstFailed;
-  const diff = selected ? buildContractDiff(selected) : undefined;
-  const log = buildRunnerLog(run, finished, !running);
-  const conformance = runConformance({ passed: run.passed, total });
+  const log = buildRunnerLog({ ...base, result: done ? base.result : 'running' }, finished, done);
+  const elapsed = elapsedMs(base, finished);
+  const score = Math.round((100 * passCount) / Math.max(1, total));
   const waitSec = Math.round(base.timeoutMs / 1000);
   const apiRef = service ? `${service.name}:${service.version}` : base.serviceId;
   const ci = ciCommandForRun(apiRef, base.endpoint, base.runner, waitSec);
+  const current = running ? base.steps[tick] : undefined;
+  const prefix = basePath(base.endpoint);
+
+  const points = timeline.data ?? [];
+  const at = points.findIndex((p) => p.runId === base.id);
+  const previous = at > 0 ? points[at - 1] : undefined;
+  const delta = previous ? score - previous.conformance : 0;
+
+  const brokenOps = operations.filter((_, i) => opStates[i] === 'fail');
+  const failedSchema = firstFailed?.schemaRef?.split('/').pop();
+  const bandOutcomes: OperationResult[] = opStates.map((s) => (s === 'pass' ? 'pass' : s === 'fail' ? 'fail' : 'untested'));
+  const related = base.relatedWorkflowRun;
+
+  const badges = (
+    <span className="tr-badges">
+      <RouterLink to={`/services/${base.serviceId}`} className="tr-badge-link">
+        <ApiBadge protocol={service?.protocol ?? 'REST'} name={serviceLabel} size="lg" />
+      </RouterLink>
+      {running ? (
+        <>
+          <LiveIndicator />
+          <span className="tr-running">
+            <Icon name="running" size={15} className="tr-spin" />
+            Running · step {Math.min(tick + 1, total)} of {total}
+          </span>
+        </>
+      ) : (
+        <ApiBadge label="result" value={RESULT_WORD[base.result]} status={base.result === 'passed' ? 'success' : base.result === 'failed' ? 'danger' : 'warning'} />
+      )}
+    </span>
+  );
 
   return (
-    <div className="stack">
-      <Panel title="Verdict" aria-busy={running}>
-        <div className="tr-verdict">
-          <div className="tr-verdict-main">
-            <div className="demo-actions-row">
-              <StatusBadge status={OUTCOME[run.result]} />
-              {service ? <ApiBadge protocol={service.protocol} name={service.name} version={service.version} /> : null}
-              {running ? <LiveIndicator paused={stream.paused} label="streaming" /> : null}
-            </div>
-            <p style={{ margin: 0 }}>
-              <strong>{run.passed}</strong> of <strong>{total}</strong> steps passed · conformance <strong>{conformance}%</strong> · {elapsedMs(run, finished)} ms
-            </p>
-            <ul className="demo-meta">
-              <li className="demo-meta-item"><span className="demo-meta-key">Runner</span> <span className="demo-mono">{base.runner}</span></li>
-              <li className="demo-meta-item"><span className="demo-meta-key">Endpoint</span> <span className="demo-mono">{base.endpoint}</span></li>
-              <li className="demo-meta-item"><span className="demo-meta-key">Environment</span> {base.environment}</li>
-              {base.launchedBy ? <li className="demo-meta-item"><span className="demo-meta-key">Launched by</span> {base.launchedBy}</li> : null}
-            </ul>
-          </div>
-          {running ? (
-            <Button icon={stream.paused ? 'play' : 'pause'} onClick={stream.toggle}>
-              {stream.paused ? 'Resume' : 'Pause'}
+    <>
+      <PageHeader
+        title={`Run #${base.id}`}
+        breadcrumb={[
+          { label: 'APIs & Services', to: '/services' },
+          { label: serviceLabel, to: `/services/${base.serviceId}` },
+          { label: 'Tests', to: `/tests/service/${base.serviceId}` },
+          { label: `Run #${base.id}` },
+        ]}
+        badge={badges}
+        align="start"
+        description={
+          <span className="tr-meta">
+            <span>
+              <span className="tr-meta-key">Endpoint</span>
+              <span className="tr-meta-endpoint">{base.endpoint}</span>
+            </span>
+            <span>
+              <span className="tr-meta-key">Runner</span>
+              <span className="tr-meta-runner">{base.runner}</span>
+            </span>
+            <span>
+              <span className="tr-meta-key">Started</span>
+              <span>{relative(base.startedAt)}</span>
+              <span className="tr-meta-date">{formatClock(base.startedAt)}</span>
+            </span>
+            <span>
+              <span className="tr-meta-key">{done ? 'Duration' : 'Elapsed'}</span>
+              <span className="tr-meta-mono">{elapsed} ms</span>
+            </span>
+            <span>
+              <span className="tr-meta-key">Timeout</span>
+              <span className="tr-meta-mono">{waitSec} s</span>
+            </span>
+            {base.launchedBy ? (
+              <span>
+                <span className="tr-meta-key">Launched by</span>
+                <span>{base.launchedBy}</span>
+              </span>
+            ) : null}
+          </span>
+        }
+        actions={
+          <>
+            <Button icon="reset" onClick={replay}>
+              Replay run
             </Button>
+            {running ? (
+              <Button variant="primary" icon="skip" onClick={skip}>
+                Skip to result
+              </Button>
+            ) : null}
+          </>
+        }
+      />
+
+      <div className="tr-top">
+        {running ? (
+          <section aria-label="Progress" className="run-progress">
+            <div className="run-progress-head">
+              <div className="run-progress-count">
+                <span className="run-progress-num">
+                  {finished}
+                  <span className="run-progress-total">/{total}</span>
+                </span>
+                <span className="run-progress-caption">test steps done</span>
+              </div>
+              <div className="run-progress-now">
+                <span className="run-progress-now-label">Now calling</span>
+                <span className="run-progress-now-value">
+                  {current ? `${current.method} ${base.endpoint}${current.path}` : 'Computing conformance score…'}
+                </span>
+              </div>
+            </div>
+            <div
+              className="run-progress-bar"
+              role="img"
+              aria-label={`Progress: ${passCount} passed, ${failCount} failed, ${queuedCount} remaining of ${total} test steps`}
+            >
+              {base.steps.map((s, i) => (
+                <span key={s.id} data-state={states[i]} title={`${s.method} ${s.path} · ${s.name} · ${LOOK[states[i] ?? 'pend'].word}`} />
+              ))}
+            </div>
+            <div className="run-progress-foot">
+              <span className="run-progress-counts">
+                <span data-kind="pass"><Icon name="check" size={13} />{passCount} passed</span>
+                <span data-kind="fail"><Icon name="cross" size={13} />{failCount} failed</span>
+                <span data-kind="pending"><Icon name="circle" size={13} />{queuedCount} queued</span>
+              </span>
+              <Button size="sm" icon="chevron" className="run-progress-step" onClick={advance}>
+                Step forward
+              </Button>
+            </div>
+            <p className="run-progress-note">
+              Microcks replays every example of the contract against the endpoint, then validates each response body with the OpenAPI schema of the operation.
+            </p>
+          </section>
+        ) : (
+          <section aria-label="Verdict" className="tr-verdict">
+            <div className="tr-verdict-head">
+              <div className="tr-score">
+                <span className="tr-score-label">Conformance score</span>
+                <span className="tr-score-value" data-level={score >= 80 ? 'high' : score >= 50 ? 'mid' : 'low'}>
+                  {score}%
+                </span>
+                {previous ? (
+                  <span className="tr-trend" data-dir={delta < 0 ? 'down' : delta > 0 ? 'up' : 'flat'}>
+                    <Icon name={delta < 0 ? 'arrow-down' : delta > 0 ? 'arrow-up' : 'dash'} size={13} />
+                    {delta === 0 ? 'Same as' : `${Math.abs(delta)} pts vs`} run #{previous.runId} <span className="tr-trend-prev">{previous.conformance}%</span>
+                  </span>
+                ) : null}
+              </div>
+              <div className="tr-verdict-text">
+                <span className="tr-verdict-word" data-result={base.result}>
+                  <Icon name={base.result === 'passed' ? 'check' : base.result === 'failed' ? 'cross' : 'clock'} size={18} />
+                  {base.result === 'passed' ? 'Passed' : base.result === 'failed' ? 'Failed' : 'Timed out'}
+                </span>
+                <span className="tr-verdict-summary">
+                  <span className="tr-mono-strong">
+                    {passCount}/{total}
+                  </span>{' '}
+                  test steps passed ·{' '}
+                  {brokenOps.length === 0
+                    ? `all ${operations.length} operations match their contract`
+                    : `${brokenOps.length} of ${operations.length} operations broke ${brokenOps.length === 1 ? 'its' : 'their'} contract`}
+                </span>
+                {brokenOps[0] && base.result === 'failed' && failedSchema ? (
+                  <span className="tr-verdict-detail">
+                    <span className="tr-mono">
+                      {brokenOps[0].method} {brokenOps[0].path}
+                    </span>{' '}
+                    returns a body that does not match the <span className="tr-mono">{failedSchema}</span> schema.
+                  </span>
+                ) : base.reason ? (
+                  <span className="tr-verdict-detail">{base.reason}</span>
+                ) : null}
+                {related ? (
+                  <RouterLink to={`/workflows/runs/${related.runId}`} className="tr-verdict-link">
+                    <Icon name="dispatcher" size={14} />
+                    <span>
+                      Same contract violation breaks workflow <strong>{related.workflowTitle}</strong> (run #{related.number}, schema validation) at step{' '}
+                      <span className="tr-mono">{related.stepId}</span>
+                    </span>
+                  </RouterLink>
+                ) : null}
+              </div>
+            </div>
+
+            <div className="tr-band">
+              <span className="tr-band-caption">Conformance band · one cell per operation</span>
+              <ConformanceBand
+                outcomes={bandOutcomes}
+                labels={operations.map((op, i) => `${op.method} ${op.path} · ${LOOK[opStates[i] ?? 'pend'].word.toLowerCase()}`)}
+              />
+            </div>
+
+            <div className="tr-actions">
+              <Button asChild variant="primary" icon="play">
+                <RouterLink to={`/tests/create?service=${base.serviceId}`}>Run again</RouterLink>
+              </Button>
+              <Button asChild>
+                <RouterLink to={`/tests/service/${base.serviceId}`}>All runs</RouterLink>
+              </Button>
+              <Button asChild>
+                <RouterLink to={`/services/${base.serviceId}`}>Back to service</RouterLink>
+              </Button>
+              <Button icon="code" className="tr-ci-toggle" aria-expanded={ciOpen} aria-controls="ci-panel" onClick={() => setCiOpen(!ciOpen)}>
+                Add to CI
+              </Button>
+            </div>
+
+            {ciOpen ? (
+              <div id="ci-panel" role="region" aria-label="Add to CI" className="tr-ci">
+                <div className="tr-ci-head">
+                  <span className="tr-ci-title">
+                    <span className="tr-ci-name">Run this test in your pipeline</span>
+                    <span className="tr-ci-hint">
+                      Same service, endpoint and runner. The command exits non-zero when the test fails, so a contract break stops the build.
+                    </span>
+                  </span>
+                  <CopyButton value={ci} label="Copy command" />
+                </div>
+                <pre className="tr-ci-code" tabIndex={0} aria-label="microcks-cli command">
+                  <code>{ci}</code>
+                </pre>
+                <span className="tr-ci-hint">
+                  Set <span className="tr-mono">MICROCKS_CLIENT_SECRET</span> from the <span className="tr-mono">microcks-serviceaccount</span> credentials. The
+                  same parameters work with the GitHub Action, GitLab CI, Jenkins and Tekton integrations.
+                </span>
+              </div>
+            ) : null}
+          </section>
+        )}
+
+        <section aria-labelledby="tr-log-title" className="runner-log">
+          <div className="runner-log-head">
+            <h2 id="tr-log-title" className="runner-log-title">
+              Runner log
+            </h2>
+            {running ? (
+              <LiveIndicator variant="inline" label="live · streaming" />
+            ) : (
+              <span className="runner-log-count">{log.length} lines · completed</span>
+            )}
+          </div>
+          <div className="runner-log-body" role="log" aria-label="Runner log lines" tabIndex={0}>
+            <div className="runner-log-lines">
+              {log.map((l, i) => (
+                <div className="runner-log-line" key={i} data-tone={l.tone}>
+                  <span className="runner-log-time">{l.time}</span>
+                  <span className="runner-log-level" data-level={l.level}>
+                    {l.level}
+                  </span>
+                  <span className="runner-log-msg">{l.message}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      </div>
+
+      <section aria-labelledby="tr-results-title" className="tr-results">
+        <div className="tr-results-head">
+          <h2 id="tr-results-title" className="tr-results-title">
+            Results
+          </h2>
+          <span className="tr-results-hint">
+            {operations.length} operations · {total} test steps · select a finished step to compare the contract with the actual response
+          </span>
+        </div>
+
+        {operations.map((op, oi) => {
+          const opState = opStates[oi] ?? 'pend';
+          const fin = op.idx.filter((i) => i < finished);
+          const ms = fin.reduce((n, i) => n + (base.steps[i]?.ms ?? 0), 0);
+          return (
+            <div key={op.id} className="tr-op" data-state={opState}>
+              <div className="tr-op-head">
+                <MethodTag method={op.method} className="tr-op-method" />
+                <h3 className="tr-op-path">{op.path}</h3>
+                <span className="tr-op-count">
+                  {op.idx.length} {op.idx.length === 1 ? 'step' : 'steps'}
+                  {fin.length > 0 && fin.length < op.idx.length ? ` · ${fin.length} done` : ''}
+                </span>
+                <span className="tr-op-segs" aria-hidden="true">
+                  {op.idx.map((i) => (
+                    <span key={i} data-state={states[i]} />
+                  ))}
+                </span>
+                <span className="tr-state" data-state={opState}>
+                  <Icon name={LOOK[opState].icon} size={14} className={opState === 'run' ? 'tr-spin' : undefined} />
+                  {LOOK[opState].word}
+                </span>
+                <span className="tr-op-ms">{fin.length ? `${ms} ms` : '—'}</span>
+              </div>
+
+              {op.idx.map((i) => {
+                const step = base.steps[i];
+                if (!step) return null;
+                const st = states[i] ?? 'pend';
+                const isFin = st === 'pass' || st === 'fail';
+                const open = isFin && selId === step.id;
+                const regionId = `tr-diff-${step.id}`;
+                return (
+                  <div key={step.id} className="tr-step">
+                    <button
+                      type="button"
+                      className="tr-step-row"
+                      data-state={st}
+                      aria-expanded={open}
+                      aria-controls={open ? regionId : undefined}
+                      aria-disabled={!isFin}
+                      onClick={() => {
+                        if (isFin) setSel(open ? '' : step.id);
+                      }}
+                    >
+                      <span className="tr-step-name">{step.name}</span>
+                      <span className="tr-step-req">
+                        {step.method} {prefix}
+                        {step.path}
+                        {step.requestBody ? `  ${step.requestBody}` : ''}
+                      </span>
+                      <span className="tr-step-code" data-fin={isFin ? '' : undefined}>
+                        {isFin ? (step.httpStatus ?? 200) : '—'}
+                      </span>
+                      <span className="tr-step-ms">{isFin ? `${step.ms} ms` : '—'}</span>
+                      <span className="tr-state" data-state={st}>
+                        <Icon name={LOOK[st].icon} size={14} className={st === 'run' ? 'tr-spin' : undefined} />
+                        {LOOK[st].word}
+                      </span>
+                      <span className="tr-step-chevron" aria-hidden="true">
+                        {isFin ? <Icon name="chevron" size={16} /> : null}
+                      </span>
+                    </button>
+                    {open ? <StepDiff id={regionId} step={step} run={base} serviceId={base.serviceId} /> : null}
+                  </div>
+                );
+              })}
+            </div>
+          );
+        })}
+      </section>
+    </>
+  );
+}
+
+function CodeCard({ title, source, rows, label, bad }: { title: string; source: string; rows: DiffRow[]; label: string; bad?: boolean }) {
+  return (
+    <div className="tr-code-card" data-bad={bad ? '' : undefined}>
+      <div className="tr-code-head">
+        <span className="tr-code-title">{title}</span>
+        <span className="tr-code-source">{source}</span>
+      </div>
+      <pre className="tr-code" tabIndex={0} aria-label={label}>
+        <code>
+          {rows.map((r) => (
+            <span key={r.n} className="tr-line" data-bad={r.bad ? '' : undefined}>
+              <span className="tr-line-n" aria-hidden="true">
+                {r.n}
+              </span>
+              <span className="tr-line-mark">{r.bad ? <><span aria-hidden="true">✕</span><span className="sr-only">Mismatch: </span></> : null}</span>
+              <span className="tr-line-text">{r.text}</span>
+            </span>
+          ))}
+        </code>
+      </pre>
+    </div>
+  );
+}
+
+function StepDiff({ id, step, run, serviceId }: { id: string; step: TestStepResult; run: TestRun; serviceId: string }) {
+  const diff = buildContractDiff(step);
+  const ko = step.result === 'failed';
+  const isArray = Array.isArray(step.payload);
+  const n = isArray ? (step.payload as unknown[]).length : 1;
+  const code = step.httpStatus ?? 200;
+  const schema = step.schemaRef?.split('/').pop() ?? 'the schema';
+  const props = step.contract?.length ?? 0;
+  const newEnum = step.violations.map((v) => /^Enum value "([^"]+)"/.exec(v.message)?.[1]).find(Boolean);
+  const label = run.operationLabels?.find((o) => o.id === step.operationId);
+  const opText = label ? `${label.method} ${label.path}` : `${step.method} ${step.path}`;
+  return (
+    <div id={id} role="region" aria-label={`Contract versus actual response for ${step.name}`} className="tr-diff">
+      <div className="tr-diff-head">
+        <div className="tr-diff-heading">
+          <h4 className="tr-diff-title">
+            Contract <span aria-hidden="true" className="tr-diff-swap">⇄</span> Actual response
+          </h4>
+          {step.schemaRef ? (
+            <span className="tr-diff-ref">
+              {isArray ? 'array of ' : ''}
+              {step.schemaRef} · {code} application/json
+            </span>
           ) : null}
         </div>
-        <div style={{ marginBlockStart: 12 }}>
-          <Progress label={`Test progress: ${finished} of ${total} steps`} value={finished} max={Math.max(total, 1)} />
-        </div>
-        <div style={{ marginBlockStart: 12 }}>
-          <ConformanceBand outcomes={outcomes} />
-        </div>
-        {run.reason && !running ? (
-          <div style={{ marginBlockStart: 12 }}>
-            <Callout tone={run.result === 'passed' ? 'success' : 'danger'} title="Reason">
-              <p>{run.reason}</p>
-            </Callout>
-          </div>
-        ) : null}
-        {!running && base.relatedWorkflowRun ? (
-          <div style={{ marginBlockStart: 12 }}>
-            <Callout tone="info" title="Same contract violation in a workflow run">
-              <p>
-                Arazzo run #{base.relatedWorkflowRun.number} of {base.relatedWorkflowRun.workflowTitle} fails on step{' '}
-                <span className="demo-mono">{base.relatedWorkflowRun.stepId}</span> for the same reason.{' '}
-                <RouterLink to={`/workflows/runs/${base.relatedWorkflowRun.runId}`}>Open workflow run #{base.relatedWorkflowRun.number}</RouterLink>
-              </p>
-            </Callout>
-          </div>
-        ) : null}
-      </Panel>
+        <ApiBadge
+          label="schema"
+          value={ko ? `${step.violations.length} ${step.violations.length === 1 ? 'violation' : 'violations'}` : 'Conformant'}
+          status={ko ? 'danger' : 'success'}
+        />
+      </div>
 
-      <div className="demo-two-col" data-wide-aside="">
-        <Panel title="Operations" as="section">
-          <ul className="tr-ops">
-            {operations.map((op, i) => (
-              <li key={op.id}>
-                <h3 className="tr-op-title">
-                  <MethodTag method={op.method} />
-                  <span className="demo-mono">{op.title.replace(`${op.method} `, '')}</span>
-                  <span className="demo-muted">
-                    {outcomes[i] === 'untested' ? 'not run yet' : outcomes[i] === 'pass' ? 'passed' : 'failed'}
+      <div className="tr-request">
+        <span>
+          <span className="tr-request-key">sent </span>
+          <span>
+            {step.method} {run.endpoint}
+            {step.path}
+          </span>
+        </span>
+        {step.requestBody ? (
+          <span>
+            <span className="tr-request-key">body </span>
+            <span className="tr-request-body">{step.requestBody}</span>
+          </span>
+        ) : null}
+        <span>
+          <span className="tr-request-key">got </span>
+          <span>
+            {code} OK · application/json · {step.ms} ms
+          </span>
+        </span>
+      </div>
+
+      {step.contract ? (
+        <div className="tr-code-pair">
+          <CodeCard title="Contract · expected" source={run.contractFile ?? 'contract'} rows={diff.left} label="Contract schema" />
+          <div aria-hidden="true" className="tr-code-swap">
+            ⇄
+          </div>
+          <CodeCard title="Actual response" source={hostOf(run.endpoint)} rows={diff.right} label="Actual response" bad={ko} />
+        </div>
+      ) : null}
+
+      {ko ? (
+        <div className="tr-violations">
+          <ul className="tr-violation-list">
+            {step.violations.map((v) => (
+              <li key={v.path} className="tr-violation">
+                <span aria-hidden="true" className="tr-violation-mark">
+                  ✕
+                </span>
+                <span className="tr-violation-body">
+                  <span className="tr-violation-text">
+                    <span className="tr-violation-path">{v.path}</span> {v.message}
                   </span>
-                </h3>
-                {op.steps.length === 0 ? (
-                  <p className="demo-muted">Waiting for the first call.</p>
-                ) : (
-                  <ul className="tr-steps">
-                    {op.steps.map((s) => (
-                      <li key={s.id}>
-                        <button
-                          type="button"
-                          className="tr-step-btn"
-                          aria-expanded={selected?.id === s.id}
-                          aria-controls="tr-detail"
-                          onClick={() => setSelectedId(s.id)}
-                        >
-                          <StepStatus status={s.result === 'passed' ? 'passed' : 'failed'} />
-                          <span className="tr-step-name">{s.name}</span>
-                          <span className="tr-step-ms">{s.ms} ms</span>
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
+                  {v.raw ? <span className="tr-violation-raw">validator: {v.raw}</span> : null}
+                </span>
               </li>
             ))}
           </ul>
-        </Panel>
-
-        <Panel title="Step detail" as="section" id="tr-detail">
-          {!selected ? (
-            <p className="demo-muted">Select a step to compare the contract with the actual response.</p>
-          ) : (
-            <div className="stack">
-              <p style={{ margin: 0 }}>
-                <MethodTag method={selected.method} /> <span className="demo-mono">{selected.path}</span> · HTTP {selected.httpStatus ?? 200} · {selected.ms} ms ·{' '}
-                {selected.result === 'passed' ? 'body valid' : `${selected.violations.length} ${selected.violations.length === 1 ? 'violation' : 'violations'}`}
-              </p>
-              {selected.requestBody ? (
-                <p className="demo-muted" style={{ margin: 0 }}>
-                  Request body <span className="demo-mono">{selected.requestBody}</span>
-                </p>
-              ) : null}
-              {diff ? (
-                <div className="tr-diff">
-                  <div>
-                    <p className="tr-code-title">Contract {selected.schemaRef ? <span className="demo-mono">{selected.schemaRef}</span> : null}</p>
-                    <pre className="tr-code" tabIndex={0} aria-label="Contract schema">
-                      <code>
-                        {diff.left.map((r) => (
-                          <span key={r.n} className="tr-row" data-bad={r.bad ? '' : undefined}>
-                            <span className="tr-row-n" aria-hidden="true">{r.n}</span>
-                            {r.bad ? <span className="sr-only">Mismatch: </span> : null}
-                            {r.text}
-                          </span>
-                        ))}
-                      </code>
-                    </pre>
-                  </div>
-                  <div>
-                    <p className="tr-code-title">Actual response</p>
-                    <pre className="tr-code" tabIndex={0} aria-label="Actual response">
-                      <code>
-                        {diff.right.map((r) => (
-                          <span key={r.n} className="tr-row" data-bad={r.bad ? '' : undefined}>
-                            <span className="tr-row-n" aria-hidden="true">{r.n}</span>
-                            {r.bad ? <span className="sr-only">Mismatch: </span> : null}
-                            {r.text}
-                          </span>
-                        ))}
-                      </code>
-                    </pre>
-                  </div>
-                </div>
-              ) : null}
-              {selected.violations.length > 0 ? (
-                <div>
-                  <h3 className="tr-code-title">Violations ({selected.violations.length})</h3>
-                  <ul className="tr-violations">
-                    {selected.violations.map((v) => (
-                      <li key={v.path} className="tr-violation">
-                        <Icon name="warning" size={16} /> <strong className="demo-mono">{v.path}</strong> {v.message}
-                        {v.raw ? (
-                          <Disclosure summary="Raw message">
-                            <pre className="tr-code" tabIndex={0}><code>{v.raw}</code></pre>
-                          </Disclosure>
-                        ) : null}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ) : (
-                <p>
-                  <Icon name="check" size={16} /> Every property matches the contract.
-                </p>
-              )}
-            </div>
-          )}
-        </Panel>
-      </div>
-
-      <Panel title="Runner log" as="section">
-        <div className="tr-log" role="log" aria-label="Runner log" tabIndex={0}>
-          {log.map((l, i) => (
-            <div className="tr-log-line" key={i}>
-              <span className="tr-log-time">{l.time}</span>
-              <span className="tr-log-level">{l.level}</span>
-              <span className="tr-log-msg">{l.message}</span>
-            </div>
-          ))}
+          <p className="tr-diff-note">
+            The endpoint answered <span className="tr-mono">{code}</span> as the contract declares, but its body breaks the <span className="tr-mono">{schema}</span>{' '}
+            schema on {step.violations.length} {step.violations.length === 1 ? 'property' : 'properties'}. Fix the implementation
+            {newEnum ? (
+              <>
+                , or if <span className="tr-mono">{newEnum}</span> is an intended new status, add it to the contract and re-import
+              </>
+            ) : null}
+            .{' '}
+            <RouterLink to={`/services/${serviceId}/operations/${step.operationId}`} className="tr-diff-link">
+              Open {opText}
+            </RouterLink>
+          </p>
         </div>
-      </Panel>
-
-      <Panel title="Add to CI" as="section">
-        <Switch label="Show the CI command for this run" checked={showCi} onChange={setShowCi} />
-        {showCi ? (
-          <div className="stack" style={{ marginBlockStart: 12 }}>
-            <div className="demo-actions-row" style={{ justifyContent: 'space-between' }}>
-              <span className="demo-muted">microcks-cli</span>
-              <CopyButton value={ci} label="Copy" />
-            </div>
-            <pre className="tr-ci" tabIndex={0} aria-label="CI command">
-              <code>{ci}</code>
-            </pre>
-          </div>
-        ) : null}
-      </Panel>
+      ) : (
+        <p className="tr-diff-ok">
+          <Icon name="check" size={14} />
+          <span>
+            {isArray
+              ? `Conformant. ${n} ${n === 1 ? 'item' : 'items'} checked against ${schema}, ${props} properties each, 0 violations. Status ${code} is declared by the contract.`
+              : `Conformant. ${props} properties checked against ${schema}, 0 violations. Status ${code} is declared by the contract.`}
+          </span>
+        </p>
+      )}
     </div>
   );
 }

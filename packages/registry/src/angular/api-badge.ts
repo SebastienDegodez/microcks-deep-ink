@@ -2,7 +2,7 @@ import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@an
 import { IconComponent } from './icon';
 
 export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
-export type ProofStatus = 'success' | 'danger' | 'warning' | 'info' | 'neutral';
+export type ProofStatus = 'success' | 'danger' | 'warning' | 'info' | 'action' | 'neutral';
 
 const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
 const STATUS_ICON = { success: 'check', danger: 'cross', warning: 'warning' } as const;
@@ -38,8 +38,8 @@ export class ApiBadgeComponent {
   readonly status = input<ProofStatus>('neutral');
   /** More proof values after `value`, each its own filled segment ("samples │ 7 │ +1 AI"). */
   readonly values = input<ReadonlyArray<{ value: string; status?: ProofStatus }>>([]);
-  /** `lg` sets the name in the brand font at 17px (beside a page title); `xl` at 30px (the badge is the page title). */
-  readonly size = input<'sm' | 'md' | 'lg' | 'xl'>('md');
+  /** `card`: 13px, for badge walls. `lg` sets the name in the brand font at 17px (beside a page title); `xl` at 30px (the badge is the page title). */
+  readonly size = input<'sm' | 'md' | 'card' | 'lg' | 'xl'>('md');
 
   protected isProof(): boolean {
     return !this.arazzo() && this.label() !== undefined;

@@ -1,0 +1,25 @@
+/* Sources page (prototype Sources.dc.html). Colors come from the design tokens only. */
+.sources-page { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
+.sources-head { display: flex; flex-direction: column; gap: 14px; min-width: 0; }
+
+/* Global scan schedule strip under the header. */
+.scan-strip {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 10px 22px; padding: 10px 14px;
+  border: 1px solid var(--border); border-radius: var(--radius-panel); background: var(--canvas);
+  font: 400 13px/18px var(--font-ui); color: var(--text);
+}
+.scan-strip-group { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.scan-strip-group > .icon { color: var(--text-muted); }
+.scan-strip-pair { display: inline-flex; align-items: baseline; gap: 6px; }
+.scan-strip-cron { font-family: var(--font-mono); color: var(--text); background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-control); padding: 1px 6px; }
+.scan-strip-env { font: 400 11px/16px var(--font-mono); color: var(--text-muted); }
+.scan-strip-sep { width: 1px; height: 16px; background: var(--border); }
+.scan-strip-counts { margin-inline-start: auto; display: inline-flex; flex-wrap: wrap; gap: 8px; }
+.muted { color: var(--text-muted); }
+.secondary { color: var(--text-secondary); }
+.mono { font-family: var(--font-mono); }
+
+/* List (jobs) and detail side by side, wrapping under 980px. */
+.sources-split { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; min-width: 0; }
+.sources-list { flex: 1 1 520px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.sources-detail { flex: 1 1 440px; min-width: 0; }

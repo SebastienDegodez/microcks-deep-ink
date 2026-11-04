@@ -78,6 +78,8 @@ export interface TestRun extends TestRunSummary {
   /** Operations of the service, in order, to group the steps. */
   operationLabels?: { id: string; method: string; path: string }[];
   launchedBy?: string;
+  /** Contract artifact the run validates against: `apipastry-2.0-openapi.yaml`. */
+  contractFile?: string;
   /** The workflow run that hits the same contract violation (Arazzo run #14 for test run #119). */
   relatedWorkflowRun?: { runId: string; number: number; workflowTitle: string; stepId: string };
 }

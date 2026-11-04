@@ -66,24 +66,35 @@ describe('Run a test (/tests/create)', () => {
 describe('Test run (/tests/runner/:id)', () => {
   it('shows the finished run #118 as passed, with a runner log and no violation', async () => {
     renderAt('/tests/runner/118');
-    expect(await screen.findByRole('heading', { level: 1, name: 'Test run #118' })).toBeTruthy();
-    expect(await screen.findByRole('log', { name: 'Runner log' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Run #118' })).toBeTruthy();
+    expect(screen.getByRole('navigation', { name: 'Breadcrumb' }).textContent).toContain('Tests');
+    expect(await screen.findByRole('log', { name: 'Runner log lines' })).toBeTruthy();
+    expect(screen.getByRole('region', { name: 'Verdict' }).textContent).toContain('Passed');
     expect(screen.queryByText('$.price')).toBeNull();
   });
 
-  it('streams the 7 steps of #119, can be paused, and explains the price violation', async () => {
+  it('runs #119 live from step 3, steps forward, skips to the result and explains the price violation', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     renderAt('/tests/runner/119');
-    await screen.findByRole('button', { name: 'Pause' });
+    const progress = await screen.findByRole('region', { name: 'Progress' });
+    expect(progress.textContent).toContain('3/7');
+    fireEvent.click(screen.getByRole('button', { name: 'Step forward' }));
+    expect(progress.textContent).toContain('4/7');
+    expect(screen.getByRole('button', { name: /Millefeuille/ }).getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByRole('button', { name: /Eclair Chocolat · price/ }).getAttribute('aria-disabled')).toBe('true');
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(9000);
+      await vi.advanceTimersByTimeAsync(6000);
     });
-    await waitFor(() => expect(document.querySelectorAll('.tr-step-btn')).toHaveLength(7));
-    expect(screen.queryByRole('button', { name: 'Pause' })).toBeNull();
-    const detail = document.getElementById('tr-detail') as HTMLElement;
-    expect(detail.textContent).toContain('$.price');
-    expect(detail.textContent).toContain('$.status');
-    expect(screen.getByRole('link', { name: /Open workflow run #14/ }).getAttribute('href')).toContain('6729a1d27e4c0b5f93a8c214');
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Skip to result' })).toBeNull());
+    expect(screen.getByRole('region', { name: 'Verdict' }).textContent).toContain('86%');
+    const diff = screen.getByRole('region', { name: /Contract versus actual response for Eclair Chocolat · price/ });
+    expect(diff.textContent).toContain('$.price');
+    expect(diff.textContent).toContain('$.status');
+    expect(screen.getByRole('link', { name: /Same contract violation breaks workflow Restock a pastry/ }).getAttribute('href')).toContain('6729a1d27e4c0b5f93a8c214');
+    fireEvent.click(screen.getByRole('button', { name: 'Add to CI' }));
+    expect(screen.getByRole('region', { name: 'Add to CI' }).textContent).toContain('MICROCKS_CLIENT_SECRET');
+    fireEvent.click(screen.getByRole('button', { name: 'Replay run' }));
+    expect((await screen.findByRole('region', { name: 'Progress' })).textContent).toContain('0/7');
   });
 });
 
@@ -95,9 +106,26 @@ describe('Test history (/tests/service/:id)', () => {
     expect(within(table).getByText('#119')).toBeTruthy();
     expect(within(table).getByText('#118')).toBeTruthy();
     expect(table.querySelector('tr[data-selected]')?.textContent).toContain('#117');
-    expect(screen.getByRole('img', { name: /Conformance of each test run/ })).toBeTruthy();
+    expect(screen.getByRole('table', { name: /Conformance timeline, last 20 runs/ })).toBeTruthy();
     fireEvent.change(screen.getByLabelText('Result'), { target: { value: 'failed' } });
     expect(within(await screen.findByRole('table', { name: 'Test runs' })).queryByText('#118')).toBeNull();
+  });
+
+  it('shows one pressed bar per run and inspects the run of the clicked bar', async () => {
+    renderAt('/tests/service/pastry2');
+    const nav = await screen.findByRole('navigation', { name: 'Breadcrumb' });
+    expect(within(nav).getByRole('link', { name: 'APIs & Services' })).toBeTruthy();
+    const group = await screen.findByRole('group', { name: /Runs, oldest to newest/ });
+    const bars = within(group).getAllByRole('button');
+    expect(bars).toHaveLength(20);
+    expect(bars.filter((b) => b.getAttribute('aria-pressed') === 'true').map((b) => b.getAttribute('aria-label'))).toEqual([
+      expect.stringMatching(/^Run #117, failed, 2\.11 s, 6\/7 samples passed/),
+    ]);
+    const timeout = within(group).getByRole('button', { name: /^Run #113, timed out, 10\.00 s/ });
+    fireEvent.click(timeout);
+    expect(timeout.getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('link', { name: 'Open run #113' }).getAttribute('href')).toContain('/tests/runner/113');
+    expect(screen.getByRole('img', { name: /^GET \/pastries: 19 passed, 1 failed/ })).toBeTruthy();
   });
 
   it('keeps #118 (passed) in the history next to the failing #119', async () => {

@@ -1,4 +1,5 @@
 import '../explore-kit/explore.css';
+import './sources.css';
 import { useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import {
@@ -135,19 +136,31 @@ export default function SourcesPage() {
   const failing = counts.failed;
 
   return (
-    <div className="ex-stack">
-      <PageHeader
-        title="Sources"
-        actions={<Button asChild icon="plus"><RouterLink to="/sources/new">Add source</RouterLink></Button>}
-      />
-      <p className="ex-secondary" style={{ margin: 0 }}>Everything Microcks imports is a source: files you upload once and URLs or repositories it keeps in sync.</p>
+    <div className="sources-page">
+      <div className="sources-head">
+        <PageHeader
+          title="Sources"
+          description="Everything Microcks imports is a source: files you upload once and URLs or repositories it keeps in sync."
+          descriptionTone="secondary"
+          actions={<Button asChild variant="primary" icon="plus"><RouterLink to="/sources/new">Add source</RouterLink></Button>}
+        />
 
-      <div className="ex-row" role="group" aria-label="Scan schedule">
-        <strong>Scan schedule</strong> <code>{schedule.cron}</code> <span className="ex-secondary">{schedule.description}</span> <code>{schedule.envVar}</code>
-        <span>Last scan <strong>{formatHourMinute(schedule.lastScanAt)}</strong> <span className="ex-secondary">{schedule.minutesSinceLast} min ago</span></span>
-        <span>Next scan <strong>{formatHourMinute(schedule.nextScanAt)}</strong> <span className="ex-secondary">in {schedule.minutesUntilNext} min</span></span>
-        <span>sources <strong>{counts.all}</strong></span>
-        {failing ? <span><Icon name="cross" size={14} /> failing <strong>{failing}</strong></span> : null}
+        <div className="scan-strip" role="group" aria-label="Scan schedule">
+          <span className="scan-strip-group">
+            <Icon name="clock" size={15} />
+            <span className="muted">Scan schedule</span>
+            <span className="scan-strip-cron">{schedule.cron}</span>
+            <span className="secondary">{schedule.description}</span>
+            <span className="scan-strip-env">{schedule.envVar}</span>
+          </span>
+          <span className="scan-strip-sep" aria-hidden="true" />
+          <span className="scan-strip-pair"><span className="muted">Last scan</span><span className="mono">{formatHourMinute(schedule.lastScanAt)}</span><span className="muted">{schedule.minutesSinceLast} min ago</span></span>
+          <span className="scan-strip-pair"><span className="muted">Next scan</span><span className="mono">{formatHourMinute(schedule.nextScanAt)}</span><span className="muted">in {schedule.minutesUntilNext} min</span></span>
+          <span className="scan-strip-counts">
+            <ApiBadge label="sources" value={String(counts.all)} />
+            {failing ? <ApiBadge label="failing" value={String(failing)} status="danger" /> : null}
+          </span>
+        </div>
       </div>
 
       <section aria-label="Filter sources" className="ex-row">
@@ -173,8 +186,8 @@ export default function SourcesPage() {
         <span role="status" className="ex-small ex-secondary">{shown.length} of {counts.all} sources</span>
       </section>
 
-      <div className="ex-grid ex-grid-sources">
-        <section aria-label="Sources" className="ex-stack">
+      <div className="sources-split">
+        <section aria-label="Sources" className="sources-list">
           {undoing ? (
             <Callout tone="info" live="polite" actions={<Button size="sm" variant="secondary" icon="undo" onClick={() => void undo()}>Undo</Button>}>
               <strong>{undoing.name}</strong> deleted. Services already discovered remain but are no longer updated.
@@ -223,7 +236,7 @@ export default function SourcesPage() {
         </section>
 
         {selected ? (
-          <section aria-label="Source detail" className="ex-stack">
+          <section aria-label="Source detail" className="sources-detail ex-stack">
             <Panel
               title={selected.name}
               actions={importerStatus(selected) === 'running' ? <LiveIndicator label="live · importing" /> : <span className="ex-row"><span className="ex-small ex-secondary">last import</span><Chip tone={selected.health === 'failed' ? 'danger' : selected.health === 'warning' ? 'warning' : 'success'}>{STATUS_WORD[importerStatus(selected)]}</Chip></span>}
