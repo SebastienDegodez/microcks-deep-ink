@@ -11,7 +11,7 @@ import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { CopyButton } from '@/ui/components/ui/copy-button';
 import { Icon } from '@/ui/components/ui/icon';
-import { Input } from '@/ui/components/ui/input';
+import { FilterRow, FilterSearch } from '@/ui/components/ui/filter-bar';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { Switch } from '@/ui/components/ui/switch';
@@ -162,27 +162,29 @@ export default function SourcesPage() {
         </div>
       </div>
 
-      <section aria-label="Filter sources" className="ex-row">
-        <Input type="search" aria-label="Filter sources by name, URL, secret or Service" autoComplete="off" placeholder="Filter by name, URL, secret, Service…" value={query} onChange={(e) => setQuery(e.target.value)} />
-        <Segmented
-          label="Status"
-          value={status}
-          onChange={(id) => setStatus(id as SourceStatus | 'all')}
-          options={[
-            { id: 'all', label: 'All', count: counts.all },
-            { id: 'imported', label: 'Imported', count: counts.imported },
-            { id: 'warning', label: 'Warning', count: counts.warning },
-            { id: 'failed', label: 'Failed', count: counts.failed },
-            { id: 'inactive', label: 'Inactive', count: counts.inactive },
-          ]}
-        />
-        <Segmented
-          label="Origin"
-          value={origin}
-          onChange={(id) => setOrigin(id as SourceOrigin | 'all')}
-          options={[{ id: 'all', label: 'All', count: originTotals.all }, ...SOURCE_ORIGINS.map((o) => ({ id: o.id, label: o.label, count: originTotals[o.id] }))]}
-        />
-        <span role="status" className="ex-small ex-secondary">{shown.length} of {counts.all} sources</span>
+      <section aria-label="Filter sources">
+        <FilterRow>
+          <FilterSearch label="Filter sources by name, URL, secret or Service" placeholder="Filter by name, URL, secret, Service…" autoComplete="off" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Segmented
+            label="Status"
+            value={status}
+            onChange={(id) => setStatus(id as SourceStatus | 'all')}
+            options={[
+              { id: 'all', label: 'All', count: counts.all },
+              { id: 'imported', label: 'Imported', icon: 'check', count: counts.imported },
+              { id: 'warning', label: 'Warnings', icon: 'warning', count: counts.warning },
+              { id: 'failed', label: 'Failing', icon: 'cross', count: counts.failed },
+              { id: 'inactive', label: 'Inactive', icon: 'pause', count: counts.inactive },
+            ]}
+          />
+          <Segmented
+            label="Origin"
+            value={origin}
+            onChange={(id) => setOrigin(id as SourceOrigin | 'all')}
+            options={[{ id: 'all', label: 'All', count: originTotals.all }, ...SOURCE_ORIGINS.map((o) => ({ id: o.id, label: o.label, count: originTotals[o.id] }))]}
+          />
+          <span role="status" className="filter-bar-end sources-shown">{shown.length} of {counts.all} sources</span>
+        </FilterRow>
       </section>
 
       <div className="sources-split">

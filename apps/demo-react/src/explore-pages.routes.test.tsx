@@ -147,7 +147,7 @@ describe('WP7 pages', () => {
     renderAt('/sources');
     await h1('Sources');
     await screen.findByRole('article', { name: 'Pastry orders events' });
-    fireEvent.click(screen.getByRole('button', { name: /^Failed/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Failing/ }));
     await waitFor(() => expect(screen.queryByRole('article', { name: 'Hello gRPC' })).toBeNull());
     expect(screen.getByRole('alert').textContent).toMatch(/401 Unauthorized/);
     fireEvent.click(screen.getByRole('button', { name: 'Delete Pastry orders events' }));
