@@ -64,6 +64,8 @@ export interface TestRunSummary {
   /** Passed steps over total steps. */
   passed: number;
   total: number;
+  /** Stored conformance score (0..100) when it is not passed/total (#118 scored 92 on its per-operation results). */
+  conformance?: number;
   reason?: string;
   /** One outcome per operation of the service, in operation order. */
   operations?: OperationOutcome[];
@@ -118,8 +120,9 @@ export interface TestTarget {
   recentEndpoints: { env: TestEnvironment; url: string }[];
 }
 
-/** Conformance score of a run: passed steps over total, rounded. */
-export function runConformance(run: Pick<TestRunSummary, 'passed' | 'total'>): number {
+/** Conformance score of a run: the stored score, else passed steps over total, rounded. */
+export function runConformance(run: Pick<TestRunSummary, 'passed' | 'total' | 'conformance'>): number {
+  if (run.conformance !== undefined) return run.conformance;
   return run.total === 0 ? 0 : Math.round((100 * run.passed) / run.total);
 }
 

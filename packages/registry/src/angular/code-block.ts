@@ -43,7 +43,7 @@ export interface CodeTab {
         }
         <span class="code-caption" [id]="captionId">{{ caption() ?? '' }}</span>
         @if (copy()) {
-          <mk-copy-button class="code-copy" [value]="value()" />
+          <mk-copy-button class="code-copy" variant="link" [value]="value()" />
         }
       </figcaption>
     }

@@ -35,12 +35,16 @@ const PATHS = {
   branch: ['M6 3v18', 'M18 3v6a6 6 0 0 1-6 6H6'],
   play: ['M7 5l12 7-12 7z'],
   pause: ['M8 5v14M16 5v14'],
+  /** Narrow pause (Sources "Inactive"). */
+  'pause-narrow': ['M9 6v12M15 6v12'],
   undo: ['M9 14L4 9l5-5', 'M4 9h10a6 6 0 0 1 0 12h-3'],
   // actions
   search: ['M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14', 'M20 20l-3.5-3.5'],
   copy: ['M11 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z', 'M5 15V5a2 2 0 0 1 2-2h10'],
   upload: ['M12 16V4', 'M6 10l6-6 6 6', 'M4 20h16'],
   trash: ['M4 7h16', 'M9 7V4h6v3', 'M6 7l1 13h10l1-13', 'M10 11v6M14 11v6'],
+  /** Trash without the inner lines (Sources delete, 13px). */
+  'trash-plain': ['M4 7h16', 'M9 7V4h6v3', 'M6 7l1 13h10l1-13'],
   plus: ['M12 5v14M5 12h14'],
   close: ['M6 6l12 12M18 6L6 18'],
   menu: ['M4 6h16M4 12h16M4 18h16'],

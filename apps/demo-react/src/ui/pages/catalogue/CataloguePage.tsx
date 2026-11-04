@@ -139,7 +139,7 @@ export default function CataloguePage() {
   ];
 
   return (
-    <div className="catalogue">
+    <div className="catalogue" data-main-pad="roomy">
       <PageHeader
         title="APIs & Services"
         size="lg"

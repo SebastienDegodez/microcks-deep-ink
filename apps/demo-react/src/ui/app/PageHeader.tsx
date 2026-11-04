@@ -16,6 +16,8 @@ export interface PageHeaderProps {
   breadcrumb?: Crumb[];
   /** Breadcrumb separator: `›` (default, most screens), `/` (Service) or `chevron` (a 12px icon, Workflow). */
   breadcrumbSeparator?: '›' | '/' | 'chevron';
+  /** Note between the breadcrumb and the title row (Copilot "Opened from a workflow run"). Pass an element with its own role. */
+  notice?: ReactNode;
   /** Mono pill beside the title ("11 services · 29 operations"). */
   meta?: ReactNode;
   /** Badge next to the title (an ApiBadge, a StatusBadge...). */
@@ -28,8 +30,8 @@ export interface PageHeaderProps {
   descriptionTone?: 'muted' | 'secondary';
   /** Page-level actions (buttons, a Menu). The primary action of the page goes first. */
   actions?: ReactNode;
-  /** `md` = 32px title (default), `lg` = 34px. Applies to the `brand` variant. */
-  size?: 'md' | 'lg';
+  /** `sm` = 30px, `md` = 32px title (default), `lg` = 34px. Applies to the `brand` variant. */
+  size?: 'sm' | 'md' | 'lg';
   /**
    * Title font: `brand` (Alegreya Sans SC 800, default), `plain` (IBM Plex Sans 600 28px, as on Import) or
    * `subtitle` (Alegreya Sans SC 700 26px, secondary text, after a leading badge, as on Tests) or
@@ -45,7 +47,7 @@ export interface PageHeaderProps {
  * focus to it when the route changes. Section headings below it are `<h2>`.
  * The wrapper is a `div`, not a `header`, so the page has exactly one banner landmark (the top bar).
  */
-export function PageHeader({ title, breadcrumb, breadcrumbSeparator = '›', meta, badge, leading, description, descriptionTone = 'muted', actions, size = 'md', variant = 'brand', align = 'end' }: PageHeaderProps) {
+export function PageHeader({ title, breadcrumb, breadcrumbSeparator = '›', notice, meta, badge, leading, description, descriptionTone = 'muted', actions, size = 'md', variant = 'brand', align = 'end' }: PageHeaderProps) {
   return (
     <div className="demo-page-header" data-align={align}>
       {breadcrumb && breadcrumb.length > 0 ? (
@@ -67,6 +69,7 @@ export function PageHeader({ title, breadcrumb, breadcrumbSeparator = '›', met
           </ol>
         </nav>
       ) : null}
+      {notice}
       <div className="demo-page-header-row">
         <div className="demo-page-header-text">
           <div className="demo-page-title-row" data-leading={leading ? '' : undefined}>

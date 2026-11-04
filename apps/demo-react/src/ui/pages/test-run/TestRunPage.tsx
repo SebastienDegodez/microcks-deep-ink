@@ -19,6 +19,8 @@ import { CopyButton } from '@/ui/components/ui/copy-button';
 import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { MethodTag } from '@/ui/components/ui/method-tag';
+import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
+import { RunnerLog } from '@/ui/components/ui/runner-log';
 import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
 import { useThrottledAnnounce } from '../tests/useThrottledAnnounce';
 import './test-run.css';
@@ -35,6 +37,7 @@ const LOOK: Record<StepState, { word: string; icon: IconName }> = {
   run: { word: 'Running', icon: 'running' },
   pend: { word: 'Queued', icon: 'circle' },
 };
+const SEGMENT: Record<StepState, RunSegment> = { pass: 'done', fail: 'failed', run: 'current', pend: 'queued' };
 const RESULT_WORD: Record<TestRun['result'], string> = { passed: 'passed', failed: 'failed', timeout: 'timed out', running: 'running' };
 
 export default function TestRunPage() {
@@ -85,6 +88,9 @@ function RunView({ base }: { base: TestRun }) {
   /** `null` follows the run (latest finished step while running, the first failed one when done); '' = all closed. */
   const [sel, setSel] = useState<string | null>(null);
   const [ciOpen, setCiOpen] = useState(false);
+  /** The control the user pressed disappears when the run ends (Skip to result, Step forward): focus then moves to the verdict. */
+  const focusVerdict = useRef(false);
+  const verdictRef = useRef<HTMLElement>(null);
   const running = phase === 'running';
   const done = !running;
   const finished = done ? total : tick;
@@ -105,7 +111,18 @@ function RunView({ base }: { base: TestRun }) {
     setSel(null);
     setCiOpen(false);
   };
+  useEffect(() => {
+    if (phase === 'done' && focusVerdict.current) {
+      focusVerdict.current = false;
+      verdictRef.current?.focus();
+    }
+  }, [phase]);
+  const stepForward = () => {
+    if (tick >= total) focusVerdict.current = true;
+    advance();
+  };
   const skip = () => {
+    focusVerdict.current = true;
     setPlay({ phase: 'done', tick: total });
     setSel(null);
   };
@@ -254,47 +271,28 @@ function RunView({ base }: { base: TestRun }) {
 
       <div className="tr-top">
         {running ? (
-          <section aria-label="Progress" className="run-progress">
-            <div className="run-progress-head">
-              <div className="run-progress-count">
-                <span className="run-progress-num">
-                  {finished}
-                  <span className="run-progress-total">/{total}</span>
-                </span>
-                <span className="run-progress-caption">test steps done</span>
-              </div>
-              <div className="run-progress-now">
-                <span className="run-progress-now-label">Now calling</span>
-                <span className="run-progress-now-value">
-                  {current ? `${current.method} ${base.endpoint}${current.path}` : 'Computing conformance score…'}
-                </span>
-              </div>
-            </div>
-            <div
-              className="run-progress-bar"
-              role="img"
-              aria-label={`Progress: ${passCount} passed, ${failCount} failed, ${queuedCount} remaining of ${total} test steps`}
-            >
-              {base.steps.map((s, i) => (
-                <span key={s.id} data-state={states[i]} title={`${s.method} ${s.path} · ${s.name} · ${LOOK[states[i] ?? 'pend'].word}`} />
-              ))}
-            </div>
-            <div className="run-progress-foot">
-              <span className="run-progress-counts">
-                <span data-kind="pass"><Icon name="check" size={13} />{passCount} passed</span>
-                <span data-kind="fail"><Icon name="cross" size={13} />{failCount} failed</span>
-                <span data-kind="pending"><Icon name="circle" size={13} />{queuedCount} queued</span>
-              </span>
-              <Button size="sm" icon="chevron" className="run-progress-step" onClick={advance}>
+          <RunProgress
+            className="tr-card"
+            done={finished}
+            total={total}
+            caption="test steps done"
+            nowLabel="Now calling"
+            now={current ? `${current.method} ${base.endpoint}${current.path}` : 'Computing conformance score…'}
+            segments={states.map((st) => SEGMENT[st])}
+            counts={[
+              { kind: 'pass', text: `${passCount} passed` },
+              { kind: 'fail', text: `${failCount} failed` },
+              { kind: 'pending', text: `${queuedCount} queued` },
+            ]}
+            action={
+              <Button size="sm" icon="chevron" className="tr-step-forward" onClick={stepForward}>
                 Step forward
               </Button>
-            </div>
-            <p className="run-progress-note">
-              Microcks replays every example of the contract against the endpoint, then validates each response body with the OpenAPI schema of the operation.
-            </p>
-          </section>
+            }
+            note="Microcks replays every example of the contract against the endpoint, then validates each response body with the OpenAPI schema of the operation."
+          />
         ) : (
-          <section aria-label="Verdict" className="tr-verdict">
+          <section aria-label="Verdict" className="tr-verdict" ref={verdictRef} tabIndex={-1}>
             <div className="tr-verdict-head">
               <div className="tr-score">
                 <span className="tr-score-label">Conformance score</span>
@@ -390,31 +388,11 @@ function RunView({ base }: { base: TestRun }) {
           </section>
         )}
 
-        <section aria-labelledby="tr-log-title" className="runner-log">
-          <div className="runner-log-head">
-            <h2 id="tr-log-title" className="runner-log-title">
-              Runner log
-            </h2>
-            {running ? (
-              <LiveIndicator variant="inline" label="live · streaming" />
-            ) : (
-              <span className="runner-log-count">{log.length} lines · completed</span>
-            )}
-          </div>
-          <div className="runner-log-body" role="log" aria-label="Runner log lines" tabIndex={0}>
-            <div className="runner-log-lines">
-              {log.map((l, i) => (
-                <div className="runner-log-line" key={i} data-tone={l.tone}>
-                  <span className="runner-log-time">{l.time}</span>
-                  <span className="runner-log-level" data-level={l.level}>
-                    {l.level}
-                  </span>
-                  <span className="runner-log-msg">{l.message}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
+        <RunnerLog
+          className="tr-log"
+          status={running ? <LiveIndicator variant="inline" label="live · streaming" /> : `${log.length} lines · completed`}
+          lines={log.map((l) => ({ time: l.time, level: l.level, text: l.message, emphasis: l.tone === 'emphasis', error: l.tone === 'error' }))}
+        />
       </div>
 
       <section aria-labelledby="tr-results-title" className="tr-results">

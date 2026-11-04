@@ -68,7 +68,7 @@ describe('Test run (/tests/runner/:id)', () => {
     renderAt('/tests/runner/118');
     expect(await screen.findByRole('heading', { level: 1, name: 'Run #118' })).toBeTruthy();
     expect(screen.getByRole('navigation', { name: 'Breadcrumb' }).textContent).toContain('Tests');
-    expect(await screen.findByRole('log', { name: 'Runner log lines' })).toBeTruthy();
+    expect(await screen.findByRole('log', { name: 'Runner log' })).toBeTruthy();
     expect(screen.getByRole('region', { name: 'Verdict' }).textContent).toContain('Passed');
     expect(screen.queryByText('$.price')).toBeNull();
   });
@@ -87,6 +87,7 @@ describe('Test run (/tests/runner/:id)', () => {
     });
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Skip to result' })).toBeNull());
     expect(screen.getByRole('region', { name: 'Verdict' }).textContent).toContain('86%');
+    expect(screen.getByRole('region', { name: 'Verdict' }).textContent).toContain('6 pts vs run #118');
     const diff = screen.getByRole('region', { name: /Contract versus actual response for Eclair Chocolat · price/ });
     expect(diff.textContent).toContain('$.price');
     expect(diff.textContent).toContain('$.status');
@@ -149,23 +150,26 @@ describe('Usage (/metrics/:serviceId?)', () => {
     expect(within(figures).getByRole('region', { name: 'Conformance' }).textContent).toContain('92%');
   });
 
-  it('selects a bar with the keyboard and offers the data table', async () => {
+  it('selects a bar with the keyboard and keeps text equivalents', async () => {
     renderAt('/metrics/pastry2');
     await screen.findByRole('heading', { level: 1, name: 'Usage & conformance' });
-    const group = await screen.findByRole('group', { name: /one bar per hour/ });
+    const group = await screen.findByRole('group', { name: /one bar per hour/i });
     const bars = within(group).getAllByRole('button');
     const current = bars.find((b) => b.getAttribute('aria-pressed') === 'true') as HTMLElement;
     expect(current).toBeTruthy();
     fireEvent.keyDown(current, { key: 'ArrowLeft' });
     await waitFor(() => expect(bars.filter((b) => b.getAttribute('aria-pressed') === 'true')).toHaveLength(1));
-    expect(screen.getAllByText('Show data table').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByRole('table', { name: 'Invocations per hour · today' })).toBeTruthy();
+    expect(screen.getByRole('table', { name: 'Invocations per week and weekday' })).toBeTruthy();
+    const ops = screen.getByRole('table', { name: 'Invocations per operation' });
+    expect(within(ops).getAllByRole('columnheader').map((h) => h.textContent)).toEqual(['Operation', 'Dispatcher', 'Invocations', 'Share', 'vs previous', 'Last call']);
   });
 
   it('switches period and shows the conformance treemap and index card', async () => {
     renderAt('/metrics/pastry2');
     await screen.findByRole('heading', { level: 1 });
     fireEvent.click(await screen.findByRole('button', { name: '7 days' }));
-    await screen.findByRole('group', { name: /one bar per day/ });
+    await screen.findByRole('group', { name: /one bar per day/i });
     const treemap = await screen.findByRole('region', { name: 'Conformance risk by domain' });
     const pastry = within(treemap).getByRole('region', { name: 'domain=pastry' });
     expect(within(pastry).getAllByRole('link').map((l) => l.textContent)).toEqual([
