@@ -49,7 +49,7 @@ export function argTypesFor(item: string, classes?: string[], controls = false):
  * selector (`tag[attr]`) and binds every key of `args` as an input; `inner` is the projected content.
  * The story file's meta must already import the component (`moduleMetadata`).
  */
-export function playground(item: string, className: string, args: Record<string, unknown>, inner = '', attrs = ''): StoryObj {
+export function playground(item: string, className: string, args: Record<string, unknown>, inner = '', attrs = '', wrap = ''): StoryObj {
   const doc = (REGISTRY_INPUTS[item] ?? []).find((c) => c.className === className);
   const sel = (doc?.selector ?? 'div').split(',')[0].trim();
   const m = /^([a-z0-9-]*)(?:\[(\w+)\])?$/.exec(sel);
@@ -61,7 +61,7 @@ export function playground(item: string, className: string, args: Record<string,
     render: (a: Record<string, unknown>) => {
       const bind = Object.keys(args).map((k) => `[${k}]="${k}"`).join(' ');
       const open = `<${tag}${attr}${attrs ? ' ' + attrs : ''} ${bind}${tag === 'input' ? ' />' : `>${inner}</${tag}>`}`;
-      return { props: a, template: open };
+      return { props: a, template: wrap ? wrap.replace('%%', open) : open };
     },
   };
 }

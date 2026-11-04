@@ -1,7 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { OperationListDirective, OperationRowComponent } from '@microcks-deep-ink/registry/angular/operation-row';
 import { OPERATIONS } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/OperationRow',
@@ -54,3 +54,6 @@ export const AsLinks: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('operation-row', 'OperationRowComponent', { method: 'GET', path: '/pastries/{name}', protocol: 'REST', meta: '3 examples', selected: false, interactive: false }, '', '', '<ul mkOperationList label="Operations">%%</ul>');

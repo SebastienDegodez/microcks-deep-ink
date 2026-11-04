@@ -1,7 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
 import { RunProgressComponent } from '@microcks-deep-ink/registry/angular/run-progress';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/RunProgress',
@@ -27,6 +27,21 @@ export const Running: StoryObj = {
   }),
 };
 
+/** Paused: the note is read before "Step forward" (it comes first in the DOM) and is still shown under the counts. */
+export const PausedNoteFirst: StoryObj = {
+  name: 'Paused (note read before the action)',
+  render: () => ({
+    props: { segments: ['done', 'done', 'current', 'queued'] },
+    template: `
+      <div style="max-width: 640px">
+        <section mkRunProgress [done]="2" [total]="4" caption="steps ended" nowLabel="Now calling" now="GET /pastries/Eclair%20Cafe" [segments]="segments" note="Paused: the replay waits. Step forward shows the next step.">
+          <button mkRunProgressAction mkButton size="sm" icon="chevron">Step forward</button>
+        </section>
+      </div>
+    `,
+  }),
+};
+
 /** A custom `label` for the progress bar and a `gap` between the segments. */
 export const LabelAndGap: StoryObj = {
   name: 'Label and gap',
@@ -35,3 +50,6 @@ export const LabelAndGap: StoryObj = {
     template: `<div style="max-width:560px"><section mkRunProgress label="Run #120 progress" [done]="3" [total]="6" caption="3 of 6 steps" [gap]="4" [segments]="segments"></section></div>`,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('run-progress', 'RunProgressComponent', { label: 'Progress', done: 7, total: 12, caption: '7 of 12 operations', nowLabel: 'Now', now: 'PATCH /pastries/{name}', segments: ['done','done','done','failed','done','warn','done','current','queued','queued','queued','queued'], counts: [{ kind: 'pass', text: '5 passed' }, { kind: 'fail', text: '1 failed' }], note: 'Started 09:10.' }, '');

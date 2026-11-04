@@ -12,7 +12,8 @@
     "aria": [
       "The segment bar is role=\"img\" named \"5 of 7 test steps done\"",
       "\"Now calling\" is aria-live=\"polite\": the current step is announced when it changes",
-      "Each count writes its word next to a decorative icon; the current segment's pulse stops under reduced motion"
+      "Each count writes its word next to a decorative icon; the current segment's pulse stops under reduced motion",
+      "The note is before the counts and the step control in the DOM, so the reason (\"Paused…\") is read before \"Step forward\"; CSS order shows it last, and it is not focusable"
     ],
     "rgaa": ["1.1", "3.1", "7.5", "13.8"],
     "wcag": ["1.1.1", "1.4.1", "2.2.2", "4.1.3"]

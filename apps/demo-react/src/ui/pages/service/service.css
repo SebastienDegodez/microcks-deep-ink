@@ -237,6 +237,6 @@
 .run-list-status[data-tone='failed'] { color: var(--danger); }
 .run-list-status[data-tone='running'] { color: var(--running); }
 .run-list-score { flex: none; font: 400 12px/1.4 var(--font-mono); color: var(--text-secondary); }
-.run-list-env { flex: none; padding: 1px 8px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); font: 400 11px/1.4 var(--font-mono); color: var(--text-secondary); }
+.run-list-env { flex: none; }
 .run-list-when { flex: 1 1 120px; min-width: 0; font-size: 13px; color: var(--text-muted); }
 .run-list-chevron { color: var(--text-muted); }

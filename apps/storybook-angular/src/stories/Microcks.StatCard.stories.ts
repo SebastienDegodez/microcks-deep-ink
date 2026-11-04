@@ -1,7 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { LiveIndicatorComponent } from '@microcks-deep-ink/registry/angular/live-indicator';
 import { STAT_CARD } from '@microcks-deep-ink/registry/angular/stat-card';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/StatCard',
@@ -42,3 +42,6 @@ export const Tones: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('stat-card', 'StatCardComponent', { title: 'Conformance', headingLevel: 2, value: '92', unit: '%', tone: 'success' }, '<p>Across 12 operations.</p>');
