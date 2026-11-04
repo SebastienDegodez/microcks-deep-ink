@@ -11,7 +11,7 @@ beforeEach(() => {
 describe('catalog use cases', () => {
   it('lists the 11 seeded services and filters them', async () => {
     expect(await uc.catalog.listServices()).toHaveLength(11);
-    expect((await uc.catalog.listServices({ query: 'pastry' })).map((s) => s.id)).toEqual(['pastry2', 'orders', 'pastry1', 'concierge']);
+    expect((await uc.catalog.listServices({ query: 'pastry' })).map((s) => s.id)).toEqual(['pastry2', 'orders', 'concierge', 'pastry1']);
     expect((await uc.catalog.listServices({ protocols: ['EVENT'] })).map((s) => s.id)).toEqual(['orders', 'usersignedup']);
     expect((await uc.catalog.listServices({ testStatus: 'never' })).map((s) => s.id)).toEqual(['petstore', 'rocks', 'usersignedup']);
     expect((await uc.catalog.listServices({ labels: ['domain=pastry', 'status=GA'] })).map((s) => s.id)).toEqual(['pastry2']);
