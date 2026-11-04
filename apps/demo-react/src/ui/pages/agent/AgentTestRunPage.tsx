@@ -612,7 +612,7 @@ export default function AgentTestRunPage() {
           </span>
         </>
       ) : (
-        <span role="status"><ApiBadge label="result" value={passed ? 'passed' : 'failed'} status={passed ? 'success' : 'danger'} /></span>
+        <span role="status"><ApiBadge label="result" value={passed ? 'passed' : 'failed'} status={passed ? 'success' : 'danger'} icon={passed ? 'check' : 'close-sm'} /></span>
       )}
     </span>
   );
