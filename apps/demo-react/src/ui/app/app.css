@@ -1,6 +1,6 @@
 /*
- * Demo-specific layout glue (prefix `demo-`). Components and the design system live in the copied
- * `ui/styles` (plain class names, no prefix); this file only covers what the demo shell adds around them.
+ * Demo-specific layout glue (prefix `demo-`). Components and the design system live in
+ * `@microcks/deep-ink/styles.css` (plain class names, no prefix); this file only covers what the demo shell adds around them.
  * Colors come from the tokens; no alpha or color-mix behind text.
  */
 

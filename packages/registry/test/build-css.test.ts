@@ -7,7 +7,6 @@ import { beforeAll, describe, expect, it } from 'vitest';
 import { buildCss, LAYER_ORDER } from '../scripts/build-css.mjs';
 
 const ROOT = resolve(fileURLToPath(import.meta.url), '..', '..');
-const DEMO_STYLES = resolve(ROOT, '..', '..', 'apps', 'demo-react', 'src', 'ui', 'styles');
 
 let out: { css: string; cssNoFonts: string; order: string[] };
 
@@ -25,6 +24,8 @@ const rules = (css: string) =>
     .join('\n');
 
 describe('dist/deep-ink.css', () => {
+  // The demo now loads this file (through @microcks/deep-ink/styles.css). It was checked equal to the demo's former
+  // copies, in their order, before they were deleted; css-order.json keeps that order.
   it('starts with the layer order, then the tokens font import', () => {
     const lines = rules(out.css).split('\n');
     expect(lines[0]).toBe(LAYER_ORDER);
@@ -49,12 +50,5 @@ describe('dist/deep-ink.css', () => {
       const deps: string[] = JSON.parse(readFileSync(join(ROOT, 'items', `${n}.json`), 'utf8')).registryDependencies;
       for (const d of deps) if (out.order.includes(d)) expect(out.order.indexOf(d), `${d} before ${n}`).toBeLessThan(out.order.indexOf(n));
     }
-  });
-
-  // The demo's copies (CLI output) are what the demo renders today: the package stylesheet must be the same cascade.
-  it('equals the demo copies, in the order of its index.css', () => {
-    const imports = [...readFileSync(join(DEMO_STYLES, 'index.css'), 'utf8').matchAll(/@import '\.\/([^']+)';/g)].map((m) => m[1]!);
-    const demo = imports.map((f) => readFileSync(join(DEMO_STYLES, f), 'utf8')).join('\n');
-    expect(rules(out.css)).toBe(`${LAYER_ORDER}\n${rules(demo)}`);
   });
 });

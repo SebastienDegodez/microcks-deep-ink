@@ -7,9 +7,15 @@ export default defineConfig({
   base: './',
   plugins: [react()],
   resolve: {
-    alias: {
-      '@': new URL('./src', import.meta.url).pathname,
-    },
+    alias: [
+      // The design system is the @microcks/deep-ink package (a `link:` to react/packages/deep-ink, built first).
+      // Pages keep importing `@/ui/components/ui/<item>`: every such import resolves to the package barrel.
+      // The one real file left there (workflow-loom.tsx, for LoomHost's import.meta.glob) is imported relatively.
+      { find: /^@\/ui\/components\/ui\/.*$/, replacement: '@microcks/deep-ink' },
+      { find: '@', replacement: new URL('./src', import.meta.url).pathname },
+    ],
+    // One React: the package is linked from another workspace, which has its own node_modules.
+    dedupe: ['react', 'react-dom'],
   },
   build: {
     target: 'es2022',
