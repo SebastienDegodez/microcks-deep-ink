@@ -24,7 +24,7 @@ into your app and edit it. Three tiers:
 | --- | --- | --- |
 | **natural** | Native HTML styled by a CSS class API (`button`, `field`, `input`, `tabs`, `table`, `dialog`...) | CSS + a thin React or Angular file |
 | **microcks** | Microcks-specific but presentational (`api-badge`, `status-badge`, `operation-row`, `conformance-band`...) | CSS + React or Angular file + HTML recipe |
-| **element** | Three Web Components kept for heavy logic: `<workflow-loom>` (Arazzo), `<command-bar>`, `<plugin-slot>` | A self-contained bundle + a thin wrapper |
+| **element** | Two Web Components kept for heavy logic: `<workflow-loom>` (Arazzo) and `<plugin-slot>` | A self-contained bundle + a thin wrapper |
 
 Plain class names, no prefix: `.button`, `.tabs`, `.sr-only`, `.skip-link`; custom properties are `--action`, `--surface`...
 Angular alone keeps a `mk-` selector prefix (`<mk-tabs>`, `<button mkButton>`) because the Angular style guide and its lint
@@ -35,8 +35,8 @@ rules require one; the reasoning is in the Angular Storybook introduction and at
 ```
  packages/tokens ── tokens.json ──► dist/deep-ink.css                       packages/plugin-sdk
         │                                                                          │
-        │           packages/core (Stencil): <workflow-loom> <command-bar> <plugin-slot>
-        │             └─ esbuild ─► dist/elements/{workflow-loom,command-bar,plugin-slot}.js (self-contained ESM)
+        │           packages/core (Stencil): <workflow-loom> <plugin-slot>
+        │             └─ esbuild ─► dist/elements/{workflow-loom,plugin-slot}.js (self-contained ESM)
         ▼                                   ▼
  packages/registry   SINGLE SOURCE OF TRUTH FOR COPYABLE CODE
    items/<name>.json   src/css/<name>.css   src/react/<name>.tsx   src/angular/<name>.ts   src/html/<name>.html
@@ -58,7 +58,7 @@ rules require one; the reasoning is in the Angular Storybook introduction and at
 | Folder | What it is |
 | --- | --- |
 | `packages/tokens` | Design tokens: `tokens.json`, `deep-ink.css` (dark Deep Ink and light Paper), contrast test |
-| `packages/core` | The three Web Components (Stencil) and their self-contained bundles |
+| `packages/core` | The two Web Components (Stencil) and their self-contained bundles |
 | `packages/registry` | The registry: 46 items (CSS, React, Angular, HTML recipes, accessibility contract). See its [README](packages/registry/README.md) for the CSS class API |
 | `packages/cli` | `deep-ink`, a zero-dependency CLI that copies items into an app. See its [README](packages/cli/README.md) |
 | `packages/plugin-sdk` | Plugin manifest, extension points, shared plugin host |

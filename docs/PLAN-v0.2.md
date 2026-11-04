@@ -4,7 +4,7 @@ The repo moves from "22 Web Components plus generated wrappers" to a shadcn-styl
 
 - **Natural components** become native HTML styled by a CSS class API with the `di-` prefix.
 - **Simple Microcks components** become native React and Angular code over that same CSS. Their Web Component versions are dropped.
-- **Three Web Components remain:** `mk-workflow-loom`, `mk-command-bar` and `mk-plugin-slot`. They are compiled into self-contained element bundles that get copied along with a thin wrapper.
+- **Three Web Components remain:** `mk-workflow-loom`, `mk-command-bar` and `mk-plugin-slot`. (Later decision: the command bar became a native React and Angular component, so two Web Components remain: `workflow-loom` and `plugin-slot`.) They are compiled into self-contained element bundles that get copied along with a thin wrapper.
 - **One registry** in `packages/registry` is the single source of truth. Both the Storybook "Copy" panel and the new zero-dependency CLI (`pnpm deep-ink add …`) read its built JSON.
 - **A new clean-architecture demo**, `apps/demo-react`, covers all 17 screens. It uses only components copied by the CLI. It is published under `/demo/`.
 - **Accessibility (RGAA 4.1.2 / WCAG 2.1 AA)** is a contract every work package must meet. It is checked by axe-core and `@a11ylint/core@1.0.0-alpha.7` in a Playwright smoke run.

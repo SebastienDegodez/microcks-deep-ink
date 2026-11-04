@@ -10,17 +10,6 @@ export const PROTOCOL_TOKEN: Record<Protocol, string> = {
   A2A: 'proto-a2a',
 };
 
-/** Entry of the command bar. `kind` groups the results; 'action' items are commands. */
-export interface CommandItem {
-  id: string;
-  label: string;
-  /** 'action' items are commands (run a test…); others are navigation targets. */
-  kind: 'action' | 'service' | 'operation' | 'test';
-  protocol?: Protocol;
-  hint?: string;
-  keywords?: string[];
-}
-
 /* ---------- Workflow loom (Arazzo) ---------- */
 
 export type StepStatus = 'passed' | 'failed' | 'not-run';

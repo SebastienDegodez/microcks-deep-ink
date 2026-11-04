@@ -113,6 +113,7 @@ Generated from `packages/registry/items/*.json` by `node packages/registry/scrip
 | `checkbox` | natural | Native &lt;input type=checkbox/radio&gt; inside &lt;label&gt;; groups use &lt;fieldset&gt;&lt;legend&gt; | 3.3, 11.1, 11.5, 11.6, 11.7 | 1.3.1, 1.4.11, 3.3.2, 4.1.2 |
 | `chip` | natural | &lt;span&gt; (static), &lt;button aria-pressed&gt; (toggle), nested &lt;button aria-label&gt; (remove) | 3.1, 3.2, 7.1, 11.9 | 1.4.1, 1.4.3, 4.1.2 |
 | `code-block` | natural | &lt;figure&gt; + &lt;figcaption&gt; + &lt;pre tabindex="0"&gt;&lt;code&gt; | 1.1, 3.2, 7.3, 10.7 | 1.3.1, 1.4.1, 2.1.1, 2.4.7, 4.1.2 |
+| `command-bar` | natural | WAI-ARIA 1.2 combobox with listbox popup (aria-activedescendant), in a native &lt;dialog&gt; opened with showModal() | 7.1, 7.3, 7.5, 10.7, 11.1, 12.8 | 1.3.1, 2.1.1, 2.1.2, 2.4.3, 2.4.7, 4.1.2, 4.1.3 |
 | `copy-button` | natural | Native &lt;button&gt; plus a polite live region | 7.1, 7.5, 11.9 | 1.4.1, 4.1.2, 4.1.3 |
 | `description-list` | natural | Native &lt;dl&gt; &gt; div &gt; dt + dd | 9.3 | 1.3.1 |
 | `dialog` | natural | Native &lt;dialog&gt; opened with showModal() | 7.1, 7.3, 10.7, 12.6 | 2.1.1, 2.1.2, 2.4.3, 4.1.2 |
@@ -146,7 +147,6 @@ Generated from `packages/registry/items/*.json` by `node packages/registry/scrip
 | `run-target` | microcks | Static &lt;span&gt; with visible text | 3.1, 3.2 | 1.4.1, 1.4.3 |
 | `status-badge` | microcks | Static &lt;span&gt; with decorative icon and visible word | 3.1, 3.2, 13.8 | 1.4.1, 1.4.3 |
 | `step-status` | microcks | Static &lt;span&gt; and &lt;ul&gt; with visible words | 3.1, 3.2, 9.3 | 1.3.1, 1.4.1, 1.4.3 |
-| `command-bar` | element | WAI-ARIA 1.2 combobox with listbox popup (aria-activedescendant), in a native &lt;dialog&gt; opened with showModal() | 7.1, 7.3, 7.5, 10.7, 11.1, 12.8 | 1.3.1, 2.1.1, 2.1.2, 2.4.3, 2.4.7, 4.1.2, 4.1.3 |
 | `plugin-slot` | element | Light-DOM wrapper: div.plugin-item[data-plugin-id] around each contributed element, no ARIA of its own | 8.2, 9.1, 10.7 | 1.3.1, 2.4.3, 4.1.1 |
 | `workflow-loom` | element | role=group with toggle-button nodes (aria-pressed), roving tabindex, and a Show as table view | 1.2, 3.2, 5.4, 7.1, 7.3, 9.1, 10.7, 12.8 | 1.1.1, 1.3.1, 1.4.1, 2.1.1, 2.4.3, 2.4.7, 4.1.2 |
 
@@ -182,7 +182,7 @@ Generated from `packages/registry/items/*.json` by `node packages/registry/scrip
   walkthroughs, zoom at 200% and reflow at 320px (criteria 10.4 and 10.11 are only partly checked by axe).
 - **Live data** in the demo (Traces, Cockpit ticker, TestRun stream) is simulated; the Pause control is present but its
   effect on real assistive technology is untested.
-- **Web Components** (`workflow-loom`, `command-bar`, `plugin-slot`): the runner walks open shadow roots; the
+- **Web Components** (`workflow-loom`, `plugin-slot`): the runner walks open shadow roots; the
   Loom has a table alternative. Plugin elements are not covered at all.
 - The criterion numbers and wording in `rgaa-criteria.json` are short English paraphrases. Verify them against the
   official list at <https://accessibilite.numerique.gouv.fr/> before publishing anything.
