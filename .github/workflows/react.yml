@@ -1,0 +1,44 @@
+name: React package
+
+# The React workspace (react/): the @microcks/deep-ink package. It has its own lockfile.
+# Nothing is published: the package is private.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "react/**"
+      - "packages/tokens/**"
+      - "packages/core/**"
+      - "packages/registry/src/css/**"
+      - "packages/registry/items/**"
+      - ".github/workflows/react.yml"
+  pull_request:
+    paths:
+      - "react/**"
+      - "packages/tokens/**"
+      - "packages/core/**"
+      - "packages/registry/src/css/**"
+      - "packages/registry/items/**"
+      - ".github/workflows/react.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: react-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  react:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: react/pnpm-lock.yaml
+      - run: pnpm -C react install --frozen-lockfile
+      - run: pnpm -C react build

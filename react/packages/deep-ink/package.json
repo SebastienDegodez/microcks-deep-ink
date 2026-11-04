@@ -1,0 +1,14 @@
+{
+  "name": "@microcks/deep-ink",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "Deep Ink React components for the Microcks UI v2. Not published: private until the maintainers decide.",
+  "scripts": {
+    "build": "node -e \"console.log('@microcks/deep-ink: nothing to build yet')\""
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  }
+}
