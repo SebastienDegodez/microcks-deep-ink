@@ -210,7 +210,7 @@ export default function BehaviorPage() {
                 <span id="stateful-desc" className="stateful-desc">Persist state between calls, e.g. count views, keep a cart, reflect a PATCH in later GETs.</span>
               </div>
               <label className="stateful-switch">
-                <input type="checkbox" role="switch" className="switch" aria-labelledby="stateful-title" aria-describedby="stateful-desc" checked={draft.stateful} onChange={(e) => toggleStateful(e.target.checked)} />
+                <input type="checkbox" role="switch" className="switch" data-size="lg" aria-labelledby="stateful-title" aria-describedby="stateful-desc" checked={draft.stateful} onChange={(e) => toggleStateful(e.target.checked)} />
                 <span aria-hidden="true">{draft.stateful ? 'On' : 'Off'}</span>
               </label>
             </div>

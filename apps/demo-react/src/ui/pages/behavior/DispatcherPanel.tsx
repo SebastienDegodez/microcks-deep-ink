@@ -2,6 +2,7 @@ import './dispatcher.css';
 import { useMemo } from 'react';
 import { parseJsonBodyRule, reachability, ruleNames, scriptSample, storedAs, type Behavior, type BehaviorDispatcher } from '@/domain/catalog';
 import type { Example } from '@/domain/shared';
+import { Callout } from '@/ui/components/ui/callout';
 import { CodeBlock } from '@/ui/components/ui/code-block';
 import { Icon } from '@/ui/components/ui/icon';
 import { Panel } from '@/ui/components/ui/panel';
@@ -139,10 +140,9 @@ export function DispatcherPanel({ draft, examples, pathParams, pathPrefix, edit 
           <div className="rules-block">
             <label htmlFor="params-rule" className="section-label">Query parameters used as criteria</label>
             <input id="params-rule" className="rules-input" type="text" spellCheck={false} value={draft.rule} onChange={(e) => edit({ rule: e.target.value })} />
-            <div role="note" className="callout-outline" data-tone="warning">
-              <Icon name="warning" size={14} />
-              <span>The contract declares no query parameter on this operation. The {examples.length} imported examples carry no query criteria, so every call returns 404 until you add examples that do.</span>
-            </div>
+            <Callout tone="warning" variant="outline">
+              The contract declares no query parameter on this operation. The {examples.length} imported examples carry no query criteria, so every call returns 404 until you add examples that do.
+            </Callout>
           </div>
         ) : null}
 
