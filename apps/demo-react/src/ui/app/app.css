@@ -117,6 +117,9 @@
   color: var(--text);
   overflow-wrap: anywhere;
 }
+.demo-page-title[data-size='sm'] {
+  font-size: 30px;
+}
 .demo-page-title[data-size='lg'] {
   font-size: 34px;
   line-height: 1.05;
