@@ -35,6 +35,13 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+const describedBy = (el: HTMLElement) =>
+  (el.getAttribute('aria-describedby') ?? '')
+    .split(' ')
+    .map((id) => document.getElementById(id)?.textContent ?? '')
+    .join(' ')
+    .trim();
+
 describe('Run a test (/tests/create)', () => {
   it('labels every field, mirrors the form in the CI snippet and switches the CI format', async () => {
     renderAt('/tests/create?service=pastry2');
@@ -42,21 +49,26 @@ describe('Run a test (/tests/create)', () => {
     expect((await screen.findAllByRole('radio')).length).toBeGreaterThanOrEqual(2);
     const endpoint = screen.getByLabelText(/Test endpoint/) as HTMLInputElement;
     fireEvent.change(endpoint, { target: { value: 'https://pastry.example.test/api' } });
-    const snippet = screen.getByRole('region', { name: /command/i, hidden: false });
+    const snippet = screen.getByRole('region', { name: 'microcks CLI code' });
     expect(snippet.textContent).toContain('https://pastry.example.test/api');
-    fireEvent.click(screen.getByRole('tab', { name: /GitHub/i }));
-    expect(screen.getByRole('tabpanel').textContent).toContain('uses:');
+    expect(screen.getByText('1 line differs from the default configuration.')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'GitHub Actions' }));
+    expect(screen.getByRole('button', { name: 'GitHub Actions' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('region', { name: 'GitHub Actions code' }).textContent).toContain('- name: Contract test API Pastry 2.0');
   });
 
   it('tells which field is wrong, ties the error to it, and launches a valid test', async () => {
     const router = renderAt('/tests/create?service=pastry2');
     const endpoint = (await screen.findByLabelText(/Test endpoint/)) as HTMLInputElement;
     fireEvent.change(endpoint, { target: { value: '' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Launch test' }));
-    const alert = await screen.findByRole('alert');
-    expect(alert.textContent).toContain('Test endpoint');
+    const launch = screen.getByRole('button', { name: 'Launch test' });
+    expect(launch.getAttribute('aria-disabled')).toBe('true');
+    expect(describedBy(launch)).toBe('A test endpoint is required.');
+    fireEvent.click(launch);
+    expect(document.activeElement).toBe(endpoint);
+    expect(router.state.location.pathname).toBe('/tests/create');
     expect(endpoint.getAttribute('aria-invalid')).toBe('true');
-    expect(endpoint.getAttribute('aria-describedby')).toBeTruthy();
+    expect(describedBy(endpoint)).toContain('A test endpoint is required.');
     fireEvent.change(endpoint, { target: { value: 'https://pastry.example.test/api' } });
     fireEvent.click(screen.getByRole('button', { name: 'Launch test' }));
     await waitFor(() => expect(router.state.location.pathname).toMatch(/^\/tests\/runner\/.+/));
@@ -150,23 +162,26 @@ describe('Usage (/metrics/:serviceId?)', () => {
     expect(within(figures).getByRole('region', { name: 'Conformance' }).textContent).toContain('92%');
   });
 
-  it('selects a bar with the keyboard and offers the data table', async () => {
+  it('selects a bar with the keyboard and keeps text equivalents', async () => {
     renderAt('/metrics/pastry2');
     await screen.findByRole('heading', { level: 1, name: 'Usage & conformance' });
-    const group = await screen.findByRole('group', { name: /one bar per hour/ });
+    const group = await screen.findByRole('group', { name: /one bar per hour/i });
     const bars = within(group).getAllByRole('button');
     const current = bars.find((b) => b.getAttribute('aria-pressed') === 'true') as HTMLElement;
     expect(current).toBeTruthy();
     fireEvent.keyDown(current, { key: 'ArrowLeft' });
     await waitFor(() => expect(bars.filter((b) => b.getAttribute('aria-pressed') === 'true')).toHaveLength(1));
-    expect(screen.getAllByText('Show data table').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByRole('table', { name: 'Invocations per hour · today' })).toBeTruthy();
+    expect(screen.getByRole('table', { name: 'Invocations per week and weekday' })).toBeTruthy();
+    const ops = screen.getByRole('table', { name: 'Invocations per operation' });
+    expect(within(ops).getAllByRole('columnheader').map((h) => h.textContent)).toEqual(['Operation', 'Dispatcher', 'Invocations', 'Share', 'vs previous', 'Last call']);
   });
 
   it('switches period and shows the conformance treemap and index card', async () => {
     renderAt('/metrics/pastry2');
     await screen.findByRole('heading', { level: 1 });
     fireEvent.click(await screen.findByRole('button', { name: '7 days' }));
-    await screen.findByRole('group', { name: /one bar per day/ });
+    await screen.findByRole('group', { name: /one bar per day/i });
     const treemap = await screen.findByRole('region', { name: 'Conformance risk by domain' });
     const pastry = within(treemap).getByRole('region', { name: 'domain=pastry' });
     expect(within(pastry).getAllByRole('link').map((l) => l.textContent)).toEqual([

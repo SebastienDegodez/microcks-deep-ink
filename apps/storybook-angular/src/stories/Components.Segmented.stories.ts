@@ -65,3 +65,33 @@ export const JoinedPrimary: StoryObj = {
     template: `<mk-segmented label="Artifact role" variant="joined" tone="primary" [options]="options" [(value)]="v" />`,
   }),
 };
+
+export const StatusIcons: StoryObj = {
+  name: 'Toned icons, selected fill (Sources)',
+  render: () => ({
+    props: {
+      v: 'all',
+      options: [
+        { id: 'all', label: 'All' },
+        { id: 'imported', label: 'Imported', icon: 'check', iconTone: 'success' },
+        { id: 'warnings', label: 'Warnings', icon: 'warning', iconTone: 'warning' },
+        { id: 'failing', label: 'Failing', icon: 'cross', iconTone: 'danger' },
+        { id: 'inactive', label: 'Inactive', icon: 'pause', iconTone: 'muted' },
+      ],
+    },
+    template: `<mk-segmented label="Status" pressedFill="selected" [iconSize]="13" [options]="options" [(value)]="v" />`,
+  }),
+};
+
+export const Compact: StoryObj = {
+  name: 'Joined sm and wide track (Behavior, Usage)',
+  render: () => ({
+    props: {
+      lang: 'groovy',
+      period: 'today',
+      langs: [{ id: 'groovy', label: 'Groovy' }, { id: 'js', label: 'JavaScript' }],
+      periods: [{ id: 'today', label: 'Today' }, { id: '7d', label: '7 days' }, { id: '30d', label: '30 days' }],
+    },
+    template: `<div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start"><mk-segmented label="Script language" variant="joined" size="sm" [options]="langs" [(value)]="lang" /><mk-segmented label="Period" spacing="wide" [options]="periods" [(value)]="period" /></div>`,
+  }),
+};

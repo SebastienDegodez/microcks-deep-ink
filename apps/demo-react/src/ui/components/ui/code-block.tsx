@@ -85,7 +85,7 @@ export function CodeBlock({
           <span className="code-caption" id={captionId}>
             {caption ?? ''}
           </span>
-          {copy ? <CopyButton value={value} className="code-copy" /> : null}
+          {copy ? <CopyButton value={value} variant="link" className="code-copy" /> : null}
         </figcaption>
       ) : null}
       {/* The scroll container must be keyboard reachable (WCAG 2.1.1), so it is focusable and named. */}

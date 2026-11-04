@@ -17,7 +17,7 @@
     "keyboard": [],
     "aria": [
       "No role=\"img\" override: the text is read as \"REST API Pastry 2.0\" or \"ARAZZO restock-pastry\"",
-      "Proof status fills add an icon and a visually hidden status word",
+      "Proof status fills add a visually hidden status word (\"(success)\"), so the fill colour is never the only cue",
       "Proof badges read as \"<label> <value>\""
     ],
     "rgaa": [

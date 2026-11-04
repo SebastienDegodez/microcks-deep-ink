@@ -22,10 +22,14 @@
   object-fit: contain;
 }
 
-/* Content text is 13-14px in the prototype; the shell's 15px body size stays for the chrome. */
+/* Content text is 13-14px with a normal line height in the prototype; the shell's 15px body size stays for the chrome. */
 .main {
   font-size: 14px;
-  line-height: 1.5;
+  line-height: normal;
+}
+/* Catalogue, Workflows and Import use 28px above and below the content (others: 24px 32px 40px). */
+.main:has(> [data-main-pad='roomy']) {
+  padding-block: 28px;
 }
 
 /* Top bar search: a field-looking button that opens the command bar. */
@@ -131,6 +135,22 @@
   font: 700 26px/1 var(--font-brand);
   color: var(--text-secondary);
 }
+/* Badge title (Service, Agent, Workflow): the h1 is the api-badge, the row centres the chips beside it. */
+.demo-page-title[data-variant='badge'] {
+  display: inline-flex;
+  font: inherit;
+}
+.demo-page-header[data-variant='badge'] .demo-page-title-row {
+  align-items: center;
+}
+.demo-page-header[data-variant='badge'] .demo-page-header-text {
+  flex-basis: 420px;
+  gap: 10px;
+}
+.demo-page-header[data-variant='badge'] .demo-page-description {
+  max-width: 760px;
+  font-size: 15px;
+}
 .demo-page-title[data-variant='mono'] {
   font: 600 24px/1.2 var(--font-mono);
 }
@@ -149,10 +169,17 @@
   font: 400 13px/18px var(--font-mono);
 }
 /* Inside the meta text, a link is underlined so it is not told apart by colour alone (RGAA 10.6). */
+/*
+ * Link inside the meta pill: no underline (prototype), but semibold, so it is not told apart from the
+ * pill text by colour alone (RGAA 10.6; axe link-in-text-block accepts a weight difference).
+ */
 .demo-page-meta a {
   color: var(--link);
+  font-weight: 600;
+  text-decoration: none;
+}
+.demo-page-meta a:hover {
   text-decoration: underline;
-  text-underline-offset: 2px;
 }
 
 .demo-page-description {
