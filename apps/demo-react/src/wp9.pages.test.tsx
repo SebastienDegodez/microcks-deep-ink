@@ -198,22 +198,42 @@ describe('Usage (/metrics/:serviceId?)', () => {
 });
 
 describe('Live traces (/traces)', () => {
-  it('lists the calls, pauses and clears', async () => {
+  it('lists the calls, opens call #4, pauses and clears', async () => {
     renderAt('/traces');
     await screen.findByRole('heading', { level: 1, name: 'Live traces' });
-    const table = await screen.findByRole('table', { name: /Calls received/ });
-    expect(within(table).getAllByRole('row').length).toBeGreaterThan(1);
+    const list = await screen.findByRole('region', { name: 'Latest calls' });
+    const rows = within(list).getAllByRole('button', { name: /^\d\d:\d\d:\d\d/ });
+    expect(rows).toHaveLength(10);
+    const detail = screen.getByRole('region', { name: '/pastries/Eclair%20Cafe' });
+    expect(within(detail).getByRole('note', { name: 'Arazzo run of this call' })).toBeTruthy();
+    expect(within(detail).getByRole('link', { name: 'Restock a pastry' }).getAttribute('href')).toContain('/workflows/pastry/restock-pastry/loom');
     fireEvent.click(screen.getByRole('button', { name: 'Pause' }));
-    expect(screen.getByRole('button', { name: 'Resume' })).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
-    await screen.findByText('No call yet');
+    expect(screen.getByRole('button', { name: 'Resume' }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(screen.getByRole('button', { name: 'Clear list' }));
+    await screen.findByText('List cleared. Waiting for the next call…');
+    expect(screen.getByRole('complementary', { name: 'Call detail' })).toBeTruthy();
   });
 
-  it('prefills the Arazzo only switch from ?run= and narrows the list to that run', async () => {
+  it('focuses the list on a graph node and filters MCP tool calls by protocol', async () => {
+    renderAt('/traces');
+    await screen.findByRole('heading', { level: 1, name: 'Live traces' });
+    const graph = await screen.findByRole('region', { name: 'Call graph' });
+    const node = within(graph).getByRole('button', { name: /^copilot-agent \(MCP\), 10\.0\.9\.3, 50 calls/ });
+    fireEvent.click(node);
+    expect(node.getAttribute('aria-pressed')).toBe('true');
+    const list = screen.getByRole('region', { name: 'Latest calls' });
+    expect(within(list).getAllByRole('button', { name: /^\d\d:/ })).toHaveLength(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Remove node focus' }));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Protocol' }), { target: { value: 'MCP' } });
+    expect(within(list).getAllByRole('button', { name: /^\d\d:/ }).every((b) => /tools\/call|get_pastries/.test(b.getAttribute('aria-label') ?? ''))).toBe(true);
+  });
+
+  it('prefills the Arazzo filter from ?run= and narrows the list to that run', async () => {
     renderAt('/traces?run=6729a1d27e4c0b5f93a8c214');
     await screen.findByRole('heading', { level: 1 });
-    const toggle = (await screen.findByRole('switch', { name: /Arazzo only/ })) as HTMLInputElement;
-    expect(toggle.checked).toBe(true);
+    const toggle = await screen.findByRole('button', { name: /From Arazzo runs/ });
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    await screen.findByText('No call matches the current filters.');
   });
 });
 
