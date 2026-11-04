@@ -70,6 +70,11 @@ describe('loom model', () => {
     expect(threads[4]).toMatchObject({ from: 'patchPastry', missing: true });
     const session = await load('restock-pastry', 13);
     expect(threadsOf(session.workflow, session.run)[1]?.drops[1]).toEqual({ to: 'patchPastry', label: 'name · path', bad: 'Millefeuille' });
+    expect(buildLoomProps(session.workflow, session.document, session.run, undefined).steps[2]?.checks).toEqual([
+      { label: 'Call #4', state: 'pass' },
+      { label: 'Data passing', state: 'fail' },
+      { label: 'Contract', state: 'pass' },
+    ]);
   });
 
   it('traces where a value is produced and consumed (the expression lens)', async () => {

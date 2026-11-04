@@ -37,8 +37,13 @@ export interface LoomStep {
   dependsOn?: string[];
   status?: LoomStepStatus;
   attempts?: number;
-  checks?: { successCriteria: LoomCheckState; schemaValidation?: LoomCheckState };
+  /** The pair (drawn when `validatesSchemas`), or a list of rows drawn as given (a session's call / data passing / contract). */
+  checks?: { successCriteria: LoomCheckState; schemaValidation?: LoomCheckState } | LoomCheckRow[];
   actions?: LoomAction[];
+}
+export interface LoomCheckRow {
+  label: string;
+  state: 'pass' | 'fail' | 'skip' | 'idle';
 }
 export interface LoomDrop {
   to: string;
@@ -165,8 +170,18 @@ export function threadsOf(workflow: Pick<Workflow, 'steps' | 'outputs'>, run?: W
   return threads;
 }
 
-function checksOf(result: StepResult | undefined, validate: boolean): LoomStep['checks'] | undefined {
+function checksOf(result: StepResult | undefined, validate: boolean, run?: WorkflowRun): LoomStep['checks'] | undefined {
   if (!result) return undefined;
+  if (run?.origin.kind === 'session') {
+    // A verification judges each call: the call itself, the data it carries, and its contract.
+    if (result.status === 'not-run') return [{ label: 'Call', state: 'idle' }, { label: 'Data passing', state: 'idle' }, { label: 'Contract', state: 'idle' }];
+    const call = result.attempts[0]?.when.replace(/^call/, 'Call') ?? 'Call';
+    return [
+      { label: call, state: 'pass' },
+      { label: 'Data passing', state: wrongValue(result) ? 'fail' : 'pass' },
+      { label: 'Contract', state: 'pass' },
+    ];
+  }
   if (result.status === 'not-run') return { successCriteria: 'not-evaluated', schemaValidation: validate ? 'not-evaluated' : undefined };
   const criteria = result.criteria.every((c) => c.held) ? 'passed' : 'failed';
   const schema: LoomCheckState = result.schema.state === 'pass' ? 'passed' : result.schema.state === 'fail' ? 'failed' : result.schema.state === 'off' ? 'off' : 'not-evaluated';
@@ -238,7 +253,7 @@ export function buildLoomProps(
       dependsOn: step.dependsOn,
       status: result?.status,
       attempts: result && result.attempts.length > 1 ? result.attempts.length : undefined,
-      checks: checksOf(result, validate),
+      checks: checksOf(result, validate, run),
       actions: actionsOf(step, result, run),
     };
   });
