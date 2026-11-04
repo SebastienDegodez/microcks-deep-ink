@@ -235,10 +235,6 @@
   color: var(--text-secondary);
 }
 
-.demo-placeholder {
-  max-width: 60ch;
-}
-
 .demo-map {
   display: grid;
   gap: 16px;
