@@ -31,3 +31,14 @@ export const AlignedInAList: StoryObj = {
     </ul>
   ),
 };
+
+export const Small: StoryObj = {
+  name: 'Small (step lists)',
+  render: () => (
+    <div className="inline">
+      <MethodTag method="GET" size="sm" />
+      <MethodTag method="PATCH" size="sm" />
+      <MethodTag method="POST" size="sm" />
+    </div>
+  ),
+};

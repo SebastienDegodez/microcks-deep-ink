@@ -30,6 +30,18 @@ describe('CodeBlock', () => {
     expect(nums).toEqual(['10', '11']);
     expect(container.querySelectorAll('.code-line')[1]!.textContent).toContain('schema: number');
   });
+
+  it('narrow gutter, danger frame and an 11px cross on the bad line', () => {
+    const { container } = render(
+      <CodeBlock variant="plain" caption="Response body" lineNumbers gutter="narrow" tone="danger" lines={[{ text: '{' }, { text: '  "price": "2.5"', bad: true, note: 'schema: number' }]} />,
+    );
+    const fig = container.querySelector('figure')!;
+    expect(fig.getAttribute('data-gutter')).toBe('narrow');
+    expect(fig.getAttribute('data-tone')).toBe('danger');
+    const bad = container.querySelectorAll('.code-line')[1]!;
+    expect(bad.querySelector('.code-mark svg')?.getAttribute('width')).toBe('11');
+    expect(bad.textContent).toContain('Problem: ');
+  });
 });
 
 describe('LiveIndicator', () => {
