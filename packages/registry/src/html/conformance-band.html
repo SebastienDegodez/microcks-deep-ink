@@ -1,5 +1,22 @@
 <!-- ConformanceBand. The band is role="img" with a label that spells out the counts.
-     Fail cells are hatched and pass cells solid; untested cells are outlined. -->
+     Cells are solid: pass --success, fail --danger, untested --border. -->
+<div class="conformance" data-size="full" role="img" aria-label="3 of 4 operations pass, 1 fails">
+  <span data-result="pass"></span><span data-result="pass"></span><span data-result="pass"></span><span data-result="fail"></span>
+</div>
+
+<!-- Labelled (test run): a list named by the counts; each cell writes its operation and result under the bar. -->
+<ul class="conformance" data-size="full" data-labelled aria-label="1 of 2 operations pass, 1 fails">
+  <li data-result="pass">
+    <span class="conformance-bar" aria-hidden="true"></span>
+    <span class="conformance-label"><svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l5 5 9-11"/></svg>GET /pastries · passed</span>
+  </li>
+  <li data-result="fail">
+    <span class="conformance-bar" aria-hidden="true"></span>
+    <span class="conformance-label"><svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>PATCH /pastries/{name} · failed</span>
+  </li>
+</ul>
+
+<!-- Optional summary under the band. -->
 <div class="conformance-wrap">
   <div class="conformance" data-size="full" role="img" aria-label="3 of 4 operations pass, 1 fails">
     <span data-result="pass"></span><span data-result="pass"></span><span data-result="pass"></span><span data-result="fail"></span>
@@ -10,7 +27,7 @@
   </p>
 </div>
 
-<!-- Mini: catalogue rows. -->
+<!-- Mini: catalogue rows, 96 x 14. -->
 <div class="conformance" data-size="mini" role="img" aria-label="2 of 3 operations pass, 1 untested">
   <span data-result="pass"></span><span data-result="pass"></span><span data-result="untested"></span>
 </div>

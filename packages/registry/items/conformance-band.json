@@ -2,9 +2,10 @@
   "name": "conformance-band",
   "title": "ConformanceBand",
   "tier": "microcks",
-  "description": "Conformance by operation: one cell per operation, with a spelled-out label and a visible summary in the full size.",
+  "description": "Conformance by operation: one cell per operation, with a spelled-out label; the full size can write a label under each cell and a visible summary.",
   "registryDependencies": [
-    "base"
+    "base",
+    "icon"
   ],
   "npmDependencies": {
     "react": [],
@@ -16,8 +17,9 @@
     "keyboard": [],
     "aria": [
       "The band is role=\"img\" with a label that spells out the counts",
-      "Failed cells are hatched as well as colored; untested cells are outlined",
-      "The full size shows a visible percentage and counts as text",
+      "With labels, the band is a <ul> named by the counts and each cell writes its operation and result as text (icon decorative)",
+      "Cell colour is never alone: the label (or the visible per-cell text) carries the result",
+      "The optional summary shows a visible percentage and counts as text",
       "Percentage color is secondary: the numbers are always written"
     ],
     "rgaa": [

@@ -25,8 +25,8 @@ describe('ConformanceBand', () => {
     expect(screen.getByRole('img').getAttribute('aria-label')).toBe('1 of 2 skills pass, 1 fails');
   });
 
-  it('writes the score and counts as visible text in the full size', () => {
-    const { container } = render(<ConformanceBand outcomes={twelve} />);
+  it('writes the score and counts as visible text when asked', () => {
+    const { container } = render(<ConformanceBand outcomes={twelve} showSummary />);
     const summary = container.querySelector('.conformance-summary');
     expect(summary?.textContent).toContain('92%');
     expect(summary?.textContent).toContain('11 of 12 operations pass, 1 fails');
@@ -36,5 +36,17 @@ describe('ConformanceBand', () => {
     const { container } = render(<ConformanceBand outcomes={['pass', 'untested', 'fail']} size="mini" />);
     expect(container.querySelectorAll('[data-result]')).toHaveLength(3);
     expect(container.querySelector('.conformance-summary')).toBeNull();
+  });
+
+  it('has no summary by default', () => {
+    const { container } = render(<ConformanceBand outcomes={twelve} />);
+    expect(container.querySelector('.conformance-summary')).toBeNull();
+  });
+
+  it('writes a label under each cell as a named list', () => {
+    render(<ConformanceBand outcomes={['pass', 'fail']} labels={['GET /pastries · passed', 'PATCH /pastries/{name} · failed']} />);
+    const list = screen.getByRole('list', { name: '1 of 2 operations pass, 1 fails' });
+    expect(list.querySelectorAll('li')).toHaveLength(2);
+    expect(screen.getByText('PATCH /pastries/{name} · failed')).toBeTruthy();
   });
 });
