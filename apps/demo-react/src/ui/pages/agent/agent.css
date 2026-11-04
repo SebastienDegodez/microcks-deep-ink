@@ -12,10 +12,6 @@
 .ag-pickbtn:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
 .ag-transport { display: grid; gap: 8px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-md, 6px); background: var(--surface); min-width: 0; }
 .ag-transport[data-preferred] { border-color: var(--proto-a2a); }
-.ag-diff { margin: 0; font-family: var(--font-mono); font-size: var(--type-small); display: grid; }
-.ag-diff > li { list-style: none; padding: 0 8px; white-space: pre-wrap; overflow-wrap: anywhere; }
-.ag-diff > li[data-mark='-'] { background: var(--danger-tint); text-decoration: line-through; }
-.ag-diff > li[data-mark='+'] { background: var(--success-tint); }
 .ag-setup { display: grid; gap: 16px; max-width: 880px; }
 .ag-choices { display: grid; gap: 8px; border: 0; margin: 0; padding: 0; min-width: 0; }
 .ag-choices > legend { padding: 0; font-weight: 600; margin-bottom: 8px; }
