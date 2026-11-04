@@ -35,7 +35,7 @@ import { Icon } from '@/ui/components/ui/icon';
 import { Input } from '@/ui/components/ui/input';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
-import { RunnerLog, type RunnerLevel } from '@/ui/components/ui/runner-log';
+import { RunnerLog } from '@/ui/components/ui/runner-log';
 import { Select } from '@/ui/components/ui/select';
 import { TaskLanes } from '@/ui/components/ui/task-timeline';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
@@ -491,8 +491,7 @@ function Results({ run, phase, tick, conversationSubs, onStep, onReplay, onEdit 
         <RunnerLog
           className="run-top-log"
           status={running ? <LiveIndicator variant="inline" label="live · streaming" /> : `${log.length} lines · completed`}
-          // The registry log has no WARN level yet (asked to R4): the line keeps its text and level word.
-          lines={log.map((l) => ({ time: l.time, level: l.level as RunnerLevel, text: l.text, emphasis: l.tone === 'emphasis', error: l.tone === 'error' }))}
+          lines={log.map((l) => ({ time: l.time, level: l.level, text: l.text, emphasis: l.tone === 'emphasis', error: l.tone === 'error' }))}
         />
       </div>
       <section aria-labelledby="matrix-title" className="matrix-section" ref={areaRef}>
