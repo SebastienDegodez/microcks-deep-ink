@@ -34,7 +34,9 @@
   .op-pick-summary { font-size: 12px; line-height: 1.25; color: var(--text-muted); }
   .op-pick-meta { font: 400 11px/1.25 var(--font-mono); color: var(--text-muted); }
   .op-pick-end { flex: none; display: inline-flex; align-items: center; gap: 4px; font: 400 12px/1 var(--font-mono); color: var(--text-secondary); }
-  .op-pick-end[data-tone="warning"] { font-size: 11px; color: var(--warning); }
+  .op-pick-end[data-tone] { font-size: 11px; }
+  .op-pick-end[data-tone="warning"] { color: var(--warning); }
+  .op-pick-end[data-tone="success"] { color: var(--success); }
 
   @media (forced-colors: active) {
     .op-pick:is([aria-pressed="true"], [aria-checked="true"]) { outline: 2px solid Highlight; outline-offset: -2px; }

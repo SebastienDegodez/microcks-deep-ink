@@ -489,10 +489,10 @@
     "op-pick": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/op-pick.tsx": "28b8662b16fbcd977a07920388f02d7cb826b32980e07a76276443a9a6074acd",
-        "src/ui/styles/op-pick.css": "3fc01579deeaed0172ec4765f09162666e798360599b985eb24b87c6695ecb2c"
+        "src/ui/components/ui/op-pick.tsx": "15c7a8e9439dbac8bcf3d10ec4efb63ce4d4d664283361eb8e9e7eb62862d0dc",
+        "src/ui/styles/op-pick.css": "f29c2c01ed410b5ed295ed962576c52326c06cf2ead75489df00076e37b2ea63"
       },
-      "hash": "feec68807f6c5654"
+      "hash": "877c9fedbd71ea85"
     },
     "exchange-card": {
       "version": "0.2.0",
