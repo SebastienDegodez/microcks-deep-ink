@@ -100,8 +100,6 @@
 .artifact-card-origin { font: 400 13px/18px var(--font-ui); color: var(--text-muted); }
 .artifact-card-status { font: 400 13px/18px var(--font-ui); color: var(--text-secondary); }
 .artifact-card-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.format-pill { display: inline-flex; align-items: center; gap: 6px; padding: 3px 10px; border: 1px solid var(--border); border-radius: 999px; background: var(--canvas); font: 400 12px/16px var(--font-mono); color: var(--text-secondary); }
-.format-pill > .icon { color: var(--success); }
 
 /* Boxed lists (operations, workflows, skills, interfaces). */
 .boxed-list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--border); border-radius: 4px; }
@@ -118,9 +116,6 @@
 .boxed-list-binding { flex: none; min-width: 92px; font: 600 12px/16px var(--font-mono); color: var(--text); }
 .boxed-list-url { flex: 1 1 200px; min-width: 0; font: 400 12px/16px var(--font-mono); color: var(--text-secondary); overflow-wrap: anywhere; }
 .boxed-list-op { display: inline-flex; align-items: center; gap: 6px; font: 400 12px/16px var(--font-mono); color: var(--text-secondary); }
-.note-pill { display: inline-flex; align-items: center; gap: 5px; padding: 2px 8px; border: 1px solid var(--border); border-radius: 999px; font: 400 12px/16px var(--font-mono); color: var(--text-secondary); }
-.note-pill[data-tone='warning'] { border-color: var(--warning); color: var(--warning); }
-.preferred-pill { padding: 1px 8px; border: 1px solid var(--link); border-radius: 999px; font: 600 12px/16px var(--font-ui); color: var(--link); }
 
 /* A2A interfaces beside the capabilities. */
 .agent-split { display: flex; flex-wrap: wrap; gap: 16px; }

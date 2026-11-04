@@ -18,10 +18,12 @@ import {
 import { formatClock, formatDuration } from '@/domain/shared';
 import { RUN_SCENARIOS, type RunScenario } from '@/application/arazzo';
 import { PageHeader, useQuery, useRelativeTime, useSubscription, useUseCases, usePageTitle } from '@/ui/app';
+import { Chip } from '@/ui/components/ui/chip';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Facts } from '@/ui/components/ui/facts';
 import { Icon } from '@/ui/components/ui/icon';
+import { StatusBadge } from '@/ui/components/ui/status-badge';
 import { DataTable } from '@/ui/components/ui/table';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { RunMeta } from '@/ui/components/ui/run-meta';
@@ -214,11 +216,12 @@ function RunView({
   const chip = running ? (
     <span className="wfr-running">
       <LiveIndicator paused={paused} />
-      <span className="wfr-running-label" role="status">
-        <Icon name="running" size={14} strokeWidth={2.6} className="wfr-spin" />
-        Running · step {Math.min(currentIndex + 1, total)} of {total}
-        {run.current && run.current.attempt > 1 ? ` · attempt ${run.current.attempt}` : ''}
-      </span>
+      <StatusBadge
+        shape="bare"
+        status="running"
+        role="status"
+        label={`Running · step ${Math.min(currentIndex + 1, total)} of ${total}${run.current && run.current.attempt > 1 ? ` · attempt ${run.current.attempt}` : ''}`}
+      />
     </span>
   ) : (
     <ApiBadge label="result" value={passed ? 'passed' : 'failed'} status={passed ? 'success' : 'danger'} icon={passed ? 'check' : 'close-sm'} />
@@ -647,7 +650,7 @@ function Properties({ run, detail, example }: { run: WorkflowRun; detail?: Detai
           <strong>{run.target.kind === 'mocks' ? 'Microcks mocks' : run.target.kind === 'implementations' ? 'Implementations' : 'Mixed'}</strong>
           {run.target.kind === 'implementations' ? <span className="wfr-target-url">{implementationsText(run.target.baseUrls)}</span> : null}
           {run.target.kind === 'mocks' ? <span className="wfr-target-url">{mockSources(run)}</span> : null}
-          {run.target.kind === 'mixed' ? <span className="wfr-proposed">Proposed · beyond POC</span> : null}
+          {run.target.kind === 'mixed' ? <Chip size="sm" variant="dashed" tone="warning" className="wfr-proposed">Proposed · beyond POC</Chip> : null}
         </span>
       ),
     },

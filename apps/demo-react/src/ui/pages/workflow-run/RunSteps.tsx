@@ -2,8 +2,10 @@ import { useId, useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 import { formatDuration } from '@/domain/shared';
 import { handoversOf, runContext, stepOffsets, stoppedStep, type Step, type StepResult, type Workflow, type WorkflowRun } from '@/domain/arazzo';
+import { Chip } from '@/ui/components/ui/chip';
 import { CodeBlock } from '@/ui/components/ui/code-block';
 import { Icon } from '@/ui/components/ui/icon';
+import { StatusBadge } from '@/ui/components/ui/status-badge';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { Verdict } from './run-parts';
 
@@ -175,23 +177,31 @@ function StepCard({ index, step, def, look, run, offset, stop }: { index: number
         ) : null}
         {def ? <span className="wfr-step-opid">{def.operationId}</span> : null}
         {tags.map((t) => (
-          <span key={t.text} className="wfr-step-tag" data-tone={t.tone}>
+          <Chip key={t.text} size="sm" variant="outline" tone={t.tone === 'warning' || t.tone === 'success' ? t.tone : 'neutral'}>
             {t.text}
-          </span>
+          </Chip>
         ))}
       </span>
       {finished || look === 'run' ? <span className="wfr-step-at">at +{formatDuration(offset)}</span> : null}
       <span className="wfr-step-ms">{msLabel}</span>
-      <span className="wfr-step-status" data-look={look}>
-        <Icon
-          name={look === 'pass' ? 'check' : look === 'fail' ? 'cross' : look === 'run' ? 'running' : 'circle'}
-          size={14}
-          strokeWidth={look === 'pass' || look === 'fail' ? 2.6 : 2}
-          strokeDasharray={look === 'notrun' ? '3 3' : undefined}
-          className={look === 'run' ? 'wfr-spin' : undefined}
+      {look === 'run' ? (
+        <StatusBadge
+          shape="bare"
+          status="running"
+          className="wfr-step-run"
+          label={run.current && run.current.attempt > 1 ? `Retrying · attempt ${run.current.attempt} of ${(retry && retry.type === 'retry' ? retry.retryLimit : 0) + 1}` : WORD[look]}
         />
-        {look === 'run' && run.current && run.current.attempt > 1 ? `Retrying · attempt ${run.current.attempt} of ${(retry && retry.type === 'retry' ? retry.retryLimit : 0) + 1}` : WORD[look]}
-      </span>
+      ) : (
+        <span className="wfr-step-status" data-look={look}>
+          <Icon
+            name={look === 'pass' ? 'check' : look === 'fail' ? 'cross' : 'circle'}
+            size={14}
+            strokeWidth={look === 'pass' || look === 'fail' ? 2.6 : 2}
+            strokeDasharray={look === 'notrun' ? '3 3' : undefined}
+          />
+          {WORD[look]}
+        </span>
+      )}
     </>
   );
 
