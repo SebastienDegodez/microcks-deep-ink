@@ -13,6 +13,7 @@ import { Icon } from '@/ui/components/ui/icon';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { Panel } from '@/ui/components/ui/panel';
 import { Segmented } from '@/ui/components/ui/segmented';
+import { SummaryStrip } from '@/ui/components/ui/summary-strip';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
 import { DispatcherPanel } from './DispatcherPanel';
 import { SimulatorPanel } from './SimulatorPanel';
@@ -101,17 +102,19 @@ export default function BehaviorPage() {
             </>
           }
         />
-        <div role="note" aria-label="Saved behavior" className="summary-strip">
-          <span className="summary-strip-label">Saved</span>
-          <span className="summary-strip-value">{current ? storedSummary(current) : ''}</span>
-          <span aria-hidden="true" className="summary-strip-sep" />
-          <span className="summary-strip-value">delay {current?.delayMs} ms {current?.delayStrategy ?? 'fixed'}</span>
-          <span aria-hidden="true" className="summary-strip-sep" />
-          <span className="summary-strip-value">{current?.constraints.length} constraints</span>
-          <span aria-hidden="true" className="summary-strip-sep" />
-          <span className="summary-strip-label">{exs.length} examples{inferred ? ' · dispatcher inferred from the OpenAPI path parameter' : ''}</span>
+        <SummaryStrip
+          role="note"
+          aria-label="Saved behavior"
+          parts={[
+            { text: 'Saved', kind: 'label' },
+            { text: current ? storedSummary(current) : '' },
+            { text: `delay ${current?.delayMs} ms ${current?.delayStrategy ?? 'fixed'}`, sep: true },
+            { text: `${current?.constraints.length} constraints`, sep: true },
+            { text: `${exs.length} examples${inferred ? ' · dispatcher inferred from the OpenAPI path parameter' : ''}`, kind: 'label', sep: true },
+          ]}
+        >
           {savedAt ? <span role="status" className="behavior-saved"><Icon name="check" size={14} />Behavior saved</span> : null}
-        </div>
+        </SummaryStrip>
       </div>
 
       <div className="behavior-layout">

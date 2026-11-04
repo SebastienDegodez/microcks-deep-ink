@@ -22,18 +22,3 @@
 .behavior-unsaved { display: inline-flex; align-items: center; gap: 6px; font: 400 13px/18px var(--font-ui); color: var(--warning); }
 .behavior-saved { display: inline-flex; align-items: center; gap: 6px; color: var(--success); }
 
-/* Saved strip; the future summary-strip registry item. */
-.summary-strip {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px 18px;
-  padding: 10px 12px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-badge);
-  background: var(--surface);
-  font: 400 13px/18px var(--font-ui);
-}
-.summary-strip-label { color: var(--text-muted); }
-.summary-strip-value { font-family: var(--font-mono); color: var(--text-secondary); }
-.summary-strip-sep { width: 1px; height: 16px; background: var(--border); }
