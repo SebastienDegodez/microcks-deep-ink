@@ -105,7 +105,7 @@ describe('Test run (/tests/runner/:id)', () => {
     expect(diff.textContent).toContain('$.status');
     expect(screen.getByRole('link', { name: /Same contract violation breaks workflow Restock a pastry/ }).getAttribute('href')).toContain('6729a1d27e4c0b5f93a8c214');
     fireEvent.click(screen.getByRole('button', { name: 'Add to CI' }));
-    expect(screen.getByRole('region', { name: 'Add to CI' }).textContent).toContain('MICROCKS_CLIENT_SECRET');
+    expect(screen.getByRole('region', { name: 'Run this test in your pipeline' }).textContent).toContain('MICROCKS_CLIENT_SECRET');
     fireEvent.click(screen.getByRole('button', { name: 'Replay run' }));
     expect((await screen.findByRole('region', { name: 'Progress' })).textContent).toContain('0/7');
   });
