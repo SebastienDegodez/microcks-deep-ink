@@ -49,6 +49,10 @@ export interface DataTableProps<T> {
   onSortChange?: (sort: SortState) => void;
   emptyText?: string;
   density?: 'comfortable' | 'compact';
+  /** `upper` (default): uppercase 11px headers. `sentence`: sentence-case 12px headers, top-aligned cells, tabular figures. */
+  headerCase?: 'upper' | 'sentence';
+  /** Tone of a row: `failed` sits on the surface fill, `idle` is dimmed with the muted text colour. Write the state in a cell too. */
+  rowTone?: (row: T) => 'failed' | 'idle' | undefined;
   className?: string;
 }
 
@@ -82,6 +86,8 @@ export function DataTable<T>({
   onSortChange,
   emptyText = 'Nothing here yet.',
   density = 'comfortable',
+  headerCase = 'upper',
+  rowTone,
   className,
 }: DataTableProps<T>) {
   const captionId = useId();
@@ -102,7 +108,7 @@ export function DataTable<T>({
 
   return (
     <div className={['table-wrap', className].filter(Boolean).join(' ')} role="region" aria-labelledby={captionId} tabIndex={0}>
-      <table className="table" data-density={density}>
+      <table className="table" data-density={density} data-header={headerCase === 'sentence' ? 'sentence' : undefined}>
         <caption id={captionId} className={captionHidden ? 'sr-only' : undefined}>
           {caption}
         </caption>
@@ -140,7 +146,7 @@ export function DataTable<T>({
               const selected = selectedKey !== undefined && key === selectedKey;
               const href = rowHref?.(row);
               return (
-                <tr key={key} data-selected={selected ? '' : undefined}>
+                <tr key={key} data-selected={selected ? '' : undefined} data-tone={rowTone?.(row)}>
                   {columns.map((c, i) => {
                     const content = cellValue(row, c);
                     let inner: ReactNode = content;
