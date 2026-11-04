@@ -237,24 +237,37 @@ describe('Administration (/admin/:tab?)', () => {
   it('changes a role and tells it in a status message', async () => {
     renderAt('/admin/users');
     await screen.findByRole('heading', { level: 1, name: 'Administration' });
-    const selects = (await screen.findAllByRole('combobox')) as HTMLSelectElement[];
-    const editable = selects.find((s) => !s.disabled && s.value === 'user') as HTMLSelectElement;
-    fireEvent.change(editable, { target: { value: 'manager' } });
-    await waitFor(() => expect(document.querySelector('.ad-toast')?.textContent).toMatch(/manager/i));
+    expect(await screen.findByRole('tab', { name: /^Users\W+7$/ })).toBeTruthy();
+    const select = (await screen.findByRole('combobox', { name: 'Role of Léa Martin' })) as HTMLSelectElement;
+    expect([...select.options].map((o) => o.textContent)).toEqual(['User', 'Manager', 'Admin']);
+    expect((screen.getByRole('combobox', { name: 'Role of Microcks Admin' }) as HTMLSelectElement).disabled).toBe(true);
+    fireEvent.change(select, { target: { value: 'manager' } });
+    expect(await screen.findByText('Léa Martin is now a manager in realm microcks.')).toBeTruthy();
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Filter users' }), { target: { value: 'nobody' } });
+    expect(screen.getByText('No user matches “nobody”.')).toBeTruthy();
   });
 
-  it('flags the pending requests on Groups and saves a membership draft', async () => {
+  it('drafts memberships in the groups × managers matrix and applies them', async () => {
     renderAt('/admin/groups');
     await screen.findByRole('heading', { level: 1 });
-    expect(await screen.findByRole('tab', { name: /pending/ })).toBeTruthy();
-    expect(await screen.findByText(/pending requests/)).toBeTruthy();
-    const save = screen.getByRole('button', { name: 'Save changes' }) as HTMLButtonElement;
-    expect(save.disabled).toBe(true);
-    const box = screen.getAllByRole('checkbox')[0] as HTMLInputElement;
-    fireEvent.click(box);
-    expect(save.disabled).toBe(false);
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-    expect((screen.getAllByRole('checkbox')[0] as HTMLInputElement).checked).toBe(!box.checked ? false : box.checked);
+    const cell = await screen.findByRole('button', { name: 'Clara Nguyen in /microcks/manager/beer, not a member' }, { timeout: 3000 });
+    expect(screen.queryByRole('button', { name: 'Apply to Keycloak' })).toBeNull();
+    fireEvent.click(cell);
+    expect(screen.getByRole('button', { name: 'Clara Nguyen in /microcks/manager/beer, member, to be added' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('tab', { name: /Groups/ }).textContent).toBe('Groups, 6, 1 pending change');
+    fireEvent.click(screen.getByRole('button', { name: 'Discard' }));
+    expect(screen.queryByRole('button', { name: 'Apply to Keycloak' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Tom Keller in /microcks/manager/pets, member' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Apply to Keycloak' }));
+    expect(await screen.findByText('1 membership change applied in Keycloak realm microcks.', {}, { timeout: 3000 })).toBeTruthy();
+    expect(await screen.findByText('no manager', {}, { timeout: 3000 })).toBeTruthy();
+  });
+
+  it('shows the configuration read-only', async () => {
+    renderAt('/admin/configuration');
+    await screen.findByText('Async API mocking');
+    expect(screen.queryByRole('switch')).toBeNull();
+    expect(screen.queryByRole('checkbox')).toBeNull();
   });
 
   it('creates a secret through the dialog and toggles a feature flag', async () => {
