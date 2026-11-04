@@ -113,7 +113,7 @@ function eclairExchanges(): Exchange[] {
         L('    "parts": [{ "text": "I would like to order an Eclair Cafe" }],'), L('    "metadata": { "skillId": "order-pastry" }'), L('  }'), L('}'),
       ],
       response: [
-        L('{'), L('  "task": {'), L('    "id": "t-1",'), L('    "contextId": "ctx-8c1f",'), L('    "status": {'), L('      "state": "TASK_STATE_INPUT_REQUIRED",'),
+        L('{'), L('  "task": {'), L('    "id": "t-1",'), L('    "contextId": "ctx-8c1f",'), L('    "status": {'), L('      "state": "input-required",'),
         L('      "message": { "role": "agent",'), L('        "parts": [{ "text": "Which size: S, M or L?" }] }'), L('    }'), L('  }'), L('}'),
       ],
     },
@@ -124,7 +124,7 @@ function eclairExchanges(): Exchange[] {
         L('    "parts": [{ "text": "M" }]'), L('  }'), L('}'),
       ],
       response: [
-        L('{'), L('  "task": {'), L('    "id": "t-2",', 'bad'), L('    "contextId": "ctx-8c1f",'), L('    "status": { "state": "TASK_STATE_COMPLETED" },'),
+        L('{'), L('  "task": {'), L('    "id": "t-2",', 'bad'), L('    "contextId": "ctx-8c1f",'), L('    "status": { "state": "completed" },'),
         L('    "artifacts": [{ "artifactId": "a-1", "name": "order",'), L('      "parts": [{ "data": { "orderId": "ord-2417",'), L('        "pastry": "Eclair Cafe", "size": "M", "total": 2.5 } }] }]'),
         L('  }'), L('}'),
       ],
@@ -132,7 +132,7 @@ function eclairExchanges(): Exchange[] {
     {
       head: `GET ${HOST}/a2a/v1/tasks/t-1`, status: '200 OK · 46 ms · follow-up check', statusTone: 'plain', highlight: false,
       request: ECLAIR_HEADERS.slice(0, 2),
-      response: [L('{'), L('  "id": "t-1",'), L('  "contextId": "ctx-8c1f",'), L('  "status": { "state": "TASK_STATE_INPUT_REQUIRED" }', 'bad'), L('}')],
+      response: [L('{'), L('  "id": "t-1",'), L('  "contextId": "ctx-8c1f",'), L('  "status": { "state": "input-required" }', 'bad'), L('}')],
     },
   ];
 }
@@ -227,11 +227,24 @@ function detailOf(check: AgentCheck, setup: AgentTestSetup): AgentCheckDetail {
           ],
         },
       ],
+      note: 'Illegal continuation: the user turn carried taskId t-1, the agent answered on a new task t-2. Task t-1 never left input-required.',
+      verdict: {
+        title: 'After input-required, the agent must resume the same taskId.',
+        body:
+          'Both HTTP calls returned `200 OK`, so the transport passed; the task state machine did not. The same conversation resumed `t-1` correctly over JSON-RPC and gRPC, which points at the HTTP+JSON binding of the agent: it likely ignores `message.taskId` on `POST /message:send`.',
+      },
       exchanges: eclairExchanges(),
     };
   }
   if (id === 'ord-2417-ready' && transport === 'grpc') {
-    return { kind: 'stream', title: 'gRPC × ord-2417-ready', sub: 'skill track-order · SendStreamingMessage, server streaming · concierge.staging.acme.io:443', events: streamEvents() };
+    return {
+      kind: 'stream', title: 'gRPC × ord-2417-ready', sub: 'skill track-order · a2a.v1.A2AService/SendStreamingMessage · concierge.staging.acme.io:443', events: streamEvents(),
+      verdict: {
+        title: 'The stream closed without an artifact update carrying `lastChunk: true`.',
+        body:
+          'The agent appended `"ready"` to artifact `status`, sent `completed` and closed with gRPC status OK. A client cannot tell that the artifact is complete. Over JSON-RPC and HTTP+JSON (SSE) the same conversation ended its last chunk with `lastChunk: true`, so the gap is in the gRPC binding.',
+      },
+    };
   }
   const conversation = CONVERSATION_CHECKS.find((c) => c.id === id);
   if (conversation && tr) {
@@ -254,9 +267,26 @@ function detailOf(check: AgentCheck, setup: AgentTestSetup): AgentCheckDetail {
   return { kind: 'summary', title: id, sub: '', rows: [], note: '' };
 }
 
+const CARD_LOG: Record<string, string> = {
+  schema: '← agent card valid · 3 skills · 3 interfaces',
+  sig: 'signatures absent · optional in A2A v1.0',
+  iface: 'A2A-Version 1.0 accepted · GetTask(unknown) → TaskNotFoundError as expected',
+  caps: 'streaming opened · push config created · webhook received 2 notifications',
+};
+
+function logNote(row: string, result: AgentCheckResult): string {
+  const card = CARD_LOG[row];
+  if (card) return card;
+  if (result === 'fail') return row === 'eclair-size-m' ? 'turn 2 opened new task t-2 instead of resuming t-1' : 'stream closed without lastChunk: true on artifact status';
+  return CONVERSATION_CHECKS.find((c) => c.id === row)?.lifecycle.split(' · ')[0] ?? '';
+}
+
 /** Executes the plan of a setup against the simulated agent and records every cell with its detail. */
-export function executeAgentTest(id: string, setup: AgentTestSetup): AgentTestRunWithDetails {
-  const checks: AgentCheck[] = planChecks(setup).map((p) => ({ ...p, result: resultOf(p.row, p.transport), ms: msOf(p.row, p.transport) }));
+export function executeAgentTest(id: string, setup: AgentTestSetup, startedAt: string, launchedBy = 'MA'): AgentTestRunWithDetails {
+  const checks: AgentCheck[] = planChecks(setup).map((p) => {
+    const result = resultOf(p.row, p.transport);
+    return { ...p, result, ms: msOf(p.row, p.transport), note: logNote(p.row, result) };
+  });
   const details: Record<string, AgentCheckDetail> = {};
   for (const check of checks) details[cellKey(check.row, check.transport)] = detailOf(check, setup);
   const failures = checks
@@ -266,5 +296,5 @@ export function executeAgentTest(id: string, setup: AgentTestSetup): AgentTestRu
       transport: c.transport as TransportId,
       cause: c.row === 'eclair-size-m' ? 'new taskId after input-required' : 'stream closed without lastChunk: true',
     }));
-  return { id, setup, checks, details, failures };
+  return { id, setup, startedAt, launchedBy, checks, details, failures };
 }

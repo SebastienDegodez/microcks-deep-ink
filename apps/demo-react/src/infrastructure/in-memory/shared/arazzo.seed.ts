@@ -243,25 +243,84 @@ function restockRun(init: {
   return { documentId: 'pastry', workflowId: 'restock-pastry', outputs: {}, coherence: [], ...init };
 }
 
+/* The pastries the seeded runs #14, #15 and #16 read, as the prototype shows them. */
+interface PastryBody { name: string; description: string; size: 'S' | 'M' | 'L'; price: number | string; status: string }
+const PASTRY: Record<string, PastryBody> = {
+  'Tarte Tatin': { name: 'Tarte Tatin', description: 'Caramelized upside-down apple tart', size: 'S', price: 3.2, status: 'unknown' },
+  'Eclair Cafe': { name: 'Eclair Cafe', description: 'Delicious Coffee Eclair, not caloric at all', size: 'M', price: 2.4, status: 'unknown' },
+  'Eclair Chocolat': { name: 'Eclair Chocolat', description: 'Delicious Chocolate Eclair, not caloric at all', size: 'M', price: 2.4, status: 'unknown' },
+  Millefeuille: { name: 'Millefeuille', description: 'Delicious Millefeuille, not caloric at all', size: 'L', price: 4.4, status: 'available' },
+};
+const BY_SIZE: Record<'S' | 'M' | 'L', string[]> = { S: ['Tarte Tatin'], M: ['Eclair Cafe', 'Eclair Chocolat'], L: ['Millefeuille'] };
+
+const J = (value: unknown) => JSON.stringify(value);
+const pastry = (name: string) => PASTRY[name] as PastryBody;
+
+/** Pretty JSON lines of an object, one key per line; `badKey` marks the line that breaks the schema. */
+function objectLines(o: PastryBody, badKey?: keyof PastryBody, note?: string): { text: string; bad?: boolean; note?: string }[] {
+  const keys = Object.keys(o) as (keyof PastryBody)[];
+  return [
+    { text: '{' },
+    ...keys.map((k, i) => {
+      const text = `  ${J(k)}: ${J(o[k])}${i < keys.length - 1 ? ',' : ''}`;
+      return k === badKey ? { text, bad: true, note: note ?? 'schema mismatch' } : { text };
+    }),
+    { text: '}' },
+  ];
+}
+
+/** listPastries of a seeded run: the pastries of `size`, the first one handed over as firstName. */
+function listStep(runId: string, base: string, size: 'S' | 'M' | 'L', ms: number, validate: boolean): StepResult {
+  const names = BY_SIZE[size];
+  const one = (o: PastryBody) => `{ ${(Object.keys(o) as (keyof PastryBody)[]).map((k) => `${J(k)}: ${J(o[k])}`).join(', ')} }`;
+  return {
+    stepId: 'listPastries', status: 'passed', attempts: [attempt(1, ms, 'first call')],
+    request: { method: 'GET', url: `${base}/pastries?size=${size}`, params: { size } },
+    response: {
+      meta: `200 OK · application/json · ${names.length} ${names.length > 1 ? 'items' : 'item'}`,
+      lines: [{ text: '[' }, ...names.map((n, i) => ({ text: `  ${one(pastry(n))}${i < names.length - 1 ? ',' : ''}` })), { text: ']' }],
+    },
+    criteria: [status200],
+    schema: validate ? { state: 'pass', ref: 'GetPastries · 200 · application/json', message: 'The response conforms to its schema: an array of Pastry.' } : NO_SCHEMA,
+    outputs: { firstName: names[0] },
+    flow: { kind: 'next', title: 'Next: getPastry', text: 'No onSuccess action is declared: the run continues with the next step.' },
+    baggage: baggage(runId, 'restock-pastry', 'listPastries', 1),
+  };
+}
+
+/** getPastry of a seeded run that found the pastry: its onSuccess end applies when the pastry is available. */
+function getStep(runId: string, base: string, name: string, ms: number, validate: boolean): StepResult {
+  const p = pastry(name);
+  const ends = p.status === 'available';
+  return {
+    stepId: 'getPastry', status: 'passed', attempts: [attempt(1, ms, 'first call')],
+    request: { method: 'GET', url: `${base}/pastries/${encodeURIComponent(name)}`, params: { name } },
+    response: { meta: '200 OK · application/json', lines: objectLines(p) },
+    criteria: [status200],
+    schema: validate ? { state: 'pass', ref: 'GetPastryByName · 200 · application/json · Pastry', message: 'The response conforms to the Pastry schema.' } : NO_SCHEMA,
+    outputs: { oldPrice: p.price, status: p.status },
+    flow: ends
+      ? { kind: 'end', title: 'onSuccess end applies: the run ends here', text: `Its criterion $response.body#/status == 'available' holds (${J(p.status)}): nothing to restock. The run ends with SUCCESS; patchPastry and verifyPastry are not run.` }
+      : { kind: 'next', title: 'onSuccess end does not apply: next is patchPastry', text: `Its criterion $response.body#/status == 'available' does not hold (${J(p.status)}), so the run continues with the next step.` },
+    baggage: baggage(runId, 'restock-pastry', 'getPastry', 1),
+  };
+}
+
 /** Run #14: implementations (staging), schema validation on. patchPastry fails 3 times on `price`. */
 function run14(): WorkflowRun {
   const id = RUN_IDS[14];
   const base = STAGING_BASE;
   const patch: StepResult = {
     stepId: 'patchPastry', status: 'failed',
-    attempts: [attempt(1, 66, 'first call'), attempt(2, 58, 'after 1 s'), attempt(3, 61, 'after 1 s')],
+    attempts: [
+      attempt(1, 66, 'first call'),
+      { ...attempt(2, 58, 'after 1 s'), waitMs: 1000 },
+      { ...attempt(3, 61, 'after 1 s'), waitMs: 1000 },
+    ],
     request: { method: 'PATCH', url: `${base}/pastries/Eclair%20Cafe`, params: { name: 'Eclair Cafe' }, body: '{"price": 3.9, "status": "available"}' },
     response: {
       meta: '200 OK · application/json',
-      lines: [
-        { text: '{' },
-        { text: '  "name": "Eclair Cafe",' },
-        { text: '  "description": "Delicious Coffee Eclair, not caloric at all",' },
-        { text: '  "size": "M",' },
-        { text: '  "price": "3.9",', bad: true, note: 'schema: number' },
-        { text: '  "status": "available"' },
-        { text: '}' },
-      ],
+      lines: objectLines({ ...pastry('Eclair Cafe'), price: '3.9', status: 'available' }, 'price', 'schema: number'),
     },
     criteria: [status200],
     schema: { state: 'fail', ref: 'PatchPastry · 200 · application/json · Pastry', message: SCHEMA_MSG },
@@ -277,8 +336,8 @@ function run14(): WorkflowRun {
     options: { example: 'restock-eclair', inputs: { size: 'M', newPrice: 3.9 }, secret: 'pastry-staging-oauth', timeoutMs: 10_000, validateSchemas: true },
     status: 'FAILURE', relatedTestRunId: '119',
     steps: [
-      passedStep(id, 'restock-pastry', LIST, base, 41, { firstName: 'Eclair Cafe' }, true),
-      passedStep(id, 'restock-pastry', GET, base, 29, { oldPrice: 2.4, status: 'unknown' }, true),
+      listStep(id, base, 'M', 41, true),
+      getStep(id, base, 'Eclair Cafe', 29, true),
       patch,
       notRun(id, 'restock-pastry', VERIFY),
     ],
@@ -319,20 +378,18 @@ function mocksSuccess(number: number, id: string, startedAt: string, origin: Run
   });
 }
 
+/** Run #15, scenario "Mocks · ended early": Millefeuille is already available, the onSuccess end of getPastry stops the run. */
 function run15(startedAt = '2026-11-03T09:14:37Z'): WorkflowRun {
   const id = RUN_IDS[15];
-  const get: StepResult = {
-    ...passedStep(id, 'restock-pastry', GET, MOCK_BASE, 5, { oldPrice: 4.4, status: 'available' }),
-    flow: { kind: 'end', title: 'onSuccess end applies: the run ends here', text: "Its criterion $response.body#/status == 'available' holds: nothing to restock. The run ends with SUCCESS; patchPastry and verifyPastry are not run." },
-  };
   return restockRun({
     number: 15, id, startedAt, origin: { kind: 'ui' }, target: { kind: 'mocks' },
     options: MOCK_OPTS('already-available', { size: 'L' }), status: 'SUCCESS',
-    steps: [passedStep(id, 'restock-pastry', LIST, MOCK_BASE, 6, { firstName: 'Millefeuille' }), get, notRun(id, 'restock-pastry', PATCH), notRun(id, 'restock-pastry', VERIFY)],
-    outputs: { pastryName: 'Millefeuille' },
+    steps: [listStep(id, MOCK_BASE, 'L', 6, false), getStep(id, MOCK_BASE, 'Millefeuille', 5, false), notRun(id, 'restock-pastry', PATCH), notRun(id, 'restock-pastry', VERIFY)],
+    outputs: { pastryName: 'Millefeuille', oldPrice: 4.4 },
   });
 }
 
+/** Run #16, scenario "Mocks · missing example": the mocks of GetPastryByName have no example for Tarte Tatin. */
 function run16(startedAt = '2026-11-03T09:16:52Z'): WorkflowRun {
   const id = RUN_IDS[16];
   const get: StepResult = {
@@ -347,7 +404,7 @@ function run16(startedAt = '2026-11-03T09:16:52Z'): WorkflowRun {
   return restockRun({
     number: 16, id, startedAt, origin: { kind: 'ui' }, target: { kind: 'mocks' },
     options: { inputs: { size: 'S', newPrice: 4.2 }, timeoutMs: 10_000, validateSchemas: false }, status: 'FAILURE',
-    steps: [passedStep(id, 'restock-pastry', LIST, MOCK_BASE, 6, { firstName: 'Tarte Tatin' }), get, notRun(id, 'restock-pastry', PATCH), notRun(id, 'restock-pastry', VERIFY)],
+    steps: [listStep(id, MOCK_BASE, 'S', 6, false), get, notRun(id, 'restock-pastry', PATCH), notRun(id, 'restock-pastry', VERIFY)],
     coherence: [{
       stepId: 'getPastry', operationId: 'GetPastryByName',
       missing: 'an example of GetPastryByName for name=Tarte Tatin',
