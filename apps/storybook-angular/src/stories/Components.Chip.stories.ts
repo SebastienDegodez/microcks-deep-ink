@@ -65,3 +65,27 @@ export const Removable: StoryObj = {
     `,
   }),
 };
+
+export const Filters: StoryObj = {
+  name: "Filters (labels and protocols)",
+  render: () => ({
+    props: { proto: 'REST', label: 'domain=pastry', protos: [['REST', 4], ['SOAP', 1], ['EVENT', 2], ['GRAPHQL', 0]] },
+    template: `
+      <div class="stack">
+        <div class="inline">
+          @for (p of protos; track p[0]) {
+            <button mkChip [protocol]="p[0]" [count]="p[1]" [pressed]="proto === p[0]" (click)="proto = proto === p[0] ? null : p[0]">{{ p[0] }}</button>
+          }
+        </div>
+        <div class="inline">
+          <button mkChip labelKey="domain" [count]="4" [pressed]="label === 'domain=pastry'" (click)="label = 'domain=pastry'">pastry</button>
+          <button mkChip labelKey="domain" [count]="1" [pressed]="label === 'domain=movies'" (click)="label = 'domain=movies'">movies</button>
+        </div>
+        <div class="inline">
+          <span mkChip size="sm" labelKey="domain">pastry</span>
+          <span mkChip size="sm" labelKey="team">bakery</span>
+        </div>
+      </div>
+    `,
+  }),
+};

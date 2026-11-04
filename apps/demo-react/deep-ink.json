@@ -85,10 +85,10 @@
     "chip": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/chip.tsx": "ea57bef920333fb552b871f8f987cca794890a44f8acd7453fcd1eda5f2d562f",
-        "src/ui/styles/chip.css": "4fca9f409b4a2118ff78cae780f2466446cac5e55d1cddce1d2c60c8426e2474"
+        "src/ui/components/ui/chip.tsx": "6b280064685a73379e93abfc55ed3dd5aa7223efe14d05168165e55794a3e2be",
+        "src/ui/styles/chip.css": "bdc14a3848fbac1ca21d84998ec2ef2daec2270026256abfe89f2de994d7e26b"
       },
-      "hash": "5a3adf3bb9d235b8"
+      "hash": "8ec736c74451e652"
     },
     "copy-button": {
       "version": "0.2.0",
@@ -205,10 +205,10 @@
     "segmented": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/segmented.tsx": "2cf7ebadb510ff3a6f5b5fb769a37b949aae3342658755864eeebcf1d30b6afb",
-        "src/ui/styles/segmented.css": "f80a12d04957f33716c1143381d04a6b823c56ceda3c8e735ae7818f6dc938e7"
+        "src/ui/components/ui/segmented.tsx": "43da8158955364a242f95900418176bf888748c735c9ee5f5b4fad2a0d11e0fa",
+        "src/ui/styles/segmented.css": "4618ecd12070a4cd5cd0ca8cd553f77e18ae6ccb9689917f9696e178efcdc02f"
       },
-      "hash": "f9e9d626331bbf2d"
+      "hash": "8dd642942a2efaa9"
     },
     "mock-url": {
       "version": "0.2.0",
