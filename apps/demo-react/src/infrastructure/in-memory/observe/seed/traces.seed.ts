@@ -159,9 +159,17 @@ export const HISTORY_LENGTH = HISTORY_TEMPLATES.length;
 const CLIENT_BY_ID = new Map(TOPOLOGY_CLIENTS.map((c) => [c.id, c]));
 const ENDPOINT_BY_ID = new Map(TOPOLOGY_ENDPOINTS.map((e) => [e.id, e]));
 
+/** Live traces receives a call every 3.2 s (Traces.dc.html `setInterval(..., 3200)`). */
+export const TRACE_TICK_MS = 3200;
+
 export function atOf(seq: number): string {
-  const offset = seq <= HISTORY_LENGTH ? -(HISTORY_LENGTH - seq) * 3200 : (seq - HISTORY_LENGTH) * 1200;
+  const offset = (seq - HISTORY_LENGTH) * TRACE_TICK_MS;
   return new Date(NOW_MS + offset + ((seq * 137) % 600)).toISOString();
+}
+
+/** Times of the Cockpit ticker, which streams the same calls every 1.2 s (its pace before Live traces slowed down). */
+export function trafficAt(seq: number): string {
+  return new Date(NOW_MS + (seq - HISTORY_LENGTH) * 1200 + ((seq * 137) % 600)).toISOString();
 }
 
 /** Builds call number `seq`. History calls (1..10) follow `HISTORY_TEMPLATES`, later ones `STREAM_CYCLE`. */

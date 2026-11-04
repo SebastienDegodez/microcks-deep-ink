@@ -56,7 +56,7 @@ describe('observe use cases', () => {
       const run14: string[] = [];
       const stopAll = uc.subscribeTraces({}, (c) => seqs.push(c.seq));
       const stopRun = uc.subscribeTraces({ runId: RUN_IDS[14] }, (c) => run14.push(c.baggage ?? ''));
-      await vi.advanceTimersByTimeAsync(1200 * 14);
+      await vi.advanceTimersByTimeAsync(3200 * 14);
       stopAll();
       stopRun();
       expect(seqs.slice(0, 3)).toEqual([11, 12, 13]);
@@ -82,7 +82,7 @@ describe('observe use cases', () => {
       const uc = setup();
       const seen: string[] = [];
       const stop = uc.subscribeTraces({}, (c) => seen.push(c.at));
-      await vi.advanceTimersByTimeAsync(1200 * 5);
+      await vi.advanceTimersByTimeAsync(3200 * 5);
       stop();
       const replay = uc.replay('call-4');
       await vi.advanceTimersByTimeAsync(1000);

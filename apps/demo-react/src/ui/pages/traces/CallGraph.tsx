@@ -1,4 +1,3 @@
-import type { CSSProperties } from 'react';
 import type { FlowCounts, TopologyEdge, TraceCall, TraceTopology } from '@/domain/observe';
 import { Icon } from '@/ui/components/ui/icon';
 
@@ -88,14 +87,16 @@ export function CallGraph({ topology, counts, filter, focus, onFocus, flash }: P
   const sumFrom = (id: string) => edges1.reduce((a, e) => a + (e.from === id ? e.count : 0), 0);
   const sumTo1 = (id: string) => edges1.reduce((a, e) => a + (e.to === id ? e.count : 0), 0);
   const sumTo2 = (id: string) => edges2.reduce((a, e) => a + (e.to === id ? e.count : 0), 0);
-  const nodeProps = (id: string, label: string) => ({
+  // The name is the visible text in order, between a hidden prefix and a hidden suffix (RGAA 6.1). A node outside the
+  // filters or the focus is dimmed by its chrome only, so its text keeps a 4.5:1 contrast (RGAA 3.2).
+  const nodeProps = (id: string) => ({
     type: 'button' as const,
     className: 'tr2-node',
     'aria-pressed': focus === id,
-    'aria-label': label,
-    style: { opacity: focus === id || touches(id) ? 1 : 0.4 } as CSSProperties,
+    'data-dim': focus === id || touches(id) ? undefined : '',
     onClick: () => onFocus(id),
   });
+  const hidden = (text: string) => <span className="sr-only">{text}</span>;
 
   const nameOf = (id: string) => {
     const c = clients.find((x) => x.id === id);
@@ -121,12 +122,15 @@ export function CallGraph({ topology, counts, filter, focus, onFocus, flash }: P
 
           <div className="tr2-graph-col" data-col="clients">
             {clients.map((c) => (
-              <button key={c.id} {...nodeProps(c.id, `${c.label}, ${c.ip}, ${fmt(sumFrom(c.id))} calls in the last hour. Focus on this client.`)} data-kind={c.kind.toLowerCase()}>
+              <button key={c.id} {...nodeProps(c.id)} data-kind={c.kind.toLowerCase()}>
+                {hidden('Client')}{' '}
                 <span className="tr2-node-text">
-                  <span className="tr2-node-label demo-mono">{c.label}</span>
+                  <span className="tr2-node-label demo-mono">{c.label}</span>{' '}
                   <span className="tr2-node-sub demo-mono">{c.detail}</span>
-                </span>
+                </span>{' '}
                 <span className="tr2-node-total">{fmt(sumFrom(c.id))}</span>
+                {' '}
+                {hidden('calls in the last hour. Focus on this client.')}
               </button>
             ))}
           </div>
@@ -135,13 +139,16 @@ export function CallGraph({ topology, counts, filter, focus, onFocus, flash }: P
             {endpoints.map((e) => {
               const isEvent = e.kinds.includes('EVENT');
               return (
-                <button key={e.id} {...nodeProps(e.id, `${e.method} ${e.label}, ${e.detail}, ${fmt(sumTo1(e.id))} calls. Focus on this endpoint.`)} data-kind={isEvent ? 'event' : 'rest'}>
-                  <span className="tr2-method" data-size="node" data-tone={isEvent || e.method === 'PATCH' ? 'event' : 'rest'}>{e.method}</span>
+                <button key={e.id} {...nodeProps(e.id)} data-kind={isEvent ? 'event' : 'rest'}>
+                  {hidden('Endpoint')}{' '}
+                  <span className="tr2-method" data-size="node" data-tone={isEvent || e.method === 'PATCH' ? 'event' : 'rest'}>{e.method}</span>{' '}
                   <span className="tr2-node-text">
-                    <span className="tr2-node-label demo-mono">{e.label}</span>
+                    <span className="tr2-node-label demo-mono">{e.label}</span>{' '}
                     <span className="tr2-node-sub">{e.detail}</span>
-                  </span>
+                  </span>{' '}
                   <span className="tr2-node-total">{fmt(sumTo1(e.id))}</span>
+                  {' '}
+                {hidden('calls in the last hour. Focus on this endpoint.')}
                 </button>
               );
             })}
@@ -151,16 +158,19 @@ export function CallGraph({ topology, counts, filter, focus, onFocus, flash }: P
             {examples.map((x) => {
               const event = exampleEdges.some((e) => e.to === x.id && endpoint(e.from)?.kinds.includes('EVENT'));
               return (
-                <button key={x.id} {...nodeProps(x.id, `${x.label}, status ${x.code}, served ${fmt(sumTo2(x.id))} times. Focus on this example.`)} data-kind={!x.ok ? 'miss' : event ? 'event' : 'rest'}>
+                <button key={x.id} {...nodeProps(x.id)} data-kind={!x.ok ? 'miss' : event ? 'event' : 'rest'}>
+                  {hidden('Example, status')}{' '}
                   <span className="tr2-code" data-miss={x.ok ? undefined : ''}>
                     <Icon name={x.ok ? 'check' : 'warning'} size={11} />
                     {x.code}
-                  </span>
+                  </span>{' '}
                   <span className="tr2-node-text">
-                    <span className="tr2-node-label">{x.label}</span>
+                    <span className="tr2-node-label">{x.label}</span>{' '}
                     <span className="tr2-node-sub demo-mono">{x.detail}</span>
-                  </span>
+                  </span>{' '}
                   <span className="tr2-node-total">{fmt(sumTo2(x.id))}</span>
+                  {' '}
+                {hidden('times served in the last hour. Focus on this example.')}
                 </button>
               );
             })}
@@ -207,7 +217,7 @@ function Edges({ edges, labelAt }: { edges: EdgeView[]; labelAt: string }) {
         </svg>
       ))}
       {edges.map((e) => (
-        <span key={e.id} className="tr2-edge-count" data-tone={e.flash ? 'live' : e.tone} style={{ left: labelAt, top: `${e.top}px`, opacity: e.on ? 1 : 0.22 }}>
+        <span key={e.id} className="tr2-edge-count" data-tone={e.flash ? 'live' : e.tone} data-dim={e.on ? undefined : ''} style={{ left: labelAt, top: `${e.top}px` }}>
           {fmt(e.count)}
         </span>
       ))}

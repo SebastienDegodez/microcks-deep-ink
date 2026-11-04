@@ -42,6 +42,11 @@
 .tr2-node[data-kind='arazzo'] { border-color: var(--text-secondary); }
 .tr2-node[data-kind='miss'] { border-color: var(--warning); border-style: dashed; }
 .tr2-node[aria-pressed='true'] { background: var(--selected); border-color: var(--action); }
+/* Outside the filters or the focus: only the chrome fades (the prototype's opacity .4 broke text contrast). */
+.tr2-node[data-dim] { background: transparent; border-color: var(--border); }
+.tr2-node[data-dim] .tr2-node-label { color: var(--text-secondary); }
+.tr2-node[data-dim] .tr2-method { color: var(--text-secondary); background: var(--raised); }
+.tr2-node[data-dim] .tr2-code { color: var(--text-muted); }
 .tr2-node-text { display: flex; flex: 1; flex-direction: column; gap: 2px; min-width: 0; }
 .tr2-node-label { font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .tr2-node-sub { font-size: 11px; color: var(--text-muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -64,6 +69,8 @@
 .tr2-edge-count[data-tone='event'] { border-color: var(--proto-event); }
 .tr2-edge-count[data-tone='miss'] { color: var(--warning); border-color: var(--warning); }
 .tr2-edge-count[data-tone='live'] { color: var(--live-text); border-color: var(--live); }
+/* A dimmed edge keeps a readable count: only its border fades. */
+.tr2-edge-count[data-dim] { color: var(--text-muted); border-color: var(--border); }
 .tr2-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 20px; padding-top: 10px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-muted); }
 .tr2-legend > span { display: inline-flex; align-items: center; gap: 8px; }
 .tr2-legend > .tr2-legend-end { display: inline; margin-inline-start: auto; }
@@ -126,13 +133,16 @@ button.tr2-row[aria-pressed='true'] { background: var(--selected); border-left-c
 .tr2-facts { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; margin: 0; padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: 6px; }
 .tr2-facts > div { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
 .tr2-facts dt { font-size: 11px; line-height: 16px; color: var(--text-muted); }
-.tr2-facts dd { margin: 0; font-size: 12px; line-height: 16px; overflow-wrap: anywhere; }
+.tr2-facts dd { min-width: 0; margin: 0; font-size: 12px; line-height: 16px; overflow-wrap: anywhere; }
+.tr2-facts .tr2-status { align-items: flex-start; white-space: normal; }
+.tr2-facts .tr2-status > span { min-width: 0; }
+.tr2-facts .tr2-status > .icon { margin-top: 1px; }
 .tr2-example-name { font-size: 13px !important; font-weight: 600; }
 .tr2-example-name[data-miss] { color: var(--warning); }
 .tr2-trace-id { font-size: 11px !important; color: var(--text-secondary); }
 .tr2-note { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; font-size: 13px; line-height: 1.4; background: var(--surface); border: 1px solid var(--border-strong); border-radius: 6px; }
 .tr2-note-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
-.tr2-note a { color: var(--link); }
+.tr2-note a { color: var(--link); text-decoration: underline; text-underline-offset: 2px; }
 .tr2-note .tr2-strong-link { font-weight: 600; }
 .tr2-arazzo-tag { padding: 1px 6px; font: 600 11px/14px var(--font-mono); color: var(--bg); background: var(--text); border: 1px solid var(--border); border-radius: 4px; }
 .tr2-note-label { font-size: 11px; color: var(--text-muted); }
@@ -156,6 +166,7 @@ button.tr2-row[aria-pressed='true'] { background: var(--selected); border-left-c
 .tr2-event-at { flex: 0 0 100px; color: var(--text-muted); }
 .tr2-event-text { flex: 1 1 200px; min-width: 0; color: var(--text-secondary); overflow-wrap: anywhere; }
 .tr2-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding-top: 4px; }
+.tr2-replayed:empty { margin-top: -16px; }
 .tr2-replayed { display: flex; align-items: center; gap: 6px; margin: 0; font-size: 13px; color: var(--success); }
 .tr2-noselect { display: flex; flex: 1 1 320px; flex-direction: column; gap: 8px; min-width: 0; box-sizing: border-box; padding: 18px; font-size: 14px; line-height: 1.5; color: var(--text-secondary); border: 1px dashed var(--border-strong); border-radius: var(--radius-panel); }
 .tr2-noselect-title { font-weight: 600; color: var(--text); }

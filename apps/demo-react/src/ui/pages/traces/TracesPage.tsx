@@ -70,18 +70,6 @@ const arazzoRunId = (c: TraceCall) => (c.baggage ? /microcks-arazzo-run=([^,;\s]
 const arazzoTitle = (c: TraceCall) =>
   `From workflow ${c.workflowName ?? arazzoWorkflow(c) ?? ''} · run #${c.arazzoRun ?? ''} · step ${arazzoStep(c) ?? ''} · attempt ${arazzoAttempt(c) ?? '1'}`;
 
-function rowLabel(c: TraceCall): string {
-  return [
-    clockTime(c.at),
-    c.clientName ?? 'unknown client',
-    `${c.method} ${c.path}${c.mcpTool ? ` ${c.mcpTool}` : ''}`,
-    c.exampleName ?? 'no example',
-    statusLabel(c),
-    ...(c.baggage ? [arazzoTitle(c)] : []),
-    ...(c.sessionId ? [`session ${c.sessionId}`] : []),
-  ].join(', ');
-}
-
 type KindFilter = '' | Extract<TraceKind, 'REST' | 'MCP' | 'EVENT'>;
 
 /** One tree for the loading and the loaded page, so the h1 keeps its focus when the data arrives. */
@@ -147,9 +135,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
   const lastSeen = useRef('');
   useEffect(() => {
     if (!latest || latest.callId === lastSeen.current) return;
-    const first = lastSeen.current === '';
     lastSeen.current = latest.callId;
-    if (first) return;
     setFlashId(latest.callId);
     throttled(`Live traces: latest ${latest.method} ${latest.path}, ${statusLabel(latest)}.`);
   }, [latest, throttled]);
@@ -190,7 +176,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
       setReplayed((r) => [again, ...r]);
       setSelectedId(again.callId);
       setFlashId(again.callId);
-      throttled(`Replayed ${call.method} ${call.path}: ${statusLabel(again)}.`, true);
+      // The visible role=status line under the actions announces the replay, once.
     } catch (e) {
       setReplayError(e instanceof Error ? e.message : 'The call could not be replayed.');
     }
@@ -385,46 +371,39 @@ function StatusText({ call, withLatency }: { call: TraceCall; withLatency?: bool
   );
 }
 
+/** The row is named by its visible text, cell by cell, plus hidden words for the units and the run (RGAA 6.1). */
 function CallRow({ call: c, selected, flash, replay, onPick }: { call: TraceCall; selected: boolean; flash: boolean; replay: boolean; onPick: () => void }) {
   const step = arazzoStep(c);
   return (
-    <button type="button" className="tr2-row" aria-pressed={selected} data-flash={flash ? '' : undefined} aria-label={rowLabel(c)} onClick={onPick}>
-      <span className="tr2-time">{clockTime(c.at)}</span>
+    <button type="button" className="tr2-row" aria-pressed={selected} data-flash={flash ? '' : undefined} onClick={onPick}>
+      <span className="tr2-time">{clockTime(c.at)}</span>{' '}
       <span className="tr2-client">
-        <span className="tr2-ellipsis">{c.clientName}</span>
+        <span className="tr2-ellipsis">{c.clientName}</span>{' '}
         <span className="tr2-ip">{c.clientIp}</span>
-      </span>
+      </span>{' '}
       <span className="tr2-request">
-        <span className="tr2-method" data-tone={methodTone(c)}>
-          {c.method}
-        </span>
+        <span className="tr2-method" data-tone={methodTone(c)}>{c.method}</span>{' '}
         <span className="tr2-path">
           <span className="tr2-ellipsis">{c.path}</span>
-          {c.mcpTool ? <span className="tr2-tool">tools/call · {c.mcpTool}</span> : null}
+          {c.mcpTool ? <>{' '}<span className="tr2-tool">tools/call · {c.mcpTool}</span></> : null}
         </span>
-        {replay ? (
-          <span className="tr2-tag" data-tag="replay">
-            replay
-          </span>
-        ) : null}
+        {replay ? <>{' '}<span className="tr2-tag" data-tag="replay">replay</span></> : null}
         {step ? (
-          <span className="tr2-arazzo" title={arazzoTitle(c)}>
-            <span>ARAZZO</span>
-            <span>{step}</span>
-          </span>
+          <>
+            {' '}
+            <span className="tr2-arazzo" title={arazzoTitle(c)}>
+              <span>ARAZZO</span>{' '}
+              <span>{step}</span>
+            </span>
+          </>
         ) : null}
-        {c.sessionId ? (
-          <span className="tr2-tag" data-tag="session" title={`x-microcks-session: ${c.sessionId}`}>
-            session
-          </span>
-        ) : null}
-      </span>
-      <span className="tr2-crit tr2-ellipsis">{c.criteria}</span>
-      <span className="tr2-example tr2-ellipsis" data-miss={isMiss(c) ? '' : undefined}>
-        {c.exampleName}
-      </span>
-      <StatusText call={c} />
-      <span className="tr2-ms">{c.ms}</span>
+        {c.sessionId ? <>{' '}<span className="tr2-tag" data-tag="session" title={`x-microcks-session: ${c.sessionId}`}>session</span></> : null}
+      </span>{' '}
+      <span className="tr2-crit tr2-ellipsis">{c.criteria}</span>{' '}
+      <span className="tr2-example tr2-ellipsis" data-miss={isMiss(c) ? '' : undefined}>{c.exampleName}</span>{' '}
+      <StatusText call={c} />{' '}
+      <span className="tr2-ms">{c.ms}</span>{' '}
+      <span className="sr-only">ms{c.baggage ? `, ${arazzoTitle(c)}` : ''}{c.sessionId ? `, session ${c.sessionId}` : ''}</span>
     </button>
   );
 }
@@ -585,12 +564,15 @@ function CallDetail({ call: c, replayNote, onClose, onReplay }: { call: TraceCal
           <RouterLink to={openTo}>{miss ? 'Open operation' : 'Open example'}</RouterLink>
         </Button>
       </div>
-      {replayNote ? (
-        <p role="status" className="tr2-replayed">
-          <Icon name="check" size={13} />
-          {replayNote}
-        </p>
-      ) : null}
+      {/* Always in the DOM, so the live region announces the replay when its text appears. */}
+      <p role="status" className="tr2-replayed">
+        {replayNote ? (
+          <>
+            <Icon name="check" size={13} />
+            {replayNote}
+          </>
+        ) : null}
+      </p>
     </section>
   );
 }
