@@ -149,6 +149,14 @@
 .demo-page-description[data-tone='secondary'] {
   color: var(--text-secondary);
 }
+/* Plain title (Import): breadcrumb 6px above the title, 15px description up to 680px. */
+.demo-page-header:has(.demo-page-title[data-variant='plain']) {
+  gap: 6px;
+}
+.demo-page-header:has(.demo-page-title[data-variant='plain']) .demo-page-description {
+  max-width: 680px;
+  font-size: 15px;
+}
 
 .demo-page-actions {
   display: flex;
