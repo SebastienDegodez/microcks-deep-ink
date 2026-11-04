@@ -41,12 +41,13 @@ export default function TestsPage() {
     <>
       <PageHeader
         title="Test history"
+        variant="subtitle"
         breadcrumb={[
           { label: 'APIs & Services', to: '/services' },
           ...(service ? [{ label: `${service.name} ${service.version}`, to: `/services/${serviceId}` }] : []),
           { label: 'Test history' },
         ]}
-        badge={
+        leading={
           service ? (
             <RouterLink className="tests-title-badge" to={`/services/${serviceId}`} aria-label={`${service.protocol} ${service.name} ${service.version}, open the service`}>
               <ApiBadge protocol={service.protocol} name={service.name} version={service.version} size="xl" />
