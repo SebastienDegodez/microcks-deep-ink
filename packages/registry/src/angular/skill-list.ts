@@ -30,7 +30,7 @@ export interface SkillItem {
   host: { class: 'skill-list', '[attr.aria-label]': 'label()' },
   template: `
     @for (s of skills(); track s.id) {
-      <li class="skill-item-row">
+      <li class="skill-item-row" [attr.data-fallback]="s.fallback ? '' : null">
         @if (selectable()) {
           <button type="button" class="skill-item" [attr.data-variant]="s.fallback ? 'fallback' : null" [attr.aria-pressed]="selectedId() === s.id" (click)="skillSelect.emit(s.id)">
             <ng-container *ngTemplateOutlet="body; context: { $implicit: s }" />
@@ -42,38 +42,53 @@ export interface SkillItem {
         }
       </li>
     }
+    <ng-template #calls let-s>
+      @if (s.calls !== undefined) {
+        <span class="skill-item-calls">{{ s.calls }}<span class="sr-only"> calls in 24 hours</span></span>
+      }
+    </ng-template>
+    <ng-template #result let-s>
+      @if (s.result) {
+        <span class="skill-item-result" [attr.data-result]="s.result">
+          <svg mkIcon [name]="s.result === 'pass' ? 'check' : 'cross'" [size]="12"></svg>
+          {{ s.result === 'pass' ? 'passed' : 'failed' }}
+          @if (s.resultNote) {
+            <span class="sr-only">: {{ s.resultNote }}</span>
+          }
+        </span>
+      }
+    </ng-template>
     <ng-template #body let-s>
-      <span class="skill-item-head">
-        <span class="skill-item-id">{{ s.id }}</span>
-        @if (s.calls !== undefined) {
-          <span class="skill-item-calls">{{ s.calls }}<span class="sr-only"> calls in 24 hours</span></span>
+      @if (s.fallback) {
+        <span class="skill-item-head">
+          <span class="skill-item-title">{{ s.name }}</span>
+          <ng-container *ngTemplateOutlet="calls; context: { $implicit: s }" />
+        </span>
+        @if (fallbackLine(s); as line) {
+          <span class="skill-item-line">{{ line }}</span>
         }
-      </span>
-      @if (s.name) {
-        <span class="skill-item-name">{{ s.name }}</span>
-      }
-      @if (s.tags?.length) {
-        <span class="skill-item-tags">
-          @for (t of s.tags; track t) {
-            <span class="skill-item-tag">{{ t }}</span>
-          }
+        @if (s.result) {
+          <span class="skill-item-foot"><ng-container *ngTemplateOutlet="result; context: { $implicit: s }" /></span>
+        }
+      } @else {
+        <span class="skill-item-head">
+          <span class="skill-item-id">{{ s.id }}</span>
+          <ng-container *ngTemplateOutlet="calls; context: { $implicit: s }" />
         </span>
-      }
-      @if (s.meta || s.result) {
-        <span class="skill-item-foot">
-          @if (s.meta) {
-            <span>{{ s.meta }}</span>
-          }
-          @if (s.result) {
-            <span class="skill-item-result" [attr.data-result]="s.result">
-              <svg mkIcon [name]="s.result === 'pass' ? 'check' : 'cross'" [size]="12"></svg>
-              {{ s.result === 'pass' ? 'passed' : 'failed' }}
-              @if (s.resultNote) {
-                <span class="sr-only">: {{ s.resultNote }}</span>
-              }
-            </span>
-          }
-        </span>
+        @if (s.name) {
+          <span class="skill-item-name">{{ s.name }}</span>
+        }
+        @if (s.tags?.length || s.meta || s.result) {
+          <span class="skill-item-foot">
+            @for (t of s.tags ?? []; track t) {
+              <span class="skill-item-tag">{{ t }}</span>
+            }
+            @if (s.meta) {
+              <span class="skill-item-meta">{{ s.meta }}</span>
+            }
+            <ng-container *ngTemplateOutlet="result; context: { $implicit: s }" />
+          </span>
+        }
       }
     </ng-template>
   `,
@@ -86,4 +101,8 @@ export class SkillListComponent {
   /** Makes the items toggle buttons (`aria-pressed`) that emit `skillSelect`. Without it the list is read-only. */
   readonly selectable = input(false);
   readonly skillSelect = output<string>();
+
+  protected fallbackLine(s: SkillItem): string {
+    return [...(s.tags ?? []), ...(s.meta ? [s.meta] : [])].join(' · ');
+  }
 }
