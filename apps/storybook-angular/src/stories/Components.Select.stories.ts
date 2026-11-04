@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { SelectDirective } from '@microcks-deep-ink/registry/angular/select';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Select',
@@ -40,3 +40,6 @@ export const Small: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('select', 'SelectDirective', { size: 'md' }, '<option>REST</option><option>EVENT</option><option>gRPC</option>', 'aria-label="Protocol"');

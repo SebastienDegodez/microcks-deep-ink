@@ -1,7 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { PanelComponent, PanelActionsDirective } from '@microcks-deep-ink/registry/angular/panel';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Panel',
@@ -42,3 +42,6 @@ export const LabelTitle: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('panel', 'PanelComponent', { title: 'Last runs', headingLevel: 2, flush: false, titleStyle: 'heading', padding: 'md' }, '<p>Three tests ran in the last hour.</p>');

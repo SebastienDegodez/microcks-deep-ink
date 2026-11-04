@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { LinkComponent } from '@microcks-deep-ink/registry/angular/link';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Link',
@@ -17,3 +17,6 @@ export const Default: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('link', 'LinkComponent', { external: false }, 'Read the Arazzo guide');

@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ProgressComponent, MeterComponent } from '@microcks-deep-ink/registry/angular/progress';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Progress',
@@ -45,3 +45,6 @@ export const MeterStory: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('progress', 'ProgressComponent', { label: 'Importing operations', value: 60, max: 100 }, '');

@@ -1,7 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { EmptyStateComponent, EmptyActionsDirective } from '@microcks-deep-ink/registry/angular/empty-state';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/EmptyState',
@@ -46,3 +46,6 @@ export const NoResults: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('empty-state', 'EmptyStateComponent', { title: 'No services yet', headingLevel: 2, icon: 'search-x', align: 'center' }, 'Import a contract to create your first service.');

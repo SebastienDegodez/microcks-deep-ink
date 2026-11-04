@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { SkeletonComponent } from '@microcks-deep-ink/registry/angular/skeleton';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Skeleton',
@@ -32,3 +32,6 @@ export const Widths: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('skeleton', 'SkeletonComponent', { lines: 3, width: '60%' }, '');

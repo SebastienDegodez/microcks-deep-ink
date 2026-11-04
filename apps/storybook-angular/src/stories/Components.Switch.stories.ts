@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { SwitchComponent } from '@microcks-deep-ink/registry/angular/switch';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Switch',
@@ -44,3 +44,6 @@ export const Large: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('switch', 'SwitchComponent', { label: 'Send a Slack message', description: 'When a test fails.', checked: false, size: 'md', disabled: false }, '');
