@@ -461,9 +461,17 @@
         "src/ui/styles/ci-panel.css": "0f7fa8c2159060d9b95ea76b80089506ce60bbd558d21ab1bafc899a20aa611c"
       },
       "hash": "d3415d4d251764df"
+    },
+    "result-box": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/result-box.tsx": "07f21a3fd73122eb57e7842f835504e8acf1987493beaa0bbff45930c3c732b7",
+        "src/ui/styles/result-box.css": "814250668bd0637e38bcf40e6cee84b559b33546ea6c9fcf087de9c503639369"
+      },
+      "hash": "f1124ffd828eafd8"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "380938228db5296d4768b6de3007def27b3a9ec22accfaece04e63c570487635"
+    "src/ui/styles/index.css": "b8e1bbc19fc08904165967fa10d6da6003e3b3844d45ca9568d55ace9bc08d55"
   }
 }
