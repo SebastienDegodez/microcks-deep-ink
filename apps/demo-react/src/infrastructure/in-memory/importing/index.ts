@@ -83,7 +83,7 @@ const AGENT_PREVIEW: Omit<AgentPreview, 'fileName'> = {
 export function createInMemoryImportingAdapters(deps: InMemoryDeps = {}): ImportingAdapters {
   const clock = deps.clock ?? new FixedClock();
   const importers = new Map(seedImporters().map((i) => [i.id, i]));
-  const removed = new Map<string, Importer>();
+  const removed = new Map<string, { importer: Importer; index: number }>();
   const secrets = new Map(SEED_SECRETS.map((s) => [s.id, s]));
   const previews = new Map<string, ImportPreview>();
   const recent: RecentImport[] = [...RECENT];
@@ -212,16 +212,20 @@ export function createInMemoryImportingAdapters(deps: InMemoryDeps = {}): Import
     remove: (id) =>
       after(() => {
         const found = importers.get(id);
-        if (found) removed.set(id, found);
+        if (found) removed.set(id, { importer: found, index: [...importers.keys()].indexOf(id) });
         importers.delete(id);
       }),
     restore: (id) =>
       after(() => {
-        const found = removed.get(id);
-        if (!found) throw new NotFoundError('Importer', id);
+        const entry = removed.get(id);
+        if (!entry) throw new NotFoundError('Importer', id);
         removed.delete(id);
-        importers.set(id, found);
-        return found;
+        // Put it back where it was, so the list order does not change after an undo.
+        const rest = [...importers.entries()];
+        rest.splice(Math.min(entry.index, rest.length), 0, [id, entry.importer]);
+        importers.clear();
+        for (const [k, v] of rest) importers.set(k, v);
+        return entry.importer;
       }),
     run: (id) => (listener) => {
       const inner = createSequenceStream([25, 50, 75, 100]);

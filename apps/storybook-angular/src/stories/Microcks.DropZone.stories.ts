@@ -38,3 +38,17 @@ export const Single: StoryObj = {
     `,
   }),
 };
+
+export const Small: StoryObj = {
+  name: "Small, in a panel (Admin snapshots)",
+  render: () => ({
+    template: `
+      <div style="max-width:420px">
+        <mk-drop-zone size="sm" heading="Drop a snapshot here" chooseLabel="Choose a file" [multiple]="false" accept="application/json,.json">
+          <span mkDropZoneHint>A <code>microcks-repository.json</code> exported from any Microcks instance</span>
+          <button type="button" class="button" data-variant="link">Use a sample snapshot</button>
+        </mk-drop-zone>
+      </div>
+    `,
+  }),
+};

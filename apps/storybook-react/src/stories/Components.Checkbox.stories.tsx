@@ -29,3 +29,18 @@ export const Disabled: StoryObj = {
     </div>
   ),
 };
+
+export const CompactCards: StoryObj = {
+  name: 'Compact cards (dense list)',
+  render: () => {
+    const [sel, setSel] = useState<Record<string, boolean>>({ a: true, b: true, c: false });
+    const ops = [['a', 'GET /pastries'], ['b', 'GET /pastries/{name}'], ['c', 'PATCH /pastries/{name}']] as const;
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 6, maxWidth: 360 }}>
+        {ops.map(([id, label]) => (
+          <Checkbox key={id} variant="compact" label={label} checked={sel[id]} onChange={(e) => setSel({ ...sel, [id]: e.target.checked })} />
+        ))}
+      </div>
+    );
+  },
+};

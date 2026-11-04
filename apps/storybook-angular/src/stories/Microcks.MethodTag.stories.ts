@@ -23,3 +23,30 @@ export const Default: StoryObj = {
     `,
   }),
 };
+
+export const AlignedInAList: StoryObj = {
+  name: 'Aligned in a list',
+  render: () => ({
+    props: { ops: [['GET', '/pastries'], ['PATCH', '/pastries/{name}'], ['DELETE', '/pastries/{name}']] },
+    template: `
+      <ul style="list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px">
+        @for (o of ops; track o[0]) {
+          <li style="display: flex; gap: 10px; align-items: center"><span mkMethodTag [method]="o[0]" [minWidth]="52"></span><span style="font-family: var(--font-mono); font-size: 13px">{{ o[1] }}</span></li>
+        }
+      </ul>
+    `,
+  }),
+};
+
+export const Small: StoryObj = {
+  name: 'Small (step lists)',
+  render: () => ({
+    template: `
+      <div class="inline">
+        <span mkMethodTag method="GET" size="sm"></span>
+        <span mkMethodTag method="PATCH" size="sm"></span>
+        <span mkMethodTag method="POST" size="sm"></span>
+      </div>
+    `,
+  }),
+};

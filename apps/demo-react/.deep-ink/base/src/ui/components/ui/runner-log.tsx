@@ -2,7 +2,7 @@
 import { useId } from 'react';
 import type { HTMLAttributes, ReactNode } from 'react';
 
-export type RunnerLevel = 'INFO' | 'SEND' | 'PASS' | 'FAIL' | 'WAIT';
+export type RunnerLevel = 'INFO' | 'SEND' | 'PASS' | 'FAIL' | 'WARN' | 'WAIT';
 export interface RunnerLine {
   time: string;
   level: RunnerLevel;

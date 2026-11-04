@@ -63,10 +63,12 @@ export function sortRows<T>(rows: readonly T[], sort: SortState | undefined, val
 /** Styles a plain native table: `<table mkTable density="compact">` with your own `<caption>` and `<th scope>`. */
 @Directive({
   selector: 'table[mkTable]',
-  host: { class: 'table', '[attr.data-density]': 'density()' },
+  host: { class: 'table', '[attr.data-density]': 'density()', '[attr.data-header]': "headerCase() === 'sentence' ? 'sentence' : null" },
 })
 export class TableDirective {
   readonly density = input<'comfortable' | 'compact'>('comfortable');
+  /** `sentence`: sentence-case 12px headers, top-aligned cells, tabular figures. Row tones: `data-tone="failed | idle"` on a `<tr>`. */
+  readonly headerCase = input<'upper' | 'sentence'>('upper');
 }
 
 /**
@@ -80,7 +82,7 @@ export class TableDirective {
   styles: [':host { display: block; }'],
   template: `
     <div class="table-wrap" role="region" [attr.aria-labelledby]="captionId" tabindex="0">
-      <table class="table" [attr.data-density]="density()">
+      <table class="table" [attr.data-density]="density()" [attr.data-header]="headerCase() === 'sentence' ? 'sentence' : null">
         <caption [id]="captionId" [class.sr-only]="captionHidden()">{{ caption() }}</caption>
         <thead>
           <tr>
@@ -107,7 +109,7 @@ export class TableDirective {
             </tr>
           } @else {
             @for (row of rows(); track keyOf(row)) {
-              <tr [attr.data-selected]="isSelected(row) ? '' : null">
+              <tr [attr.data-selected]="isSelected(row) ? '' : null" [attr.data-tone]="rowTone()?.(row) ?? null">
                 @for (c of columns(); track c.key; let i = $index) {
                   <td [attr.data-align]="c.align === 'end' ? 'end' : null" [attr.data-mono]="c.mono ? '' : null" [attr.data-nowrap]="c.nowrap ? '' : null">
                     @if (i === 0 && rowHref()) {
@@ -163,6 +165,10 @@ export class DataTableComponent<T> {
   readonly sort = model<SortState | undefined>(undefined);
   readonly emptyText = input('Nothing here yet.');
   readonly density = input<'comfortable' | 'compact'>('comfortable');
+  /** `upper` (default): uppercase 11px headers. `sentence`: sentence-case 12px headers, top-aligned cells, tabular figures. */
+  readonly headerCase = input<'upper' | 'sentence'>('upper');
+  /** Tone of a row: `failed` sits on the surface fill, `idle` is dimmed with the muted text colour. Write the state in a cell too. */
+  readonly rowTone = input<(row: T) => 'failed' | 'idle' | undefined>();
 
   protected readonly captionId = `mk-table-caption-${++nextId}`;
   private readonly cells = contentChildren(CellDirective);

@@ -1,6 +1,10 @@
-<!-- MethodTag. data-protocol picks the color; for REST, data-method refines it (POST/PUT/PATCH event color, DELETE danger). The verb is the visible text. -->
+<!-- MethodTag. data-protocol picks the color; for REST, data-method refines it (POST/PUT/PATCH event color, DELETE danger). The verb is the visible text.
+     In a list, line the tags up with a fixed minimum width: style="--method-min-width: 52px". -->
 <span class="method" data-method="GET" data-protocol="rest">GET</span>
 <span class="method" data-method="PATCH" data-protocol="rest">PATCH</span>
 <span class="method" data-method="DELETE" data-protocol="rest">DELETE</span>
 <span class="method" data-method="PUBLISH" data-protocol="event">PUBLISH</span>
 <span class="method" data-method="QUERY" data-protocol="graphql">QUERY</span>
+<span class="method" data-method="GET" data-protocol="rest" style="--method-min-width: 52px">GET</span>
+<!-- Small (data-size="sm"): 11px 600, padding 1px 5px, 44px wide by default. -->
+<span class="method" data-method="PATCH" data-protocol="rest" data-size="sm">PATCH</span>

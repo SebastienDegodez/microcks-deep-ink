@@ -59,6 +59,6 @@ describe('loom model', () => {
 
   it('labels runs for the picker', async () => {
     const { runs } = await load('restock-pastry');
-    expect(runs.slice(0, 4).map(runPickLabel)).toEqual(['#16 · Mocks', '#15 · Mocks', '#14 · Implementations', '#13 · Session']);
+    expect(runs.slice(0, 4).map(runPickLabel)).toEqual(['#14 · Implementations', '#13 · Session', '#12 · Mocks', '#11 · Mock URL']);
   });
 });

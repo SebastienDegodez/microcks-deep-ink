@@ -9,6 +9,8 @@
     border-radius: var(--radius-badge);
     overflow: hidden;
   }
+  /* Danger frame: the whole block failed (a response that does not match its schema, WorkflowRun). */
+  .code[data-tone="danger"] { border-color: var(--danger); }
   .code > figcaption {
     display: flex;
     align-items: center;
@@ -21,11 +23,13 @@
     color: var(--text-muted);
     font: 400 12px/16px var(--font-ui);
   }
+  /* In a narrow column the tabs and Copy wrap to a second row instead of scrolling. */
+  .code > figcaption { flex-wrap: wrap; }
   .code-caption { min-width: 0; padding-inline: 8px; overflow-wrap: anywhere; }
   .code-caption:empty { display: none; }
 
   /* Header tabs: switch the format of the snippet (curl, HTTPie...). Toggle buttons with aria-pressed. */
-  .code-tabs { display: flex; align-self: stretch; min-width: 0; overflow-x: auto; }
+  .code-tabs { display: flex; flex-wrap: wrap; align-self: stretch; min-width: 0; }
   .code-tabs > button {
     margin: 0;
     padding: 8px 12px;
@@ -78,6 +82,8 @@
     text-align: end;
     user-select: none;
   }
+  /* Narrow gutter: 28px with 6px before the marker column (WorkflowRun response, TestRun). */
+  .code[data-gutter="narrow"] .code-ln { width: 28px; padding-inline-end: 6px; }
   .code-line[data-selected] > .code-ln { color: var(--link); }
 
   .code-mark {
@@ -87,10 +93,18 @@
     font-weight: 600;
     text-align: center;
   }
+  /* The bad-line marker is an 11px cross (stroke 3), centred in the 16px column. */
+  .code-mark > .icon { display: inline-block; vertical-align: -1px; stroke-width: 3; }
   .code[data-numbered] .code-line:not([data-bad]) > .code-ln + .code-text { padding-inline-start: 16px; }
+  /* Diff: a 22px mark column ("+" in --link on changed lines, empty elsewhere), changed lines on --selected. */
+  .code[data-diff] > pre { padding: 10px 0; line-height: 1.65; }
+  .code[data-diff] .code-line { margin: 0; padding: 0 14px 0 0; }
+  .code-mark[data-kind="changed"] { width: 22px; color: var(--link); }
+  .code-line[data-changed] { background: var(--selected); color: var(--text); }
+
   /* Inline note, after the text on the same row. */
   .code-note {
-    padding-inline-start: 16px;
+    padding-inline: 16px 14px;
     color: var(--danger);
     font: 400 12px/inherit var(--font-mono);
     white-space: pre-wrap;
