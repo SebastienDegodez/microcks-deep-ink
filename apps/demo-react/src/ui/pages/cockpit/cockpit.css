@@ -1,19 +1,6 @@
 /* Cockpit (screen 03, Cockpit.dc.html). Colors come from the design tokens only. */
 .cockpit { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
 
-/* Header: dashed toggle. Local class until the registry ships `Button variant="dashed"` (also on Test create). */
-.button.button-dashed {
-  padding: 0 12px;
-  gap: 8px;
-  border: 1px dashed var(--border-strong);
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 13px;
-  font-weight: 400;
-}
-.button.button-dashed[aria-pressed='true'] { background: var(--selected); }
-.button.button-dashed .icon { width: 14px; height: 14px; }
-
 /* KPI strip: registry stat-card, with the Cockpit's 240px minimum and 10px rhythm. */
 .cockpit-stats { --stat-min: 240px; }
 .cockpit-stats .stat-card, .cockpit-stats .stat-card-body { gap: 10px; }
