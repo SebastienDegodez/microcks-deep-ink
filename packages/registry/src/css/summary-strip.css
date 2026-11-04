@@ -1,0 +1,21 @@
+@layer deep-ink.components {
+  /* Behavior "Saved" strip; Service, Agent dispatcher summaries (roomy gap); Sources schedule strip. */
+  .summary-strip {
+    box-sizing: border-box;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 8px 18px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: var(--surface);
+    color: var(--text);
+    font: 400 13px/1.4 var(--font-ui);
+  }
+  .summary-strip[data-gap="roomy"] { row-gap: 10px; }
+  .summary-strip-label { color: var(--text-muted); }
+  .summary-strip-value { font-family: var(--font-mono); color: var(--text-secondary); overflow-wrap: anywhere; }
+  .summary-strip[data-values="text"] .summary-strip-value { color: var(--text); }
+  .summary-strip-sep { flex: none; width: 1px; height: 16px; background: var(--border); }
+}

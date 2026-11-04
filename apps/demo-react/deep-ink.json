@@ -421,9 +421,17 @@
         "src/ui/styles/section-label.css": "17215c6135327222fcb6f6c72591ca8c6821cfffe54b0bb71863665aea23264c"
       },
       "hash": "45dd753bd200c6b9"
+    },
+    "summary-strip": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/summary-strip.tsx": "4e5c927ac00df7c86be2f25268cf1ceda77da232290d60e051b262b21b52f463",
+        "src/ui/styles/summary-strip.css": "4bdda67531d6e1fd7b317ad741a02cbf677e1a844f8c3b9d0f6d7ff3681bcdb9"
+      },
+      "hash": "d129dc6bb8a30abc"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "72826b4a4eb01789632b037a8539699dddf10537015287b80c82c42f449b0077"
+    "src/ui/styles/index.css": "4e77551a25acc6b563259c51efa1ca77ee09741f6f7681e8fc7237040b9c6f5d"
   }
 }
