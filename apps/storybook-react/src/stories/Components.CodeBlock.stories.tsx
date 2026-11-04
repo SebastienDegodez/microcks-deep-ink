@@ -18,6 +18,28 @@ export const Default: StoryObj = {
   ),
 };
 
+/** `startLine` for an excerpt, and `tabsLabel` to name the tab list. */
+export const ExcerptWithTabs: StoryObj = {
+  name: 'Excerpt and named tabs',
+  render: () => {
+    const [tab, setTab] = useState('request');
+    return (
+      <div style={{ maxWidth: 560 }}>
+        <CodeBlock
+          language="json"
+          lineNumbers
+          startLine={41}
+          tabs={[{ id: 'request', label: 'Request' }, { id: 'response', label: 'Response' }]}
+          tab={tab}
+          onTabChange={setTab}
+          tabsLabel="Exchange parts"
+          code={tab === 'request' ? '{\n  "name": "Millefeuille"\n}' : '{\n  "name": "Millefeuille",\n  "price": 3.9\n}'}
+        />
+      </div>
+    );
+  },
+};
+
 export const WithBadLine: StoryObj = {
   name: 'Failing line',
   render: () => (

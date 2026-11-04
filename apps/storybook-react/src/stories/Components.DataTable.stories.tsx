@@ -16,6 +16,21 @@ export const Default: StoryObj = {
   ),
 };
 
+/** `renderRowLink` renders the row link with your router instead of a plain `<a>`. */
+export const RouterLinks: StoryObj = {
+  name: 'Router links (renderRowLink)',
+  render: () => (
+    <DataTable<CatalogueRow>
+      caption="Services, router links"
+      columns={CATALOGUE_COLUMNS}
+      rows={CATALOGUE_ROWS.slice(0, 3)}
+      rowKey="id"
+      rowHref={(r) => `#/services/${r.id}`}
+      renderRowLink={(r, props) => <a {...props} data-route={r.id} />}
+    />
+  ),
+};
+
 export const Sortable: StoryObj = {
   render: () => {
     const [sort, setSort] = useState<SortState>({ key: 'name', direction: 'ascending' });

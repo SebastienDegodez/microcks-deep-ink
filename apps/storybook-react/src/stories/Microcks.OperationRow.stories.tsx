@@ -25,6 +25,17 @@ export const Default: StoryObj = {
   },
 };
 
+/** `protocol` colours the method tag and `mockUrl` shows the mock endpoint under the path. */
+export const ProtocolAndMockUrl: StoryObj = {
+  name: 'Protocol and mock URL',
+  render: () => (
+    <OperationList label="Operations of Pastry orders">
+      <OperationRow method="SUBSCRIBE" protocol="EVENT" path="pastry/orders" meta="1 message" mockUrl="kafka://localhost:9092/pastry-orders" />
+      <OperationRow method="GET" path="/pastries" meta="3 examples" mockUrl="http://localhost:8080/rest/API+Pastry/2.0.0/pastries" />
+    </OperationList>
+  ),
+};
+
 export const AsLinks: StoryObj = {
   name: 'Links',
   render: () => (
