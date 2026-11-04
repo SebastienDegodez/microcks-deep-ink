@@ -13,6 +13,7 @@ import { CopyButton } from '@/ui/components/ui/copy-button';
 import { Icon } from '@/ui/components/ui/icon';
 import { FilterRow, FilterSearch } from '@/ui/components/ui/filter-bar';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
+import { FactRow, Facts, type Fact as RegistryFact } from '@/ui/components/ui/facts';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { Switch } from '@/ui/components/ui/switch';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
@@ -318,21 +319,11 @@ export default function SourcesPage() {
               </div>
             ) : null}
 
-            <dl className="facts">
-              {facts(selected, schedule.nextScanAt).map((f) => (
-                <div key={f.term} className="facts-row">
-                  <dt className="facts-term">{f.term}</dt>
-                  <dd className="facts-value">
-                    <span className={f.mono ? 'mono' : undefined}>{f.value}</span>
-                    {f.sub ? <span className="facts-sub">{f.sub}</span> : null}
-                  </dd>
-                </div>
-              ))}
-              <div className="facts-row">
-                <dt className="facts-term">{selected.producedLabel ?? (selected.workflows ? 'Workflows produced' : 'Services produced')}</dt>
-                <dd className="facts-value"><ServiceLinks importer={selected} className="source-detail-services" /></dd>
-              </div>
-            </dl>
+            <Facts className="source-facts" items={facts(selected, schedule.nextScanAt)}>
+              <FactRow term={selected.producedLabel ?? (selected.workflows ? 'Workflows produced' : 'Services produced')}>
+                <ServiceLinks importer={selected} className="source-detail-services" />
+              </FactRow>
+            </Facts>
 
             <div className="source-detail-block">
               <div className="source-detail-block-head">
@@ -413,7 +404,7 @@ function monoTokens(text: string, tokens: readonly (string | undefined)[]): Reac
   return text.split(re).map((part, i) => (list.includes(part) ? <span key={i} className={i === 1 ? 'mono source-failure-secret' : 'mono'}>{part}</span> : part));
 }
 
-interface Fact { term: string; value: string; sub?: string | undefined; mono?: boolean }
+type Fact = Pick<RegistryFact, 'term' | 'value' | 'sub' | 'mono'>;
 
 function facts(s: Importer, nextScanAt: Date | string): Fact[] {
   const up = s.origin === 'upload';

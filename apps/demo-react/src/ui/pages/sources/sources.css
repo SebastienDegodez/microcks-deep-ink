@@ -127,13 +127,10 @@
 .source-failure .source-failure-link { background: var(--raised); font-weight: 600; gap: 6px; }
 .source-failure-help { align-self: center; font-size: 12px; color: var(--text-muted); }
 
-/* Facts list (future registry item "facts"): term column 130px, rows separated by a rule. */
-.facts { margin: 0; display: flex; flex-direction: column; font: 400 13px/normal var(--font-ui); }
-.facts-row { display: flex; flex-wrap: wrap; gap: 2px 12px; padding: 7px 0; border-bottom: 1px solid var(--border); }
-.facts-row:last-child { align-items: center; gap: 6px 12px; padding: 8px 0; border-bottom: 0; }
-.facts-term { flex: 0 0 130px; color: var(--text-muted); }
-.facts-value { margin: 0; flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px; color: var(--text); overflow-wrap: anywhere; }
-.facts-sub { font-size: 12px; color: var(--text-muted); }
+/* Facts list: registry facts (rows, 130px terms). The prototype keeps a normal line height, 13px mono values and a centred last row. */
+.source-facts { line-height: normal; }
+.source-facts > .facts-row > dd[data-mono] { font-size: 13px; }
+.source-facts > .facts-row:last-child { align-items: center; gap: 6px 12px; padding: 8px 0; }
 
 .source-detail-block { display: flex; flex-direction: column; gap: 10px; }
 .source-detail-block + .source-detail-block { gap: 8px; }
