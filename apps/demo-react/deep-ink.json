@@ -109,10 +109,10 @@
     "conformance-band": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/conformance-band.tsx": "ce3b6edd64ab045956ebab9ecf2a53f14c7b3ebbf385b69d0a4586f62d02b989",
-        "src/ui/styles/conformance-band.css": "744f5bbfa54d2b55ce6302171f70785a5db4b35fe526b2f68740ac0e6dcbc226"
+        "src/ui/components/ui/conformance-band.tsx": "9a079e331e1f9cb91ac298edeec32e2c2444595c67b06a944c0a6a4db80000a5",
+        "src/ui/styles/conformance-band.css": "03685f114d27dbd52aa8b1d1a5fe51394767100115c7aa466272978219790b6a"
       },
-      "hash": "d1f76a32aab4105d"
+      "hash": "b4f59b25e48056ae"
     },
     "description-list": {
       "version": "0.2.0",
@@ -301,10 +301,10 @@
     "table": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/table.tsx": "c53a7b0b8c8b6c71e5df8a3516546ce7a53271c7a07e0ad5f1ca2f86c69a76d6",
-        "src/ui/styles/table.css": "61eddb2845a73958cd07a966bda0d6b46b221a2c50f92d4271c0e3a0606fc36f"
+        "src/ui/components/ui/table.tsx": "0b066171272900ced76e9461ec6f6c789a4e95339dc002aebbb7268afe09a7b6",
+        "src/ui/styles/table.css": "d9c3c5b645bb0c685d6d0f74eb96e39144775ca6dd2d2b7fffd569e7756117cf"
       },
-      "hash": "67f6dc3c7c054d02"
+      "hash": "cb4d637ce44e9f08"
     },
     "tabs": {
       "version": "0.2.0",
