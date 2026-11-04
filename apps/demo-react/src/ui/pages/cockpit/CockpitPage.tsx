@@ -13,6 +13,7 @@ import { Chip } from '@/ui/components/ui/chip';
 import { ConformanceBand, type OperationResult } from '@/ui/components/ui/conformance-band';
 import { Icon } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
+import { StatCard, StatGrid } from '@/ui/components/ui/stat-card';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
 import { PROTOCOL_ORDER, fmt, operationUnit, pluralize, testRunHref } from '../explore-kit/format';
 import { buildAttention } from './attention';
@@ -31,6 +32,8 @@ const toOutcomes = (s: ServiceSummary): OperationResult[] =>
 const level = (c: number | null) => (c === null ? 'none' : c >= 80 ? 'high' : c >= 50 ? 'mid' : 'low');
 
 const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
+
+const TONE = { high: 'success', mid: 'warning', low: 'danger', none: 'neutral' } as const;
 
 const isLive = (s: ServiceSummary) => s.id === 'pastry2' || s.protocol === 'EVENT';
 
@@ -145,16 +148,13 @@ export default function CockpitPage() {
         actions={actions}
       />
 
-      <section aria-label="Key figures" className="kpi-grid">
-        <div className="kpi-card">
-          <div className="kpi-card-head">
-            <h2 className="kpi-card-title">APIs &amp; services</h2>
-            <RouterLink to="/services">Catalogue</RouterLink>
-          </div>
-          <div className="kpi-card-figure">
-            <span className="kpi-card-value">{services.length}</span>
-            <span className="kpi-card-unit">{empty ? 'no contract imported yet' : `${services.reduce((n, s) => n + s.operationCount, 0)} operations`}</span>
-          </div>
+      <StatGrid label="Key figures" className="cockpit-stats">
+        <StatCard
+          title="APIs & services"
+          action={<RouterLink to="/services">Catalogue</RouterLink>}
+          value={services.length}
+          unit={empty ? 'no contract imported yet' : `${services.reduce((n, s) => n + s.operationCount, 0)} operations`}
+        >
           <ul className="kpi-protocols" aria-label="Services per protocol">
             {PROTOCOL_ORDER.map((p) => (
               <li key={p}>
@@ -162,16 +162,8 @@ export default function CockpitPage() {
               </li>
             ))}
           </ul>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-card-head">
-            <h2 className="kpi-card-title">Mock invocations today</h2>
-            {empty ? null : <LiveIndicator variant="inline" />}
-          </div>
-          <div className="kpi-card-figure">
-            <span className="kpi-card-value">{fmt(syncCalls)}</span>
-            <span className="kpi-card-unit">requests</span>
-          </div>
+        </StatCard>
+        <StatCard title="Mock invocations today" action={empty ? undefined : <LiveIndicator variant="inline" />} value={fmt(syncCalls)} unit="requests">
           <div
             className="kpi-bars"
             role="img"
@@ -190,19 +182,11 @@ export default function CockpitPage() {
               );
             })}
           </div>
-          <span className="kpi-card-foot">
+          <span className="cockpit-stat-foot">
             {empty ? 'Mocks appear as soon as a contract is imported.' : `${fmt(msgs)} async messages published · last request 12 s ago`}
           </span>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-card-head">
-            <h2 className="kpi-card-title">Tests · last 7 days</h2>
-            <RouterLink to="/tests/service/pastry2">History</RouterLink>
-          </div>
-          <div className="kpi-card-figure">
-            <span className="kpi-card-value">{passedRuns + failedRuns}</span>
-            <span className="kpi-card-unit">runs</span>
-          </div>
+        </StatCard>
+        <StatCard title="Tests · last 7 days" action={<RouterLink to="/tests/service/pastry2">History</RouterLink>} value={passedRuns + failedRuns} unit="runs">
           <div className="kpi-meter" role="img" aria-label={empty ? 'No test run yet' : `${passedRuns} passed, ${failedRuns} failed over the last 7 days`}>
             <span style={{ flex: `${passedRuns} 1 0`, background: 'var(--success)' }} />
             <span style={{ flex: `${failedRuns} 1 0`, background: 'var(--danger)' }} />
@@ -215,24 +199,23 @@ export default function CockpitPage() {
             <RouterLink to="/workflows"><Icon name="dispatcher" size={12} />Workflows {empty ? 0 : 5}</RouterLink>
             <span className={empty ? undefined : 'tone-danger'}>{empty ? '· no Arazzo document imported' : '· 1 failing'}</span>
           </span>
-        </div>
-        <div className="kpi-card">
-          <div className="kpi-card-head">
-            <h2 className="kpi-card-title">Average conformance</h2>
-            <RouterLink to="/usage">Details</RouterLink>
-          </div>
-          <div className="kpi-card-figure">
-            <span className="kpi-card-value" data-level={level(avg)}>{avg === null ? '—' : `${avg}%`}</span>
-            <span className="kpi-card-unit">{avg === null ? 'no test yet' : 'current score'}</span>
-          </div>
+        </StatCard>
+        <StatCard
+          title="Average conformance"
+          action={<RouterLink to="/usage">Details</RouterLink>}
+          value={avg === null ? '—' : `${avg}%`}
+          unit={avg === null ? 'no test yet' : 'current score'}
+          tone={TONE[level(avg)]}
+          data-empty={avg === null ? '' : undefined}
+        >
           <div className="kpi-gauge" data-level={level(avg)} aria-hidden="true">
             <span style={{ width: `${avg ?? 0}%` }} />
           </div>
-          <span className="kpi-card-foot">
+          <span className="cockpit-stat-foot">
             {avg === null ? 'Run a first test to get a conformance score.' : `Across ${tested.length} tested services · ${services.length - tested.length} never tested`}
           </span>
-        </div>
-      </section>
+        </StatCard>
+      </StatGrid>
 
       {empty ? (
         <section aria-labelledby="start-title" className="start">
