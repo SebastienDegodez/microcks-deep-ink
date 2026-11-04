@@ -56,6 +56,8 @@ export function RunProgress({ label = 'Progress', done, total, caption, nowLabel
           <span key={i} data-seg={s} />
         ))}
       </div>
+      {/* The note comes before the foot in the DOM, so the reason is read before the step control; CSS shows it last. */}
+      {note ? <p className="run-progress-note">{note}</p> : null}
       {counts?.length || action ? (
         <div className="run-progress-foot">
           {counts?.length ? (
@@ -71,7 +73,6 @@ export function RunProgress({ label = 'Progress', done, total, caption, nowLabel
           {action ? <span className="run-progress-action">{action}</span> : null}
         </div>
       ) : null}
-      {note ? <p className="run-progress-note">{note}</p> : null}
     </section>
   );
 }

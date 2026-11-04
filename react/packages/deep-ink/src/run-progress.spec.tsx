@@ -16,12 +16,16 @@ describe('RunProgress', () => {
         segments={['done', 'done', 'done', 'failed', 'done', 'current', 'queued']}
         counts={[{ kind: 'pass', text: '4 passed' }, { kind: 'fail', text: '1 failed' }]}
         action={<button type="button">Step forward</button>}
+        note="Paused: the run waits for Step forward."
       />,
     );
     expect(screen.getByRole('region', { name: 'Progress' })).toBeTruthy();
     expect(screen.getByRole('img', { name: '5 of 7 test steps done' }).children).toHaveLength(7);
     expect(screen.getByText('PATCH /pastries/{name}').closest('[aria-live]')?.getAttribute('aria-live')).toBe('polite');
     expect(screen.getByText('1 failed')).toBeTruthy();
+    const note = screen.getByText('Paused: the run waits for Step forward.');
+    const step = screen.getByRole('button', { name: 'Step forward' });
+    expect(note.compareDocumentPosition(step) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
     expect(await axeViolations(container)).toEqual([]);
   });
 });

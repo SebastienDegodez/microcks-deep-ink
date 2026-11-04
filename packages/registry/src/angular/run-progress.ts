@@ -35,6 +35,8 @@ const COUNT_ICON = { pass: 'check', fail: 'cross', warn: 'warning', pending: 'ci
     <div class="run-progress-bar" role="img" [attr.aria-label]="summary()">
       @for (s of segments(); track $index) {<span [attr.data-seg]="s"></span>}
     </div>
+    <!-- The note comes before the foot in the DOM, so the reason is read before the step control; CSS shows it last. -->
+    @if (note()) {<p class="run-progress-note">{{ note() }}</p>}
     <div class="run-progress-foot">
       @if (counts().length) {
         <ul class="run-progress-counts">
@@ -45,7 +47,6 @@ const COUNT_ICON = { pass: 'check', fail: 'cross', warn: 'warning', pending: 'ci
       }
       <span class="run-progress-action"><ng-content select="[mkRunProgressAction]" /></span>
     </div>
-    @if (note()) {<p class="run-progress-note">{{ note() }}</p>}
   `,
 })
 export class RunProgressComponent {

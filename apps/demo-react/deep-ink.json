@@ -400,10 +400,10 @@
     "run-progress": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/run-progress.tsx": "9428f6c69afc165a643b78d0ed37d2b2aefe7841c93d57d16541aad1b1e3c3c8",
-        "src/ui/styles/run-progress.css": "d528d5af3efd7b85de957664642f09e41b725495424e318d91f937d9a3ebe8a0"
+        "src/ui/components/ui/run-progress.tsx": "e0d994c6c05292f538ac272b6436e0355fe05ff18641b6c0a48f840a431804db",
+        "src/ui/styles/run-progress.css": "2e08960b53ffbe6c85588b1c98aed49fe10d5369f55e2c1d1dcc01f697bc054b"
       },
-      "hash": "452776151a17ecb4"
+      "hash": "ddd24ddce2f05a03"
     },
     "runner-log": {
       "version": "0.2.0",
