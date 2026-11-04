@@ -14,12 +14,14 @@ export interface AgentAdapters {
 
 /** Id of the run that the Cockpit and the Tests history already list (run #3 of Pastry concierge). */
 export const SEED_AGENT_RUN_ID = '3';
+/** Start of run #3, as in the Tests history. */
+export const SEED_AGENT_RUN_STARTED_AT = '2026-11-03T08:10:04Z';
 
 /**
  * In-memory A2A adapters: the Pastry concierge profile, the tasks its mock creates (a 1 s clock, `task-9a04` streams
  * its artifact) and the conformance runner that fails the same two cells every time.
  */
-export function createInMemoryAgentAdapters(_deps: InMemoryDeps = {}): AgentAdapters {
+export function createInMemoryAgentAdapters(deps: InMemoryDeps = {}): AgentAdapters {
   const startedAt = Date.now();
   const canceled: Record<string, number> = {};
   const currentTick = (): number => Math.max(0, Math.floor((Date.now() - startedAt) / 1000));
@@ -30,7 +32,7 @@ export function createInMemoryAgentAdapters(_deps: InMemoryDeps = {}): AgentAdap
 
   const runs = new Map<string, AgentTestRunWithDetails>();
   const defaults = agentTestDefaults(CONCIERGE_ID);
-  runs.set(SEED_AGENT_RUN_ID, executeAgentTest(SEED_AGENT_RUN_ID, defaults.setup));
+  runs.set(SEED_AGENT_RUN_ID, executeAgentTest(SEED_AGENT_RUN_ID, defaults.setup, SEED_AGENT_RUN_STARTED_AT));
   let next = 4;
 
   const agents: AgentRepository = {
@@ -61,10 +63,10 @@ export function createInMemoryAgentAdapters(_deps: InMemoryDeps = {}): AgentAdap
   };
 
   const tests: AgentTestGateway = {
-    defaults: (serviceId) => after(() => (serviceId === CONCIERGE_ID ? agentTestDefaults(serviceId) : undefined)),
+    defaults: (serviceId) => after(() => (serviceId === CONCIERGE_ID ? { ...agentTestDefaults(serviceId), nextRunId: String(next) } : undefined)),
     run: (setup) => after(() => {
       known(setup.serviceId);
-      const run = executeAgentTest(String(next), setup);
+      const run = executeAgentTest(String(next), setup, (deps.clock?.now() ?? new Date()).toISOString());
       next += 1;
       runs.set(run.id, run);
       return run;
