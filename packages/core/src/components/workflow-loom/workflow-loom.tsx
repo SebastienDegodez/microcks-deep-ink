@@ -191,18 +191,6 @@ export class MkWorkflowLoom {
     };
   }
 
-  private accessibleName(s: LoomStep, p: LoomPlacement): string {
-    const parts = [`Step ${p.number}`, s.stepId, s.operation];
-    const status = this.statusPhrase(s);
-    if (status) parts.push(status);
-    if (this.validatesSchemas) {
-      const c = this.checkStates(s);
-      parts.push(`Success criteria ${CHECK_WORD[c.successCriteria].toLowerCase()}`);
-      parts.push(`Schema validation ${CHECK_WORD[c.schemaValidation].toLowerCase()}`);
-    }
-    return parts.join(', ');
-  }
-
   private actionText(a: LoomAction, s: LoomStep): string {
     if (a.type === 'end') {
       const state = a.taken === true ? ', taken' : a.taken === false ? ', not taken' : '';
@@ -286,7 +274,6 @@ export class MkWorkflowLoom {
         class="node"
         data-status={s.status}
         aria-pressed={this.selectedStep === s.stepId ? 'true' : 'false'}
-        aria-label={this.accessibleName(s, pl)}
         aria-describedby={descId}
         tabindex={s.stepId === tabStop ? 0 : -1}
         ref={(el) => (el ? this.nodeEls.set(s.stepId, el) : this.nodeEls.delete(s.stepId))}
@@ -301,6 +288,7 @@ export class MkWorkflowLoom {
         onBlur={() => (this.hot = undefined)}
       >
         <span class="id">
+          <span class="sr">Step </span>
           {pl.number} {s.stepId}
         </span>{' '}
         <span class="op">{s.operation}</span>{' '}
