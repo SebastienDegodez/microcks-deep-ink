@@ -39,7 +39,8 @@ rules require one; the reasoning is in the Angular Storybook introduction and at
         │             └─ esbuild ─► dist/elements/{workflow-loom,plugin-slot}.js (self-contained ESM)
         ▼                                   ▼
  packages/registry   SINGLE SOURCE OF TRUTH FOR COPYABLE CODE
-   items/<name>.json   src/css/<name>.css   src/react/<name>.tsx   src/angular/<name>.ts   src/html/<name>.html
+   items/<name>.json   src/css/<name>.css   src/angular/<name>.ts   src/html/<name>.html
+   (React sources: react/packages/deep-ink/src/<name>.tsx, in the React workspace)
    build ─► dist/registry.json · dist/registry.full.json · dist/deep-ink-components.css
         │                          │                                   │
         ▼                          ▼                                   ▼

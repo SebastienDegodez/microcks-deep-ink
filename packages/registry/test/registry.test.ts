@@ -6,6 +6,8 @@ import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
 // @ts-expect-error plain ESM script without types
 import { buildRegistry } from '../scripts/build.mjs';
+// @ts-expect-error plain ESM script without types
+import { REACT_SRC } from '../scripts/sync-elements.mjs';
 
 const ROOT = resolve(fileURLToPath(import.meta.url), '..', '..');
 
@@ -226,6 +228,6 @@ describe('registry validation', () => {
       put(root, meta('loom', [], { cssOnly: false, tier: 'element', elements: ['mk-nope'] }));
     });
     expect(r.ok).toBe(true);
-    expect(existsSync(join(ROOT, 'src', 'react', 'elements', 'mk-nope.js'))).toBe(false);
+    expect(existsSync(join(REACT_SRC, 'elements', 'mk-nope.js'))).toBe(false);
   });
 });

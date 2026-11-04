@@ -4,9 +4,23 @@
     "types": [],
     "jsx": "react-jsx",
     "allowSyntheticDefaultImports": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "paths": {
+      "@microcks-deep-ink/registry/react/*": [
+        "../../../react/packages/deep-ink/src/*"
+      ],
+      "react": [
+        "../node_modules/@types/react"
+      ],
+      "react/*": [
+        "../node_modules/@types/react/*"
+      ]
+    }
   },
-  "exclude": ["../src/test.ts", "../src/**/*.spec.ts"],
+  "exclude": [
+    "../src/test.ts",
+    "../src/**/*.spec.ts"
+  ],
   "include": [
     "../src/**/*.stories.*",
     "../src/**/_meta.ts",
@@ -16,5 +30,7 @@
     "../../shared/copy-panel/a11y-doc.ts",
     "../../../packages/registry/src/angular/**/*.ts"
   ],
-  "files": ["./typings.d.ts"]
+  "files": [
+    "./typings.d.ts"
+  ]
 }
