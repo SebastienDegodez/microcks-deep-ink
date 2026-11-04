@@ -28,6 +28,13 @@ on:
       - "packages/registry/css-order.json"
       - "packages/registry/css-order.json"
       - ".github/workflows/react.yml"
+  # storybooks.yml calls this workflow first and consumes its artifacts (deep-ink-dist, storybook-react).
+  workflow_call:
+    inputs:
+      storybook:
+        description: "Also build the React Storybook (artifact storybook-react)"
+        type: boolean
+        default: true
   workflow_dispatch:
     inputs:
       publish:
@@ -42,8 +49,9 @@ on:
 permissions:
   contents: read
 
+# github.workflow is the caller's name when called: a standalone run and a called run never cancel each other.
 concurrency:
-  group: react-${{ github.ref }}
+  group: ${{ github.workflow }}-react-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -79,6 +87,16 @@ jobs:
         with:
           name: deep-ink-dist
           path: react/packages/deep-ink/dist
+          if-no-files-found: error
+
+      # The package docs. Built unless a caller passes storybook: false.
+      - if: inputs.storybook != false
+        run: pnpm -C react --filter storybook-react build-storybook
+      - if: inputs.storybook != false
+        uses: actions/upload-artifact@v4
+        with:
+          name: storybook-react
+          path: react/apps/storybook/storybook-static
           if-no-files-found: error
 
   # Manual only. npm trusted publishing (OIDC, provenance): no token. Dry run by default; the package is
