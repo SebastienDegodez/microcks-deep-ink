@@ -2,7 +2,7 @@ import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { AppShellComponent } from '@microcks-deep-ink/registry/angular/app-shell';
 import { ThemeToggleComponent } from '@microcks-deep-ink/registry/angular/theme-toggle';
 import { CalloutComponent, CalloutActionsDirective } from '@microcks-deep-ink/registry/angular/callout';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const NAV = [
   { id: 'cockpit', label: 'Cockpit', href: '#cockpit', icon: 'cockpit' as const },
@@ -14,6 +14,7 @@ const NAV = [
 
 const meta: Meta = {
   title: 'Components/AppShell',
+  argTypes: argTypesFor('app-shell', ['AppShellComponent']),
   decorators: [moduleMetadata({ imports: [AppShellComponent, ThemeToggleComponent, CalloutComponent, CalloutActionsDirective] })],
   parameters: itemParams(['app-shell', 'theme-toggle', 'icon', 'button'], "Skip link, banner, main navigation (`aria-current=\"page\"`) and `<main>`. Below 768px the navigation collapses behind a disclosure button. Pass `linkTemplate` to use your router.", { layout: 'fullscreen' }),
 };

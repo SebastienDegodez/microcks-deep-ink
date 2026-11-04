@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { OperationListDirective, OperationRowComponent } from '@microcks-deep-ink/registry/angular/operation-row';
 import { OPERATIONS } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/OperationRow',
+  argTypes: argTypesFor('operation-row', ['OperationListDirective', 'OperationRowComponent']),
   decorators: [moduleMetadata({ imports: [OperationListDirective, OperationRowComponent] })],
   parameters: itemParams(['operation-row', 'method-tag', 'mock-url'], "A list of operations. Each row is a link or a button (never a clickable `<div>`); the selected row has `aria-current=\"true\"` and reveals its mock URL."),
 };

@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { DialogComponent, DialogFooterDirective } from '@microcks-deep-ink/registry/angular/dialog';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Dialog',
+  argTypes: argTypesFor('dialog', ['DialogComponent']),
   decorators: [moduleMetadata({ imports: [DialogComponent, DialogFooterDirective, ButtonDirective] })],
   parameters: itemParams(['dialog', 'button'], "A native `<dialog>` opened with `showModal()`: focus is trapped by the browser, Escape closes it and focus returns to the opener."),
 };

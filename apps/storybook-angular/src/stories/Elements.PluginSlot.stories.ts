@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { PluginSlotDirective } from '@microcks-deep-ink/registry/angular/plugin-slot';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Elements/Plugin slot',
+  argTypes: argTypesFor('plugin-slot', ['PluginSlotDirective']),
   decorators: [moduleMetadata({ imports: [PluginSlotDirective], schemas: [CUSTOM_ELEMENTS_SCHEMA] })],
   parameters: itemParams(['plugin-slot'], "An extension point. Contributions render in the light DOM, so plugins use the same CSS classes as the app. The fallback content shows when nothing contributes. The host component needs `schemas: [CUSTOM_ELEMENTS_SCHEMA]`."),
 };

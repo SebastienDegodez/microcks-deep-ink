@@ -4,10 +4,11 @@ import { ApiBadgeComponent } from '@microcks-deep-ink/registry/angular/api-badge
 import { getPluginHost } from '@microcks-deep-ink/registry/angular/plugin-slot';
 import { registerDemoPlugin } from '@microcks-deep-ink/storybook-shared/demo-plugin';
 import { SAMPLE_MANIFEST } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Plugins/Installed plugins',
+  argTypes: argTypesFor('plugin-slot'),
   decorators: [moduleMetadata({ imports: [PanelComponent, PanelActionsDirective, ApiBadgeComponent] })],
   loaders: [async () => ({ ready: await registerDemoPlugin() })],
   parameters: itemParams(['plugin-slot', 'panel', 'api-badge'], "What the shared plugin host knows about: the manifest of the demo plugin and the points it contributes to."),

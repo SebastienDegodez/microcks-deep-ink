@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { IconComponent } from '@microcks-deep-ink/registry/angular/icon';
 import { ICON_NAMES } from '@microcks-deep-ink/registry/angular/icon';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Foundations/Icons',
+  argTypes: argTypesFor('icon', ['IconComponent']),
   decorators: [moduleMetadata({ imports: [IconComponent] })],
   parameters: itemParams(['icon'], "Inline stroke icons, 2px stroke, `currentColor`. Hidden from assistive technology next to text; pass `label` to make one meaningful. No emoji.", { controls: { disable: true } }),
 };

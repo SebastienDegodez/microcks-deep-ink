@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { SPLIT_PANE } from '@microcks-deep-ink/registry/angular/split-pane';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/SplitPane',
+  argTypes: argTypesFor('split-pane'),
   decorators: [moduleMetadata({ imports: [...SPLIT_PANE] })],
   parameters: itemParams(['split-pane'], 'List + detail layout. The side pane grows to a cap, the main pane takes the rest and wraps under the list on narrow screens. The DOM order is the reading order.'),
 };

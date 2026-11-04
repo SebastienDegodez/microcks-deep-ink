@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { LiveIndicatorComponent } from '@microcks-deep-ink/registry/angular/live-indicator';
 import { RunnerLogComponent } from '@microcks-deep-ink/registry/angular/runner-log';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/RunnerLog',
+  argTypes: argTypesFor('runner-log', ['RunnerLogComponent']),
   decorators: [moduleMetadata({ imports: [RunnerLogComponent, LiveIndicatorComponent] })],
   parameters: itemParams(['runner-log', 'live-indicator'], "The runner log: a role=\"log\" list of time, level and message. Levels are always written; the colour only speeds up scanning."),
 };

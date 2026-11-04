@@ -2,10 +2,11 @@ import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { WorkflowLoomDirective } from '@microcks-deep-ink/registry/angular/workflow-loom';
 import { LOOM_CHECK_MENU, LOOM_RESTOCK_RUN14, LOOM_SESSION_RUN13 } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Elements/Workflow loom',
+  argTypes: argTypesFor('workflow-loom', ['WorkflowLoomDirective']),
   decorators: [moduleMetadata({ imports: [WorkflowLoomDirective], schemas: [CUSTOM_ELEMENTS_SCHEMA] })],
   parameters: itemParams(['workflow-loom'], "An Arazzo workflow drawn as a loom: sources as lanes, steps as nodes, `dependsOn` as branches that join, `end` and `retry` actions, and the two checks of each step. Every node is a button reachable with the arrow keys, and \"Show as table\" switches to an equivalent table. The element is self-contained: the registry copies its bundle next to this wrapper. The host component needs `schemas: [CUSTOM_ELEMENTS_SCHEMA]`."),
 };

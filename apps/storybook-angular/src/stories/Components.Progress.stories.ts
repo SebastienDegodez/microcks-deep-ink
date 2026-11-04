@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ProgressComponent, MeterComponent } from '@microcks-deep-ink/registry/angular/progress';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Progress',
+  argTypes: argTypesFor('progress', ['ProgressComponent', 'MeterComponent']),
   decorators: [moduleMetadata({ imports: [ProgressComponent, MeterComponent] })],
   parameters: itemParams(['progress'], "Native `<progress>` and `<meter>`, each with a visible label. Without a value the progress is indeterminate."),
 };

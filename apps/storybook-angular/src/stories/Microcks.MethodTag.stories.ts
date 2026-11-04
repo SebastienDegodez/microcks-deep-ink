@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { MethodTagComponent } from '@microcks-deep-ink/registry/angular/method-tag';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/MethodTag',
+  argTypes: argTypesFor('method-tag', ['MethodTagComponent']),
   decorators: [moduleMetadata({ imports: [MethodTagComponent] })],
   parameters: itemParams(['method-tag'], "The operation verb in mono, always written out. The color only speeds up scanning."),
 };

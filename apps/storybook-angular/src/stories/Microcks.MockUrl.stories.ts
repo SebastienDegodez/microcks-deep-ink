@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { MockUrlComponent } from '@microcks-deep-ink/registry/angular/mock-url';
 import { MOCK_BASE } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/MockUrl',
+  argTypes: argTypesFor('mock-url', ['MockUrlComponent']),
   decorators: [moduleMetadata({ imports: [MockUrlComponent] })],
   parameters: itemParams(['mock-url', 'method-tag', 'copy-button', 'segmented'], "The contract made copyable: the URL in mono, a snippet format group (URL, curl, HTTPie, MCP tool) and a Copy button with a live announcement."),
 };

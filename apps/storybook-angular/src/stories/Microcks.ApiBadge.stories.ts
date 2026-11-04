@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ApiBadgeComponent } from '@microcks-deep-ink/registry/angular/api-badge';
 import type { Protocol } from '@microcks-deep-ink/registry/angular/api-badge';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/ApiBadge',
+  argTypes: argTypesFor('api-badge', ['ApiBadgeComponent']),
   decorators: [moduleMetadata({ imports: [ApiBadgeComponent] })],
   parameters: itemParams(['api-badge', 'icon'], "Three segments: type, name, version. The visible text is the accessible name (\"REST API Pastry 2.0\"). The Arazzo variant inverts the left segment and never uses a protocol color."),
 };

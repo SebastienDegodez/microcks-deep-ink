@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { LinkComponent } from '@microcks-deep-ink/registry/angular/link';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Link',
+  argTypes: argTypesFor('link', ['LinkComponent']),
   decorators: [moduleMetadata({ imports: [LinkComponent] })],
   parameters: itemParams(['link', 'icon'], "Always underlined in body text. An external link adds an icon, a hidden \"(opens in a new tab)\" and `rel=\"noopener\"`."),
 };

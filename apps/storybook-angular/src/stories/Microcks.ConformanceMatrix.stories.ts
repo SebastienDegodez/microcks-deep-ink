@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ConformanceMatrixComponent, cellKey } from '@microcks-deep-ink/registry/angular/conformance-matrix';
 import { MATRIX_COLUMNS, MATRIX_GROUPS } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/ConformanceMatrix',
+  argTypes: argTypesFor('conformance-matrix', ['ConformanceMatrixComponent']),
   decorators: [moduleMetadata({ imports: [ConformanceMatrixComponent] })],
   parameters: itemParams(['conformance-matrix', 'icon'], 'Checks by columns (here the three A2A transports) as a real table. Each cell writes its result with a glyph and a word. A finished cell is a button that selects it; queued and running cells are plain text. A cell without a column spans all of them.'),
 };

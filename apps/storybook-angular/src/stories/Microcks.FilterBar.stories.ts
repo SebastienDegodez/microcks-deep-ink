@@ -2,10 +2,11 @@ import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ChipComponent } from '@microcks-deep-ink/registry/angular/chip';
 import { FILTER_BAR } from '@microcks-deep-ink/registry/angular/filter-bar';
 import { SegmentedComponent } from '@microcks-deep-ink/registry/angular/segmented';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/FilterBar',
+  argTypes: argTypesFor('filter-bar'),
   decorators: [moduleMetadata({ imports: [...FILTER_BAR, ChipComponent, SegmentedComponent] })],
   parameters: itemParams(['filter-bar', 'chip', 'segmented'], "A named box of filter rows: a search field, titled rows of chips or segmented controls, and a Reset that writes the number of active filters."),
 };
