@@ -260,7 +260,7 @@ describe('Administration (/admin/:tab?)', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Tom Keller in /microcks/manager/pets, member' }));
     fireEvent.click(screen.getByRole('button', { name: 'Apply to Keycloak' }));
     expect(await screen.findByText('1 membership change applied in Keycloak realm microcks.', {}, { timeout: 3000 })).toBeTruthy();
-    expect(await screen.findByText('no manager', {}, { timeout: 3000 })).toBeTruthy();
+    await waitFor(() => expect(screen.getAllByText('no manager')).toHaveLength(2), { timeout: 3000 });
   });
 
   it('shows the configuration read-only', async () => {
