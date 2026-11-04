@@ -31,6 +31,8 @@ const toOutcomes = (s: ServiceSummary): OperationResult[] =>
 /** Conformance level, same thresholds as the prototype: 80 and 50. */
 const level = (c: number | null) => (c === null ? 'none' : c >= 80 ? 'high' : c >= 50 ? 'mid' : 'low');
 
+const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
+
 const isLive = (s: ServiceSummary) => s.id === 'pastry2' || s.protocol === 'EVENT';
 
 function usageText(s: ServiceSummary) {
@@ -117,7 +119,7 @@ export default function CockpitPage() {
   const top = services.filter((s) => s.protocol !== 'EVENT').sort((a, b) => b.calls24h - a.calls24h).slice(0, 5);
   const tMax = top[0]?.calls24h ?? 1;
   const active = [...protos];
-  const groups = PROTOCOL_ORDER.filter((p) => active.length === 0 || protos.has(p)).map((p) => ({ p, list: services.filter((s) => s.protocol === p) }));
+  const groups = PROTOCOL_ORDER.filter((p) => active.length === 0 || protos.has(p)).map((p) => ({ p, list: services.filter((s) => s.protocol === p).sort((a, b) => b.calls24h - a.calls24h) }));
   const shown = groups.reduce((n, g) => n + g.list.length, 0);
   const stepsDone = START_STEPS.filter((s) => done[s.id]).length;
   const firstOpen = START_STEPS.findIndex((s) => !done[s.id]);
@@ -268,51 +270,62 @@ export default function CockpitPage() {
         </section>
       ) : (
         <>
-          <Panel
-            title="API wall"
-            actions={<span className="ex-small ex-secondary" role="status">{active.length ? `${shown} of ${services.length} services` : `${services.length} services`} · {live.length} live now</span>}
-          >
-            <div className="ex-row" role="group" aria-label="Filter by protocol">
-              {PROTOCOL_ORDER.map((p) => (
-                <Chip key={p} pressed={protos.has(p)} onClick={() => toggleProto(p)}>
-                  {p} {services.filter((s) => s.protocol === p).length}
-                </Chip>
-              ))}
-              {active.length ? <button type="button" className="ex-linkbutton" onClick={() => setProtos(new Set())}>Show all</button> : null}
+          <section aria-labelledby="wall-title" className="wall">
+            <div className="wall-head">
+              <div className="wall-heading">
+                <h2 id="wall-title" className="wall-title">API wall</h2>
+                <span className="wall-count" role="status">
+                  {active.length ? `${shown} of ${services.length} services` : `${services.length} services`} · {live.length} live now
+                </span>
+              </div>
+              <div className="wall-filters" role="group" aria-label="Filter by protocol">
+                {PROTOCOL_ORDER.map((p) => (
+                  <Chip key={p} protocol={p} count={services.filter((s) => s.protocol === p).length} pressed={protos.has(p)} onClick={() => toggleProto(p)}>
+                    {p}
+                  </Chip>
+                ))}
+                {active.length ? <button type="button" className="wall-show-all" onClick={() => setProtos(new Set())}>Show all</button> : null}
+              </div>
             </div>
-            <div className="ex-stack" style={{ marginTop: 12 }}>
+            <div className="wall-groups">
               {groups.filter((g) => g.list.length).map(({ p, list }) => (
-                <section key={p} aria-label={`${p} services, ${list.length}`}>
-                  <div className="ex-row" style={{ marginBottom: 8 }}>
-                    <ApiBadge protocol={p} size="sm" /> <span className="ex-secondary">{list.length}</span>
+                <section
+                  key={p}
+                  aria-label={`${p} services, ${list.length}`}
+                  className="wall-group"
+                  data-protocol={PROTOCOL_ATTR[p]}
+                  style={{ flex: `${list.length} 1 ${list.length * 232}px` }}
+                >
+                  <div className="wall-group-head" aria-hidden="true">
+                    <span className="wall-swatch" />
+                    {p}
+                    <span className="wall-group-count">{list.length}</span>
                   </div>
-                  <div className="ex-tiles">
+                  <div className="wall-tiles">
                     {list.map((s) => (
-                      <RouterLink
-                        key={s.id}
-                        className="ex-tile"
-                        data-live={isLive(s) ? '' : undefined}
-                        to={`/services/${s.id}`}
-                      >
-                        <span className="ex-row-between">
-                          <span className="ex-tile-title">{s.name} <span className="ex-muted">{s.version}</span></span>
-                          {isLive(s) ? <LiveIndicator /> : null}
+                      <RouterLink key={s.id} className="wall-tile" data-live={isLive(s) ? '' : undefined} to={`/services/${s.id}`}>
+                        <span className="wall-tile-head">
+                          <ApiBadge protocol={s.protocol} name={s.name} version={s.version} className="wall-tile-badge" />
+                          {isLive(s) ? <LiveIndicator variant="inline" className="wall-tile-live" /> : null}
                         </span>
-                        <span className="ex-row">
+                        <span className="wall-tile-score">
                           <ConformanceBand size="mini" outcomes={toOutcomes(s)} unit={operationUnit(s.protocol)} />
-                          <span className="ex-small">{s.conformance === null ? 'untested' : `${s.conformance}%`}</span>
+                          <span className="wall-tile-pct" data-level={level(s.conformance)}>{s.conformance === null ? 'untested' : `${s.conformance}%`}</span>
                         </span>
-                        <span className="ex-small ex-secondary">{usageText(s)}</span>
+                        <span className="wall-tile-usage">{usageText(s)}</span>
                       </RouterLink>
                     ))}
                   </div>
                 </section>
               ))}
             </div>
-            <p className="ex-small ex-secondary" style={{ marginBottom: 0 }}>
-              Band: one segment per operation, conformant, failing or never tested. Live: mock called or publishing in the last minute.
-            </p>
-          </Panel>
+            <ul className="wall-legend" aria-label="Legend">
+              <li><span aria-hidden="true" className="wall-legend-swatch" data-kind="pass" />operation conformant</li>
+              <li><span aria-hidden="true" className="wall-legend-swatch" data-kind="fail" />operation failing</li>
+              <li><span aria-hidden="true" className="wall-legend-swatch" data-kind="untested" />never tested</li>
+              <li><span aria-hidden="true" className="wall-legend-swatch" data-kind="live" />mock called or publishing in the last minute</li>
+            </ul>
+          </section>
 
           <div className="ex-grid ex-grid-2-even">
             <Panel title="Needs attention" actions={<span className="ex-small ex-secondary">{pluralize(attention.length, 'item')}</span>}>
