@@ -56,4 +56,4 @@ export const AsLinks: StoryObj = {
 };
 
 /** Interactive: every input is a control in the Controls panel. */
-export const Playground: StoryObj = playground('operation-row', 'OperationRowComponent', { method: 'GET', path: '/pastries/{name}', protocol: 'REST', meta: '3 examples', selected: false, interactive: false }, '');
+export const Playground: StoryObj = playground('operation-row', 'OperationRowComponent', { method: 'GET', path: '/pastries/{name}', protocol: 'REST', meta: '3 examples', selected: false, interactive: false }, '', '', '<ul mkOperationList label="Operations">%%</ul>');
