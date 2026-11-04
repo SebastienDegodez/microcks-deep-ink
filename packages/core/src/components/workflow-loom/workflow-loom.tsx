@@ -207,20 +207,6 @@ export class MkWorkflowLoom {
     };
   }
 
-  private accessibleName(s: LoomStep, p: LoomPlacement): string {
-    const { method, path } = operationParts(s);
-    const parts = [`Step ${p.number}`, s.stepId, [method, path].filter(Boolean).join(' ')];
-    const status = this.statusPhrase(s);
-    if (status) parts.push(status);
-    if (this.validatesSchemas) {
-      const c = this.checkStates(s);
-      parts.push(`Success criteria ${CHECK_WORD[c.successCriteria].toLowerCase()}`);
-      parts.push(`Schema validation ${CHECK_WORD[c.schemaValidation].toLowerCase()}`);
-    }
-    if (s.result) parts.push(s.result);
-    return parts.join(', ');
-  }
-
   private actionText(a: LoomAction, s: LoomStep): string {
     if (a.type === 'end') {
       const state = a.taken === true ? ', taken' : a.taken === false ? ', not taken' : '';
@@ -310,7 +296,6 @@ export class MkWorkflowLoom {
         class="node"
         data-status={s.status}
         aria-pressed={this.selectedStep === s.stepId ? 'true' : 'false'}
-        aria-label={this.accessibleName(s, pl)}
         aria-describedby={descId}
         tabindex={s.stepId === tabStop ? 0 : -1}
         ref={(el) => (el ? this.nodeEls.set(s.stepId, el) : this.nodeEls.delete(s.stepId))}
@@ -325,7 +310,10 @@ export class MkWorkflowLoom {
         onBlur={() => (this.hot = undefined)}
       >
         <span class="hd">
-          <span class="num">{pl.number}</span> <span class="id">{s.stepId}</span>
+          <span class="num">
+            <span class="sr">Step </span>
+            {pl.number}
+          </span> <span class="id">{s.stepId}</span>
         </span>{' '}
         <span class="op">
           {method && (
@@ -349,6 +337,7 @@ export class MkWorkflowLoom {
               <span class={`chk ${c[k]}`}>
                 {ringed(CHECK_MARK[c[k]], 12)}
                 {k === 'successCriteria' ? 'Success criteria' : 'Schema validation'}
+                <span class="sr">{` ${CHECK_WORD[c[k]].toLowerCase()}`}</span>
               </span>,
               ' ',
             ])}
