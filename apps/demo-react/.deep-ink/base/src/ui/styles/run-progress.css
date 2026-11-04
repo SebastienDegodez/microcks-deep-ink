@@ -12,6 +12,7 @@
     border-radius: var(--radius-panel);
   }
   .run-progress-top { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
+  .run-progress-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
   .run-progress-count { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 0; }
   .run-progress-done { font: 800 56px/0.9 var(--font-brand); color: var(--text); font-variant-numeric: tabular-nums; }
   .run-progress-total { color: var(--text-muted); }
@@ -35,10 +36,12 @@
   .run-progress-counts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin: 0; padding: 0; list-style: none; font: 400 13px/18px var(--font-ui); color: var(--text-secondary); }
   .run-progress-counts > li { display: inline-flex; align-items: center; gap: 6px; }
   .run-progress-counts .icon { flex: none; stroke-width: 2.6; }
-  .run-progress-counts [data-kind="pass"] .icon { color: var(--success); }
-  .run-progress-counts [data-kind="fail"] .icon { color: var(--danger); }
-  .run-progress-counts [data-kind="warn"] .icon { color: var(--warning); }
-  .run-progress-counts [data-kind="pending"] .icon { color: var(--text-muted); stroke-width: 2; }
+  /* The whole count takes the result colour (icon and words). */
+  .run-progress-counts [data-kind="pass"] { color: var(--success); }
+  .run-progress-counts [data-kind="fail"] { color: var(--danger); }
+  .run-progress-counts [data-kind="warn"] { color: var(--warning); }
+  .run-progress-counts [data-kind="pending"] { color: var(--text-muted); }
+  .run-progress-counts [data-kind="pending"] .icon { stroke-width: 2; }
   .run-progress-action { margin-inline-start: auto; }
   .run-progress-note { margin: 0; font: 400 13px/1.5 var(--font-ui); color: var(--text-muted); }
 }

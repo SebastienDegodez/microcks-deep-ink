@@ -58,7 +58,7 @@ export function RunProgress({ label = 'Progress', done, total, caption, nowLabel
         ))}
       </div>
       {counts?.length || action ? (
-        <div className="run-progress-top">
+        <div className="run-progress-foot">
           {counts?.length ? (
             <ul className="run-progress-counts">
               {counts.map((c) => (

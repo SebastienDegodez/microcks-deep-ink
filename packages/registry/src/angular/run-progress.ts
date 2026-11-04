@@ -35,7 +35,7 @@ const COUNT_ICON = { pass: 'check', fail: 'cross', warn: 'warning', pending: 'ci
     <div class="run-progress-bar" role="img" [attr.aria-label]="summary()">
       @for (s of segments(); track $index) {<span [attr.data-seg]="s"></span>}
     </div>
-    <div class="run-progress-top">
+    <div class="run-progress-foot">
       @if (counts().length) {
         <ul class="run-progress-counts">
           @for (c of counts(); track c.kind + c.text) {
