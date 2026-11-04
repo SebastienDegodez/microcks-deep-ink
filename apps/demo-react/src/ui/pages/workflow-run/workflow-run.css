@@ -285,7 +285,6 @@ button[aria-expanded="true"] > .wfr-step-chevron { transform: rotate(90deg); }
 .wfr-code-chip[data-tone="danger"] { color: var(--danger); }
 
 .wfr-response-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; font-size: 12px; }
-.wfr-response[data-invalid] { border-color: var(--danger); }
 .wfr-waiting { display: flex; flex-direction: column; gap: 8px; padding: 12px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); font-size: 12px; }
 .wfr-waiting .wfr-pulse-bar { height: 10px; }
 

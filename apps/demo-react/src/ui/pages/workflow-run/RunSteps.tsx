@@ -366,9 +366,10 @@ function StepBody({ step, def, run, running }: { step: StepResult; def?: Step; r
         ) : lines.length > 0 ? (
           <CodeBlock
             className="wfr-response"
-            data-invalid={schema.state === 'fail' ? '' : undefined}
+            tone={schema.state === 'fail' ? 'danger' : undefined}
+            gutter="narrow"
             language="json"
-            lines={lines.map((l) => (l.bad ? { ...l, note: l.note } : l))}
+            lines={lines}
             lineNumbers
             copy={false}
             variant="plain"
