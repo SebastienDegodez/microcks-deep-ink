@@ -48,7 +48,7 @@ export function AgentMockTab({ agent }: { agent: AgentProfile }) {
               <Icon name="activity" size={13} />
               <span>{transportStreamingNote(t, mode)}</span>
             </p>
-            <CodeBlock className="agent-transport-sample" code={transportSample(t, mode)} language="bash" caption={`${method} · ${t.id === 'grpc' ? 'grpcurl' : 'curl'} · ${t.binding}`} />
+            <CodeBlock className="agent-transport-sample" code={transportSample(t, mode)} language="bash" caption={`${method} · ${t.id === 'grpc' ? 'grpcurl' : 'curl'}`} label={`${method} · ${t.id === 'grpc' ? 'grpcurl' : 'curl'}, ${t.name} binding`} />
             <div className="agent-also">
               <span className="agent-also-label">Also served</span>
               <span className="agent-also-list">{t.more}</span>
