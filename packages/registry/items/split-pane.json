@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "List plus detail layout: a side pane with a flexible width and a cap, next to a main pane that takes the rest. It wraps the detail under the list on narrow screens. Used on Admin, Agent, Behavior, Hub, Service, Sources, Tests, Traces, Usage, Workflow, WorkflowRun and Workflows.",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "Layout only: the panes keep the element you give them (<nav>, <aside>, <section aria-labelledby>, <div>)",
     "keyboard": [["Tab", "Follows the DOM order: the first pane, then the second, also when they wrap"]],

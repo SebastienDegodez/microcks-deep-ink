@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "Framed result or feedback line in a role=\"status\" box: a tone icon, an optional title, the text, an optional action and an optional dismiss button. Used for the Admin toast and export result, the Sources undo banner, the Workflows warning block, the Traces replay feedback and the Workflow validation band.",
   "registryDependencies": ["base", "icon"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "<div role=\"status\"> (polite live region) holding an aria-hidden tone icon, the text, and real <button>/<a> actions",
     "keyboard": [["Tab", "Reaches the action and the dismiss button"], ["Enter / Space", "Activates them"]],

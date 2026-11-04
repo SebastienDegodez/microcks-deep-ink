@@ -25,7 +25,6 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "react": { "type": "array", "items": { "type": "string" } },
         "angular": { "type": "array", "items": { "type": "string" } }
       }
     },
@@ -39,7 +38,6 @@
       "description": "Source files that do not match the name-based discovery rule (for example a shared helper). Paths are relative to src/<framework>/.",
       "additionalProperties": false,
       "properties": {
-        "react": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9./-]*\\.(tsx|ts)$" } },
         "angular": { "type": "array", "items": { "type": "string", "pattern": "^[a-z0-9][a-z0-9./-]*\\.ts$" } }
       }
     },

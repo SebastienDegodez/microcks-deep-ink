@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "Checks by columns (transports, environments) as a real table. Every cell writes its result with a glyph and a word; finished cells select a detail panel.",
   "registryDependencies": ["base", "icon"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "elements": [],
   "a11y": {
     "pattern": "<div role=\"region\" tabindex=\"0\" aria-label> > <table> with <caption>, <th scope=\"col\">, <th scope=\"rowgroup\"> per <tbody>, <th scope=\"row\">; finished cells hold a <button aria-pressed>",

@@ -5,7 +5,7 @@
   "tier": "natural",
   "description": "Bordered surface with a heading and optional header actions.",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "<section aria-labelledby> with a real heading",
     "keyboard": [],

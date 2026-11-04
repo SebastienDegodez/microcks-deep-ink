@@ -8,7 +8,6 @@
     "chip"
   ],
   "npmDependencies": {
-    "react": [],
     "angular": []
   },
   "elements": [],

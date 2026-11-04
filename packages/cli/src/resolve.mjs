@@ -26,7 +26,7 @@ export function filterByTier(registry, tiers) {
 export function frameworkFiles(item, framework) {
   if (framework === 'html') {
     // Recipes, plus the self-contained element bundles (plain JS, usable without a framework).
-    const elements = item.files.react.filter((f) => f.kind === 'element');
+    const elements = (item.files.angular ?? []).filter((f) => f.kind === 'element');
     return [...item.files.html, ...elements];
   }
   return item.files[framework] ?? [];

@@ -5,7 +5,7 @@
   "tier": "natural",
   "description": "Native checkbox, radio and radio group in a fieldset with a legend.",
   "registryDependencies": ["base", "icon", "field"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "Native <input type=checkbox|radio> inside <label>; groups use <fieldset><legend>",
     "keyboard": [

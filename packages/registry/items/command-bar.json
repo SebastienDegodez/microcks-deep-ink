@@ -9,7 +9,6 @@
     "icon"
   ],
   "npmDependencies": {
-    "react": [],
     "angular": []
   },
   "a11y": {

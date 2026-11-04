@@ -9,7 +9,6 @@
     "copy-button"
   ],
   "npmDependencies": {
-    "react": [],
     "angular": []
   },
   "elements": [],

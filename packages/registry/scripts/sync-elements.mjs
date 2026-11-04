@@ -1,7 +1,7 @@
 #!/usr/bin/env node
-// Copies the self-contained element bundles built by packages/core next to the
-// framework sources, where the build discovers them. The destination folders
-// (react/packages/deep-ink/src/elements, packages/registry/src/angular/elements) are gitignored.
+// Copies the self-contained element bundles built by packages/core next to the Angular sources, where the
+// build discovers them (src/angular/elements, gitignored). The React package syncs its own copy
+// (react/packages/deep-ink/scripts/sync-elements.mjs).
 import { copyFileSync, existsSync, mkdirSync, readdirSync, rmSync } from 'node:fs';
 import { dirname, join, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -9,13 +9,10 @@ import { fileURLToPath } from 'node:url';
 const HERE = dirname(fileURLToPath(import.meta.url));
 export const PKG_ROOT = resolve(HERE, '..');
 export const CORE_ELEMENTS = resolve(PKG_ROOT, '..', 'core', 'dist', 'elements');
-/** The React sources live in the React workspace (react/packages/deep-ink/src); Angular, HTML and CSS stay here. */
-export const REACT_SRC = resolve(PKG_ROOT, '..', '..', 'react', 'packages', 'deep-ink', 'src');
-const FRAMEWORKS = ['react', 'angular'];
+const FRAMEWORKS = ['angular'];
 
-/** Source folder of a framework for a registry root: the real React package for this registry, src/<fw> otherwise. */
+/** Source folder of a framework for a registry root. */
 export function sourceDir(root, framework) {
-  if (framework === 'react' && resolve(root) === PKG_ROOT) return REACT_SRC;
   return join(root, 'src', framework);
 }
 

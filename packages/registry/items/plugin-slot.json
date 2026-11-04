@@ -5,7 +5,7 @@
   "tier": "element",
   "description": "Extension point that renders plugin contributions in the light DOM, so tokens and * classes reach them. Includes getPluginHost().",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "elements": ["plugin-slot"],
   "a11y": {
     "pattern": "Light-DOM wrapper: div.plugin-item[data-plugin-id] around each contributed element, no ARIA of its own",

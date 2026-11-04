@@ -5,7 +5,7 @@
   "tier": "natural",
   "description": "On/off setting built on a native checkbox with role=switch.",
   "registryDependencies": ["base", "checkbox"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "<input type=checkbox role=switch> inside <label>",
     "keyboard": [["Space", "Toggles the switch"]],

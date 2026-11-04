@@ -23,7 +23,7 @@ const tmp = (prefix) => {
 };
 after(() => temp.forEach((d) => rmSync(d, { recursive: true, force: true })));
 
-function project(pkg = { dependencies: { react: '19' } }) {
+function project(pkg = { dependencies: { '@angular/core': '22' } }) {
   const dir = tmp('up-');
   writeFileSync(join(dir, 'package.json'), JSON.stringify(pkg));
   return dir;
@@ -54,8 +54,8 @@ const editLine = (file, index, text) => {
   lines[index] = text;
   file.content = lines.join('\n');
 };
-const TABS = 'src/components/ui/tabs.tsx';
-const upstreamEdit = (index, text) => movedRegistry((r) => editLine(itemOf(r, 'tabs').files.react.find((f) => f.target === 'tabs.tsx'), index, text));
+const TABS = 'src/app/ui/tabs.ts';
+const upstreamEdit = (index, text) => movedRegistry((r) => editLine(itemOf(r, 'tabs').files.angular.find((f) => f.target === 'tabs.ts'), index, text));
 const localEdit = (dir, index, text) => {
   const lines = read(dir, TABS).split('\n');
   lines[index] = text;
@@ -157,11 +157,11 @@ describe('status', () => {
     assert.match(fresh.stdout, /tabs\s+up to date/);
     assert.match(fresh.stdout, /all up to date/);
 
-    write(dir, 'src/components/ui/button.tsx', read(dir, 'src/components/ui/button.tsx') + '\n// mine\n'); // local
-    write(dir, 'src/components/ui/panel.tsx', read(dir, 'src/components/ui/panel.tsx') + '\n// mine\n'); // both
+    write(dir, 'src/app/ui/button.ts', read(dir, 'src/app/ui/button.ts') + '\n// mine\n'); // local
+    write(dir, 'src/app/ui/panel.ts', read(dir, 'src/app/ui/panel.ts') + '\n// mine\n'); // both
     const moved = movedRegistry((r) => {
-      itemOf(r, 'tabs').files.react[0].content += '\n// upstream\n';
-      itemOf(r, 'panel').files.react[0].content += '\n// upstream\n';
+      itemOf(r, 'tabs').files.angular[0].content += '\n// upstream\n';
+      itemOf(r, 'panel').files.angular[0].content += '\n// upstream\n';
     });
     const s = run(['status', '--registry', moved, '--cwd', dir]);
     assert.equal(s.status, 0);
@@ -169,8 +169,8 @@ describe('status', () => {
     assert.match(s.stdout, /^button\s+locally modified/m);
     assert.match(s.stdout, /^panel\s+both \(conflict\)/m);
     assert.match(s.stdout, /^chip\s+up to date/m);
-    assert.match(s.stdout, /^\s+upstream src\/components\/ui\/tabs\.tsx/m);
-    assert.match(s.stdout, /^\s+both\s+src\/components\/ui\/panel\.tsx/m);
+    assert.match(s.stdout, /^\s+upstream src\/app\/ui\/tabs\.ts/m);
+    assert.match(s.stdout, /^\s+both\s+src\/app\/ui\/panel\.ts/m);
   });
 
   it('--exit-code exits 1 when something is not up to date, and --json lists the states', () => {
@@ -222,8 +222,8 @@ describe('diff', () => {
     const moved = upstreamEdit(120, '// UPSTREAM EDIT');
     const d = run(['diff', 'tabs', '--registry', moved, '--cwd', dir]).stdout;
     const [, local, upstream] = d.split(/^== .*$/m);
-    assert.match(d, /== src\/components\/ui\/tabs\.tsx: local edits \(base -> your file\)/);
-    assert.match(d, /== src\/components\/ui\/tabs\.tsx: upstream changes \(base -> registry\)/);
+    assert.match(d, /== src\/app\/ui\/tabs\.ts: local edits \(base -> your file\)/);
+    assert.match(d, /== src\/app\/ui\/tabs\.ts: upstream changes \(base -> registry\)/);
     assert.match(local, /^\+\/\/ LOCAL EDIT/m);
     assert.doesNotMatch(local, /UPSTREAM EDIT/);
     assert.match(upstream, /^\+\/\/ UPSTREAM EDIT/m);
@@ -296,7 +296,7 @@ describe('add --merge', () => {
     localEdit(dir, 5, '// LOCAL');
     const r = run(['add', 'tabs', '--merge', '--registry', upstreamEdit(120, '// UPSTREAM'), '--cwd', dir]);
     assert.equal(r.status, 0, r.stdout + r.stderr);
-    assert.match(r.stdout, /merged\s+src\/components\/ui\/tabs\.tsx \(git\)/);
+    assert.match(r.stdout, /merged\s+src\/app\/ui\/tabs\.ts \(git\)/);
     const merged = read(dir, TABS);
     assert.match(merged, /^\/\/ LOCAL$/m);
     assert.match(merged, /^\/\/ UPSTREAM$/m);
@@ -313,7 +313,7 @@ describe('add --merge', () => {
     localEdit(dir, 120, '// LOCAL');
     const r = run(['add', 'tabs', '--merge', '--registry', upstreamEdit(120, '// UPSTREAM'), '--cwd', dir]);
     assert.equal(r.status, 2);
-    assert.match(r.stdout, /conflict\s+src\/components\/ui\/tabs\.tsx \(1 conflict: resolve the <<<<<<< markers\)/);
+    assert.match(r.stdout, /conflict\s+src\/app\/ui\/tabs\.ts \(1 conflict: resolve the <<<<<<< markers\)/);
     const text = read(dir, TABS);
     assert.match(text, /^<<<<<<< yours\n\/\/ LOCAL\n=======\n\/\/ UPSTREAM\n>>>>>>> registry$/m);
   });
@@ -324,7 +324,7 @@ describe('add --merge', () => {
     const empty = tmp('nopath-');
     const r = run(['add', 'tabs', '--merge', '--registry', upstreamEdit(120, '// UPSTREAM'), '--cwd', dir], { env: { PATH: empty } });
     assert.equal(r.status, 2, r.stdout + r.stderr);
-    assert.match(r.stdout, /conflict\s+src\/components\/ui\/tabs\.tsx/);
+    assert.match(r.stdout, /conflict\s+src\/app\/ui\/tabs\.ts/);
     const text = read(dir, TABS);
     assert.match(text, /^<<<<<<< yours$/m);
     assert.match(text, /^=======$/m);
@@ -338,7 +338,7 @@ describe('add --merge', () => {
     localEdit(dir, 5, '// LOCAL');
     const r = run(['add', 'tabs', '--merge', '--cwd', dir]);
     assert.equal(r.status, 0);
-    assert.match(r.stdout, /kept\s+src\/components\/ui\/tabs\.tsx/);
+    assert.match(r.stdout, /kept\s+src\/app\/ui\/tabs\.ts/);
     assert.match(read(dir, TABS), /^\/\/ LOCAL$/m);
   });
 
@@ -346,7 +346,7 @@ describe('add --merge', () => {
     const dir = setup();
     const r = run(['add', 'tabs', '--merge', '--registry', upstreamEdit(120, '// UPSTREAM'), '--cwd', dir]);
     assert.equal(r.status, 0);
-    assert.match(r.stdout, /updated\s+src\/components\/ui\/tabs\.tsx/);
+    assert.match(r.stdout, /updated\s+src\/app\/ui\/tabs\.ts/);
     assert.match(read(dir, TABS), /^\/\/ UPSTREAM$/m);
   });
 
@@ -366,7 +366,7 @@ describe('add --merge', () => {
     localEdit(dir, 5, '// LOCAL');
     const before = read(dir, TABS);
     const r = run(['add', 'tabs', '--merge', '--dry-run', '--registry', upstreamEdit(120, '// UPSTREAM'), '--cwd', dir]);
-    assert.match(r.stdout, /would merge\s+src\/components\/ui\/tabs\.tsx/);
+    assert.match(r.stdout, /would merge\s+src\/app\/ui\/tabs\.ts/);
     assert.equal(read(dir, TABS), before);
   });
 
@@ -376,7 +376,7 @@ describe('add --merge', () => {
     const moved = upstreamEdit(120, '// UPSTREAM');
     const r = run(['add', 'tabs', '--overwrite', '--registry', moved, '--cwd', dir]);
     assert.equal(r.status, 0);
-    assert.match(r.stdout, /updated\s+src\/components\/ui\/tabs\.tsx \(overwritten\)/);
+    assert.match(r.stdout, /updated\s+src\/app\/ui\/tabs\.ts \(overwritten\)/);
     assert.doesNotMatch(read(dir, TABS), /\/\/ LOCAL/);
     assert.equal(read(dir, `.deep-ink/base/${TABS}`), read(dir, TABS));
   });

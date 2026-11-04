@@ -5,7 +5,7 @@
   "tier": "natural",
   "description": "Compact one-of-many filter built from toggle buttons.",
   "registryDependencies": ["base", "icon"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "role=group of <button aria-pressed>",
     "keyboard": [

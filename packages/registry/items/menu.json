@@ -5,7 +5,7 @@
   "tier": "natural",
   "description": "Actions menu using the disclosure pattern on the native popover attribute.",
   "registryDependencies": ["base", "button", "icon"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "Disclosure: button[popovertarget][aria-expanded] + div[popover] of buttons and links",
     "keyboard": [

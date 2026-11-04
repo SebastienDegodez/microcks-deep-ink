@@ -5,7 +5,7 @@
   "tier": "natural",
   "description": "Native select with a custom caret and a 3:1 border.",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "Native <select>",
     "keyboard": [

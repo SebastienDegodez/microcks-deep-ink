@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "\"Run it from CI\" panel: a title (with an optional pill), a hint, a Copy button, the command and a footnote, shown by a toggle button. Used on TestRun and AgentTestRun.",
   "registryDependencies": ["base", "button", "copy-button"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "A <section> region named by its title, disclosed by a native <button aria-expanded aria-controls>",
     "keyboard": [

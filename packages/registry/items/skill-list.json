@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "The skills of an A2A Agent Card: id, name, calls, tags and last test result per skill, with a fallback entry for messages no skill matched.",
   "registryDependencies": ["base", "icon"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "elements": [],
   "a11y": {
     "pattern": "<ul aria-label> of <li> holding a <button aria-pressed> (selectable) or a <div> (read-only)",

@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "Card for a package, a service, a workflow or an agent: media, title, meta, a tag, a body and a footer, in a wrapping grid. The whole card is clickable through one stretched link or button.",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "<article> named by its heading; the heading holds the one link (or toggle button) of the tile, stretched over it with ::after",
     "keyboard": [

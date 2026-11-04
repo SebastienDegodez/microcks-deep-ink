@@ -5,7 +5,7 @@
   "tier": "natural",
   "description": "Native text input and textarea with a visible 3:1 border.",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "Native <input> and <textarea>",
     "keyboard": [["Tab", "Moves focus into and out of the field"]],

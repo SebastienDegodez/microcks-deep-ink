@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "Key figure card (KPI): a small uppercase heading with an optional link, a big figure with its unit, and optional detail; StatGrid lays them out. Used on the Cockpit, Usage and test-run summaries.",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "<section> named by its heading (aria-labelledby); the figure and unit are text in one <p>",
     "keyboard": [["Tab", "Reaches the header link and any control in the body"]],

@@ -10,7 +10,6 @@
     "segmented"
   ],
   "npmDependencies": {
-    "react": [],
     "angular": []
   },
   "elements": [],

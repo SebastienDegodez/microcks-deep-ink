@@ -5,7 +5,7 @@
   "tier": "natural",
   "description": "Label, control, help and error wired together for forms.",
   "registryDependencies": ["base", "icon"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "Visible <label for> with aria-describedby help and error",
     "keyboard": [["Tab", "Moves between controls in DOM order"]],

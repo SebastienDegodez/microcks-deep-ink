@@ -15,7 +15,7 @@ const run = (args, opts = {}) =>
   spawnSync(process.execPath, [BIN, ...args], { encoding: 'utf8', env: { ...process.env, NO_COLOR: '1' }, ...opts });
 
 const temp = [];
-function project(pkg = { dependencies: { react: '19' } }) {
+function project(pkg = { dependencies: { '@angular/core': '22' } }) {
   const dir = mkdtempSync(join(tmpdir(), 'cli-'));
   temp.push(dir);
   writeFileSync(join(dir, 'package.json'), JSON.stringify(pkg));
@@ -51,8 +51,8 @@ describe('init', () => {
     const index = read(dir, 'src/styles/deep-ink/index.css');
     assert.ok(index.indexOf("./tokens.css") < index.indexOf('./base.css'));
     const lock = JSON.parse(read(dir, 'deep-ink.json'));
-    assert.equal(lock.framework, 'react');
-    assert.equal(lock.out, 'src/components/ui');
+    assert.equal(lock.framework, 'angular');
+    assert.equal(lock.out, 'src/app/ui');
     assert.equal(lock.items.base.files['src/styles/deep-ink/base.css'].length, 64);
     assert.match(read(dir, 'src/styles/deep-ink/base.css'), /^\/\* Deep Ink · base@0\.2\.0 · copied from packages\/registry\. You own this file\. \*\//);
   });
@@ -77,13 +77,13 @@ describe('add', () => {
     run(['init', '--cwd', dir]);
     const r = run(['add', 'tabs', '--cwd', dir]);
     assert.equal(r.status, 0, r.stderr);
-    assert.ok(existsSync(join(dir, 'src/components/ui/tabs.tsx')));
+    assert.ok(existsSync(join(dir, 'src/app/ui/tabs.ts')));
     assert.ok(existsSync(join(dir, 'src/styles/deep-ink/tabs.css')));
     assert.match(read(dir, 'src/styles/deep-ink/index.css'), /tabs\.css/);
-    assert.match(read(dir, 'src/components/ui/tabs.tsx'), /^\/\/ Deep Ink · tabs@0\.2\.0 · copied from packages\/registry\. You own this file\./);
+    assert.match(read(dir, 'src/app/ui/tabs.ts'), /^\/\/ Deep Ink · tabs@0\.2\.0 · copied from packages\/registry\. You own this file\./);
     // Transitive dependencies: button needs icon.
     run(['add', 'button', '--cwd', dir]);
-    assert.ok(existsSync(join(dir, 'src/components/ui/icon.tsx')));
+    assert.ok(existsSync(join(dir, 'src/app/ui/icon.ts')));
     assert.ok(existsSync(join(dir, 'src/styles/deep-ink/icon.css')));
     assert.ok(JSON.parse(read(dir, 'deep-ink.json')).items.icon);
   });
@@ -107,22 +107,22 @@ describe('add', () => {
   it('skips locally modified files with exit 2, and --overwrite replaces them', () => {
     const dir = project();
     run(['add', 'tabs', '--cwd', dir]);
-    const file = join(dir, 'src/components/ui/tabs.tsx');
-    writeFileSync(file, read(dir, 'src/components/ui/tabs.tsx') + '\n// my edit\n');
+    const file = join(dir, 'src/app/ui/tabs.ts');
+    writeFileSync(file, read(dir, 'src/app/ui/tabs.ts') + '\n// my edit\n');
     const r = run(['add', 'tabs', '--cwd', dir]);
     assert.equal(r.status, 2);
-    assert.match(r.stdout, /skip\s+src\/components\/ui\/tabs\.tsx \(modified locally, use --merge, --overwrite or deep-ink diff tabs\)/);
-    assert.match(read(dir, 'src/components/ui/tabs.tsx'), /my edit/);
+    assert.match(r.stdout, /skip\s+src\/app\/ui\/tabs\.ts \(modified locally, use --merge, --overwrite or deep-ink diff tabs\)/);
+    assert.match(read(dir, 'src/app/ui/tabs.ts'), /my edit/);
     const o = run(['add', 'tabs', '--cwd', dir, '--overwrite']);
     assert.equal(o.status, 0);
-    assert.doesNotMatch(read(dir, 'src/components/ui/tabs.tsx'), /my edit/);
+    assert.doesNotMatch(read(dir, 'src/app/ui/tabs.ts'), /my edit/);
   });
 
   it('updates silently a file that is unchanged since the last copy', () => {
     const dir = project();
     run(['add', 'tabs', '--cwd', dir]);
     // Simulate an older registry copy: the file on disk matches the lockfile hash but not the registry.
-    const rel = 'src/components/ui/tabs.tsx';
+    const rel = 'src/app/ui/tabs.ts';
     const old = '// old version\n';
     writeFileSync(join(dir, rel), old);
     const lock = JSON.parse(read(dir, 'deep-ink.json'));
@@ -132,7 +132,7 @@ describe('add', () => {
     writeFileSync(join(dir, '.deep-ink/base', rel), old);
     const r = run(['add', 'tabs', '--cwd', dir]);
     assert.equal(r.status, 0, r.stdout);
-    assert.match(r.stdout, /updated\s+src\/components\/ui\/tabs\.tsx/);
+    assert.match(r.stdout, /updated\s+src\/app\/ui\/tabs\.ts/);
     assert.match(read(dir, rel), /Deep Ink · tabs@/);
   });
 
@@ -140,7 +140,7 @@ describe('add', () => {
     const dir = project();
     const r = run(['add', 'tabs', '--cwd', dir, '--dry-run']);
     assert.equal(r.status, 0);
-    assert.match(r.stdout, /would add\s+src\/components\/ui\/tabs\.tsx/);
+    assert.match(r.stdout, /would add\s+src\/app\/ui\/tabs\.ts/);
     assert.equal(existsSync(join(dir, 'src')), false);
     assert.equal(existsSync(join(dir, 'deep-ink.json')), false);
   });
@@ -161,14 +161,14 @@ describe('add', () => {
     assert.equal(r.status, 0, r.stderr);
     assert.ok(existsSync(join(dir, 'deep-ink/button.html')));
     assert.ok(existsSync(join(dir, 'deep-ink/css/button.css')));
-    assert.equal(existsSync(join(dir, 'deep-ink/button.tsx')), false);
+    assert.equal(existsSync(join(dir, 'deep-ink/button.ts')), false);
   });
 
   it('--all with --tier copies a whole tier', () => {
     const dir = project();
     const r = run(['add', '--all', '--tier', 'natural', '--cwd', dir]);
     assert.equal(r.status, 0, r.stderr);
-    assert.ok(existsSync(join(dir, 'src/components/ui/dialog.tsx')));
+    assert.ok(existsSync(join(dir, 'src/app/ui/dialog.ts')));
   });
 
   it('rejects an unknown item and an unknown tier', () => {
@@ -183,12 +183,12 @@ describe('diff and view', () => {
     const dir = project();
     run(['add', 'tabs', '--cwd', dir]);
     assert.match(run(['diff', 'tabs', '--cwd', dir]).stdout, /identical to the registry/);
-    const rel = 'src/components/ui/tabs.tsx';
+    const rel = 'src/app/ui/tabs.ts';
     writeFileSync(join(dir, rel), read(dir, rel).replace('Tabs with the WAI-ARIA tabs pattern', 'Mine'));
     const d = run(['diff', 'tabs', '--cwd', dir]).stdout;
-    assert.match(d, /== src\/components\/ui\/tabs\.tsx: local edits \(base -> your file\)/);
-    assert.match(d, /^--- base\/src\/components\/ui\/tabs\.tsx/m);
-    assert.match(d, /^\+\+\+ local\/src\/components\/ui\/tabs\.tsx/m);
+    assert.match(d, /== src\/app\/ui\/tabs\.ts: local edits \(base -> your file\)/);
+    assert.match(d, /^--- base\/src\/app\/ui\/tabs\.ts/m);
+    assert.match(d, /^\+\+\+ local\/src\/app\/ui\/tabs\.ts/m);
     assert.match(d, /^-.*Tabs with the WAI-ARIA tabs pattern/m);
     assert.match(d, /^\+.*Mine/m);
     assert.doesNotMatch(d, /upstream changes/);

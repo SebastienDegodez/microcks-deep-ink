@@ -6,8 +6,6 @@ import { fileURLToPath } from 'node:url';
 import { beforeAll, describe, expect, it } from 'vitest';
 // @ts-expect-error plain ESM script without types
 import { buildRegistry } from '../scripts/build.mjs';
-// @ts-expect-error plain ESM script without types
-import { REACT_SRC } from '../scripts/sync-elements.mjs';
 
 const ROOT = resolve(fileURLToPath(import.meta.url), '..', '..');
 
@@ -17,7 +15,7 @@ interface Entry {
   cssOnly?: boolean;
   registryDependencies: string[];
   a11y: { keyboard: unknown[]; rgaa: string[]; wcag: string[]; aria: unknown[]; pattern: string };
-  files: Record<'react' | 'angular' | 'html', Array<{ target: string; content?: string }>>;
+  files: Record<'angular' | 'html', Array<{ target: string; content?: string }>>;
   css: Array<{ target: string; content?: string }>;
 }
 
@@ -66,14 +64,14 @@ describe('registry build', () => {
 
   it('puts the copy header on every file of the full registry', () => {
     for (const item of result.full.items) {
-      for (const f of [...item.files.react, ...item.files.angular, ...item.files.html, ...item.css]) {
+      for (const f of [...item.files.angular, ...item.files.html, ...item.css]) {
         expect(f.content, `${item.name}/${f.target}`).toMatch(new RegExp(`Deep Ink · ${item.name}@0\\.2\\.0 · copied from packages/registry\\. You own this file\\.`));
       }
     }
   });
 
   it('does not leak content into the index', () => {
-    for (const item of result.index.items) for (const f of [...item.files.react, ...item.css]) expect(f.content).toBeUndefined();
+    for (const item of result.index.items) for (const f of [...item.files.angular, ...item.css]) expect(f.content).toBeUndefined();
   });
 
   it('lists dependencies before dependents in the concatenated CSS', () => {
@@ -135,7 +133,7 @@ describe('registry validation', () => {
       cpSync(join(ROOT, 'registry.schema.json'), join(root, 'registry.schema.json'));
       cpSync(join(ROOT, 'package.json'), join(root, 'package.json'));
       mkdirSync(join(root, 'items'), { recursive: true });
-      for (const d of ['css', 'react', 'html']) mkdirSync(join(root, 'src', d), { recursive: true });
+      for (const d of ['css', 'angular', 'html']) mkdirSync(join(root, 'src', d), { recursive: true });
       setup(root);
       return buildRegistry({ write: false, root, syncElementsFiles: false });
     } finally {
@@ -208,7 +206,7 @@ describe('registry validation', () => {
     };
     const loose = scratch(setup);
     expect(loose.ok).toBe(true);
-    expect(loose.warnings.join('\n')).toContain('a: no react, angular, html files yet');
+    expect(loose.warnings.join('\n')).toContain('a: no angular, html files yet');
     const root = mkdtempSync(join(tmpdir(), 'reg-'));
     try {
       cpSync(join(ROOT, 'registry.schema.json'), join(root, 'registry.schema.json'));
@@ -228,6 +226,15 @@ describe('registry validation', () => {
       put(root, meta('loom', [], { cssOnly: false, tier: 'element', elements: ['mk-nope'] }));
     });
     expect(r.ok).toBe(true);
-    expect(existsSync(join(REACT_SRC, 'elements', 'mk-nope.js'))).toBe(false);
+    expect(existsSync(join(ROOT, 'src', 'angular', 'elements', 'mk-nope.js'))).toBe(false);
+  });
+});
+
+describe('React', () => {
+  it('is a package, not copied: the registry ships no React file and no React npm dependency', () => {
+    for (const item of result.full.items) {
+      expect(Object.keys(item.files), item.name).toEqual(['angular', 'html']);
+      expect((item as unknown as { npmDependencies?: Record<string, unknown> }).npmDependencies?.react, item.name).toBeUndefined();
+    }
   });
 });

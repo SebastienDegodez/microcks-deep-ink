@@ -1,5 +1,6 @@
-// Smoke run of the CLI against a fresh temporary app, one per framework: init, add --all, status, diff.
+// Smoke run of the CLI against a fresh temporary app, one per framework that copies: init, add --all, status, diff.
 // It is what proves that a copy is complete and self-contained, without relying on apps/demo-react.
+// React apps copy nothing: they use the @microcks/deep-ink package, and the CLI says so.
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
@@ -23,9 +24,31 @@ before(() => {
 });
 
 const APPS = {
-  react: { deps: { react: '^19.0.0', 'react-dom': '^19.0.0' }, ext: /\.tsx?$/ },
   angular: { deps: { '@angular/core': '^22.0.0' }, ext: /\.ts$/ },
 };
+
+describe('smoke: a fresh react app', () => {
+  const dir = mkdtempSync(join(tmpdir(), 'cli-smoke-react-'));
+  temp.push(dir);
+  writeFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'smoke-react', private: true, dependencies: { react: '^19.0.0' } }));
+
+  for (const args of [['init'], ['add', 'button'], ['add', '--all'], ['view', 'button'], ['init', '--framework', 'react'], ['list', '--framework', 'react']]) {
+    it(`${args.join(' ')} points at the package and copies nothing`, () => {
+      const r = run([...args, '--cwd', dir]);
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(r.stdout, /pnpm add @microcks\/deep-ink/);
+      assert.match(r.stdout, /import \{ Button \} from '@microcks\/deep-ink'/);
+      assert.equal(existsSync(join(dir, 'deep-ink.json')), false);
+      assert.equal(existsSync(join(dir, 'src')), false);
+    });
+  }
+
+  it('--framework html still copies the recipes into a react app', () => {
+    const r = run(['add', 'button', '--framework', 'html', '--cwd', dir]);
+    assert.equal(r.status, 0, r.stderr);
+    assert.ok(existsSync(join(dir, 'deep-ink', 'button.html')));
+  });
+});
 
 for (const [framework, app] of Object.entries(APPS)) {
   describe(`smoke: a fresh ${framework} app`, () => {

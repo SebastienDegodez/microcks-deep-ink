@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "Numbered steps in an ordered list. `progress` shows where a flow stands: 22px numbered dots for done, current and upcoming steps (Import \"Source · Preview · Live mock\", the TestCreate and Agent flows). `list` shows numbered instructions with a mono number and 12px text (TestCreate \"Before you paste\", Behavior).",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "<ol aria-label> of <li>; the current step has aria-current=\"step\"",
     "keyboard": [],

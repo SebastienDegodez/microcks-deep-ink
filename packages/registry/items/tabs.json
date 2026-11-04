@@ -5,7 +5,7 @@
   "tier": "natural",
   "description": "Tab strip with an action-colored underline and the full WAI-ARIA keyboard model.",
   "registryDependencies": ["base", "icon"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "WAI-ARIA tabs: role=tablist / tab / tabpanel with roving tabindex",
     "keyboard": [

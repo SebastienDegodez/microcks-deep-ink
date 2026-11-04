@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "Key/value list of an object's facts in a native <dl>: rows with a fixed term column (Sources, Service), an inline two-column grid (AgentTestRun, WorkflowRun), or columns of term-over-value (Workflow, Usage). Values can be mono, toned, or carry a muted sub line.",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "Native <dl> > div.facts-row > dt + dd",
     "keyboard": [["Tab", "Reaches links or buttons placed in a value"]],
