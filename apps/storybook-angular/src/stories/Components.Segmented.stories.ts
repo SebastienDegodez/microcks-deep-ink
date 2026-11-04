@@ -57,3 +57,11 @@ export const Joined: StoryObj = {
     template: `<mk-segmented label="Script language" variant="joined" [options]="options" [(value)]="v" />`,
   }),
 };
+
+export const JoinedPrimary: StoryObj = {
+  name: "Joined, primary tone",
+  render: () => ({
+    props: { v: 'primary', options: [{ id: 'primary', label: 'Primary' }, { id: 'secondary', label: 'Secondary' }] },
+    template: `<mk-segmented label="Artifact role" variant="joined" tone="primary" [options]="options" [(value)]="v" />`,
+  }),
+};
