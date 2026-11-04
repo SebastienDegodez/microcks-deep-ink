@@ -29,8 +29,9 @@ function dailySeries(): { pastry: number[]; all: number[] } {
 }
 
 /** Hours 00 to 09 of today (the demo clock is 09:10): each series sums to the "today" column of its table. */
-const HOURLY_PASTRY = [4, 0, 2, 1, 1, 6, 16, 42, 96, 128];
-const HOURLY_ALL = [10, 2, 4, 2, 2, 12, 30, 80, 184, 248];
+// The 09:00 hour is in progress (10 minutes), so it stays below the busiest completed hour.
+const HOURLY_PASTRY = [4, 0, 2, 1, 3, 10, 28, 72, 148, 28];
+const HOURLY_ALL = [10, 2, 4, 2, 6, 20, 56, 138, 284, 52];
 const sum = (a: number[]) => a.reduce((x, y) => x + y, 0);
 
 const OPERATION_ROWS: UsageRowData[] = [

@@ -192,6 +192,8 @@ describe('Usage (/metrics/:serviceId?)', () => {
     const index = screen.getByRole('region', { name: 'Conformance index vs current score' });
     expect(within(index).getByRole('img', { name: 'Current score 92 percent, conformance index 92 percent' })).toBeTruthy();
     expect(within(index).getAllByRole('link')).toHaveLength(10);
+    expect(within(screen.getByRole('combobox', { name: 'Service' })).getAllByRole('option').map((o) => o.textContent)).toEqual(['API Pastry 2.0', 'All services']);
+    expect(screen.getAllByRole('region', { name: 'Conformance' })).toHaveLength(1);
   });
 });
 

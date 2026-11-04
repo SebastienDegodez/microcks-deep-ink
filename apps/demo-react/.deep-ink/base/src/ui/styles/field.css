@@ -9,7 +9,7 @@
 
   /* Sentence case, as in the prototype ("Service under test"). */
   .label {
-    font: 600 13px/18px var(--font-ui);
+    font: 500 13px/18px var(--font-ui);
     color: var(--text-secondary);
   }
 
