@@ -101,10 +101,10 @@
     "code-block": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/code-block.tsx": "bb4e785fe02ce324a26ccffd0383a59f817c3b085929682518ad1bb69704bfb9",
-        "src/ui/styles/code-block.css": "636cd819c15f097f402f5267abf39ee219c9e8227e6802e8003c443ebdfcf4dc"
+        "src/ui/components/ui/code-block.tsx": "46a4549c5726db700726988e5a5e46b4be1c183d7717e6bf82ee0f8acdddeaa5",
+        "src/ui/styles/code-block.css": "01b3b23bbc3ac27b30563bbf3055722cfb8d1d836368028357fb284f7bf91adf"
       },
-      "hash": "223f94d44667397d"
+      "hash": "93bc0b1230034594"
     },
     "conformance-band": {
       "version": "0.2.0",
