@@ -296,7 +296,11 @@ describe('Administration (/admin/:tab?)', () => {
     expect([...select.options].map((o) => o.textContent)).toEqual(['User', 'Manager', 'Admin']);
     expect((screen.getByRole('combobox', { name: 'Role of Microcks Admin' }) as HTMLSelectElement).disabled).toBe(true);
     fireEvent.change(select, { target: { value: 'manager' } });
-    expect(await screen.findByText('Léa Martin is now a manager in realm microcks.')).toBeTruthy();
+    expect(await screen.findByText('Léa Martin is now a manager in realm microcks.', {}, { timeout: 3000 })).toBeTruthy();
+    const dismiss = screen.getByRole('button', { name: 'Dismiss message' });
+    dismiss.focus();
+    fireEvent.click(dismiss);
+    expect(document.activeElement).toBe(screen.getByRole('tab', { name: /^Users/ }));
     fireEvent.change(screen.getByRole('searchbox', { name: 'Filter users' }), { target: { value: 'nobody' } });
     expect(screen.getByText('No user matches “nobody”.')).toBeTruthy();
   });
@@ -311,6 +315,7 @@ describe('Administration (/admin/:tab?)', () => {
     expect(screen.getByRole('tab', { name: /Groups/ }).textContent).toBe('Groups, 6, 1 pending change');
     fireEvent.click(screen.getByRole('button', { name: 'Discard' }));
     expect(screen.queryByRole('button', { name: 'Apply to Keycloak' })).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 2, name: 'Manager groups' }));
     fireEvent.click(screen.getByRole('button', { name: 'Tom Keller in /microcks/manager/pets, member' }));
     fireEvent.click(screen.getByRole('button', { name: 'Apply to Keycloak' }));
     expect(await screen.findByText('1 membership change applied in Keycloak realm microcks.', {}, { timeout: 3000 })).toBeTruthy();
@@ -324,9 +329,12 @@ describe('Administration (/admin/:tab?)', () => {
     expect(await screen.findByText('downloaded · 2 services, 4 operations · 28 KB')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Use a sample snapshot' }));
     expect(await screen.findByRole('heading', { level: 3, name: 'Preview · 3 services detected' })).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: /^Change file/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Import snapshot' }));
     expect(await screen.findByText('Imported · 1 created, 2 replaced')).toBeTruthy();
-    expect(screen.getByRole('link', { name: 'Open APIs & Services' })).toBeTruthy();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('link', { name: 'Open APIs & Services' })));
+    fireEvent.click(screen.getByRole('button', { name: 'Import another' }));
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText('Choose a file')));
   });
 
   it('shows the configuration read-only', async () => {
@@ -336,14 +344,37 @@ describe('Administration (/admin/:tab?)', () => {
     expect(screen.queryByRole('checkbox')).toBeNull();
   });
 
-  it('creates a secret through the dialog and toggles a feature flag', async () => {
+  it('creates, edits and deletes a secret in the inline form', async () => {
     renderAt('/admin/secrets');
     await screen.findByRole('heading', { level: 1 });
-    fireEvent.click(await screen.findByRole('button', { name: 'Create secret' }));
-    fireEvent.change(await screen.findByLabelText(/^Name/), { target: { value: 'staging-token' } });
-    fireEvent.change(screen.getByLabelText(/Password/), { target: { value: 'hunter2hunter2' } });
-    fireEvent.click(screen.getAllByRole('button', { name: 'Create secret' }).pop() as HTMLElement);
-    await waitFor(() => expect(screen.getByText('staging-token')).toBeTruthy());
+    fireEvent.click(await screen.findByRole('button', { name: 'New secret' }, { timeout: 3000 }));
+    expect((screen.getByRole('button', { name: 'Create secret' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByText('Name required')).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByLabelText('Name'));
+    fireEvent.keyDown(screen.getByLabelText('Name'), { key: 'Escape' });
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'New secret' })));
+    fireEvent.click(screen.getByRole('button', { name: 'New secret' }));
+    const create = screen.getByRole('button', { name: 'Create secret' }) as HTMLButtonElement;
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'staging-token' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Token' }));
+    fireEvent.change(screen.getByLabelText('Token'), { target: { value: 'hunter2hunter2' } });
+    expect(create.disabled).toBe(false);
+    fireEvent.click(create);
+    expect(await screen.findByText('Secret staging-token created. Reference it from an importer or a test.')).toBeTruthy();
+    expect(await screen.findByText('staging-token')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit secret postman-api' }));
+    expect(screen.getByRole('heading', { level: 2, name: 'Edit secret postman-api' })).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByLabelText(/^Description/));
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    expect(await screen.findByText('Secret postman-api updated.')).toBeTruthy();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Edit secret postman-api' })));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete secret gitlab-bakery' }));
+    expect(screen.getByRole('alert').textContent).toContain('Delete gitlab-bakery? 1 importer still reference it and will fail on next run.');
+    fireEvent.click(screen.getByRole('button', { name: 'Delete secret' }));
+    await waitFor(() => expect(screen.queryByText('gitlab-bakery')).toBeNull());
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Delete secret github-contracts' })));
   });
 });
 

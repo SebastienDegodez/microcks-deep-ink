@@ -45,10 +45,10 @@
     "api-badge": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/api-badge.tsx": "a7bc1fa9cb32b58f89e7417468b205415ff857e13e301fe5c6224dcca5a23d44",
-        "src/ui/styles/api-badge.css": "23b75bf5af48177f5a9e9538f2a48fa10c39845b6d6294c0639561c962915eef"
+        "src/ui/components/ui/api-badge.tsx": "066ba81e5175c3c2039399921a9cb924a200b6ee05811688091d9857315c3ccb",
+        "src/ui/styles/api-badge.css": "ac76da1ac0f38530e98e8053f25d15a60ecbd929d5f41a8136d883b54fda6deb"
       },
-      "hash": "d61b7e99c71d7a0f"
+      "hash": "758ae858ac95013f"
     },
     "app-shell": {
       "version": "0.2.0",
@@ -301,10 +301,10 @@
     "table": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/table.tsx": "8a90ceec850db022d8ce99c5d0ea7f5387491e3fce72fa16eaec0041f61f3310",
-        "src/ui/styles/table.css": "698a6e715bb6cd03044aad365235eae8591014b93aaaec2dd12ac01b85816417"
+        "src/ui/components/ui/table.tsx": "4956efce542dd0e6a38d22ad75f617bf27cb462bf1b5391a8e8498f0520f17fc",
+        "src/ui/styles/table.css": "9b8bca88cec3ae6ab1a0d57f43519894e7b8c2011f10e8b7bfc00090bbfc5dd0"
       },
-      "hash": "18f8e3ef339923d8"
+      "hash": "25c04193b0969dd7"
     },
     "tabs": {
       "version": "0.2.0",
@@ -433,21 +433,13 @@
     "facts": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/facts.tsx": "f5d66fcf95b96081017b24ea2eb6e72cd718eaa3487d1e56841d6abbef0ef837",
-        "src/ui/styles/facts.css": "ce9c494aacc238f8774bacb88c0fe78b4c44455d8343a5b52b7c32139dcf405a"
+        "src/ui/components/ui/facts.tsx": "4af3abd2c6e660382f578ddb4eee8a7684629a9c8fcc9f19b939f090eba3f7ae",
+        "src/ui/styles/facts.css": "f7d2dba9484899925448067060762495e8716fb2960990880c2160ba55cb4f89"
       },
-      "hash": "a020e5122c541a54"
-    },
-    "summary-strip": {
-      "version": "0.2.0",
-      "files": {
-        "src/ui/components/ui/summary-strip.tsx": "4e5c927ac00df7c86be2f25268cf1ceda77da232290d60e051b262b21b52f463",
-        "src/ui/styles/summary-strip.css": "4bdda67531d6e1fd7b317ad741a02cbf677e1a844f8c3b9d0f6d7ff3681bcdb9"
-      },
-      "hash": "d129dc6bb8a30abc"
+      "hash": "5fc2017c9fc38091"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "76ded0f13b56baaef510476e342560fb6e8851732e4f8039ca2bc4fd2960b225"
+    "src/ui/styles/index.css": "e6cca92f96d101c3c4e0b6c709723983c56dfccc65b2a75995ca7b2299f4b07a"
   }
 }

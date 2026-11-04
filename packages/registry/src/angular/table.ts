@@ -18,6 +18,8 @@ export interface DataTableColumn<T> {
   mono?: boolean;
   /** Keeps the cells of this column on one line. Cells wrap by default. */
   nowrap?: boolean;
+  /** The cells of this column are row headers (`<th scope="row">`) that name their row. */
+  rowHeader?: boolean;
   /** Custom cell text. Defaults to `String(row[key])`. For rich cells use `<ng-template mkCell="key">`. */
   render?: (row: T) => string;
   /** Renders the header as a sort button. */
@@ -111,7 +113,20 @@ export class TableDirective {
             @for (row of rows(); track keyOf(row)) {
               <tr [attr.data-selected]="isSelected(row) ? '' : null" [attr.data-tone]="rowTone()?.(row) ?? null">
                 @for (c of columns(); track c.key; let i = $index) {
-                  <td [attr.data-align]="c.align === 'end' ? 'end' : null" [attr.data-mono]="c.mono ? '' : null" [attr.data-nowrap]="c.nowrap ? '' : null">
+                  @if (c.rowHeader) {
+                    <th scope="row" [attr.data-align]="c.align === 'end' ? 'end' : null" [attr.data-mono]="c.mono ? '' : null" [attr.data-nowrap]="c.nowrap ? '' : null"><ng-container [ngTemplateOutlet]="body" [ngTemplateOutletContext]="{ $implicit: row, c: c, i: i }" /></th>
+                  } @else {
+                    <td [attr.data-align]="c.align === 'end' ? 'end' : null" [attr.data-mono]="c.mono ? '' : null" [attr.data-nowrap]="c.nowrap ? '' : null"><ng-container [ngTemplateOutlet]="body" [ngTemplateOutletContext]="{ $implicit: row, c: c, i: i }" /></td>
+                  }
+                }
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+      <span role="status" aria-live="polite" class="sr-only">{{ sortMessage() }}</span>
+    </div>
+    <ng-template #body let-row let-c="c" let-i="i">
                     @if (i === 0 && rowHref()) {
                       @if (rowLinkTemplate(); as link) {
                         <ng-container
@@ -129,15 +144,7 @@ export class TableDirective {
                       }
                       <ng-container [ngTemplateOutlet]="cell" [ngTemplateOutletContext]="{ $implicit: row, column: c }" />
                     }
-                  </td>
-                }
-              </tr>
-            }
-          }
-        </tbody>
-      </table>
-      <span role="status" aria-live="polite" class="sr-only">{{ sortMessage() }}</span>
-    </div>
+                  </ng-template>
     <ng-template #cell let-row let-column="column">
       @if (cellTemplate(column.key); as tpl) {
         <ng-container [ngTemplateOutlet]="tpl" [ngTemplateOutletContext]="{ $implicit: row }" />
@@ -167,8 +174,8 @@ export class DataTableComponent<T> {
   readonly density = input<'comfortable' | 'compact'>('comfortable');
   /** `upper` (default): uppercase 11px headers. `sentence`: sentence-case 12px headers, top-aligned cells, tabular figures. */
   readonly headerCase = input<'upper' | 'sentence'>('upper');
-  /** Tone of a row: `failed` sits on the surface fill, `idle` is dimmed with the muted text colour. Write the state in a cell too. */
-  readonly rowTone = input<(row: T) => 'failed' | 'idle' | undefined>();
+  /** Tone of a row: `failed` sits on the surface fill, `danger` on the danger tint (an unmet row), `idle` is dimmed with the muted text colour. Write the state in a cell too. */
+  readonly rowTone = input<(row: T) => 'failed' | 'danger' | 'idle' | undefined>();
 
   protected readonly captionId = `mk-table-caption-${++nextId}`;
   private readonly cells = contentChildren(CellDirective);
