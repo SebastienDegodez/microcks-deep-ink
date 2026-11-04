@@ -6,6 +6,7 @@ import { useQuery, useRelativeTime, useReturnFocus, useUseCases } from '@/ui/app
 import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
 import { Icon } from '@/ui/components/ui/icon';
+import type { WorkflowLoomElement } from '@/ui/components/ui/workflow-loom';
 import { workflowPath } from '../../workflows/shared';
 import { LoomHost } from '../LoomHost';
 import { RunPicker } from '../RunPicker';
@@ -40,12 +41,6 @@ export function LoomTab({ detail, runs, run, step, sessions, serviceLabel, onPic
   const setLensId = (id: string | undefined) => {
     if (id) lensTrigger.current = deepActive();
     setLensIdState(id);
-  };
-  const nodeOf = (stepId: string | undefined) => () => {
-    const host = window.document.querySelector('workflow-loom');
-    const nodes = host?.shadowRoot?.querySelectorAll<HTMLElement>('button.node');
-    const i = workflow.steps.findIndex((s) => s.stepId === stepId);
-    return (i >= 0 ? nodes?.[i] : undefined) ?? host?.shadowRoot?.querySelector<HTMLElement>('button.node[tabindex="0"]') ?? null;
   };
   const others = useQuery(() => uc.arazzo.listWorkflows(), []);
   const props = buildLoomProps(workflow, document, run, step, serviceLabel);
@@ -217,13 +212,23 @@ export function LoomTab({ detail, runs, run, step, sessions, serviceLabel, onPic
         }}
         onClose={() => {
           onSelectStep(undefined);
-          afterRender(nodeOf(step));
+          if (step) focusNode(step);
         }}
       />
     </div>
   );
 }
 
+
+/** Back to a step's node once the route change has rendered: the node lives in the loom's shadow root, so only `focusStep()` can focus it. */
+function focusNode(stepId: string, tries = 10) {
+  requestAnimationFrame(() => {
+    const loom = window.document.querySelector<WorkflowLoomElement>('workflow-loom');
+    void (loom?.focusStep(stepId) ?? Promise.resolve(false)).then((ok) => {
+      if (!ok && tries > 0) focusNode(stepId, tries - 1);
+    });
+  });
+}
 
 /** The focused element, looking inside shadow roots (the loom's inputs, outputs and thread labels). */
 function deepActive(): HTMLElement | null {
@@ -234,7 +239,7 @@ function deepActive(): HTMLElement | null {
 
 /**
  * Focuses `target()` once the route change has rendered (the step lives in the URL, so it renders after the
- * handler). A node of the loom lives in its shadow root, which `useReturnFocus` cannot check, hence this helper.
+ * handler), retrying for a few frames.
  */
 function afterRender(target: () => HTMLElement | null | undefined, tries = 10) {
   requestAnimationFrame(() => {
