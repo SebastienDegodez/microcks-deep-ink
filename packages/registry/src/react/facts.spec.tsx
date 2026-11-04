@@ -37,4 +37,18 @@ describe('Facts', () => {
     expect(dl.getAttribute('data-boxed')).toBe('surface');
     expect(dl.style.getPropertyValue('--facts-gap')).toBe('9px 12px');
   });
+
+  it('sizes', () => {
+    const { container } = render(
+      <div>
+        <Facts layout="columns" size="sm" items={[{ term: 'Client', value: 'microcks-arazzo' }]} />
+        <Facts size="lg" items={[{ term: 'Mock URL', value: 'https://microcks.acme.io/rest/API+Pastry/2.0', mono: true }]} />
+        <Facts items={[{ term: 'Owner', value: 'MA' }]} />
+      </div>,
+    );
+    const dls = container.querySelectorAll('dl');
+    expect(dls[0]!.getAttribute('data-size')).toBe('sm');
+    expect(dls[1]!.getAttribute('data-size')).toBe('lg');
+    expect(dls[2]!.hasAttribute('data-size')).toBe(false);
+  });
 });

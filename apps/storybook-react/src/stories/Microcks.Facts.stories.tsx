@@ -60,6 +60,7 @@ export const SurfaceAndGap: StoryObj = {
         columns={2}
         boxed="surface"
         gap="10px 16px"
+        size="sm"
         items={[
           { term: 'Client', value: 'microcks-arazzo · 10.0.2.8', mono: true },
           { term: 'Dispatcher', value: 'URI_PARTS', mono: true },
@@ -76,5 +77,20 @@ export const SurfaceAndGap: StoryObj = {
         ]}
       />
     </div>
+  ),
+};
+
+export const Large: StoryObj = {
+  name: 'Large (Service)',
+  render: () => (
+    <Facts
+      size="lg"
+      termWidth="150px"
+      style={{ maxWidth: 640 }}
+      items={[
+        { term: 'Mock URL', value: 'https://microcks.acme.io/rest/API+Pastry/2.0', mono: true },
+        { term: 'Owner', value: 'Pastry team' },
+      ]}
+    />
   ),
 };

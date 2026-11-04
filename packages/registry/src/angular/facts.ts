@@ -25,6 +25,7 @@ export interface Fact {
     '[attr.data-layout]': "layout() === 'rows' ? null : layout()",
     '[attr.data-boxed]': "boxed() === 'surface' ? 'surface' : boxed() ? '' : null",
     '[attr.data-strong]': "strong() ? '' : null",
+    '[attr.data-size]': "size() === 'md' ? null : size()",
     '[style.--facts-term]': 'termWidth() ?? null',
     '[style.--facts-gap]': 'gap() ?? null',
     '[style.--facts-cols]': "columns() ? 'repeat(' + columns() + ', minmax(0, 1fr))' : null",
@@ -43,6 +44,8 @@ export class FactsComponent {
   readonly termWidth = input<string>();
   /** `columns` only: a fixed number of equal columns. */
   readonly columns = input<number>();
+  /** `sm`: 11px terms with a normal line height (Traces, Usage). `md` (default). `lg`: 14px text, 8px rows, 14px mono values (Service). */
+  readonly size = input<'sm' | 'md' | 'lg'>('md');
   /** `inline` and `columns`: the grid gap, row then column (default `8px 16px`; WorkflowRun `9px 12px`). */
   readonly gap = input<string>();
 }

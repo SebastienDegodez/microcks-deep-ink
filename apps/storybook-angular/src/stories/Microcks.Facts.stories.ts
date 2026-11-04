@@ -63,9 +63,22 @@ export const SurfaceAndGap: StoryObj = {
     },
     template: `
       <div class="stack" style="max-width: 560px">
-        <dl mkFacts layout="columns" [columns]="2" boxed="surface" gap="10px 16px" [items]="call"></dl>
+        <dl mkFacts layout="columns" [columns]="2" boxed="surface" gap="10px 16px" size="sm" [items]="call"></dl>
         <dl mkFacts layout="inline" gap="9px 12px" [items]="props"></dl>
       </div>
     `,
+  }),
+};
+
+export const Large: StoryObj = {
+  name: "Large (Service)",
+  render: () => ({
+    props: {
+      items: [
+        { term: 'Mock URL', value: 'https://microcks.acme.io/rest/API+Pastry/2.0', mono: true },
+        { term: 'Owner', value: 'Pastry team' },
+      ],
+    },
+    template: `<dl mkFacts size="lg" termWidth="150px" [items]="items" style="max-width: 640px"></dl>`,
   }),
 };
