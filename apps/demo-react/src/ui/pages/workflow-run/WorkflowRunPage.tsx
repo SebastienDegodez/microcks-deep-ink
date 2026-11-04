@@ -168,6 +168,7 @@ function RunView({
         breadcrumb={runBreadcrumb(detail ? `${detail.document.title} - ${detail.document.version}` : undefined, workflowTo, runsTo, `Run #${run.number}`)}
         badge={<RunBadges workflowId={run.workflowId} documentLabel={documentLabel} to={workflowTo} chip={chip} />}
         descriptionTone="secondary"
+        descriptionWidth={900}
         description={
           <span className="wfr-meta">
             {detail ? (
@@ -222,7 +223,7 @@ function RunView({
 
       <div className="wfr-layout">
         <div className="wfr-main">
-          {running ? <Progress run={run} currentIndex={currentIndex} validated={run.options.validateSchemas} /> : <Summary run={run} totals={totals} workflow={workflow} />}
+          {running ? <Progress run={run} workflow={workflow} currentIndex={currentIndex} validated={run.options.validateSchemas} /> : <Summary run={run} totals={totals} workflow={workflow} />}
           {example && !running ? <ExampleJudging run={run} example={example} /> : null}
           <RunSteps run={run} workflow={workflow} />
         </div>
@@ -276,13 +277,14 @@ function apiBodyOf(run: WorkflowRun) {
 
 /* ------------------------------------------------------------------------------------- running */
 
-function Progress({ run, currentIndex, validated }: { run: WorkflowRun; currentIndex: number; validated: boolean }) {
+function Progress({ run, workflow, currentIndex, validated }: { run: WorkflowRun; workflow?: Workflow; currentIndex: number; validated: boolean }) {
   const total = run.steps.length;
   const ended = Math.min(currentIndex, total);
   const current = run.current ? run.steps.find((s) => s.stepId === run.current?.stepId) : undefined;
   const retrying = run.current && run.current.attempt > 1;
   const nowTitle = !current ? 'Now calling' : retrying ? `Retrying · attempt ${run.current?.attempt} of ${current.attempts.length}` : 'Now calling';
-  const target = current?.request ? `${current.request.method} ${current.request.url}` : '';
+  const def = workflow?.steps.find((s) => s.stepId === current?.stepId);
+  const target = current?.request ? `${current.request.method} ${current.request.url}` : def ? `${def.method} ${def.path}` : '';
   const nowLabel = !current ? 'All steps ended · computing the result…' : retrying ? `retryAfter → ${target}` : target;
   const label = (i: number) => {
     const ph = phaseOf(run, i);

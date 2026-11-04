@@ -146,7 +146,9 @@ export function RunSteps({ run, workflow }: { run: WorkflowRun; workflow?: Workf
 function StepCard({ index, step, def, look, run, offset, stop }: { index: number; step: StepResult; def?: Step; look: Look; run: WorkflowRun; offset: number; stop: string }) {
   const bodyId = useId();
   const finished = look === 'pass' || look === 'fail';
-  const [open, setOpen] = useState(finished);
+  // Collapsed by the user, else open: a step that finishes while the run plays opens, as in the prototype.
+  const [collapsed, setCollapsed] = useState(false);
+  const open = !collapsed;
   const showBody = (finished && open) || look === 'run';
   const lastAttempt = step.attempts[step.attempts.length - 1];
   const retry = def?.onFailure.find((a) => a.type === 'retry');
@@ -197,7 +199,7 @@ function StepCard({ index, step, def, look, run, offset, stop }: { index: number
     <article className="wfr-step" data-look={look} aria-label={`Step ${index + 1} ${step.stepId}: ${WORD[look]}`}>
       <h3 className="wfr-step-h">
         {finished ? (
-          <button type="button" className="wfr-step-head" aria-expanded={open} aria-controls={bodyId} onClick={() => setOpen((o) => !o)}>
+          <button type="button" className="wfr-step-head" aria-expanded={open} aria-controls={bodyId} onClick={() => setCollapsed((c) => !c)}>
             {head}
             <Icon name="chevron" size={16} className="wfr-step-chevron" />
           </button>
