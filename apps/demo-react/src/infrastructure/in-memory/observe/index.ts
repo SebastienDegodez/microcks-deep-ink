@@ -1,7 +1,7 @@
 import { matchesTraceFilter, type DomainConformance, type InvocationPoint, type Invocations, type Period, type TraceCall, type TraceFilter } from '@/domain/observe';
 import type { MetricsRepository, TraceStream, TrafficStream } from '@/application/ports/observe';
 import { SERVICES, after, createTickingStream, type InMemoryDeps } from '../shared';
-import { HISTORY_LENGTH, CLIENT_EDGES, recentTraffic, EXAMPLE_EDGES, TOPOLOGY_CLIENTS, TOPOLOGY_ENDPOINTS, TOPOLOGY_EXAMPLES, historyCalls, makeCall } from './seed/traces.seed';
+import { HISTORY_LENGTH, CLIENT_EDGES, atOf, recentTraffic, EXAMPLE_EDGES, TOPOLOGY_CLIENTS, TOPOLOGY_ENDPOINTS, TOPOLOGY_EXAMPLES, historyCalls, makeCall } from './seed/traces.seed';
 import { CONFORMANCE_INDEX, usageDataFor } from './seed/usage.seed';
 
 export { makeCall } from './seed/traces.seed';
@@ -30,8 +30,14 @@ function invocations(serviceId: string, period: Period): Invocations {
 
 export function createInMemoryObserveAdapters(_deps: InMemoryDeps = {}): ObserveAdapters {
   let replays = 0;
+  // Time of the newest call handed out, so a replay is always stamped after it.
+  let newestAt = Date.parse(atOf(HISTORY_LENGTH));
   // Streamed calls continue after the history, so a subscriber starts at call 11.
-  const stream = createTickingStream((tick) => makeCall(HISTORY_LENGTH + tick + 1));
+  const stream = createTickingStream((tick) => {
+    const call = makeCall(HISTORY_LENGTH + tick + 1);
+    newestAt = Math.max(newestAt, Date.parse(call.at));
+    return call;
+  });
 
   const metrics: MetricsRepository = {
     invocations: (serviceId, period) => after(() => invocations(serviceId, period)),
@@ -76,7 +82,8 @@ export function createInMemoryObserveAdapters(_deps: InMemoryDeps = {}): Observe
         replays += 1;
         // Replayed calls get their own number range, so they never collide with the live ones.
         const seq = 1000 + replays;
-        return { ...makeCall(original), seq, callId: `call-${seq}`, at: new Date(Date.parse('2026-11-03T09:10:04.208Z') + replays * 400).toISOString() };
+        newestAt += 250;
+        return { ...makeCall(original), seq, callId: `call-${seq}`, at: new Date(newestAt).toISOString() };
       }),
     get: (callId) => after(() => makeCall(Number(callId.replace('call-', '')) || 1)),
     topology: () =>
