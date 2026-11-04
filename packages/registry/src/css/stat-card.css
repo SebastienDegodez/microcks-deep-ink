@@ -1,0 +1,41 @@
+@layer deep-ink.components {
+  /* Key figures: cards at least 220px wide, 12px apart. */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(var(--stat-min, 220px), 100%), 1fr));
+    gap: 12px;
+    margin: 0;
+    padding: 0;
+  }
+
+  .stat-card {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+    padding: 16px;
+    color: var(--text);
+    background: var(--canvas);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-panel);
+  }
+  .stat-card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 8px; }
+  .stat-card-title {
+    margin: 0;
+    color: var(--text-muted);
+    font: 600 12px/16px var(--font-ui);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+  .stat-card-action { flex: none; font: 400 12px/16px var(--font-ui); }
+  .stat-card-figure { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 10px; margin: 0; }
+  .stat-card-value { font: 800 40px/1 var(--font-brand); color: var(--text); font-variant-numeric: tabular-nums; }
+  .stat-card[data-tone="success"] .stat-card-value { color: var(--success); }
+  .stat-card[data-tone="warning"] .stat-card-value { color: var(--warning); }
+  .stat-card[data-tone="danger"] .stat-card-value { color: var(--danger); }
+  .stat-card-unit { font: 400 13px/18px var(--font-ui); color: var(--text-secondary); }
+  .stat-card-body { display: flex; flex-direction: column; gap: 8px; min-width: 0; font: 400 13px/18px var(--font-ui); color: var(--text-secondary); }
+  .stat-card-body:empty { display: none; }
+  .stat-card-body > p { margin: 0; }
+}

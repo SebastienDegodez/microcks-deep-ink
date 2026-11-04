@@ -1,0 +1,19 @@
+<!--
+  StatCard. A key figure: a small uppercase heading (a real heading), the figure as text with its unit,
+  and optional detail. The figure colour (data-tone) is secondary: write the meaning too.
+  StatGrid: a named section of cards, at least 220px wide each (override with --stat-min).
+-->
+<section class="stat-grid" aria-label="Key figures">
+  <section class="stat-card" aria-labelledby="kpi-1" data-tone="neutral">
+    <div class="stat-card-head">
+      <h2 class="stat-card-title" id="kpi-1">APIs &amp; services</h2>
+      <span class="stat-card-action"><a href="#/services">Catalogue</a></span>
+    </div>
+    <p class="stat-card-figure"><span class="stat-card-value">11</span> <span class="stat-card-unit">29 operations</span></p>
+  </section>
+  <section class="stat-card" aria-labelledby="kpi-2" data-tone="warning">
+    <div class="stat-card-head"><h2 class="stat-card-title" id="kpi-2">Average conformance</h2></div>
+    <p class="stat-card-figure"><span class="stat-card-value">78%</span> <span class="stat-card-unit">current score</span></p>
+    <div class="stat-card-body"><p>Across 8 tested services · 3 never tested</p></div>
+  </section>
+</section>
