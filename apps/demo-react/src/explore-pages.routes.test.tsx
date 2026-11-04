@@ -150,7 +150,7 @@ describe('WP7 pages', () => {
   it('Import: a Git source with empty fields takes the placeholders', async () => {
     renderAt('/sources/new');
     await h1('Add a source');
-    fireEvent.click(screen.getByRole('tab', { name: 'Git repository' }));
+    fireEvent.click(screen.getByRole('tab', { name: /^Git repository/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Analyze repository' }));
     expect(await screen.findByText(/The source “API Pastry — main” will be created/)).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Create source' }));

@@ -5,6 +5,7 @@ import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Field } from '@/ui/components/ui/field';
 import { Icon, type IconName } from '@/ui/components/ui/icon';
+import { ProjectionPill } from '@/ui/components/ui/projection-pill';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { Select } from '@/ui/components/ui/select';
@@ -64,7 +65,7 @@ export function ImportPreviewCard({ preview, role, onRoleChange, secret, onSecre
           ))}
           <div className="step-section">
             <h3 id="role-title">Artifact role</h3>
-            <Segmented className="role-toggle" label="Artifact role" variant="joined" value={role} onChange={(id) => onRoleChange(id as 'primary' | 'secondary')} options={[{ id: 'primary', label: 'Primary' }, { id: 'secondary', label: 'Secondary' }]} />
+            <Segmented className="role-toggle" label="Artifact role" variant="joined" tone="primary" value={role} onChange={(id) => onRoleChange(id as 'primary' | 'secondary')} options={[{ id: 'primary', label: 'Primary' }, { id: 'secondary', label: 'Secondary' }]} />
             <p style={{ maxWidth: 720 }}>
               {role === 'secondary'
                 ? 'Secondary: merges only non-conflicting Examples into an existing API, matched by name + version (here API Pastry 2.0). Ignored if no API matches.'
@@ -200,7 +201,7 @@ function AgentBody({ preview, agent }: { preview: ImportPreview; agent: AgentPre
         status={`Valid A2A Agent Card · provider ${agent.provider} · ${agent.skills.length} skills · ${agent.interfaces.length} interfaces · security ${agent.security}`}
         format={preview.formatLabel}
         badge={<ApiBadge protocol="A2A" name="Pastry concierge" version="1.0" />}
-        extra={<span className="projection-pill">Projection · v2 module</span>}
+        extra={<ProjectionPill />}
       />
       <div className="step-section">
         <h3>{agent.skills.length} skills discovered · each one becomes an operation</h3>

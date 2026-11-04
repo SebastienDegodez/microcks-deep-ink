@@ -163,10 +163,10 @@ export default function ImportPage() {
                 value={tab}
                 onChange={(id) => { setTab(id as SourceTab); setTouched(false); setError(undefined); }}
                 items={[
-                  { id: 'file', label: 'Upload a file' },
-                  { id: 'url', label: 'URL' },
-                  { id: 'git', label: 'Git repository' },
-                  { id: 'direct', label: 'Direct API' },
+                  { id: 'file', label: 'Upload a file', icon: 'document', hint: 'one-off' },
+                  { id: 'url', label: 'URL', icon: 'link' },
+                  { id: 'git', label: 'Git repository', icon: 'git-branch', hint: 'scheduled' },
+                  { id: 'direct', label: 'Direct API', icon: 'zap' },
                 ]}
               >
                 <TabPanel id="file" idPrefix="imp" value={tab} className="source-panel">
