@@ -61,10 +61,10 @@
     "callout": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/callout.tsx": "3d482cfdf5ef210b5fe125ba5a29cfaa2cb9eb985e169cf4ea9492a444b55c02",
-        "src/ui/styles/callout.css": "bf02a5c398d251a2900a8ad50fde9e23f37ba18986dc4bdfc8772c70dad9a4e3"
+        "src/ui/components/ui/callout.tsx": "a2011d7b48278608e226b8a0032e321e2f2f4a805ddc5eef4c058a8f59ee8c89",
+        "src/ui/styles/callout.css": "9b74106e80c31e35f46aa26c6397b35cabfdb42c9018b6239b220601a2b61ff3"
       },
-      "hash": "27e7ea5462213213"
+      "hash": "342cdfee2638c613"
     },
     "field": {
       "version": "0.2.0",
