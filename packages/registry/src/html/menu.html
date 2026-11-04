@@ -6,13 +6,16 @@
   and the first item is focused when the menu opens.
   Position the popover next to the trigger with script (it is fixed and has inset: auto).
 -->
+<!-- Separator: <hr class="menu-separator">. An item description is a span after it, linked with aria-describedby. -->
 <button type="button" class="button" data-variant="secondary" data-size="sm" popovertarget="svc-menu" aria-expanded="false" aria-controls="svc-menu">
   Actions
 </button>
 <div id="svc-menu" class="menu" popover="auto" role="group" aria-label="Actions">
   <button type="button" class="menu-item">Copy service id</button>
   <a class="menu-item" href="/tests/create?service=pastry2">Run a test</a>
-  <button type="button" class="menu-item" data-tone="danger">Delete service</button>
+  <hr class="menu-separator" />
+  <button type="button" class="menu-item" data-tone="danger" aria-describedby="svc-menu-del-desc">Delete service</button>
+  <span class="menu-item-description" id="svc-menu-del-desc">Its mocks and test history are removed.</span>
 </div>
 
 <script>
