@@ -13,7 +13,7 @@
     "./dist/*": "./dist/*"
   },
   "scripts": {
-    "build": "node scripts/build.mjs",
+    "build": "node scripts/build.mjs && node scripts/build-css.mjs",
     "typecheck": "tsc -p tsconfig.react.json && ngc -p tsconfig.angular.json",
     "test": "vitest run",
     "lint": "eslint src"
