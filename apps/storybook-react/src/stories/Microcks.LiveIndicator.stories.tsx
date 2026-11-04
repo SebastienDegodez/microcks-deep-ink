@@ -31,3 +31,13 @@ export const SizesAndPausedLabel: StoryObj = {
     </div>
   ),
 };
+
+export const Box: StoryObj = {
+  name: 'Box (in place of a busy button)',
+  render: () => (
+    <div className="inline">
+      <LiveIndicator variant="box" label="live · installing 3 APIs" />
+      <LiveIndicator variant="box" size="lg" label="live · fetching and importing artifacts" />
+    </div>
+  ),
+};

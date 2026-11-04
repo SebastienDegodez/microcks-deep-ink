@@ -48,6 +48,11 @@
 .treemap-rect-score[data-size='lg'] { font-size: 24px; }
 .treemap-rect-score[data-size='untested'] { font-size: 14px; }
 .treemap-rect-score svg { flex-shrink: 1; min-width: 0; stroke-width: 2.4; }
+/* 1-operation boxes are the narrowest: tighter padding and a smaller score keep the whole value; the band icon
+   goes (the band is also in the accessible name). */
+.treemap-rect[data-narrow] { padding: 8px 4px; }
+.treemap-rect[data-narrow] .treemap-rect-score { font-size: 16px; }
+.treemap-rect[data-narrow] .treemap-rect-score svg { display: none; }
 .treemap-legend { display: flex; flex-wrap: wrap; align-items: center; gap: 16px; font-size: 12px; color: var(--text-muted); }
 .treemap-legend > span { display: inline-flex; align-items: center; gap: 6px; }
 .treemap-legend-end { margin-inline-start: auto; }

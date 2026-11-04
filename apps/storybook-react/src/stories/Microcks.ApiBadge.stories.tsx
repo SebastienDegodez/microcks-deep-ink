@@ -73,3 +73,15 @@ export const Card: StoryObj = {
     </div>
   ),
 };
+
+export const CompactAndMuted: StoryObj = {
+  name: 'Compact rows, neutral and muted proofs',
+  render: () => (
+    <div className="inline">
+      <ApiBadge size="compact" protocol="REST" name="API Pastry" version="2.0" />
+      <ApiBadge size="sm" protocol="REST" name="4" />
+      <ApiBadge size="compact" label="last import" value="inactive" status="muted" />
+      <ApiBadge size="card" label="conformance" value="untested" status="neutral" />
+    </div>
+  ),
+};

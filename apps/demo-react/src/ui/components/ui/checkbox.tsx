@@ -11,7 +11,7 @@ interface ChoiceProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'
   /** Secondary text, linked with aria-describedby. */
   description?: ReactNode;
   /** `card`: a bordered card label, selected fill when checked. */
-  variant?: 'plain' | 'card';
+  variant?: 'plain' | 'card' | 'compact';
   ref?: Ref<HTMLInputElement>;
 }
 
@@ -75,7 +75,7 @@ export interface RadioGroupProps {
   help?: ReactNode;
   error?: ReactNode;
   /** `card`: each option is a bordered card label. */
-  variant?: 'plain' | 'card';
+  variant?: 'plain' | 'card' | 'compact';
   className?: string;
 }
 

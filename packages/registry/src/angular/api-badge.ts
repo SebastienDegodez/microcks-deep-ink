@@ -1,7 +1,7 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
-export type ProofStatus = 'success' | 'danger' | 'warning' | 'info' | 'action' | 'neutral';
+export type ProofStatus = 'success' | 'danger' | 'warning' | 'info' | 'action' | 'neutral' | 'muted';
 
 const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
 const STATUS_WORD = { success: 'success', danger: 'error', warning: 'warning' } as const;
@@ -36,7 +36,7 @@ export class ApiBadgeComponent {
   /** More proof values after `value`, each its own filled segment ("samples │ 7 │ +1 AI"). */
   readonly values = input<ReadonlyArray<{ value: string; status?: ProofStatus }>>([]);
   /** `card`: 13px, for badge walls. `lg` sets the name in the brand font at 17px (beside a page title); `xl` at 30px (the badge is the page title). */
-  readonly size = input<'sm' | 'md' | 'card' | 'lg' | 'xl'>('md');
+  readonly size = input<'sm' | 'compact' | 'md' | 'card' | 'lg' | 'xl'>('md');
 
   protected isProof(): boolean {
     return !this.arazzo() && this.label() !== undefined;

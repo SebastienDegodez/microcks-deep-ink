@@ -414,8 +414,8 @@
   gap: 8px;
 }
 
+/* Outline compact button, set in mono with the lighter border (page-specific). */
 .tc-apikey.button {
-  background: transparent;
   border-color: var(--border);
   color: var(--text-secondary);
   font-family: var(--font-mono);
@@ -441,13 +441,6 @@
 .tc-summary {
   font-size: 13px;
   color: var(--text-secondary);
-}
-
-/* Blocked Launch: flat raised fill, muted text, no visible border (prototype). */
-.tc-actions .button[data-variant='primary'][aria-disabled='true'] {
-  background: var(--raised);
-  border-color: var(--raised);
-  color: var(--text-muted);
 }
 
 .tc-actions-buttons {

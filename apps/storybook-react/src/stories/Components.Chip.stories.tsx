@@ -70,6 +70,11 @@ export const Filters: StoryObj = {
             <Chip key={`${k}=${v}`} labelKey={String(k)} count={Number(n)} pressed={label === `${k}=${v}`} onClick={() => setLabel(`${k}=${v}`)}>{v}</Chip>
           ))}
         </div>
+        <div className="inline" role="group" aria-label="Categories">
+          {[['All', 8], ['Samples', 3], ['Banking', 1]].map(([c, n]) => (
+            <Chip key={String(c)} size="lg" count={Number(n)} pressed={c === 'All'}>{c}</Chip>
+          ))}
+        </div>
         <div className="inline">
           <Chip size="sm" labelKey="domain">pastry</Chip>
           <Chip size="sm" labelKey="team">bakery</Chip>
