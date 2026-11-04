@@ -45,10 +45,10 @@
     "api-badge": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/api-badge.tsx": "a7bc1fa9cb32b58f89e7417468b205415ff857e13e301fe5c6224dcca5a23d44",
-        "src/ui/styles/api-badge.css": "23b75bf5af48177f5a9e9538f2a48fa10c39845b6d6294c0639561c962915eef"
+        "src/ui/components/ui/api-badge.tsx": "c4d1952ed5dfec49e0c90ae4e83202c08fd2871c15eb078dbcc3bbce499b5e68",
+        "src/ui/styles/api-badge.css": "ecdd29609aa3f10d2f18abde12fff3a376b63da93f1c6ceda957d713e8cba724"
       },
-      "hash": "d61b7e99c71d7a0f"
+      "hash": "0b3e08ce99c50c59"
     },
     "app-shell": {
       "version": "0.2.0",

@@ -34,6 +34,14 @@
   .api-badge[data-size="lg"] > .api-badge-name,
   .api-badge[data-size="lg"] > .api-badge-version { padding-block: 4px; padding-inline: 10px; font: 700 17px/1.2 var(--font-brand); }
   .api-badge[data-size="xl"] > .api-badge-type { padding: 0 12px; font-size: 14px; }
+  /* Arazzo page title (Workflow): the ARAZZO segment in mono 13px tracked .08em; the version in mono 13px --text-secondary on the name's baseline. */
+  .api-badge[data-protocol="arazzo"][data-size="xl"] > .api-badge-type { font: 600 13px/1 var(--font-mono); letter-spacing: 0.08em; }
+  .api-badge[data-protocol="arazzo"][data-size="xl"] > .api-badge-name + .api-badge-version {
+    align-items: flex-end;
+    padding: 8px 14px 11px 10px;
+    font: 400 13px/1 var(--font-mono);
+    color: var(--text-secondary);
+  }
   .api-badge[data-size="xl"] > .api-badge-name,
   .api-badge[data-size="xl"] > .api-badge-version { padding-block: 8px; padding-inline: 14px; font: 800 30px/1 var(--font-brand); }
 
@@ -61,6 +69,13 @@
   /* Neutral proof ("untested", "not exposed"): no fill, muted text, 600 like the other values (Catalogue and Sources prototypes). */
   .api-badge[data-status="neutral"] .api-badge-name,
   .api-badge-value[data-status="neutral"] { color: var(--text-muted); font-weight: 600; }
+  /* Unfilled values on the name surface (Workflow proof strip): text 600, plain 400, positive in the success colour. */
+  .api-badge[data-status="text"] .api-badge-name,
+  .api-badge-value[data-status="text"] { color: var(--text); font-weight: 600; }
+  .api-badge[data-status="plain"] .api-badge-name,
+  .api-badge-value[data-status="plain"] { color: var(--text); font-weight: 400; }
+  .api-badge[data-status="positive"] .api-badge-name,
+  .api-badge-value[data-status="positive"] { color: var(--success); font-weight: 600; }
   /* Muted proof ("inactive"): the raised fill with secondary text (Sources last import shield). */
   .api-badge[data-status="muted"] .api-badge-name,
   .api-badge-value[data-status="muted"] { background: var(--raised); color: var(--text-secondary); font-weight: 600; }

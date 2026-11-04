@@ -1,7 +1,8 @@
 import { Fragment, type HTMLAttributes } from 'react';
 
 export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
-export type ProofStatus = 'success' | 'danger' | 'warning' | 'info' | 'action' | 'neutral' | 'muted';
+/** `text` / `plain`: unfilled value in --text at 600 / 400; `positive`: unfilled value in --success (the word says it). */
+export type ProofStatus = 'success' | 'danger' | 'warning' | 'info' | 'action' | 'neutral' | 'muted' | 'text' | 'plain' | 'positive';
 
 export interface ApiBadgeProps extends HTMLAttributes<HTMLSpanElement> {
   /** Left segment for an API badge. Ignored when `label` or `arazzo` is set. */

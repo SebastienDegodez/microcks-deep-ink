@@ -109,3 +109,19 @@ export const CompactAndMuted: StoryObj = {
     `,
   }),
 };
+
+export const WorkflowHeader: StoryObj = {
+  name: 'Workflow title and unfilled proofs',
+  render: () => ({
+    template: `
+<div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start">
+  <span mkApiBadge [arazzo]="true" name="Restock a pastry" version="1.2.0" size="xl"></span>
+  <div class="inline">
+    <span mkApiBadge size="compact" label="target" value="Implementations · schema validation" status="plain"></span>
+    <span mkApiBadge size="compact" label="runs · 7 d" value="2/4 passed" status="text"></span>
+    <span mkApiBadge size="compact" label="mock url" value="ready" status="positive"></span>
+  </div>
+</div>
+    `,
+  }),
+};

@@ -18,3 +18,12 @@ describe('ApiBadge sizes and neutral proofs', () => {
     expect(await axeViolations(container)).toEqual([]);
   });
 });
+
+describe('ApiBadge unfilled proof values', () => {
+  it('keeps the status on the badge and the words as the name', () => {
+    render(<ApiBadge size="compact" label="mock url" value="ready" status="positive" />);
+    const badge = screen.getByText('ready').parentElement!;
+    expect(badge.getAttribute('data-status')).toBe('positive');
+    expect(badge.textContent?.trim()).toBe('mock url ready');
+  });
+});
