@@ -16,7 +16,7 @@ import { FilterBar, FilterReset, FilterRow, FilterSearch } from '@/ui/components
 import { Segmented } from '@/ui/components/ui/segmented';
 import { StatusBadge } from '@/ui/components/ui/status-badge';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
-import { PROTOCOL_ORDER, fmt, operationUnit, pluralize } from '../explore-kit/format';
+import { PROTOCOL_ORDER, fmt, operationUnit, pluralize } from '@/ui/app/format';
 
 const bandOf = (s: ServiceSummary): OperationResult[] =>
   s.lastResults ? s.lastResults.map((r) => (r === 'pass' ? 'pass' : 'fail')) : Array.from({ length: s.operationCount }, () => 'untested');

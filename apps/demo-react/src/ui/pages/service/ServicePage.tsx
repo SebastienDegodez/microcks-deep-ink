@@ -24,14 +24,13 @@ import { SectionLabel } from '@/ui/components/ui/section-label';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
 import AgentPage from '../agent/AgentPage';
-import { fmt, pluralize } from '../explore-kit/format';
+import { MONTHS, fmt, pluralize } from '@/ui/app/format';
 
 type TabId = 'operations' | 'properties' | 'tests';
 const TAB_IDS: TabId[] = ['operations', 'properties', 'tests'];
 const DAY_MS = 86_400_000;
 const DAY_LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
 const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const TARGET_LABEL = { mocks: 'Microcks mocks', implementations: 'Implementations', mixed: 'Mocks and implementations' } as const;
 const RECENT_RUNS = 3;
 

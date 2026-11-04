@@ -11,6 +11,7 @@ import {
   type InstallStatus,
   type PreviewRow,
 } from '@/domain/govern';
+import { plural } from '@/ui/app/format';
 import { PageHeader, useAnnounce, usePageTitle, useQuery, useReturnFocus, useUseCases } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
@@ -27,7 +28,6 @@ import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
 import './hub.css';
 
 const HUB_URL = 'https://hub.microcks.io/api';
-const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
 const metaOf = (p: HubPackage) => `${plural(p.apiCount, 'API')}${p.updated ? ` · ${p.updated}` : ''}`;
 
 export default function HubPage() {

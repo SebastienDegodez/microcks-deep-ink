@@ -24,6 +24,7 @@ import {
 } from '@/domain/agents';
 import { formatClock } from '@/domain/shared';
 import { PAGE_TITLE_ID, PageHeader, useAnnounce, usePageTitle, useQuery, useRelativeTime, useUseCases } from '@/ui/app';
+import { useReplay } from '@/ui/app/use-replay';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
@@ -566,11 +567,7 @@ export default function AgentTestRunPage() {
       return t + 1;
     });
   }, [n]);
-  useEffect(() => {
-    if (phase !== 'running') return undefined;
-    const timer = setInterval(step, CHECK_MS);
-    return () => clearInterval(timer);
-  }, [phase, step]);
+  useReplay(phase === 'running', step, CHECK_MS);
 
   const start = useMemo(
     () => async (setup: AgentTestSetup) => {

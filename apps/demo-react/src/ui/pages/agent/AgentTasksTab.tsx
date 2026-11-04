@@ -1,13 +1,13 @@
 import './agent-tasks.css';
 import { useState } from 'react';
 import { getTaskJson, isTerminalTaskState, type AgentTask } from '@/domain/agents';
+import { ago } from '@/ui/app/format';
 import { useAnnounce, useSubscription, useUseCases } from '@/ui/app';
 import { Button } from '@/ui/components/ui/button';
 import { CodeBlock } from '@/ui/components/ui/code-block';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { TaskStateTag } from '@/ui/components/ui/task-timeline';
 
-const ago = (s: number): string => (s < 3 ? 'just now' : s < 60 ? `${s} s ago` : s < 3600 ? `${Math.floor(s / 60)} min ago` : `${Math.floor(s / 3600)} h ago`);
 
 /** Tasks created on the mock, streamed from the use case (1 s tick). */
 export function AgentTasksTab({ serviceId, initial, onChanged }: { serviceId: string; initial: AgentTask[] | undefined; onChanged: () => void }) {
