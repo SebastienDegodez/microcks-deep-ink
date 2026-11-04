@@ -354,6 +354,11 @@
   color: var(--link);
 }
 
+.tc-label-hint {
+  font-weight: 400;
+  color: var(--text-muted);
+}
+
 .tc-oauth .tc-wide {
   grid-column: 1 / -1;
 }
@@ -389,7 +394,7 @@
 
 @media (min-width: 720px) {
   .tc-header-row {
-    grid-template-columns: minmax(0, 170fr) minmax(0, 150fr) minmax(0, 360fr) 36px;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 2fr) minmax(0, 2.7fr) 36px;
   }
 
   .tc-header-head {
@@ -436,6 +441,13 @@
 .tc-summary {
   font-size: 13px;
   color: var(--text-secondary);
+}
+
+/* Blocked Launch: flat raised fill, muted text, no visible border (prototype). */
+.tc-actions .button[data-variant='primary'][aria-disabled='true'] {
+  background: var(--raised);
+  border-color: var(--raised);
+  color: var(--text-muted);
 }
 
 .tc-actions-buttons {
@@ -505,6 +517,11 @@
 
 .tc-ci-code .code-tabs {
   flex-wrap: wrap;
+}
+
+/* Copy wraps under the tabs, on the left. */
+.tc-ci-code > figcaption .code-copy.button {
+  margin-inline-start: 0;
 }
 
 .tc-ci-legend {

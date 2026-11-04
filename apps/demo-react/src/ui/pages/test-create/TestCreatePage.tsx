@@ -115,6 +115,8 @@ function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: st
   const [busy, setBusy] = useState(false);
   const [submitError, setSubmitError] = useState('');
   const [ciTab, setCiTab] = useState<CiFormat>('cli');
+  // The client secret message waits for a blur or a launch attempt; until then only the border is red.
+  const [secretTouched, setSecretTouched] = useState(false);
   const endpointRef = useRef<HTMLInputElement>(null);
   const timeoutRef = useRef<HTMLInputElement>(null);
   const opsRef = useRef<HTMLInputElement>(null);
@@ -176,6 +178,7 @@ function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: st
     e.preventDefault();
     setSubmitError('');
     if (blockReason) {
+      setSecretTouched(true);
       focusFirstError();
       return;
     }
@@ -200,6 +203,7 @@ function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: st
   const pickService = (id: string) => {
     onChoose(id);
     setDraft(null);
+    setSecretTouched(false);
   };
 
   const setHeader = (id: number, patch: Partial<HeaderRow>) => update({ headers: d.headers.map((x) => (x.id === id ? { ...x, ...patch } : x)) });
@@ -400,10 +404,12 @@ function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: st
                 <Field label="Token URI">{(control) => <Input {...control} mono className="tc-link-input" spellCheck={false} value={d.tokenUri} onChange={(e) => update({ tokenUri: e.target.value })} />}</Field>
               </div>
               <Field label="Client Id">{(control) => <Input {...control} mono spellCheck={false} value={d.clientId} onChange={(e) => update({ clientId: e.target.value })} />}</Field>
-              <Field label="Client Secret" required error={errors.clientSecret}>
+              <Field label="Client Secret" required error={secretTouched ? errors.clientSecret : undefined}>
                 {(control) => (
                   <Input
                     {...control}
+                    aria-invalid={errors.clientSecret ? true : undefined}
+                    onBlur={() => setSecretTouched(true)}
                     ref={clientSecretRef}
                     type="password"
                     mono
@@ -415,7 +421,13 @@ function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: st
                 )}
               </Field>
               <div className="tc-wide">
-                <Field label="Scopes" help="Space-separated.">
+                <Field
+                  label={
+                    <>
+                      Scopes <span className="tc-label-hint">space-separated</span>
+                    </>
+                  }
+                >
                   {(control) => <Input {...control} mono spellCheck={false} value={d.scopes} onChange={(e) => update({ scopes: e.target.value })} />}
                 </Field>
               </div>
