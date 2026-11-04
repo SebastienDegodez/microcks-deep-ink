@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Radio group',
+  component: RadioGroup,
   parameters: itemParams(['checkbox'], 'A `<fieldset>` with a `<legend>`: the group name is read before each option. Arrow keys move and select, as native radios do.'),
-} satisfies Meta;
+} satisfies Meta<typeof RadioGroup>;
 
 const OPTIONS = [
   { value: 'mocks', label: 'Mocks', description: 'Call the Microcks mock endpoints.' },
@@ -46,5 +47,15 @@ export const Cards: StoryObj = {
         />
       </div>
     );
+  },
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof RadioGroup> = {
+  args: { legend: 'Run against', options: OPTIONS, value: 'mocks', name: 'target', required: false, help: 'Pick where the test sends its requests.', error: undefined, variant: 'plain' },
+  argTypes: { variant: { control: 'inline-radio', options: ['plain', 'card', 'compact'] }, onChange: { table: { disable: true } } },
+  render: (args) => {
+    const [value, setValue] = useState<string | undefined>(args.value);
+    return <RadioGroup {...args} value={value} onChange={setValue} />;
   },
 };

@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Menu',
+  component: Menu,
   parameters: itemParams(['menu', 'button'], 'A disclosure menu on the native `popover` attribute: the trigger is a button with `aria-expanded`, Escape and click outside close it natively. It is not an ARIA `role="menu"` application menu.'),
-} satisfies Meta;
+} satisfies Meta<typeof Menu>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -43,4 +44,22 @@ export const SeparatorAndDescription: StoryObj = {
       ]}
     />
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Menu> = {
+  args: {
+    label: 'Actions', iconOnly: false, variant: 'secondary', size: 'md', align: 'start',
+    items: [
+      { id: 'edit', label: 'Edit', description: 'Change the service metadata.' },
+      { id: 'export', label: 'Export' },
+      { id: 'delete', label: 'Delete', danger: true, separatorBefore: true },
+    ],
+  },
+  argTypes: {
+    variant: { control: 'select', options: ['primary', 'secondary', 'outline', 'ghost', 'link', 'dashed', 'danger'] },
+    size: { control: 'inline-radio', options: ['sm', 'compact', 'tile', 'md', 'lg'] },
+    align: { control: 'inline-radio', options: ['start', 'end'] },
+  },
+  decorators: [(Story) => <div style={{ minHeight: 200 }}><Story /></div>],
 };
