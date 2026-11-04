@@ -22,16 +22,22 @@ export const Uses: StoryObj = {
         <span>3 operations</span>
         <span>calls · 7 d</span>
       </SectionLabel>
+      <SectionLabel as="h4" lineHeight="normal">Request</SectionLabel>
+      <SectionLabel size="sm" weight="regular" split lineHeight="snug">
+        <span>Skills</span>
+        <span>4 declared</span>
+      </SectionLabel>
     </div>
   ),
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof SectionLabel> = {
-  args: { children: 'Operations', as: 'h3', size: 'md', weight: 'semibold', split: false },
+  args: { children: 'Operations', as: 'h3', size: 'md', weight: 'semibold', split: false, lineHeight: 'fixed' },
   argTypes: {
     as: { control: 'select', options: ['h2', 'h3', 'h4', 'h5', 'h6', 'label', 'span', 'p', 'div'] },
     size: { control: 'inline-radio', options: ['md', 'sm'] },
     weight: { control: 'inline-radio', options: ['semibold', 'regular'] },
+    lineHeight: { control: 'inline-radio', options: ['fixed', 'normal', 'snug'] },
   },
 };

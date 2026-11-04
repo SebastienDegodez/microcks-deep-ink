@@ -27,6 +27,10 @@ export interface ResultBoxProps extends Omit<HTMLAttributes<HTMLDivElement>, 'ti
   dismissLabel?: string;
   /** `status` (default) is a polite live region; `off` for static content. */
   live?: 'status' | 'off';
+  /** Default `true`. `false`: no frame, a top-aligned note layout (gap 10, 15px icon offset 3px with a 2.6 stroke, title in normal line height, 13px/1.55 text up to 80ch), as the Agent test verdict. */
+  bordered?: boolean;
+  /** Default `surface`. `raised`: the --raised fill instead of --surface (Agent test verdict). */
+  surface?: 'surface' | 'raised';
 }
 
 /** A framed result line in a `role="status"` box. Keep it mounted before the result arrives. */
@@ -39,6 +43,8 @@ export function ResultBox({
   onDismiss,
   dismissLabel = 'Dismiss message',
   live = 'status',
+  bordered = true,
+  surface = 'surface',
   className,
   children,
   ...rest
@@ -51,6 +57,8 @@ export function ResultBox({
       className={['result-box', className].filter(Boolean).join(' ')}
       data-tone={tone === 'success' ? undefined : tone}
       data-size={size === 'md' ? 'md' : undefined}
+      data-bordered={bordered ? undefined : 'false'}
+      data-surface={surface === 'surface' ? undefined : surface}
     >
       {name ? (
         <span className="result-box-icon" aria-hidden="true">

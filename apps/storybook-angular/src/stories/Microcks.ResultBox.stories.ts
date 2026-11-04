@@ -39,3 +39,15 @@ export const WarningDismissible: StoryObj = {
     `,
   }),
 };
+
+/** `[bordered]="false"` and `surface="raised"`: a flat note on the raised fill, as the Agent test verdict. */
+export const FlatRaised: StoryObj = {
+  name: 'Not bordered, raised (verdict)',
+  render: () => ({
+    template: `
+      <div style="max-width:720px">
+        <div mkResultBox tone="danger" icon="cross" title="The agent answered a canceled task" [bordered]="false" surface="raised" live="off">tasks/cancel returned 200, then message/send on the same task id returned a new artifact. A canceled task must stay terminal.</div>
+      </div>
+    `,
+  }),
+};

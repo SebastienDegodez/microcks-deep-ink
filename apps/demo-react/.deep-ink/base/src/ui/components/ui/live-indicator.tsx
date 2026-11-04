@@ -10,8 +10,11 @@ export interface LiveIndicatorProps extends HTMLAttributes<HTMLSpanElement> {
   pausedLabel?: string;
   /** `sm`: 11px, padding 2px 8px. `lg` (box only): 44px, 13px. */
   size?: 'md' | 'sm' | 'lg';
-  /** `inline`: no pill border, for KPI cards. `box`: a dashed 36px (lg 44px) frame in place of a busy button. */
-  variant?: 'pill' | 'inline' | 'box';
+  /**
+   * `inline`: no pill border, for KPI cards. `box`: a dashed 36px (lg 44px) frame in place of a busy button.
+   * `dot`: the 7px dot only, the label is visually hidden but still read (Agent tasks table, live task row).
+   */
+  variant?: 'pill' | 'inline' | 'box' | 'dot';
 }
 
 /**
@@ -19,6 +22,15 @@ export interface LiveIndicatorProps extends HTMLAttributes<HTMLSpanElement> {
  * and pair it with a Pause control.
  */
 export function LiveIndicator({ label = 'live', paused, pausedLabel, size = 'md', variant = 'pill', className, ...rest }: LiveIndicatorProps) {
+  const text =
+    paused && pausedLabel ? (
+      pausedLabel
+    ) : (
+      <>
+        {label}
+        {paused ? <span className="live-paused"> · paused</span> : null}
+      </>
+    );
   return (
     <span
       {...rest}
@@ -28,14 +40,7 @@ export function LiveIndicator({ label = 'live', paused, pausedLabel, size = 'md'
       data-variant={variant}
     >
       {paused ? <Icon name="pause" size={10} /> : <span className="live-dot" aria-hidden="true" />}
-      {paused && pausedLabel ? (
-        pausedLabel
-      ) : (
-        <>
-          {label}
-          {paused ? <span className="live-paused"> · paused</span> : null}
-        </>
-      )}
+      {variant === 'dot' ? <span className="sr-only">{text}</span> : text}
     </span>
   );
 }
