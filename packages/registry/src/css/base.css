@@ -44,6 +44,12 @@
     text-decoration: underline;
   }
 
+  /* Code font everywhere, at the surrounding size (not the browser's 13px/15px monospace default). */
+  :where(code, kbd, pre, samp) {
+    font-family: var(--font-mono);
+    font-size: 1em;
+  }
+
   /* One visible focus indicator for the whole system (WCAG 2.4.7, RGAA 10.7). */
   :focus-visible {
     outline: 2px solid var(--action);

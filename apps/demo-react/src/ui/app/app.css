@@ -22,6 +22,12 @@
   object-fit: contain;
 }
 
+/* Content text is 13-14px in the prototype; the shell's 15px body size stays for the chrome. */
+.main {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 /* Top bar search: a field-looking button that opens the command bar. */
 .demo-search {
   box-sizing: border-box;

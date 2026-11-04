@@ -14,9 +14,9 @@
     "base": {
       "version": "0.2.0",
       "files": {
-        "src/ui/styles/base.css": "c654e55d4cebec9b9be4eade0bfcdf992199db315f2313888ebbda0e4aa45990"
+        "src/ui/styles/base.css": "8f5eac83537de41ab594ac59c0ab8db48a0d66c310509e2f02ab8b89fa02fde2"
       },
-      "hash": "e471e4fa12f2b899"
+      "hash": "ddb234272d1cbaa0"
     },
     "icon": {
       "version": "0.2.0",
@@ -54,9 +54,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/app-shell.tsx": "27de620df02988b1bf8ac4dd347ad762ec9ec8b0d9eecf030d279c0e36d68812",
-        "src/ui/styles/app-shell.css": "34406402beb5826b559f96d5556380fde26987dcea10835f29f38aaad4ccdb38"
+        "src/ui/styles/app-shell.css": "ecd5c78873d67ff5ead15ff0d38a12a6503c061911fb4941bc8f6dfd370de3df"
       },
-      "hash": "717a0452a33172f1"
+      "hash": "2241f0de427b9de0"
     },
     "callout": {
       "version": "0.2.0",
@@ -321,7 +321,7 @@
         "src/ui/components/ui/theme-toggle.theme.ts": "c1635da4117952f5cb51b10aa43f125df18f87abc49efd9d81580509597f6b6c",
         "src/ui/styles/theme-toggle.css": "1e96f4974898f34428e58bdb81a33e84e31fc08cbd192783f73bcc10754fff14"
       },
-      "hash": "612daed0a70b595b"
+      "hash": "a95c6e4ea45c875a"
     },
     "workflow-loom": {
       "version": "0.2.0",

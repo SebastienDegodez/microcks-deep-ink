@@ -154,7 +154,7 @@ export default function BehaviorPage() {
                     <input type="radio" name="dispatcher" value={c.id} checked={draft.dispatcher === c.id} disabled={c.disabled} onChange={() => pickDispatcher(c.id)} />
                     <span className="ex-radio-card-title ex-row">{c.id}{draft.dispatcher === c.id ? <Icon name="check" size={14} /> : null}</span>
                     <span className="ex-small ex-secondary">{c.desc}</span>
-                    {c.tag ? <span className="ex-small ex-muted">{c.tag}</span> : null}
+                    {c.tag ? <span className="ex-radio-card-tag">{c.tag}</span> : null}
                   </label>
                 ))}
               </div>
