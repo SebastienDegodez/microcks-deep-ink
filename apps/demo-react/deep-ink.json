@@ -361,18 +361,18 @@
     "skill-list": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/skill-list.tsx": "42881b2b81a930181462fa46198fba7e90194e3aeeb82c8ce6472468384a1be4",
-        "src/ui/styles/skill-list.css": "ba42d8e8660a063b33ec907d6be6e25b734a11a8e19fc861a4b856bc948bda22"
+        "src/ui/components/ui/skill-list.tsx": "ec63b2c228ee0b5a7462ddcd12875beae1e084623242953d33e14e1cf6f74bcb",
+        "src/ui/styles/skill-list.css": "1e024883d910afcad15d22bec3e5c3a0947ba7fcf82c8f8d2e616a95dffd0d04"
       },
-      "hash": "1310b2bd33d9d8ee"
+      "hash": "ac4425ebb351d2b0"
     },
     "task-timeline": {
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/task-timeline.tsx": "8bdd1cd1280f671eee834b6eacc98334b490c416d7e0bcf9d9dd47d2f5c68b7c",
-        "src/ui/styles/task-timeline.css": "82857a82c954d6fabcb22a1e2000eb5d10e08de6a80d2fd69c6370f9b4932380"
+        "src/ui/styles/task-timeline.css": "1f1e0749f0a3d776f89234ffb663ad37e1e288cc94246ebd016af9c300445b95"
       },
-      "hash": "eae8e76036db2100"
+      "hash": "15e223a284c62dfd"
     },
     "tile": {
       "version": "0.2.0",
