@@ -3,7 +3,7 @@
   "name": "workflow-loom",
   "title": "WorkflowLoom",
   "tier": "element",
-  "description": "Arazzo workflow as a loom: lanes per source, step nodes, data threads, parallel branches (dependsOn), end and retry actions, and an equivalent Steps table.",
+  "description": "Arazzo workflow as a loom: fluid columns (inputs, steps, outputs), lanes per source, step nodes, data threads with their consumers, parallel branches (dependsOn), end and retry actions, an expression lens, and an equivalent Steps table.",
   "registryDependencies": [
     "base"
   ],
@@ -15,11 +15,11 @@
     "workflow-loom"
   ],
   "a11y": {
-    "pattern": "role=group with toggle-button nodes (aria-pressed), roving tabindex, and a Show as table view",
+    "pattern": "role=group with toggle-button nodes (aria-pressed), roving tabindex, lens toggle buttons (inputs, outputs, thread labels), and an optional Show as table view",
     "keyboard": [
       [
         "Tab",
-        "Moves to the Show as table button, the diagram region, then to the loom (one tab stop for all steps)"
+        "Moves to the Show as table button (unless tableToggle is false), the diagram region, the inputs, the loom (one tab stop for all steps), the outputs, then the thread labels"
       ],
       [
         "Arrow Left / Right",
@@ -35,14 +35,16 @@
       ],
       [
         "Enter / Space",
-        "Selects the step (mkStepSelect)"
+        "On a step: selects it, or clears the selection when it is already selected (mkStepSelect). On an input, an output or a thread label: traces it, or clears the lens (mkLensSelect)"
       ]
     ],
     "aria": [
-      "The SVG is aria-hidden; every node is a button named \"Step 3, patchPastry, PATCH /pastries/{name}, Failed after 3 attempts, Success criteria passed, Schema validation failed\"",
+      "Every node is a button named \"Step 3, patchPastry, PATCH /pastries/{name}, Failed after 3 attempts, Success criteria passed, Schema validation failed, 200 · 3 attempts · 5.4 s\"; the drawing marks (warp, heddles, lines, end and retry marks) are aria-hidden",
       "Actions (end, retry) and the AsyncAPI \"not runnable\" note are in the node's aria-describedby",
-      "Status is words plus a glyph: Passed, Failed, Not run (dashed outline, never reduced opacity)",
-      "Show as table (aria-pressed) swaps the diagram for a real table: #, Step, Source, Operation, Depends on, Status, Checks, Actions",
+      "Status is words plus a circled icon: Passed, Failed, Not run (dashed outline, never reduced opacity)",
+      "Inputs, outputs and thread labels are aria-pressed buttons whose name starts with hidden \"Trace …\" text followed by the visible expression and value; drop chips carry hidden \"to step …\" text",
+      "Dimmed threads keep readable text colours (only lines and dots fade)",
+      "Show as table (aria-pressed) swaps the diagram for a real table: #, Step, Source, Operation, Depends on, Status, Checks, Actions, then the data threads in words. Pages with their own Steps table set tableToggle to false",
       "The scrollable diagram and table are focusable regions with a name"
     ],
     "rgaa": [
@@ -64,7 +66,7 @@
       "2.4.7",
       "4.1.2"
     ],
-    "notes": "Copy the element bundle with the wrapper (elements/workflow-loom.js is self-contained). Angular: add schemas: [CUSTOM_ELEMENTS_SCHEMA] to the host component. No goto: Arazzo actions are limited to end and retry in the Microcks POC. The loom reads the tokens (proto-*, link, border-control, success, danger), so load tokens.css."
+    "notes": "Copy the element bundle with the wrapper (elements/workflow-loom.js is self-contained). Angular: add schemas: [CUSTOM_ELEMENTS_SCHEMA] to the host component. No goto: Arazzo actions are limited to end and retry in the Microcks POC. The loom reads the tokens (proto-*, on-proto, link, border, border-strong, canvas, selected, success, danger), so load tokens.css. Legacy data still works: inputs/outputs as strings and threads as { from, to, expression } are woven into one row per expression."
   },
   "stories": [
     "Elements/WorkflowLoom"

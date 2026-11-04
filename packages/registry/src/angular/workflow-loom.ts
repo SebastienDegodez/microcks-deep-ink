@@ -115,7 +115,15 @@ export interface WorkflowLoomElement extends HTMLElement {
   outputNote?: string;
   validatesSchemas: boolean;
   selectedStep?: string;
+  lens?: string;
+  tableToggle: boolean;
   label: string;
+}
+
+/** Detail of `mkLensSelect`: the traced thread id, undefined when the lens is cleared. */
+export interface LoomLensDetail {
+  id?: string;
+  expression?: string;
 }
 
 /**
@@ -138,11 +146,17 @@ export class WorkflowLoomDirective {
   /** The run validates schemas: every step shows "Success criteria" and "Schema validation". */
   readonly validatesSchemas = input(false, { transform: booleanAttribute });
   readonly selectedStep = input<string | undefined>(undefined);
+  /** Id of the traced thread (expression lens); inputs, outputs and thread labels toggle it. */
+  readonly lens = input<string | undefined>(undefined);
+  /** Shows the built-in "Show as table" button. Set it to false when the page has its own Steps table. */
+  readonly tableToggle = input(true, { transform: booleanAttribute });
   /** Accessible name of the loom. */
   readonly label = input.required<string>();
 
-  /** Emits `{ stepId }` when a step is selected (click, Enter, Space). */
-  readonly stepSelect = output<{ stepId: string }>();
+  /** Emits `{ stepId }` when a step is selected (click, Enter, Space); `stepId` is undefined when the selected step is pressed again. */
+  readonly stepSelect = output<{ stepId?: string }>();
+  /** Emits `{ id, expression }` when an input, an output or a thread label is pressed; `id` is undefined when the lens is cleared. */
+  readonly lensSelect = output<LoomLensDetail>();
 
   constructor() {
     const el = this.host.nativeElement;
@@ -171,11 +185,22 @@ export class WorkflowLoomDirective {
       el.selectedStep = this.selectedStep();
     });
     effect(() => {
+      el.lens = this.lens();
+    });
+    effect(() => {
+      el.tableToggle = this.tableToggle();
+    });
+    effect(() => {
       el.label = this.label();
     });
 
-    const listener = (e: Event) => this.stepSelect.emit((e as CustomEvent<{ stepId: string }>).detail);
+    const listener = (e: Event) => this.stepSelect.emit((e as CustomEvent<{ stepId?: string }>).detail);
+    const lensListener = (e: Event) => this.lensSelect.emit((e as CustomEvent<LoomLensDetail>).detail);
     el.addEventListener('mkStepSelect', listener);
-    inject(DestroyRef).onDestroy(() => el.removeEventListener('mkStepSelect', listener));
+    el.addEventListener('mkLensSelect', lensListener);
+    inject(DestroyRef).onDestroy(() => {
+      el.removeEventListener('mkStepSelect', listener);
+      el.removeEventListener('mkLensSelect', lensListener);
+    });
   }
 }

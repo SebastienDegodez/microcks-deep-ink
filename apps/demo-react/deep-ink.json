@@ -326,11 +326,11 @@
     "workflow-loom": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/workflow-loom.tsx": "4693d2a967d04afac46ee88568df8f919a00f35a9577624ed77703bd5ce84e68",
-        "src/ui/components/ui/elements/workflow-loom.js": "96a7fb50615a84d0dfe35b05639ac2047f253d8c7f49b65a2b251b81ef12d07e",
+        "src/ui/components/ui/workflow-loom.tsx": "a0da4ef3b85178897342def332148f12623acaab4a59f0d6b5c75296b6d76070",
+        "src/ui/components/ui/elements/workflow-loom.js": "de9f40ce7cb775c4bd808c9592130c166a3e7b737af7ac279a8c9c3fb86ad7af",
         "src/ui/components/ui/elements/workflow-loom.d.ts": "cebdd92f3a03c970f2889e640899fbe6a00429ce8c074345bc92f5181d7bbe80"
       },
-      "hash": "7d8fa9c49b928fe9"
+      "hash": "a288b54155825b8d"
     },
     "command-bar": {
       "version": "0.2.0",
