@@ -47,8 +47,10 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
  * Arazzo workflow as a loom: one lane per sourceDescription (warp), steps as nodes,
  * data threads between steps (weft). Step-level dependsOn draws parallel branches that join.
  * Supported actions: `end` (exit branch) and `retry` (loop). There is no goto.
- * Keyboard: arrow keys move between nodes, Home/End jump to the first/last, Enter/Space select.
- * A built-in "Show as table" toggle switches to an equivalent Steps table.
+ * Keyboard: arrow keys move between nodes, Home/End jump to the first/last, Enter/Space select (again: clear).
+ * Inputs, outputs and thread labels are toggle buttons that set the expression lens (`lens`, mkLensSelect).
+ * A built-in "Show as table" toggle switches to an equivalent Steps table (hide it with `tableToggle = false`
+ * when the page already offers a Steps table).
  */
 @Component({
   tag: 'workflow-loom',
@@ -91,7 +93,11 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .io { grid-column: 1; position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; padding: 0 2px; }
     .io.out { grid-column: -2; align-items: flex-end; }
     .io-h { font: 400 12px/16px var(--font-ui); color: var(--text-muted); }
-    .io-chip { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; max-width: 100%; padding: 4px 6px; font: 400 11px/14px var(--font-mono); text-align: left; color: var(--text); background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; }
+    .io-chip { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; max-width: 100%; padding: 4px 6px; font: 400 11px/14px var(--font-mono); text-align: left; color: var(--text); background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; cursor: pointer; }
+    .io-chip.on { background: var(--selected); border-color: var(--action); }
+    .io-chip.on .io-x { color: var(--link); }
+    .io-chip.dim { border-color: var(--border); }
+    .io-chip.dim .io-x { color: var(--text-secondary); }
     .io-x { font-weight: 600; overflow-wrap: anywhere; }
     .io-v { color: var(--text-secondary); overflow-wrap: anywhere; }
     .io-v.none { color: var(--text-muted); }
@@ -130,11 +136,19 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .weft { grid-column: 1 / -1; position: relative; padding: 10px 0 6px; }
     .heddle { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border); }
     .wl { position: relative; list-style: none; margin: 0; padding: 0; }
-    .thr { position: relative; height: 46px; transition: opacity .15s; }
-    .thr.dim { opacity: .28; }
+    .thr { position: relative; height: 46px; }
+    .tline, .tdot { transition: opacity .15s; }
+    .thr.dim .tline, .thr.dim .tdot { opacity: .28; }
+    .thr.dim .tx, .thr.dim .drop { color: var(--text-muted); }
+    .thr.dim .drop { border-color: var(--border); }
+    .thr.on .tline { height: 2px; background: var(--action); }
+    .thr.on .tdot { background: var(--action); }
+    .thr.on .tx { color: var(--link); font-weight: 600; }
+    .thr.on .drop:not(.bad) { border-color: var(--action); }
+    .thr.on .drop:not(.bad):not(.idle) { color: var(--text); }
     .tline { position: absolute; top: 30px; height: 1.5px; background: var(--text-muted); }
     .tdot { position: absolute; top: 26px; width: 10px; height: 10px; margin-left: -5px; border-radius: 999px; background: var(--text-muted); }
-    .tlabel { position: absolute; top: 2px; display: inline-flex; align-items: baseline; gap: 6px; padding: 0 4px; white-space: nowrap; font: 400 11px/16px var(--font-mono); background: var(--canvas); border: 0; border-radius: 4px; }
+    .tlabel { position: absolute; top: 2px; display: inline-flex; align-items: baseline; gap: 6px; padding: 0 4px; white-space: nowrap; font: 400 11px/16px var(--font-mono); color: inherit; background: var(--canvas); border: 0; border-radius: 4px; cursor: pointer; }
     .tx { color: var(--text-secondary); }
     .tv { color: var(--text-muted); }
     .tv.missing { color: var(--danger); }
@@ -157,7 +171,7 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .t-threads .th { margin: 0 0 4px; font: 600 13px/18px var(--font-ui); color: var(--text-secondary); }
     .sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
     .thread-li { padding: 2px 0; }
-    @media (prefers-reduced-motion: reduce) { .thr { transition: none; } }
+    @media (prefers-reduced-motion: reduce) { .tline, .tdot { transition: none; } }
   `,
 })
 export class MkWorkflowLoom {
@@ -180,7 +194,6 @@ export class MkWorkflowLoom {
   /** Accessible name of the group. */
   @Prop() label = 'Arazzo workflow';
 
-  @State() hot?: string;
   @State() focusId?: string;
   @State() asTable = false;
   /** Measured paths of the dependsOn edges (parallel branches only). */
@@ -191,12 +204,26 @@ export class MkWorkflowLoom {
   private edgeKey = '';
   private parallelEdges: LoomEdge[] = [];
 
-  /** Emitted when a step is selected (click, Enter or Space). */
-  @Event() mkStepSelect!: EventEmitter<{ stepId: string }>;
+  /** Id of the traced thread (expression lens). Mutable: inputs, outputs and thread labels toggle it. */
+  @Prop({ mutable: true }) lens?: string;
+  /** Shows the built-in "Show as table" button. Set it to false when the page has its own Steps table. */
+  @Prop() tableToggle = true;
+
+  /** Emitted when a step is selected (click, Enter or Space); `stepId` is undefined when the selected step is clicked again. */
+  @Event() mkStepSelect!: EventEmitter<{ stepId?: string }>;
+  /** Emitted when an input, an output or a thread label is pressed; `id` is undefined when the lens is cleared. */
+  @Event() mkLensSelect!: EventEmitter<{ id?: string; expression?: string }>;
 
   private select(stepId: string) {
-    this.selectedStep = stepId;
-    this.mkStepSelect.emit({ stepId });
+    const next = this.selectedStep === stepId ? undefined : stepId;
+    this.selectedStep = next;
+    this.mkStepSelect.emit({ stepId: next });
+  }
+
+  private pickLens(id: string, expression: string) {
+    const next = this.lens === id ? undefined : id;
+    this.lens = next;
+    this.mkLensSelect.emit({ id: next, expression: next ? expression : undefined });
   }
 
   /* ---------- text helpers (shared by graph and table) ---------- */
@@ -289,7 +316,7 @@ export class MkWorkflowLoom {
     return `${t.expression}${value} → ${to || 'not consumed'}`;
   }
 
-  private renderWeft(woven: WovenThread[], grid: LoomGrid, colOf: (id: string) => number, isDim: (t: WovenThread) => boolean) {
+  private renderWeft(woven: WovenThread[], grid: LoomGrid, colOf: (id: string) => number) {
     const heddles = Array.from({ length: grid.steps + 2 }, (_, c) => <span class="heddle" aria-hidden="true" style={{ left: grid.pct(grid.centre(c)) }} />);
     return [
       ...heddles,
@@ -299,13 +326,20 @@ export class MkWorkflowLoom {
           const far = t.drops.reduce((m, d) => Math.max(m, colOf(d.to)), from);
           const x = grid.pct(grid.centre(from));
           return (
-            <li class={{ thr: true, dim: isDim(t) }}>
+            <li class={{ thr: true, on: this.lens === t.id, dim: !!this.lens && this.lens !== t.id }}>
               <span class="tline" aria-hidden="true" style={{ left: x, width: grid.pct(grid.centre(far) - grid.centre(from)) }} />
               <span class="tdot" aria-hidden="true" style={{ left: x }} />
-              <span class="tlabel" style={{ left: `calc(${x} + 8px)` }}>
+              <button
+                type="button"
+                class="tlabel"
+                style={{ left: `calc(${x} + 8px)` }}
+                aria-pressed={this.lens === t.id ? 'true' : 'false'}
+                onClick={() => this.pickLens(t.id, t.expression)}
+              >
+                <span class="sr">Trace </span>
                 <span class="tx">{t.expression}</span>{' '}
                 {t.missing ? <span class="tv missing">— not produced</span> : t.value !== undefined && <span class="tv">{`= ${t.value}`}</span>}
-              </span>
+              </button>
               {t.drops.map((d) => (
                 <span class={{ drop: true, idle: !!d.idle, bad: !!d.bad }} style={{ left: grid.pct(grid.centre(colOf(d.to))) }}>
                   <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
@@ -341,13 +375,7 @@ export class MkWorkflowLoom {
         ref={(el) => (el ? this.nodeEls.set(s.stepId, el) : this.nodeEls.delete(s.stepId))}
         onClick={() => this.select(s.stepId)}
         onKeyDown={(e) => this.onNodeKey(e, layout, pl)}
-        onMouseEnter={() => (this.hot = s.stepId)}
-        onMouseLeave={() => (this.hot = undefined)}
-        onFocus={() => {
-          this.hot = s.stepId;
-          this.focusId = s.stepId;
-        }}
-        onBlur={() => (this.hot = undefined)}
+        onFocus={() => (this.focusId = s.stepId)}
       >
         <span class="hd">
           <span class="num">
@@ -587,8 +615,16 @@ export class MkWorkflowLoom {
     const firstId = layout.placements[0]?.stepId;
     const known = (id?: string) => !!id && steps.some((s) => s.stepId === id);
     const tabStop = known(this.focusId) ? this.focusId : known(this.selectedStep) ? this.selectedStep : firstId;
-    const involves = (t: WovenThread, id: string) => t.from === id || t.drops.some((d) => d.to === id);
-    const isDim = (t: WovenThread) => !!this.hot && !involves(t, this.hot);
+    const lensOn = (id: string) => this.lens === id;
+    const dimmed = (id: string) => !!this.lens && this.lens !== id;
+    const inputLens = (n: LoomInput) => {
+      const expression = n.expression ?? `$inputs.${n.name}`;
+      return { id: threads.find((t) => t.expression === expression)?.id ?? expression, expression };
+    };
+    const outputLens = (o: LoomOutput) => {
+      const t = threads.find((x) => x.drops.some((d) => d.to === '$outputs' && d.label === o.name));
+      return { id: t?.id ?? o.name, expression: t?.expression ?? o.name };
+    };
     const colOf = (id: string) => {
       if (id === '$outputs') return grid.steps + 1;
       const pl = layout.placements.find((p) => p.stepId === id);
@@ -656,23 +692,31 @@ export class MkWorkflowLoom {
           {inputs.length > 0 && (
             <div class="io in" style={{ gridRow: `${nodeFirst} / ${nodeEnd}` }}>
               <span class="io-h">inputs</span>
-              {inputs.map((n) => (
-                <span class="io-chip">
-                  <span class="io-x">{n.expression ?? `$inputs.${n.name}`}</span>
-                  {n.value !== undefined && <span class="io-v">{n.value}</span>}
-                </span>
-              ))}
+              {inputs.map((n) => {
+                const k = inputLens(n);
+                return (
+                  <button type="button" class={{ 'io-chip': true, on: lensOn(k.id), dim: dimmed(k.id) }} aria-pressed={lensOn(k.id) ? 'true' : 'false'} onClick={() => this.pickLens(k.id, k.expression)}>
+                    <span class="sr">Trace workflow input </span>
+                    <span class="io-x">{k.expression}</span>{' '}
+                    {n.value !== undefined && <span class="io-v">{n.value}</span>}
+                  </button>
+                );
+              })}
             </div>
           )}
           {outputs.length > 0 && (
             <div class="io out" style={{ gridRow: `${nodeFirst} / ${nodeEnd}` }}>
               <span class="io-h">outputs</span>
-              {outputs.map((o) => (
-                <span class="io-chip">
-                  <span class="io-x">{o.name}</span>
-                  <span class={{ 'io-v': true, none: o.value === undefined }}>{o.value ?? '—'}</span>
-                </span>
-              ))}
+              {outputs.map((o) => {
+                const k = outputLens(o);
+                return (
+                  <button type="button" class={{ 'io-chip': true, on: lensOn(k.id), dim: dimmed(k.id) }} aria-pressed={lensOn(k.id) ? 'true' : 'false'} onClick={() => this.pickLens(k.id, k.expression)}>
+                    <span class="sr">Trace workflow output </span>
+                    <span class="io-x">{o.name}</span>{' '}
+                    {o.value !== undefined ? <span class="io-v">{o.value}</span> : [<span class="io-v none" aria-hidden="true">—</span>, <span class="sr">not produced</span>]}
+                  </button>
+                );
+              })}
               {this.outputNote && <span class="io-note">{this.outputNote}</span>}
             </div>
           )}
@@ -696,7 +740,7 @@ export class MkWorkflowLoom {
           })}
           {threads.length > 0 && (
             <div class="weft" style={{ gridRow: `${nodeEnd}` }}>
-              {this.renderWeft(threads, grid, colOf, isDim)}
+              {this.renderWeft(threads, grid, colOf)}
             </div>
           )}
         </div>
@@ -725,14 +769,16 @@ export class MkWorkflowLoom {
     return (
       <Host>
         <div role="group" aria-label={this.label}>
-          <div class="bar">
-            {this.asTable && ioBar}
-            <button type="button" class="toggle" aria-pressed={this.asTable ? 'true' : 'false'} onClick={() => (this.asTable = !this.asTable)}>
-              {icon('table', 14)}
-              Show as table
-            </button>
-          </div>
-          {this.asTable ? this.renderTable(layout, steps, lanes, threads) : graph}
+          {this.tableToggle && (
+            <div class="bar">
+              {this.asTable && ioBar}
+              <button type="button" class="toggle" aria-pressed={this.asTable ? 'true' : 'false'} onClick={() => (this.asTable = !this.asTable)}>
+                {icon('table', 14)}
+                Show as table
+              </button>
+            </div>
+          )}
+          {this.tableToggle && this.asTable ? this.renderTable(layout, steps, lanes, threads) : graph}
         </div>
       </Host>
     );
