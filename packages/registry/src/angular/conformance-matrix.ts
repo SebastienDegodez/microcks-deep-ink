@@ -15,6 +15,8 @@ export interface MatrixCell {
   /** Column of the cell. Omit it for a cell that spans every column. */
   columnId?: string;
   result: CheckResult;
+  /** Word shown instead of the default one ("Absent" for a missing signature). */
+  label?: string;
   /** Duration, shown once the check has finished. */
   duration?: string;
 }
@@ -109,7 +111,7 @@ export function cellKey(rowId: string, columnId?: string): string {
                     >
                       <span class="sr-only">{{ prefix(r.label, cell) }}</span>
                       <svg mkIcon [name]="look(cell).icon" [size]="14"></svg>
-                      <span>{{ look(cell).word }}</span>
+                      <span>{{ cell.label ?? look(cell).word }}</span>
                       @if (cell.duration) {
                         <span class="matrix-ms">{{ cell.duration }}</span>
                       }
@@ -117,7 +119,7 @@ export function cellKey(rowId: string, columnId?: string): string {
                   } @else {
                     <span class="matrix-cell">
                       <svg mkIcon [name]="look(cell).icon" [size]="14"></svg>
-                      <span>{{ look(cell).word }}</span>
+                      <span>{{ cell.label ?? look(cell).word }}</span>
                       @if (finished(cell) && cell.duration) {
                         <span class="matrix-ms">{{ cell.duration }}</span>
                       }

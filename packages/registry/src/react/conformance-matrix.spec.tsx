@@ -54,4 +54,9 @@ describe('ConformanceMatrix', () => {
     const { container } = render(<ConformanceMatrix caption="Matrix" columns={COLUMNS} groups={GROUPS} onSelectCell={() => {}} />);
     expect(await axeViolations(container)).toEqual([]);
   });
+
+  it('writes a custom word on a cell', () => {
+    render(<ConformanceMatrix caption="Matrix" columns={COLUMNS} groups={[{ id: 'g', label: 'Card', rows: [{ id: 'sig', label: 'Signature', cells: [{ result: 'warn', label: 'Absent' }] }] }]} />);
+    expect(screen.getByText('Absent')).toBeTruthy();
+  });
 });
