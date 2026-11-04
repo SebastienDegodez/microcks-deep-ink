@@ -98,3 +98,107 @@
   border: 1px dashed var(--border-strong); border-radius: var(--radius-panel); color: var(--text-secondary); font: 400 14px/20px var(--font-ui);
 }
 .sources-empty-action { margin: 0; padding: 0; border: 0; background: transparent; color: var(--link); font: 600 14px/20px var(--font-ui); cursor: pointer; }
+
+/* Detail pane: one panel with the facts, the sync timeline and the contract diff. */
+.source-detail {
+  box-sizing: border-box; display: flex; flex-direction: column; gap: 18px; padding: 18px 20px;
+  border: 1px solid var(--border); border-radius: var(--radius-panel); background: var(--canvas); color: var(--text);
+}
+.source-detail-head { display: flex; flex-direction: column; gap: 8px; }
+.source-detail-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 12px; }
+.source-detail-title > h2 { margin: 0; font: 800 24px/1.1 var(--font-brand); }
+.source-detail-url { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.source-detail-url-text { flex: 1 1 280px; min-width: 0; font: 400 12px/1.5 var(--font-mono); color: var(--link); overflow-wrap: anywhere; }
+.source-detail-services { display: flex; flex-wrap: wrap; gap: 6px; }
+
+/* Failed import note */
+.source-failure {
+  display: flex; flex-direction: column; gap: 8px; padding: 12px 14px;
+  border: 1px solid var(--danger); border-radius: var(--radius-panel); background: var(--surface);
+  font: 400 13px/1.55 var(--font-ui); color: var(--text-secondary);
+}
+.source-failure-title { display: inline-flex; align-items: center; gap: 8px; font-weight: 600; color: var(--danger); }
+.source-failure-secret { color: var(--text); }
+.source-failure-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+.source-failure .source-failure-link { background: var(--raised); font-weight: 600; gap: 6px; }
+.source-failure-help { align-self: center; font-size: 12px; color: var(--text-muted); }
+
+/* Facts list (future registry item "facts"): term column 130px, rows separated by a rule. */
+.facts { margin: 0; display: flex; flex-direction: column; font: 400 13px/normal var(--font-ui); }
+.facts-row { display: flex; flex-wrap: wrap; gap: 2px 12px; padding: 7px 0; border-bottom: 1px solid var(--border); }
+.facts-row:last-child { align-items: center; gap: 6px 12px; padding: 8px 0; border-bottom: 0; }
+.facts-term { flex: 0 0 130px; color: var(--text-muted); }
+.facts-value { margin: 0; flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 2px; color: var(--text); overflow-wrap: anywhere; }
+.facts-sub { font-size: 12px; color: var(--text-muted); }
+
+.source-detail-block { display: flex; flex-direction: column; gap: 10px; }
+.source-detail-block + .source-detail-block { gap: 8px; }
+.source-detail-block-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 8px; }
+.source-detail-block-head > h3 { margin: 0; font: 600 15px/20px var(--font-ui); }
+.source-detail-help { font-size: 12px; }
+
+/* Sync timeline: a rail with one dot per entry, ringed by result, filled when the entry has a diff. */
+.sync-timeline { --dot: var(--success); margin: 0 0 0 6px; padding: 0 0 0 18px; list-style: none; border-inline-start: 2px solid var(--border); display: flex; flex-direction: column; gap: 4px; }
+.sync-timeline > li { position: relative; --dot: var(--success); }
+.sync-timeline > li::before {
+  content: ''; position: absolute; inset-inline-start: -25px; top: 12px; box-sizing: border-box; width: 10px; height: 10px;
+  border-radius: var(--radius-pill); border: 2px solid var(--dot); background: var(--bg);
+}
+.sync-timeline > li[data-filled]::before { background: var(--dot); }
+.sync-timeline > li[data-result='warning'] { --dot: var(--warning); }
+.sync-timeline > li[data-result='failed'] { --dot: var(--danger); }
+.sync-timeline > li[data-result='paused'] { --dot: var(--text-muted); }
+.sync-timeline > li[data-result='group'] { --dot: var(--border); }
+.sync-timeline > li[data-result='live'] { --dot: var(--live); }
+.sync-timeline-group { padding: 6px 10px; font: 400 12px/16px var(--font-mono); color: var(--text-muted); }
+.sync-timeline-running {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 7px 10px;
+  border: 1px dashed var(--live-text); border-radius: var(--radius-badge); font: 400 13px/18px var(--font-ui);
+}
+.sync-live { font-size: 12px; color: var(--live-text); }
+.sync-entry {
+  box-sizing: border-box; width: 100%; display: flex; flex-direction: column; gap: 4px; margin: 0; padding: 7px 10px;
+  border: 1px solid transparent; border-radius: var(--radius-badge); background: transparent; color: var(--text);
+  font: inherit; text-align: start;
+}
+button.sync-entry { cursor: pointer; }
+button.sync-entry:hover { background: var(--surface); }
+.sync-entry[aria-pressed='true'] { border-color: var(--action); background: var(--selected); }
+.sync-entry-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font: 400 13px/normal var(--font-ui); }
+.sync-entry-clock { font-size: 12px; color: var(--text); }
+.sync-entry-when { font-size: 12px; }
+.sync-entry-result { margin-inline-start: auto; display: inline-flex; align-items: center; gap: 5px; font: 600 12px/16px var(--font-ui); color: var(--success); }
+.sync-entry-result > .icon { stroke-width: 2.6; }
+.sync-entry-result[data-result='warning'] { color: var(--warning); }
+.sync-entry-result[data-result='failed'] { color: var(--danger); }
+.sync-entry-result[data-result='paused'] { color: var(--text-muted); }
+.sync-entry-change { display: flex; flex-wrap: wrap; align-items: baseline; gap: 4px 8px; font: 400 12px/normal var(--font-mono); }
+.sync-part { font-weight: 600; color: var(--success); }
+.sync-part[data-sign='~'], .sync-part[data-sign='!'] { color: var(--warning); }
+.sync-part[data-sign='-'] { color: var(--danger); }
+.sync-entry-plain { color: var(--text-muted); }
+.sync-entry-plain[data-result='failed'] { color: var(--danger); }
+.sync-entry-rev { margin-inline-start: auto; }
+
+/* Contract diff */
+.diff-stats { display: inline-flex; flex-wrap: wrap; gap: 8px; font: 400 12px/16px var(--font-mono); }
+.diff-stats > [data-kind='added'] { color: var(--success); }
+.diff-stats > [data-kind='removed'] { color: var(--danger); }
+.diff-view { border: 1px solid var(--border); border-radius: var(--radius-badge); overflow: hidden; }
+.diff-view-head {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 7px 12px;
+  background: var(--surface); border-bottom: 1px solid var(--border); font: 400 12px/16px var(--font-mono);
+}
+.diff-view-file { color: var(--text); overflow-wrap: anywhere; }
+.diff-view-rev { margin-inline-start: auto; }
+.diff-view-body { overflow-x: auto; background: var(--bg); padding: 6px 0; }
+.diff-line { display: flex; min-width: max-content; font: 400 12px/1.65 var(--font-mono); color: var(--text-secondary); }
+.diff-line-sign { flex: none; width: 26px; text-align: center; font-weight: 600; color: var(--text-muted); }
+.diff-line-text { white-space: pre; padding-inline-end: 14px; }
+.diff-line[data-kind='hunk'] { background: var(--surface); }
+.diff-line[data-kind='hunk'], .diff-line[data-kind='hunk'] > .diff-line-sign { color: var(--link); }
+.diff-line[data-kind='added'], .diff-line[data-kind='added'] > .diff-line-sign { background: var(--canvas); color: var(--success); }
+.diff-line[data-kind='removed'], .diff-line[data-kind='removed'] > .diff-line-sign { background: var(--canvas); color: var(--danger); }
+.diff-line[data-kind='skipped'], .diff-line[data-kind='skipped'] > .diff-line-sign { color: var(--warning); }
+.diff-line > .diff-line-sign { background: transparent; }
+.diff-empty { padding: 12px 14px; border: 1px dashed var(--border-strong); border-radius: var(--radius-badge); font: 400 13px/1.5 var(--font-ui); color: var(--text-secondary); }

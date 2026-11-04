@@ -1,22 +1,18 @@
 import '../explore-kit/explore.css';
 import './sources.css';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useState, type ReactNode } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import {
-  defaultDiffEntry, diffStats, filterImporters, formatHourMinute, formatShortClock, importerStatus, originCounts, splitRevision, statusCounts, SOURCE_ORIGINS,
+  defaultDiffEntry, diffStats, filterImporters, formatDay, formatHourMinute, formatShortClock, importerStatus, originCounts, splitRevision, statusCounts, SOURCE_ORIGINS,
   type Importer, type SourceOrigin, type SourceStatus, type SyncEntry,
 } from '@/domain/importing';
-import { PageHeader, useAnnounce, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
+import { PageHeader, useAnnounce, useClock, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { Chip } from '@/ui/components/ui/chip';
-import { CodeBlock, type CodeLine } from '@/ui/components/ui/code-block';
 import { CopyButton } from '@/ui/components/ui/copy-button';
 import { Icon } from '@/ui/components/ui/icon';
 import { Input } from '@/ui/components/ui/input';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { Panel } from '@/ui/components/ui/panel';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { Switch } from '@/ui/components/ui/switch';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
@@ -24,6 +20,15 @@ import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
 const STATUS_WORD: Record<SourceStatus, string> = { imported: 'Imported', warning: 'Imported · 1 warning', failed: 'Failed', inactive: 'Inactive', running: 'Importing' };
 const STATUS_ICON: Record<SourceStatus, 'check' | 'warning' | 'cross' | 'pause' | 'running'> = { imported: 'check', warning: 'warning', failed: 'cross', inactive: 'pause', running: 'running' };
 const RESULT_WORD = { imported: 'Imported', warning: 'Warning', failed: 'Failed', paused: 'Paused' } as const;
+/** The "last import" shield of the detail pane: the word and fill come from the source status, not from the last outcome. */
+const SHIELD: Record<Exclude<SourceStatus, 'running'>, { word: string; status: 'success' | 'warning' | 'danger' | 'neutral' }> = {
+  imported: { word: 'imported', status: 'success' },
+  warning: { word: '1 warning', status: 'warning' },
+  failed: { word: 'failed', status: 'danger' },
+  inactive: { word: 'inactive', status: 'neutral' },
+};
+const DIFF_SIGN = { added: '+', removed: '−', skipped: '!', hunk: '', context: '' } as const;
+const DIFF_WORD = { added: 'added', removed: 'removed', skipped: 'skipped' } as const;
 
 function ServiceLinks({ importer, className = 'ex-row' }: { importer: Importer; className?: string }) {
   return (
@@ -49,6 +54,7 @@ export default function SourcesPage() {
   const uc = useUseCases();
   const announce = useAnnounce();
   const relative = useRelativeTime();
+  const clock = useClock();
   const list = useQuery(() => uc.importing.listImporters(), [uc]);
   const schedule = uc.importing.getScanSchedule();
   const [status, setStatus] = useState<SourceStatus | 'all'>('all');
@@ -122,15 +128,11 @@ export default function SourcesPage() {
     list.reload();
   };
 
-  const diffLines: CodeLine[] = (diff.data?.lines ?? []).map((l) =>
-    l.kind === 'added' ? { text: `+ ${l.text}` }
-    : l.kind === 'removed' ? { text: `− ${l.text}`, bad: true, note: 'removed' }
-    : l.kind === 'skipped' ? { text: `! ${l.text}`, bad: true, note: 'skipped' }
-    : l.kind === 'hunk' ? { text: l.text }
-    : { text: `  ${l.text}` },
-  );
   const stats = diff.data ? diffStats(diff.data.lines) : undefined;
   const failing = counts.failed;
+  const selectedStatus = selected ? importerStatus(selected) : 'imported';
+  /** Relative time for the last week, the day after that ("Jul 14"). */
+  const when = (at: string) => (clock.now().getTime() - new Date(at).getTime() > 7 * 86_400_000 ? formatShortClock(at).split(' · ')[0] ?? '' : relative(at));
 
   return (
     <div className="sources-page">
@@ -257,65 +259,108 @@ export default function SourcesPage() {
         </section>
 
         {selected ? (
-          <section aria-label="Source detail" className="sources-detail ex-stack">
-            <Panel
-              title={selected.name}
-              actions={importerStatus(selected) === 'running' ? <LiveIndicator label="live · importing" /> : <span className="ex-row"><span className="ex-small ex-secondary">last import</span><Chip tone={selected.health === 'failed' ? 'danger' : selected.health === 'warning' ? 'warning' : 'success'}>{STATUS_WORD[importerStatus(selected)]}</Chip></span>}
-            >
-              <p className="ex-row"><code className="ex-url-line">{selected.url}</code><CopyButton value={selected.url} label="Copy URL" /></p>
-              {selected.error ? (
-                <Callout tone="danger" title={selected.error.message}>
-                  <p style={{ margin: 0 }}>{selected.error.detail} Mocks keep serving the version imported {selected.error.servedSince}.</p>
-                  <p style={{ marginBottom: 0 }}><RouterLink to="/admin/secrets">Update secret in Administration</RouterLink> <span className="ex-small ex-secondary">Secrets are managed by admins; this source only references the name.</span></p>
-                </Callout>
-              ) : null}
-              <dl className="ex-stack" style={{ margin: 0 }}>
-                {[
-                  ['Origin', SOURCE_ORIGINS.find((o) => o.id === selected.origin)?.fact ?? selected.origin, undefined],
-                  ['Role', selected.role === 'primary' ? 'Primary artifact' : 'Secondary artifact', selected.artifactNote],
-                  ['Artifact type', selected.artifactLabel, undefined],
-                  ['Secret', selected.secretName ? selected.secretName : 'None', selected.secretType],
-                  ['SSL validation', selected.sslValidation ? 'On' : 'Off', undefined],
-                  ['Labels', selected.labels.map((l) => `${l.key}=${l.value}`).join(' · ') || 'None', undefined],
-                  ['Created', `${formatShortClock(selected.createdAt)} by ${selected.createdBy}`, undefined],
-                ].map(([k, v, sub]) => (
-                  <div key={k as string}><dt className="ex-small ex-secondary">{k}</dt><dd style={{ margin: 0 }}>{v}{sub ? <><br /><span className="ex-small ex-secondary">{sub}</span></> : null}</dd></div>
-                ))}
-                <div><dt className="ex-small ex-secondary">{selected.producedLabel ?? 'Services produced'}</dt><dd style={{ margin: 0 }}><ServiceLinks importer={selected} /></dd></div>
-              </dl>
-            </Panel>
+          <section aria-label="Source detail" className="sources-detail source-detail">
+            <div className="source-detail-head">
+              <div className="source-detail-title">
+                <h2>{selected.name}</h2>
+                {selectedStatus === 'running' ? <LiveIndicator label="live · importing" /> : (
+                  <ApiBadge label="last import" value={SHIELD[selectedStatus].word} status={SHIELD[selectedStatus].status} />
+                )}
+              </div>
+              <div className="source-detail-url">
+                <span className="source-detail-url-text">{selected.url}</span>
+                <CopyButton value={selected.url} label="Copy URL" size="sm" />
+              </div>
+            </div>
 
-            <Panel title="Sync timeline" headingLevel={3}>
-              <p className="ex-small ex-secondary" style={{ marginTop: 0 }}>Each import, newest first. Pick a change to diff it.</p>
-              <ol className="ex-timeline" aria-label={`Imports of ${selected.name}`}>
-                {importerStatus(selected) === 'running' ? <li><span className="ex-row"><strong>now</strong> Forced by MA <LiveIndicator label="live · fetching and parsing" /></span></li> : null}
+            {selected.error ? (
+              <div role="note" className="source-failure">
+                <span className="source-failure-title"><Icon name="cross" size={14} />{selected.error.message.replace(' — ', ', ')}</span>
+                <span>{monoTokens(selected.error.detail, [selected.secretName, selected.secretType?.split(' ').pop()])} Mocks keep serving the version imported <span className="mono">{selected.error.servedSince}</span>.</span>
+                <span className="source-failure-actions">
+                  <Button asChild size="sm" icon="lock" className="source-failure-link"><RouterLink to="/admin/secrets">Update secret in Administration</RouterLink></Button>
+                  <span className="source-failure-help">Secrets are managed by admins; this source only references the name.</span>
+                </span>
+              </div>
+            ) : null}
+
+            <dl className="facts">
+              {facts(selected, schedule.nextScanAt).map((f) => (
+                <div key={f.term} className="facts-row">
+                  <dt className="facts-term">{f.term}</dt>
+                  <dd className="facts-value">
+                    <span className={f.mono ? 'mono' : undefined}>{f.value}</span>
+                    {f.sub ? <span className="facts-sub">{f.sub}</span> : null}
+                  </dd>
+                </div>
+              ))}
+              <div className="facts-row">
+                <dt className="facts-term">{selected.producedLabel ?? (selected.workflows ? 'Workflows produced' : 'Services produced')}</dt>
+                <dd className="facts-value"><ServiceLinks importer={selected} className="source-detail-services" /></dd>
+              </div>
+            </dl>
+
+            <div className="source-detail-block">
+              <div className="source-detail-block-head">
+                <h3>Sync timeline</h3>
+                <span className="muted source-detail-help">Each import, newest first. Pick a change to diff it.</span>
+              </div>
+              <ol className="sync-timeline" aria-label={`Imports of ${selected.name}`}>
+                {selectedStatus === 'running' ? (
+                  <li data-result="live" data-filled="">
+                    <div className="sync-timeline-running">
+                      <span className="mono sync-live">now</span>
+                      <span className="secondary">Forced by MA</span>
+                      <LiveIndicator label="live · fetching and parsing" variant="inline" />
+                    </div>
+                  </li>
+                ) : null}
                 {selected.timeline.map((e) =>
                   e.kind === 'group' ? (
-                    <li key={e.id} className="ex-small ex-muted">{e.text}</li>
+                    <li key={e.id} data-result="group"><div className="sync-timeline-group">··· {e.text}</div></li>
                   ) : (
-                    <li key={e.id}>
+                    <li key={e.id} data-result={e.result} data-filled={e.revision ? '' : undefined}>
                       {e.revision ? (
-                        <Button variant={activeEntry?.id === e.id ? 'secondary' : 'ghost'} aria-pressed={activeEntry?.id === e.id} onClick={() => setEntryId(e.id)} style={{ height: 'auto', justifyContent: 'flex-start', textAlign: 'start' }}>
-                          <TimelineLine entry={e} />
-                        </Button>
-                      ) : <TimelineLine entry={e} />}
+                        <button type="button" className="sync-entry" aria-pressed={activeEntry?.id === e.id} onClick={() => setEntryId(e.id)}>
+                          <TimelineLine entry={e} when={when(e.at)} />
+                        </button>
+                      ) : <div className="sync-entry"><TimelineLine entry={e} when={when(e.at)} /></div>}
                     </li>
                   ),
                 )}
               </ol>
-            </Panel>
+            </div>
 
-            <Panel title="Contract diff" headingLevel={3} actions={stats ? <span className="ex-small"><span>+{stats.adds}</span> <span>−{stats.dels}</span> lines</span> : undefined}>
+            <div className="source-detail-block">
+              <div className="source-detail-block-head">
+                <h3>Contract diff</h3>
+                {stats && diff.data ? (
+                  <span className="diff-stats"><span data-kind="added">+{stats.adds}</span><span data-kind="removed">−{stats.dels}</span><span className="muted">lines</span></span>
+                ) : null}
+              </div>
               {diff.data ? (
-                <div role="region" aria-label="Unified diff">
-                  <CodeBlock lines={diffLines} caption={`${diff.data.file ?? 'contract'} · ${diff.data.from} → ${diff.data.to}`} maxHeight={320} />
+                <div className="diff-view">
+                  <div className="diff-view-head"><span className="diff-view-file">{diff.data.file ?? 'contract'}</span><span className="muted diff-view-rev">{diff.data.from} → {diff.data.to}</span></div>
+                  <div role="region" aria-label="Unified diff" className="diff-view-body">
+                    {diff.data.lines.map((l, i) => (
+                      <div key={i} className="diff-line" data-kind={l.kind}>
+                        <span className="diff-line-sign" aria-hidden="true">{DIFF_SIGN[l.kind]}</span>
+                        <span className="diff-line-text">{l.kind === 'added' || l.kind === 'removed' || l.kind === 'skipped' ? <span className="sr-only">{DIFF_WORD[l.kind]} </span> : null}{l.text}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ) : <p className="ex-muted" style={{ margin: 0 }}>{activeEntry ? 'Loading the diff…' : 'No contract change to diff: every scan found the same revision.'}</p>}
-            </Panel>
+              ) : activeEntry ? <p className="muted" style={{ margin: 0 }}>Loading the diff…</p> : (
+                <div className="diff-empty">
+                  {selected.origin === 'upload'
+                    ? `Uploaded once on ${formatDay(selected.createdAt)}. Re-upload a new version of the file and the change will appear here as a diff.`
+                    : `The contract has not changed since its initial import (${formatDay(selected.createdAt)}). Nothing to compare yet: the next change will appear here as a diff.`}
+                </div>
+              )}
+            </div>
           </section>
         ) : null}
       </div>
-
     </div>
   );
 }
@@ -324,19 +369,52 @@ function originLabel(origin: SourceOrigin): string {
   return SOURCE_ORIGINS.find((o) => o.id === origin)?.label ?? origin;
 }
 
-function TimelineLine({ entry }: { entry: Extract<SyncEntry, { kind: 'run' }> }) {
+/** Wraps each token (secret name, header) of a sentence in a mono span. */
+function monoTokens(text: string, tokens: readonly (string | undefined)[]): ReactNode {
+  const list = tokens.filter((t): t is string => Boolean(t));
+  if (!list.length) return text;
+  const re = new RegExp(`(${list.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`);
+  return text.split(re).map((part, i) => (list.includes(part) ? <span key={i} className={i === 1 ? 'mono source-failure-secret' : 'mono'}>{part}</span> : part));
+}
+
+interface Fact { term: string; value: string; sub?: string | undefined; mono?: boolean }
+
+function facts(s: Importer, nextScanAt: Date | string): Fact[] {
+  const up = s.origin === 'upload';
+  return [
+    { term: 'Origin', value: SOURCE_ORIGINS.find((o) => o.id === s.origin)?.fact ?? s.origin, sub: up ? 'Re-upload a new version to update its Services' : undefined },
+    { term: 'Artifact', value: `${s.role === 'primary' ? 'Primary' : 'Secondary'} · ${s.artifactLabel}`, mono: true,
+      sub: s.artifactNote ?? (s.role === 'primary' ? 'Creates or updates Services from this contract' : 'Merges examples into existing Services only') },
+    { term: 'Secret', value: up ? 'None, uploaded file' : s.secretName ?? 'None, public resource', sub: s.secretName ? s.secretType : undefined, mono: Boolean(s.secretName) },
+    { term: 'TLS validation', value: up ? 'Not applicable' : s.sslValidation ? 'Enabled' : 'Disabled for this source' },
+    up ? { term: 'Schedule', value: 'None · one-off upload' }
+      : s.active ? { term: 'Schedule', value: `Global hourly scan · next ${formatHourMinute(nextScanAt)}`, sub: 'Also on demand with Import now' }
+      : { term: 'Schedule', value: 'Paused, not scanned', sub: 'Turn the switch on to resume' },
+    { term: 'Labels', value: s.labels.map((l) => `${l.key}=${l.value}`).join(' · ') || 'None', mono: true },
+    { term: 'Created', value: `${formatDay(s.createdAt)} by ${s.createdBy}` },
+  ];
+}
+
+const RESULT_ICON = { imported: 'check', warning: 'warning', failed: 'cross', paused: 'pause' } as const;
+
+function TimelineLine({ entry, when }: { entry: Extract<SyncEntry, { kind: 'run' }>; when: string }) {
   return (
-    <span className="ex-stack" style={{ gap: 2 }}>
-      <span className="ex-row ex-small">
-        <strong>{formatShortClock(entry.at)}</strong> <span className="ex-secondary">{entry.trigger}</span>
-        <Chip tone={entry.result === 'failed' ? 'danger' : entry.result === 'warning' ? 'warning' : entry.result === 'paused' ? 'neutral' : 'success'}>
-          <Icon name={entry.result === 'failed' ? 'cross' : entry.result === 'warning' ? 'warning' : entry.result === 'paused' ? 'dash' : 'check'} size={12} /> {RESULT_WORD[entry.result]}
-        </Chip>
+    <>
+      <span className="sync-entry-line">
+        <span className="mono sync-entry-clock">{formatShortClock(entry.at)}</span>
+        <span className="muted sync-entry-when">{when}</span>
+        <span className="secondary">{entry.trigger}</span>
+        <span className="sync-entry-result" data-result={entry.result}><Icon name={RESULT_ICON[entry.result]} size={12} />{RESULT_WORD[entry.result]}</span>
       </span>
-      <span className="ex-small ex-secondary">
-        {entry.changes.length ? entry.changes.map((c) => `${c.sign} ${c.text}`).join(' · ') : entry.note ?? 'no contract change'}
-        {entry.revision ? <> · <code>{entry.revision}</code></> : null}
+      <span className="sync-entry-change">
+        {entry.changes.length ? (
+          <>
+            <span className="muted">contract changed:</span>
+            {entry.changes.map((c) => <span key={c.sign + c.text} className="sync-part" data-sign={c.sign}>{c.sign === '!' ? '' : c.sign === '-' ? '−' : c.sign}{c.text}</span>)}
+          </>
+        ) : <span className="sync-entry-plain" data-result={entry.result}>{entry.note ?? 'no contract change'}</span>}
+        {entry.revision ? <span className="muted sync-entry-rev">{entry.revision}</span> : null}
       </span>
-    </span>
+    </>
   );
 }
