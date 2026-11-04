@@ -30,4 +30,11 @@ describe('Facts', () => {
     expect(screen.getByRole('link', { name: 'Usage details' })).toBeTruthy();
     expect(await axeViolations(container)).toEqual([]);
   });
+
+  it('boxes on the surface and takes a custom gap', () => {
+    const { container } = render(<Facts layout="inline" boxed="surface" gap="9px 12px" items={[{ term: 'Workflow', value: 'restock-pastry' }]} />);
+    const dl = container.querySelector('dl')!;
+    expect(dl.getAttribute('data-boxed')).toBe('surface');
+    expect(dl.style.getPropertyValue('--facts-gap')).toBe('9px 12px');
+  });
 });

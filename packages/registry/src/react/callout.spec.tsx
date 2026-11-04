@@ -18,4 +18,13 @@ describe('Callout outline', () => {
     expect(status.getAttribute('data-size')).toBe('sm');
     expect(await axeViolations(container)).toEqual([]);
   });
+
+  it('AI outline note: dashed frame, no default title when the text says it, the icon names the tone', async () => {
+    const { container } = render(<Callout tone="ai" variant="outline" title="">Proposed by AI from the contract's Pastry schema.</Callout>);
+    const note = screen.getByRole('note');
+    expect(note.getAttribute('data-tone')).toBe('ai');
+    expect(note.querySelector('.callout-title')).toBeNull();
+    expect(screen.getByRole('img', { name: 'AI suggestion' })).toBeTruthy();
+    expect(await axeViolations(container)).toEqual([]);
+  });
 });
