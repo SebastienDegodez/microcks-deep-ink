@@ -164,6 +164,7 @@ export function conciergeProfile(): AgentProfile {
     skills: SKILLS,
     conversations: CONVERSATIONS,
     fallback: FALLBACK,
+    fallbackCalls: 3,
     transports: TRANSPORTS,
     mockCardUrl: `${A2A}/.well-known/agent-card.json`,
     publishedCardUrl: `${HOST}/.well-known/agent-card.json`,

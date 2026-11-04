@@ -7,7 +7,7 @@
       <button type="button" aria-pressed="true">curl</button>
       <button type="button" aria-pressed="false">HTTPie</button>
     </span>
-    <button type="button" class="button copy-button code-copy" data-size="sm" data-copy="#code-1">Copy</button>
+    <button type="button" class="button copy-button code-copy" data-variant="link" data-size="sm" data-copy="#code-1">Copy</button>
   </figcaption>
   <pre tabindex="0" role="region" aria-label="curl code"><code id="code-1" class="language-shell">curl -X GET 'http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille'</code></pre>
 </figure>
@@ -20,4 +20,9 @@
 <!-- Numbered, with a bad line and its note inline. -->
 <figure class="code" data-language="json" data-variant="plain" data-numbered>
   <pre tabindex="0" role="region" aria-label="Response body"><code class="language-json"><span class="code-line"><span class="code-ln" aria-hidden="true">1</span><span class="code-text">{</span></span><span class="code-line"><span class="code-ln" aria-hidden="true">2</span><span class="code-text">  "name": "Eclair Cafe",</span></span><span class="code-line" data-bad><span class="code-ln" aria-hidden="true">3</span><span class="code-mark" aria-hidden="true">✕</span><span class="sr-only">Problem: </span><span class="code-text">  "price": "2.5"</span><span class="code-note">schema: number</span></span><span class="code-line"><span class="code-ln" aria-hidden="true">4</span><span class="code-text">}</span></span></code></pre>
+</figure>
+
+<!-- Diff: changed lines carry a visible "+" (22px column, kept empty on other lines) and a hidden "Changed: ". -->
+<figure class="code" data-diff>
+  <pre tabindex="0" role="region" aria-label="contract-tests.yml"><code><span class="code-line"><span class="code-mark" data-kind="changed" aria-hidden="true"></span><span class="code-text">jobs:</span></span><span class="code-line" data-changed><span class="code-mark" data-kind="changed" aria-hidden="true">+</span><span class="sr-only">Changed: </span><span class="code-text">  - name: Contract test API Pastry 2.0</span></span></code></pre>
 </figure>

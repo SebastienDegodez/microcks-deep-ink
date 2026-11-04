@@ -4,6 +4,5 @@
 .us-scope-badge { display: inline-flex; text-decoration: none; }
 .us-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
 .us-control { display: flex; flex-direction: column; gap: 4px; }
-.us-control-label { font: 600 12px/16px var(--font-ui); letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
 .us-control .select { min-width: 210px; }
 .us-split { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }

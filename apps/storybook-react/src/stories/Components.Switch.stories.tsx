@@ -25,3 +25,10 @@ export const WithDescription: StoryObj = {
 export const Disabled: StoryObj = {
   render: () => <Switch label="Managed by your administrator" checked onChange={() => undefined} disabled />,
 };
+
+export const Large: StoryObj = {
+  render: () => {
+    const [on, setOn] = useState(true);
+    return <Switch label="Stateful" size="lg" checked={on} onChange={setOn} />;
+  },
+};
