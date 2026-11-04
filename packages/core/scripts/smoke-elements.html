@@ -10,7 +10,7 @@
 <body>
   <main id="app"><h1>Element smoke page</h1></main>
   <script type="module">
-    // ?el=workflow-loom|command-bar|plugin-slot  &fixture=run14|menu|definition  &theme=dark|light
+    // ?el=workflow-loom|plugin-slot  &fixture=run14|menu|definition  &theme=dark|light
     const q = new URLSearchParams(location.search);
     document.documentElement.dataset.theme = q.get('theme') || 'dark';
     const tag = q.get('el');
@@ -62,23 +62,6 @@
       Object.assign(el, f);
       el.addEventListener('mkStepSelect', (e) => window.events.push(['mkStepSelect', e.detail]));
       app.append(el);
-    } else if (tag === 'command-bar') {
-      const items = [
-        { id: 'test-pastry', label: 'Run a test on API Pastry 2.0', kind: 'action', keywords: ['test', 'run'] },
-        { id: 'import', label: 'Import a contract', kind: 'action', keywords: ['import'] },
-        { id: 'svc-pastry', label: 'Open API Pastry 2.0', kind: 'service', protocol: 'REST', hint: 'service', keywords: ['pastry'] },
-        { id: 'svc-orders', label: 'Open Pastry orders API 0.1.0', kind: 'service', protocol: 'EVENT', hint: 'service', keywords: ['pastry'] },
-        { id: 'op-get', label: 'GET /pastries', kind: 'operation', hint: 'operation' },
-      ];
-      const opener = document.createElement('button');
-      opener.id = 'opener'; opener.textContent = 'Open command bar';
-      const el = document.createElement('command-bar');
-      el.items = items;
-      if (q.get('inline')) el.inline = true;
-      el.addEventListener('mkCommand', (e) => window.events.push(['mkCommand', e.detail.id]));
-      el.addEventListener('mkClose', () => window.events.push(['mkClose']));
-      opener.addEventListener('click', () => { el.open = true; });
-      app.append(opener, el);
     } else if (tag === 'plugin-slot') {
       const { getPluginHost } = await import('../dist/elements/plugin-slot.js');
       class Probe extends HTMLElement {

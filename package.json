@@ -1,7 +1,7 @@
 {
   "name": "microcks-deep-ink",
   "private": true,
-  "description": "Microcks UI v2 design system (Deep Ink): CSS tokens, a copy-paste component registry (React, Angular, HTML), three Web Components, a CLI, a plugin SDK, two Storybooks and a clean-architecture demo.",
+  "description": "Microcks UI v2 design system (Deep Ink): CSS tokens, a copy-paste component registry (React, Angular, HTML), two Web Components, a CLI, a plugin SDK, two Storybooks and a clean-architecture demo.",
   "license": "Apache-2.0",
   "packageManager": "pnpm@10.28.0",
   "engines": {
