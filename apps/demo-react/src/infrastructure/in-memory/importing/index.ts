@@ -1,7 +1,7 @@
 import type {
   AgentPreview, ArazzoPreview, DetectedService, ImportOptions, ImportPreview, ImportResult, ImportSource, Importer, ImporterDiff, RecentImport,
 } from '@/domain/importing';
-import { detectArtifactKind, directApiEndpoint, nameFromFile } from '@/domain/importing';
+import { detectArtifactKind, directApiEndpoint } from '@/domain/importing';
 import type { SecretSummary } from '@/domain/shared';
 import { NotFoundError, ValidationError } from '@/application/shared';
 import type { Clock } from '@/application/ports/shared';
@@ -27,39 +27,44 @@ const SEED_SECRETS: SecretSummary[] = [
   { id: 'sec-5', name: 'postman-api', kind: 'token', description: 'X-Api-Key of the Postman workspace', masked: '••••••••9d42', createdAt: '2026-08-06T13:10:00Z' },
 ];
 
+/** "Recent sources" of the Import screen, as on the prototype (demo clock 2026-11-03T09:10:04Z). */
 const RECENT: RecentImport[] = [
-  { id: 'r1', protocol: 'ARAZZO', name: 'Pastry workflows', at: '2026-11-03T07:20:00Z', via: 'Git repository · scheduled', status: 'imported', statusText: 'Imported', note: '4 workflows · 14 steps · 3 sources linked' },
-  { id: 'r2', protocol: 'REST', name: 'API Pastry 2.0', at: '2026-11-03T07:14:00Z', via: 'Upload', status: 'imported', statusText: 'Updated', note: '+1 operation · 2 examples changed' },
-  { id: 'r3', protocol: 'EVENT', name: 'User signed-up API 0.1.1', at: '2026-11-03T09:00:00Z', via: 'Scheduled scan', status: 'warning', statusText: 'Imported with warning', note: '1 example skipped' },
-  { id: 'r4', protocol: 'REST', name: 'Beer Catalog API 0.9', at: '2026-11-01T10:00:00Z', via: 'URL · scheduled', status: 'imported', statusText: 'Updated', note: '+1 example' },
+  { id: 'r1', protocol: 'REST', name: 'API Pastry 2.0', at: '2026-11-03T07:10:00Z', via: 'Upload', status: 'imported', statusText: 'Imported', note: '3 Operations · 7 Examples' },
+  { id: 'r2', protocol: 'EVENT', name: 'Pastry orders API 0.1.0', at: '2026-11-03T04:10:00Z', via: 'Git repository · scheduled', status: 'imported', statusText: 'Imported', note: 'AsyncAPI · SUBSCRIBE pastry/orders' },
+  { id: 'r3', protocol: 'gRPC', name: 'HelloService v1', at: '2026-11-02T10:00:00Z', via: 'URL', status: 'warning', statusText: 'Missing Examples', note: 'Protobuf only: add a secondary Artifact (Postman, APIExamples) for the responses.' },
 ];
+
 
 const OPENAPI_OPS = [
   { method: 'GET', path: '/pastries', dispatcher: 'URI_PARAMS', exampleCount: 3 },
   { method: 'GET', path: '/pastries/{name}', dispatcher: 'URI_PARTS', exampleCount: 3 },
-  { method: 'PATCH', path: '/pastries/{name}', dispatcher: 'JSON_BODY', exampleCount: 1 },
+  { method: 'PATCH', path: '/pastries/{name}', dispatcher: 'URI_PARTS', exampleCount: 1 },
 ];
 
 const ARAZZO_PREVIEW: Omit<ArazzoPreview, 'fileName'> = {
   title: 'Pastry workflows', version: '1.2.0', arazzoVersion: '1.1.0', overlay: 'ArazzoSources',
   workflows: [
-    { workflowId: 'restock-pastry', name: 'Restock a pastry', steps: 3 },
+    { workflowId: 'restock-pastry', name: 'Restock a pastry', steps: 4 },
+    { workflowId: 'order-pastry', name: 'Order a pastry', steps: 3, note: 'AsyncAPI · not runnable yet', blocked: true },
+    { workflowId: 'compare-prices', name: 'Compare v1 / v2 prices', steps: 3 },
     { workflowId: 'check-menu', name: 'Check the menu sizes', steps: 4, note: 'step dependsOn · 3 parallel steps' },
-    { workflowId: 'order-pastry', name: 'Order a pastry', steps: 4 },
-    { workflowId: 'track-order', name: 'Track an order', steps: 3, note: 'AsyncAPI · not runnable yet', blocked: true },
   ],
   sources: [
-    { name: 'apiPastry', type: 'openapi', url: './apipastry-openapi.yaml', protocol: 'REST', service: 'API Pastry 2.0', operationsFound: '3 of 3 operations found' },
-    { name: 'pastryOrders', type: 'asyncapi', url: './pastry-orders-0.1.0-asyncapi.yaml', protocol: 'EVENT', service: 'Pastry orders API 0.1.0', operationsFound: '1 of 1 operation found' },
-    { name: 'pastryStock', type: 'openapi', url: './pastry-stock-openapi.yaml', protocol: 'REST', service: 'Pastry stock API 1.0', operationsFound: '2 of 2 operations found' },
+    { name: 'apiPastry', type: 'openapi', url: './apipastry-2.0-openapi.yaml', protocol: 'REST', service: 'API Pastry 2.0', operationsFound: '3 of 3 found' },
+    { name: 'apiPastryV1', type: 'openapi', url: './apipastry-1.0-openapi.yaml', protocol: 'REST', service: 'API Pastry 1.0', operationsFound: '1 of 1 found' },
+    { name: 'pastryOrders', type: 'asyncapi', url: './pastry-orders-0.1.0-asyncapi.yaml', protocol: 'EVENT', service: 'Pastry orders API 0.1.0', operationsFound: '2 of 2 found' },
   ],
 };
 
-const MOCK_BASE = 'https://microcks.bakery.dev';
+const MOCK_BASE = 'http://microcks.local:8080';
 
 const AGENT_PREVIEW: Omit<AgentPreview, 'fileName'> = {
   provider: 'Bakery platform', specVersion: '1.0',
-  skills: [{ id: 'recommend-pastry', name: 'Recommend a pastry' }, { id: 'order-pastry', name: 'Order a pastry' }, { id: 'track-order', name: 'Track an order' }],
+  skills: [
+    { id: 'recommend-pastry', name: 'Recommend a pastry', modes: 'text in · application/json out', note: 'artifact recommendation' },
+    { id: 'order-pastry', name: 'Order a pastry', modes: 'text in · application/json out', note: 'multi-turn · input-required' },
+    { id: 'track-order', name: 'Track an order', modes: 'text in · text/plain out', note: 'streaming · artifact chunks' },
+  ],
   interfaces: [
     { binding: 'JSONRPC', url: 'https://concierge.staging.acme.io/a2a/jsonrpc', preferred: true },
     { binding: 'HTTP+JSON', url: 'https://concierge.staging.acme.io/a2a/v1', preferred: false },
@@ -71,7 +76,7 @@ const AGENT_PREVIEW: Omit<AgentPreview, 'fileName'> = {
     { binding: 'GRPC', url: 'microcks.local:9090 · a2a.v1.A2AService' },
   ],
   security: 'bakeryOAuth (OAuth2 client credentials)',
-  capabilities: ['streaming', 'pushNotifications'],
+  capabilities: [{ name: 'streaming', on: true }, { name: 'pushNotifications', on: true }, { name: 'extendedAgentCard', on: false }],
   modes: ['text/plain', 'application/json'],
 };
 
@@ -81,6 +86,15 @@ export function createInMemoryImportingAdapters(deps: InMemoryDeps = {}): Import
   const removed = new Map<string, Importer>();
   const secrets = new Map(SEED_SECRETS.map((s) => [s.id, s]));
   const previews = new Map<string, ImportPreview>();
+  const recent: RecentImport[] = [...RECENT];
+  /** Records a done import at the top of "Recent sources": it replaces the entry of the same API, or pushes out the oldest one. */
+  const record = (entry: Omit<RecentImport, 'id' | 'at'>) => {
+    const at = clock.now().toISOString();
+    const same = recent.findIndex((r) => r.name === entry.name);
+    if (same >= 0) recent.splice(same, 1);
+    else recent.pop();
+    recent.unshift({ ...entry, id: `r-${at}-${recent.length}`, at });
+  };
   let previewSeq = 0;
 
   const buildPreview = (source: ImportSource): ImportPreview => {
@@ -93,7 +107,7 @@ export function createInMemoryImportingAdapters(deps: InMemoryDeps = {}): Import
     if (kind === 'arazzo') {
       preview = {
         ...base, services: [], formatLabel: 'Arazzo 1.1.0',
-        origin: source.kind === 'git' ? 'Scanned from the repository: 1 Arazzo document found.' : 'Uploaded Arazzo document.',
+        origin: source.kind === 'git' ? 'Git repository · scheduled re-scan · external references resolved' : source.kind === 'file' && source.sample ? 'Example · bakery-platform/contracts · arazzo/pastry-workflows.arazzo.yaml' : 'Dropped from your machine · one-off import',
         arazzo: { fileName, ...ARAZZO_PREVIEW },
       };
     } else if (kind === 'a2a') {
@@ -106,11 +120,15 @@ export function createInMemoryImportingAdapters(deps: InMemoryDeps = {}): Import
         agent: { fileName, ...AGENT_PREVIEW },
       };
     } else {
+      // The demo reads every OpenAPI artifact as the API Pastry sample (the real Microcks reads the content).
       const service: DetectedService = {
-        name: source.kind === 'file' ? nameFromFile(fileName) || 'API Pastry' : 'API Pastry', version: '2.0', protocol: 'REST',
+        name: 'API Pastry', version: '2.0', protocol: 'REST',
         kind: kind === 'unknown' ? 'openapi' : kind, exists: true, operations: OPENAPI_OPS,
       };
-      preview = { ...base, services: [service], formatLabel: 'OpenAPI 3.1', exampleCount: 7, origin: source.kind === 'url' ? `Downloaded from ${source.url}` : 'Read from your computer.' };
+      const origin = source.kind === 'url' ? source.url
+        : source.kind === 'git' ? 'Git repository · scheduled re-scan · external references resolved'
+        : source.sample ? 'Microcks sample · samples/APIPastry-openapi.yaml' : 'Dropped from your machine · one-off import';
+      preview = { ...base, services: [service], formatLabel: 'OpenAPI 3.1', exampleCount: 7, origin };
     }
     previews.set(previewId, preview);
     return preview;
@@ -122,35 +140,59 @@ export function createInMemoryImportingAdapters(deps: InMemoryDeps = {}): Import
       after<ImportResult>(() => {
         const preview = previews.get(previewId);
         if (!preview) throw new NotFoundError('Preview', previewId);
+        const src = preview.source;
         if (preview.arazzo) {
+          const { workflows, sources } = preview.arazzo;
+          const steps = workflows.reduce((n, w) => n + w.steps, 0);
+          record({ protocol: 'ARAZZO', name: `${preview.arazzo.title} ${preview.arazzo.version}`, via: 'Upload', status: 'imported', statusText: 'Imported', note: `${workflows.length} workflows · ${steps} steps · ${sources.length} source descriptions linked` });
           return {
             serviceId: 'pastry', name: preview.arazzo.title, version: preview.arazzo.version, operationCount: 0, outcome: 'arazzo', protocol: 'ARAZZO',
-            arazzo: { documentId: 'pastry', workflows: preview.arazzo.workflows.length, steps: preview.arazzo.workflows.reduce((n, w) => n + w.steps, 0), sources: preview.arazzo.sources.length },
-            importerName: preview.source.kind === 'git' ? (preview.source.name ?? 'Pastry workflows') : undefined,
+            arazzo: { documentId: 'pastry', workflows: workflows.length, steps, sources: sources.length },
+            importerName: src.kind === 'git' ? (src.name ?? 'Pastry workflows') : undefined,
+            createdSource: { name: preview.arazzo.title, detail: `${preview.arazzo.fileName} · ${workflows.length} workflows`, origin: 'Upload', schedule: 'no schedule · one-off' },
           };
         }
         if (preview.agent) {
+          const { skills, interfaces, mockInterfaces } = preview.agent;
+          record({ protocol: 'A2A', name: 'Pastry concierge 1.0', via: 'Upload', status: 'warning', statusText: 'No conversations', note: `${skills.length} skills · ${interfaces.length} interfaces · add an APIExamples secondary artifact` });
           return {
-            serviceId: 'concierge', name: 'Pastry concierge', version: '1.0', operationCount: 3, outcome: 'a2a', protocol: 'A2A', samples: '0', mcp: false,
-            mockLabel: 'Mock Agent Card', mockUrl: 'http://microcks.local:8080/a2a/Pastry+concierge/1.0/.well-known/agent-card.json',
-            tryIt: "curl http://microcks.local:8080/a2a/Pastry+concierge/1.0/.well-known/agent-card.json",
-            agent: { skills: 3, conversations: 0, transports: preview.agent.mockInterfaces.map((i) => i.binding) },
+            serviceId: 'concierge', name: 'Pastry concierge', version: '1.0', operationCount: skills.length, outcome: 'a2a', protocol: 'A2A', samples: '0', mcp: false,
+            agent: { skills: skills.length, conversations: 0, transports: mockInterfaces.map((i) => i.binding) },
+            endpoints: mockInterfaces,
+            createdSource: { name: 'Pastry concierge · Agent Card', detail: `${preview.agent.fileName} · Pastry concierge 1.0`, origin: 'Upload', schedule: 'no schedule · one-off' },
           };
         }
         const merged = options.role === 'secondary';
-        const git = preview.source.kind === 'git';
+        const git = src.kind === 'git';
+        const url = src.kind === 'url';
+        const fileName = preview.artifactName ?? 'apipastry-openapi.yaml';
+        record({ protocol: 'REST', name: 'API Pastry 2.0', via: git ? 'Git repository · scheduled' : url ? 'URL · scheduled' : 'Upload', status: 'imported', statusText: 'Imported', note: '3 Operations · 7 Examples' });
+        const createdSource = git
+          ? { name: src.name ?? 'API Pastry — main', detail: src.repository, origin: 'Git', schedule: 'scheduled · re-scanned every hour' }
+          : url
+            ? { name: 'API Pastry 2.0 · OpenAPI', detail: src.url, origin: 'URL', schedule: 'scheduled · global scan' }
+            : { name: 'API Pastry 2.0 · OpenAPI', detail: `${fileName} · ${merged ? 'secondary' : 'primary'}`, origin: 'Upload', schedule: 'no schedule · one-off' };
+        const mockUrl = `${MOCK_BASE}/rest/API+Pastry/2.0`;
         return {
           serviceId: 'pastry2', name: 'API Pastry', version: '2.0', operationCount: 3, protocol: 'REST', samples: '7',
           outcome: merged ? 'merged' : git ? 'importer-created' : 'imported', mcp: true, mockLabel: 'Mock base URL',
-          mockUrl: `${MOCK_BASE}/rest/API+Pastry/2.0`, tryIt: `curl ${MOCK_BASE}/rest/API+Pastry/2.0/pastries/Millefeuille`,
+          mockUrl, tryIt: `curl -H "Accept: application/json" \\\n  ${mockUrl}/pastries/Millefeuille`,
+          importerName: git ? (src.name ?? 'API Pastry — main') : undefined,
+          createdSource,
         };
       }),
     createDirectApi: (input) =>
       after<ImportResult>(() => {
         const endpoint = directApiEndpoint(input, MOCK_BASE);
+        const event = input.type === 'GENERIC_EVENT';
+        const resource = input.resource.trim();
+        record({
+          protocol: event ? 'EVENT' : 'DIRECT', name: `${input.name.trim()} ${input.version.trim()}`, via: 'Direct API', status: 'created', statusText: 'Created',
+          note: event ? 'Generated AsyncAPI · 1 Operation' : `Generated OpenAPI · CRUD on /${resource}`,
+        });
         return {
-          serviceId: input.name.toLowerCase().replace(/\W+/g, '-'), name: input.name, version: input.version, operationCount: 1, outcome: 'direct',
-          protocol: input.type === 'GENERIC_EVENT' ? 'EVENT' : 'REST', samples: input.payload?.trim() ? '1 payload' : 'dynamic', mcp: false,
+          serviceId: input.name.toLowerCase().replace(/\W+/g, '-'), name: input.name.trim(), version: input.version.trim(), operationCount: 1, outcome: 'direct',
+          protocol: event ? 'EVENT' : 'DIRECT', samples: event ? '1 payload' : 'dynamic', mcp: false, resource,
           mockLabel: endpoint.label, mockUrl: endpoint.value, tryIt: endpoint.tryIt,
         };
       }),
@@ -223,7 +265,7 @@ export function createInMemoryImportingAdapters(deps: InMemoryDeps = {}): Import
       }),
   };
 
-  const history: ImportHistory = { recent: (limit) => after(() => [...RECENT].sort((a, b) => b.at.localeCompare(a.at)).slice(0, limit)) };
+  const history: ImportHistory = { recent: (limit) => after(() => recent.slice(0, limit)) };
 
   return { gateway, importers: repo, secrets: secretRepo, history, clock };
 }
