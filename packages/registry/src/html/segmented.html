@@ -3,7 +3,9 @@
   Update aria-pressed in your click handler and announce the new result count in a live region.
   data-variant="track" (default, padded track, pressed raised) | "joined" (bordered cells).
   Options may start with a decorative dot (<span class="segmented-dot" data-dot="success|danger|warning|muted|neutral|ring">)
-  or a decorative icon.
+  or a decorative icon; data-tone="success|warning|danger|muted" on the icon colours it.
+  data-pressed-fill="selected" (track): pressed option on --selected (Sources). data-spacing="wide": 0 12px padding.
+  data-size="sm" (joined): 28px, mono 12px 600, no separators.
 -->
 <div role="group" aria-label="Result" class="segmented" data-variant="track">
   <button type="button" aria-pressed="true"><span class="segmented-dot" data-dot="neutral" aria-hidden="true"></span>All<span class="segmented-count"><span class="sr-only">, </span>12</span></button>
@@ -22,4 +24,17 @@
 <div role="group" aria-label="Artifact role" class="segmented" data-variant="joined" data-tone="primary">
   <button type="button" aria-pressed="true">Primary</button>
   <button type="button" aria-pressed="false">Secondary</button>
+</div>
+
+<!-- Status filter with toned 13px icons and the selected fill (Sources) -->
+<div role="group" aria-label="Status" class="segmented" data-variant="track" data-pressed-fill="selected">
+  <button type="button" aria-pressed="true">All</button>
+  <button type="button" aria-pressed="false"><svg class="icon" data-tone="success" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M5 12l5 5 9-11"/></svg>Imported</button>
+  <button type="button" aria-pressed="false"><svg class="icon" data-tone="muted" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 6v12M15 6v12"/></svg>Inactive</button>
+</div>
+
+<!-- Compact mono radiogroup look (Behavior) -->
+<div role="group" aria-label="Script language" class="segmented" data-variant="joined" data-size="sm">
+  <button type="button" aria-pressed="true">Groovy</button>
+  <button type="button" aria-pressed="false">JavaScript</button>
 </div>
