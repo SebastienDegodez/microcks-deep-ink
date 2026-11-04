@@ -90,7 +90,7 @@ export default function CataloguePage() {
   ];
 
   return (
-    <div className="ex-stack">
+    <div className="ex-stack" data-main-pad="roomy">
       <PageHeader
         title="APIs & Services"
         size="lg"

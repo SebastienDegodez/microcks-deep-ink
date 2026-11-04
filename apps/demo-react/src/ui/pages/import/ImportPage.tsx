@@ -118,7 +118,7 @@ export default function ImportPage() {
   const arazzo = preview?.arazzo;
 
   return (
-    <div className="ex-stack">
+    <div className="ex-stack" data-main-pad="roomy">
       <PageHeader
         title="Add a source"
         breadcrumb={[{ label: 'Sources', to: '/sources' }, { label: 'Add a source' }]}
