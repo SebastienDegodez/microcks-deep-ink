@@ -97,16 +97,6 @@
 .wfr-band-step[data-status="failed"] .wfr-band-id { color: var(--danger); }
 .wfr-band-word { font: 400 12px/1.4 var(--font-ui); color: var(--text-secondary); }
 
-/* Tables of the summary and the example: sentence-case 12px headers on surface, wrapping cells. */
-.wfr-table-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; }
-.wfr-table { width: 100%; min-width: 480px; border-collapse: collapse; font-size: 13px; }
-.wfr-table[data-min="560"] { min-width: 560px; }
-.wfr-table thead tr { background: var(--surface); text-align: left; }
-.wfr-table thead th { padding: 8px 12px; font: 600 12px/1.4 var(--font-ui); color: var(--text-muted); text-align: left; }
-.wfr-table tbody tr { border-top: 1px solid var(--border); }
-.wfr-table tbody :is(th, td) { padding: 9px 12px; text-align: left; vertical-align: middle; overflow-wrap: anywhere; }
-.wfr-table tbody tr[data-met="false"] { background: var(--danger-tint); }
-
 .wfr-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .wfr-action {
   display: inline-flex; align-items: center; gap: 8px; height: 40px; box-sizing: border-box; padding: 0 14px;
@@ -134,9 +124,7 @@
 .wfr-example-head .wfr-verdict { font-size: 14px; gap: 6px; }
 .wfr-example-title { margin: 0; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; font: 600 16px/1.3 var(--font-ui); }
 .wfr-example-name { font: 600 14px/1.4 var(--font-mono); padding: 1px 8px; border-radius: 4px; background: var(--raised); }
-.wfr-example .wfr-table tbody :is(th, td) { padding: 8px 12px; }
 .wfr-example-kind { font: 600 12px/1.4 var(--font-ui); color: var(--text-secondary); white-space: nowrap; }
-.wfr-example td[data-tone="danger"] { color: var(--danger); }
 .wfr-unmet { margin: 0; padding: 0 0 0 18px; display: flex; flex-direction: column; gap: 3px; font: 400 12px/1.55 var(--font-mono); color: var(--text-secondary); }
 
 /* ------------------------------------------------------------------------------------- running */
@@ -376,5 +364,8 @@ fieldset.wfr-setup-group > legend + * { clear: both; }
 .wfr-verdict-title:focus-visible { outline: 2px solid var(--focus-ring); outline-offset: 4px; }
 .wfr-progress-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 16px; }
 .wfr-progress-foot > .wfr-progress-note { flex: 1 1 360px; }
-.wfr-example td[data-tone="muted"] { color: var(--text-muted); }
 .wfr-outputs-table { border-radius: 6px; }
+.wfr-example-table { min-width: 0; border-radius: 6px; }
+.wfr-example-table .table { min-width: 560px; }
+.wfr-example .wfr-mono-sm[data-tone="danger"] { color: var(--danger); }
+.wfr-example .wfr-mono-sm[data-tone="muted"] { color: var(--text-muted); }

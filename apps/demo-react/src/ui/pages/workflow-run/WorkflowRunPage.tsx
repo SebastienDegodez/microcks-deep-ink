@@ -574,43 +574,43 @@ function ExampleJudging({ run, example, pending }: { run: WorkflowRun; example: 
           )}
         </span>
       </div>
-      <div className="wfr-table-wrap">
-        <table className="wfr-table" data-min="560">
-          <caption className="sr-only">Expectations of the example {example.id}</caption>
-          <thead>
-            <tr>
-              <th scope="col">Expectation</th>
-              <th scope="col">Expected</th>
-              <th scope="col">This run</th>
-              <th scope="col">Result</th>
-            </tr>
-          </thead>
-          <tbody>
-            {rows.map((r, i) => (
-              <tr key={i} data-met={pending || r.met ? undefined : 'false'}>
-                <th scope="row" className="wfr-example-kind">
-                  {r.kind}
-                </th>
-                <td className="wfr-mono-sm">{r.expected}</td>
-                <td className="wfr-mono-sm" data-tone={pending ? 'muted' : r.met ? undefined : 'danger'}>
-                  {r.got}
-                </td>
-                <td>
-                  {pending ? (
-                    <Verdict tone="muted" icon="dash">
-                      Pending
-                    </Verdict>
-                  ) : (
-                    <Verdict tone={r.met ? 'success' : 'danger'} icon={r.met ? 'check' : 'cross'}>
-                      {r.met ? 'Met' : 'Not met'}
-                    </Verdict>
-                  )}
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      <DataTable
+        caption={`Expectations of the example ${example.id}`}
+        captionHidden
+        headerCase="sentence"
+        density="compact"
+        className="wfr-example-table"
+        rowKey={(r) => `${r.kind} ${r.expected}`}
+        rows={rows}
+        rowTone={(r) => (pending || r.met ? undefined : 'danger')}
+        columns={[
+          { key: 'kind', header: 'Expectation', rowHeader: true, nowrap: true, render: (r) => <span className="wfr-example-kind">{r.kind}</span> },
+          { key: 'expected', header: 'Expected', mono: true, render: (r) => <span className="wfr-mono-sm">{r.expected}</span> },
+          {
+            key: 'got',
+            header: 'This run',
+            render: (r) => (
+              <span className="wfr-mono-sm" data-tone={pending ? 'muted' : r.met ? undefined : 'danger'}>
+                {r.got}
+              </span>
+            ),
+          },
+          {
+            key: 'result',
+            header: 'Result',
+            render: (r) =>
+              pending ? (
+                <Verdict tone="muted" icon="dash">
+                  Pending
+                </Verdict>
+              ) : (
+                <Verdict tone={r.met ? 'success' : 'danger'} icon={r.met ? 'check' : 'cross'}>
+                  {r.met ? 'Met' : 'Not met'}
+                </Verdict>
+              ),
+          },
+        ]}
+      />
       {unmet.length > 0 ? (
         <ul aria-label="Unmet expectations" className="wfr-unmet">
           {unmet.map((u) => (
