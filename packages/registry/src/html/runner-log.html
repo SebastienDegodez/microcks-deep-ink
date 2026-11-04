@@ -1,0 +1,17 @@
+<!--
+  RunnerLog. A section named by its heading; the body is role="log" (polite by default) and focusable so it can scroll.
+  Lines: time, level (INFO SEND PASS FAIL WAIT, each with its colour, always written), message.
+-->
+<section class="runner-log" aria-labelledby="rl-title">
+  <div class="runner-log-head">
+    <h2 class="runner-log-title" id="rl-title">Runner log</h2>
+    <span class="runner-log-status">12 lines · completed</span>
+  </div>
+  <div class="runner-log-body" role="log" aria-labelledby="rl-title" tabindex="0">
+    <ol class="runner-log-lines">
+      <li class="runner-log-line" data-level="SEND"><span class="runner-log-time">09:10:04</span><span class="runner-log-level">SEND</span><span class="runner-log-text">GET /pastries?size=M</span></li>
+      <li class="runner-log-line" data-level="PASS"><span class="runner-log-time">09:10:04</span><span class="runner-log-level">PASS</span><span class="runner-log-text">200 OK · schema valid</span></li>
+      <li class="runner-log-line" data-level="FAIL" data-error><span class="runner-log-time">09:10:05</span><span class="runner-log-level">FAIL</span><span class="runner-log-text">price: expected number, got string</span></li>
+    </ol>
+  </div>
+</section>
