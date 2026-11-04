@@ -389,9 +389,17 @@
         "src/ui/styles/stat-card.css": "f262171b273ad3ec4628c13b8b8a75e0845c365f31f282a351b1b3f4b143edab"
       },
       "hash": "31b496118528abac"
+    },
+    "filter-bar": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/filter-bar.tsx": "7ee3fad9ba0b0dfd1885e84b48217ae7455ae67ca0daa8165cf2a20603b94e55",
+        "src/ui/styles/filter-bar.css": "f194714f7df7be29dae9878a7692d8b1af088ce7b261280751f4101510c1760a"
+      },
+      "hash": "22d0b49f781ca129"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "03e5aef93d536617ad19141874aae9a15e415a921c25eb9851b7a42c1bc51651"
+    "src/ui/styles/index.css": "98b257cfe4e3e09d7600126013fe673d5819f122290de921535a7c436cd144f9"
   }
 }
