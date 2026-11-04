@@ -1,0 +1,94 @@
+/* Deep Ink · bar-chart@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  .bar-chart {
+    --bar-chart-height: 160px;
+    --bar-chart-gap: 4px;
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+    min-width: 0;
+  }
+  /* Y axis: labels from top to bottom, spread over the plot height. */
+  .bar-chart-axis {
+    flex: none;
+    width: 34px;
+    height: var(--bar-chart-height);
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-items: flex-end;
+    font: 400 10px/1 var(--font-mono);
+    color: var(--text-muted);
+  }
+  .bar-chart-axis[data-side="end"] { align-items: flex-start; color: var(--link); }
+  .bar-chart-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .bar-chart-plot { position: relative; height: var(--bar-chart-height); border-bottom: 1px solid var(--border-strong); }
+  .bar-chart-grid { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--border); }
+  .bar-chart-bars {
+    position: absolute;
+    inset: 0;
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: var(--bar-chart-gap);
+    align-items: end;
+  }
+  .bar-chart-cell { position: relative; height: 100%; min-width: 0; }
+  .bar-chart-cell[data-faded] { opacity: 0.22; }
+  /* Text above a capped bar ("12 s"). */
+  .bar-chart-cap {
+    position: absolute;
+    left: 0;
+    right: 0;
+    text-align: center;
+    font: 400 9px/1 var(--font-mono);
+    color: var(--warning);
+    pointer-events: none;
+  }
+  .bar-chart-bar {
+    box-sizing: border-box;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: transparent;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    align-items: stretch;
+    cursor: pointer;
+  }
+  .bar-chart-fill { display: block; border-radius: 2px 2px 0 0; background: var(--action); }
+  .bar-chart-fill[data-tone="success"] { background: var(--success); }
+  .bar-chart-fill[data-tone="danger"] { background: var(--danger); }
+  .bar-chart-fill[data-tone="warning"] { background: var(--warning); }
+  .bar-chart-fill[data-tone="running"] { background: var(--running); }
+  /* Selected: an outline (Tests) or a --link fill (Usage). */
+  .bar-chart[data-selection="outline"] .bar-chart-bar[aria-pressed="true"] > .bar-chart-fill { outline: 2px solid var(--text); outline-offset: 2px; }
+  .bar-chart[data-selection="fill"] .bar-chart-bar[aria-pressed="true"] > .bar-chart-fill { background: var(--link); }
+  .bar-chart-bar:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; border-radius: 2px; }
+  /* Future slot (an hour still to come): a dashed full-height frame, not selectable. */
+  .bar-chart-future { display: block; box-sizing: border-box; height: 100%; border: 1px dashed var(--border); border-radius: 2px 2px 0 0; }
+  /* Overlay (a line chart): drawn over the bars, never catches the pointer. */
+  .bar-chart-overlay { position: absolute; inset: 6px 0 0; pointer-events: none; }
+  .bar-chart-overlay > svg { display: block; width: 100%; height: 100%; overflow: visible; }
+  .bar-chart-overlay polyline { fill: none; stroke: var(--link); stroke-width: 2; stroke-linejoin: round; }
+
+  .bar-chart-labels {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(0, 1fr);
+    gap: var(--bar-chart-gap);
+    font: 400 10px/1.4 var(--font-mono);
+    color: var(--text-muted);
+  }
+  .bar-chart-labels > span { text-align: center; white-space: nowrap; }
+  .bar-chart-labels > span[data-selected] { color: var(--text); font-weight: 600; }
+
+  @media (forced-colors: active) {
+    .bar-chart-fill { background: CanvasText; }
+    .bar-chart-bar[aria-pressed="true"] > .bar-chart-fill { background: Highlight; }
+  }
+}

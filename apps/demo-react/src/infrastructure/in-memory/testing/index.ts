@@ -1,7 +1,8 @@
 import { filterRuns, type CreateTestInput, type TestRun, type TestRunSummary, type TestStepResult, type TestTarget } from '@/domain/testing';
 import type { TestRunFilter, TestRunRepository } from '@/application/ports/testing';
 import { NotFoundError } from '@/application/shared';
-import { after, createSequenceStream, type InMemoryDeps } from '../shared';
+import { formatRelative } from '@/domain/shared';
+import { CLOCK_NOW_ISO, after, createSequenceStream, type InMemoryDeps } from '../shared';
 import { ENDPOINTS, OPERATION_LABELS, failingSteps, seedTestRuns } from './seed/test-runs.seed';
 import { TEST_TARGETS } from './seed/test-targets.seed';
 
@@ -32,7 +33,7 @@ function stepsForNewRun(input: CreateTestInput, target: TestTarget | undefined):
   return steps;
 }
 
-export function createInMemoryTestingAdapters(_deps: InMemoryDeps = {}): TestingAdapters {
+export function createInMemoryTestingAdapters(deps: InMemoryDeps = {}): TestingAdapters {
   const runs = seedTestRuns();
   let next = 120;
 
@@ -77,7 +78,15 @@ export function createInMemoryTestingAdapters(_deps: InMemoryDeps = {}): Testing
       });
       return createSequenceStream(snapshots);
     },
-    targets: () => after(() => TEST_TARGETS),
+    // "last test" comes from the service's latest run (API Pastry 2.0: #119 failed, just now), so it cannot drift from the runs.
+    targets: () =>
+      after(() => {
+        const now = deps.clock?.now() ?? CLOCK_NOW_ISO;
+        return TEST_TARGETS.map((t) => {
+          const last = runs.filter((r) => r.serviceId === t.serviceId).sort((a, b) => b.startedAt.localeCompare(a.startedAt))[0];
+          return last ? { ...t, lastTest: { ok: last.result === 'passed', text: `${last.result} · ${formatRelative(now, last.startedAt)}` } } : t;
+        });
+      }),
   };
   return { testRuns };
 }

@@ -3,6 +3,7 @@ import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import { USAGE_PERIODS, type UsagePeriod } from '@/domain/observe';
 import { PageHeader, usePageTitle, useQuery, useUseCases } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
+import { SectionLabel } from '@/ui/components/ui/section-label';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { Select } from '@/ui/components/ui/select';
 import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
@@ -22,6 +23,7 @@ export default function UsagePage() {
   const selectId = useId();
   const [period, setPeriod] = useState<UsagePeriod>('today');
   const services = useQuery(() => uc.catalog.listServices(), []);
+  const scopes = useQuery(() => uc.observe.usageScopes(), []);
   const usage = useQuery(() => uc.observe.usage(scope, period), [scope, period]);
   const domains = useQuery(() => uc.observe.conformanceByDomain(), []);
   const view = usage.data;
@@ -46,22 +48,21 @@ export default function UsagePage() {
         }
         actions={
           <div className="us-controls">
-            <label className="us-control" htmlFor={selectId}>
-              <span className="us-control-label">Service</span>
+            <div className="us-control">
+              <SectionLabel as="label" htmlFor={selectId}>
+                Service
+              </SectionLabel>
               <Select id={selectId} value={scope} onChange={(e) => navigate(e.target.value === 'all' ? '/metrics' : `/metrics/${e.target.value}`)}>
-                <option value="all">All services</option>
-                {(services.data ?? []).map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name} {s.version}
+                {(scopes.data ?? [{ id: 'all', label: 'All services' }]).map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.label}
                   </option>
                 ))}
               </Select>
-            </label>
+            </div>
             <div className="us-control">
-              <span className="us-control-label" aria-hidden="true">
-                Period
-              </span>
-              <Segmented label="Period" options={USAGE_PERIODS} value={period} onChange={(id) => setPeriod(id as UsagePeriod)} />
+              <SectionLabel aria-hidden="true">Period</SectionLabel>
+              <Segmented spacing="wide" label="Period" options={USAGE_PERIODS} value={period} onChange={(id) => setPeriod(id as UsagePeriod)} />
             </div>
           </div>
         }
