@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import {
   packageTotals,
@@ -41,6 +41,13 @@ export default function HubPage() {
   const [status, setStatus] = useState<Record<string, InstallStatus>>({});
   const [how, setHow] = useState<Record<string, InstallMode>>({});
   const [error, setError] = useState('');
+  // Id of the element that takes focus once it renders: the install button unmounts when clicked.
+  const [focusId, setFocusId] = useState('');
+  useEffect(() => {
+    if (!focusId) return;
+    const el = document.getElementById(focusId);
+    if (el) el.focus();
+  }, [focusId, status]);
   const categories = useQuery(() => uc.govern.listCategories(), []);
   // Counts follow the search: fetch by query, filter the category here.
   const list = useQuery(() => uc.govern.listPackages({ query: search || undefined }), [search]);
@@ -55,11 +62,13 @@ export default function HubPage() {
     if (id !== packageId) navigate(`/hub/${id}`);
   };
 
-  const install = async (pkg: HubPackage, mode: InstallMode, role: ArtifactRole, picked: Record<string, string>) => {
+  const install = async (pkg: HubPackage, mode: InstallMode, role: ArtifactRole, picked: Record<string, string>, from: 'card' | 'detail') => {
     if (statusOf(pkg)) return;
+    const target = from === 'card' ? `hb-card-${pkg.id}` : 'hb-detail';
     select(pkg.id);
     setError('');
     setStatus((s) => ({ ...s, [pkg.id]: 'installing' }));
+    setFocusId(`${target}-live`);
     setHow((h) => ({ ...h, [pkg.id]: mode }));
     announce(`Installing ${pkg.name}.`);
     try {
@@ -67,9 +76,11 @@ export default function HubPage() {
       const version = first ? versionOf(first, picked) : (pkg.versions[0] ?? '');
       await uc.govern.install(pkg.id, { version, mode, role: 'user', artifactRole: role, versions: picked });
       setStatus((s) => ({ ...s, [pkg.id]: 'installed' }));
+      setFocusId(`${target}-view`);
       announce(`${pkg.name} installed.`);
     } catch (e) {
       setStatus((s) => ({ ...s, [pkg.id]: '' }));
+      setFocusId('');
       setError(e instanceof Error ? e.message : 'The install failed.');
     }
   };
@@ -124,7 +135,7 @@ export default function HubPage() {
               selected={p.id === selected?.id}
               status={statusOf(p)}
               onSelect={() => select(p.id)}
-              onInstall={() => void install(p, 'sync', 'main', {})}
+              onInstall={() => void install(p, 'sync', 'main', {}, 'card')}
             />
           ))}
           {list.data && shown.length === 0 ? (
@@ -151,7 +162,7 @@ export default function HubPage() {
             status={statusOf(selected)}
             installedMode={how[selected.id] ?? 'sync'}
             error={error}
-            onInstall={(mode, role, picked) => void install(selected, mode, role, picked)}
+            onInstall={(mode, role, picked) => void install(selected, mode, role, picked, 'detail')}
           />
         ) : null}
       </div>
@@ -188,19 +199,21 @@ function PackageTile({
       footer={
         <>
           {status === '' ? (
-            <Button variant="primary" icon="download" onClick={onInstall}>
+            <Button variant="primary" size="compact" icon="download" onClick={onInstall}>
               Install
             </Button>
           ) : null}
-          {status === 'installing' ? <LiveIndicator className="hb-live" label={`live · installing ${pkg.apiCount} APIs`} /> : null}
+          {status === 'installing' ? (
+            <LiveIndicator id={`hb-card-${pkg.id}-live`} tabIndex={-1} className="hb-live" label={`live · installing ${pkg.apiCount} APIs`} />
+          ) : null}
           {status === 'installed' ? (
             <>
               <span className="hb-installed">
                 <Icon name="check" size={15} />
                 Installed
               </span>
-              <Button asChild>
-                <RouterLink to="/services">
+              <Button asChild size="compact">
+                <RouterLink id={`hb-card-${pkg.id}-view`} to="/services">
                   View in catalogue
                   <Icon name="arrow-right" size={13} />
                 </RouterLink>
@@ -358,13 +371,13 @@ function Detail({
       <div className="hb-actions">
         {status === '' ? (
           <>
-            <Button variant="primary" icon="download" disabled={Boolean(preview.blocked)} onClick={() => onInstall(mode, role, picked)}>
+            <Button variant="primary" size="lg" icon="download" disabled={Boolean(preview.blocked)} onClick={() => onInstall(mode, role, picked)}>
               {preview.installLabel}
             </Button>
             <span className="hb-hint">Nothing is written before you click.</span>
           </>
         ) : null}
-        {status === 'installing' ? <LiveIndicator className="hb-live" label="live · fetching and importing artifacts" /> : null}
+        {status === 'installing' ? <LiveIndicator id="hb-detail-live" tabIndex={-1} className="hb-live" label="live · fetching and importing artifacts" /> : null}
         {status === 'installed' ? (
           <>
             <span className="hb-installed">
@@ -372,7 +385,7 @@ function Detail({
               Installed
             </span>
             <Button variant="primary" asChild>
-              <RouterLink to="/services">
+              <RouterLink id="hb-detail-view" to="/services">
                 View in catalogue
                 <Icon name="arrow-right" size={14} />
               </RouterLink>

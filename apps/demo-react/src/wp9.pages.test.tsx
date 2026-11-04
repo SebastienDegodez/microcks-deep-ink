@@ -224,9 +224,19 @@ describe('Hub (/hub/:packageId?)', () => {
     const panel = await detail();
     expect(panel.getByRole('heading', { level: 2, name: 'Banking APIs (sample)' })).toBeTruthy();
     fireEvent.click(panel.getByRole('button', { name: 'Install and keep in sync' }));
-    expect(await panel.findByRole('link', { name: /View in catalogue/ })).toBeTruthy();
+    const view = await panel.findByRole('link', { name: /View in catalogue/ });
+    await waitFor(() => expect(document.activeElement).toBe(view));
     expect(panel.getByRole('link', { name: 'See importers in Sources' })).toBeTruthy();
     expect(panel.queryByRole('button', { name: /^Install/ })).toBeNull();
+  });
+
+  it('keeps focus on the card while it installs from the grid', async () => {
+    renderAt('/hub/banking');
+    const grid = within(await screen.findByRole('region', { name: 'Packages' }));
+    const card = within(await grid.findByRole('article', { name: 'Telco open APIs' }));
+    fireEvent.click(card.getByRole('button', { name: 'Install' }));
+    const view = await card.findByRole('link', { name: /View in catalogue/ });
+    await waitFor(() => expect(document.activeElement).toBe(view));
   });
 
   it('shows API Pastry as already installed', async () => {

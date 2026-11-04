@@ -4,7 +4,8 @@
 .hb-connected-url { font: 400 12px/16px var(--font-mono); color: var(--link); }
 
 /* Search row and category pills */
-.hb-filters { display: flex; flex-direction: column; gap: 14px; }
+/* The prototype header section keeps 14px between the description and the search row (the page gap is 20px). */
+.hb-filters { display: flex; flex-direction: column; gap: 14px; margin-block-start: -6px; }
 .hb-search-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .hb-search { flex: 1 1 280px; max-width: 480px; height: 40px; }
 .hb-count { font-size: 13px; color: var(--text-muted); }
@@ -17,13 +18,13 @@
 .hb-empty-reset { padding: 0; border: 0; background: transparent; color: var(--link); font: 600 14px/20px var(--font-ui); cursor: pointer; }
 .hb-installed { display: inline-flex; align-items: center; gap: 6px; padding: 0 4px; color: var(--success); font-size: 14px; font-weight: 600; }
 .hb-installed > .icon { stroke-width: 2.4; }
-.hb-live { min-height: 36px; border-style: dashed; border-radius: var(--radius-control); }
+.hb-live { min-height: 34px; border-style: dashed; border-radius: var(--radius-control); }
 .hb-mono { font-family: var(--font-mono); }
 
 .hb-detail { flex: 1 1 400px; max-width: 560px; min-width: 0; }
 .hb-detail > * { display: flex; flex-direction: column; gap: 18px; }
 .hb-detail-head { display: flex; flex-direction: column; gap: 6px; }
-.hb-detail-title { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+.hb-detail-title { display: flex; flex-wrap: nowrap; white-space: nowrap; align-items: center; justify-content: space-between; gap: 8px; }
 .hb-detail-title > h2 { min-width: 0; margin: 0; font: 800 26px/1.1 var(--font-brand); color: var(--text); }
 .hb-detail-desc { margin: 0; font-size: 14px; line-height: 1.5; color: var(--text-secondary); }
 .hb-detail-meta { font-size: 12px; color: var(--text-muted); }
@@ -52,7 +53,7 @@
 .hb-preview { margin: 0; padding: 10px; list-style: none; display: flex; flex-direction: column; gap: 6px; border: 1px dashed var(--border-strong); border-radius: var(--radius-panel); background: var(--bg); }
 .hb-preview-row { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 6px 8px; border-radius: var(--radius-badge); background: var(--canvas); }
 .hb-preview-row[data-skipped] { opacity: 0.55; }
-.hb-tag { --tag: var(--link); flex: none; min-width: 64px; box-sizing: border-box; padding: 1px 5px; text-align: center; font: 600 10px/14px var(--font-mono); letter-spacing: 0.06em; color: var(--tag); border: 1px solid var(--tag); border-radius: var(--radius-control); }
+.hb-tag { --tag: var(--link); flex: none; min-width: 64px; padding: 1px 5px; text-align: center; font: 600 10px/11px var(--font-mono); letter-spacing: 0.06em; color: var(--tag); border: 1px solid var(--tag); border-radius: var(--radius-control); }
 .hb-tag[data-tag='update'], .hb-tag[data-tag='merge'] { --tag: var(--warning); }
 .hb-tag[data-tag='skipped'] { --tag: var(--text-muted); }
 .hb-tag[data-tag='in-catalogue'] { --tag: var(--success); }
