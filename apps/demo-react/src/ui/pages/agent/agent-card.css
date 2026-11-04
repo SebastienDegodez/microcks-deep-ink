@@ -1,0 +1,46 @@
+/* Screen 18 · Agent Card tab: outline rail + the card JSON with line numbers, section band and inline diff. */
+.agent-card-split { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
+
+.agent-outline { flex: 1 1 240px; max-width: 320px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.agent-outline-title { padding: 0 4px 4px; }
+.agent-outline-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
+.agent-outline-item { display: flex; flex-direction: column; gap: 3px; width: 100%; box-sizing: border-box; padding: 9px 12px; border-radius: 6px; border: 1px solid var(--border); background: var(--canvas); color: var(--text); font-family: inherit; text-align: start; cursor: pointer; }
+.agent-outline-item:hover { background: var(--raised); }
+.agent-outline-item[aria-pressed='true'] { border-color: var(--action); background: var(--selected); }
+.agent-outline-item:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.agent-outline-row { display: flex; justify-content: space-between; gap: 8px; width: 100%; }
+.agent-outline-key { font: 600 13px/normal var(--font-mono); color: var(--link); }
+.agent-outline-range { font: 400 11px/normal var(--font-mono); color: var(--text-muted); }
+.agent-outline-summary { font: 400 12px/normal var(--font-ui); color: var(--text-secondary); }
+
+.agent-card-checks { display: flex; flex-direction: column; gap: 6px; margin-top: 8px; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border); font: 400 12px/normal var(--font-ui); color: var(--text-secondary); overflow-wrap: anywhere; }
+.agent-card-check { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; }
+.agent-card-check[data-tone='success'] { color: var(--success); }
+.agent-card-check[data-tone='warning'] { color: var(--warning); }
+.agent-card-check[data-tone='danger'] { color: var(--danger); }
+
+.agent-card-json { flex: 999 1 520px; min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px; padding: 20px; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); }
+.agent-card-bar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
+.agent-card-note { font-size: 12px; color: var(--text-muted); }
+.agent-card-url { display: flex; flex-wrap: wrap; gap: 8px; }
+.agent-card-url-input { flex: 1 1 320px; min-width: 0; }
+.agent-card-mock-note { margin: 0; font: 400 13px/1.5 var(--font-ui); color: var(--text-secondary); }
+
+/* JSON viewer: 40px number gutter, 18px mark column, token colours, selected section band. */
+.agent-json { contain: inline-size; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); overflow-x: auto; padding: 8px 0; }
+.agent-json:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.agent-json-lines { list-style: none; margin: 0; padding: 0; }
+.agent-json-line { display: flex; min-width: max-content; font: 400 12px/1.65 var(--font-mono); }
+.agent-json-line[data-selected] { background: var(--selected); }
+.agent-json-line[data-mark='-'] { background: var(--danger-tint); }
+.agent-json-line[data-mark='+'] { background: var(--success-tint); }
+.agent-json-num { flex: none; width: 40px; padding-right: 8px; box-sizing: border-box; text-align: end; color: var(--text-muted); user-select: none; }
+.agent-json-mark { flex: none; width: 18px; text-align: center; font-weight: 600; }
+.agent-json-line[data-mark='-'] .agent-json-mark { color: var(--danger); }
+.agent-json-line[data-mark='+'] .agent-json-mark { color: var(--success); }
+.agent-json-text { white-space: pre; padding-right: 16px; color: var(--text); }
+.agent-json-line[data-mark='-'] .agent-json-text { text-decoration: line-through; opacity: 0.75; }
+.agent-json-text [data-tok='key'] { color: var(--link); }
+.agent-json-text :is([data-tok='colon'], [data-tok='punct']) { color: var(--text-muted); }
+.agent-json-text [data-tok='num'] { color: var(--warning); }
+.agent-json-text [data-tok='lit'] { color: var(--proto-a2a); }

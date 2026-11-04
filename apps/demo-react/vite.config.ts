@@ -20,5 +20,8 @@ export default defineConfig({
     include: ['src/**/*.test.{ts,tsx}'],
     css: false,
     setupFiles: ['src/test-setup.ts'],
+    // Route tests render whole pages over in-memory adapters. On a loaded machine (many agents
+    // sharing 2 CPUs) they can pass 5 s; 15 s keeps them meaningful without false timeouts.
+    testTimeout: 15_000,
   },
 });

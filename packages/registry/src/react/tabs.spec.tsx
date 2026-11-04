@@ -104,3 +104,25 @@ describe('Tabs', () => {
     expect(await axeViolations(container)).toEqual([]);
   });
 });
+
+describe('Tabs icon and hint', () => {
+  it('puts a hidden icon before the label and reads the hint after a comma', async () => {
+    const { container } = render(
+      <Tabs
+        label="Source type"
+        variant="card"
+        value="file"
+        onChange={() => {}}
+        items={[{ id: 'file', label: 'Upload', hint: 'one-off file', icon: 'document' }, { id: 'git', label: 'Git repository', hint: 'kept in sync', icon: 'git-branch' }]}
+      >
+        <TabPanel id="file" value="file">File</TabPanel>
+        <TabPanel id="git" value="file">Git</TabPanel>
+      </Tabs>,
+    );
+    const t = screen.getByRole('tab', { name: 'Upload, one-off file' });
+    expect(t.querySelector('svg')?.getAttribute('aria-hidden')).toBe('true');
+    expect(t.querySelector('svg')?.getAttribute('width')).toBe('16');
+    expect(container.querySelector('.tabs')?.getAttribute('data-variant')).toBe('card');
+    expect(await axeViolations(container)).toEqual([]);
+  });
+});

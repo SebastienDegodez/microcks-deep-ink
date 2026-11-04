@@ -46,3 +46,26 @@ describe('LiveIndicator', () => {
     expect(container.querySelector('.live')?.getAttribute('data-size')).toBe('sm');
   });
 });
+
+describe('CodeBlock changed lines', () => {
+  it('writes a visible + and a hidden "Changed: " on changed lines, and keeps the column on the others', async () => {
+    const { container } = render(
+      <CodeBlock caption="contract-tests.yml" lines={[{ text: 'jobs:' }, { text: '  - name: Contract test API Pastry 2.0', changed: true }]} />,
+    );
+    const figure = container.querySelector('figure')!;
+    expect(figure.hasAttribute('data-diff')).toBe(true);
+    const [plain, changed] = Array.from(container.querySelectorAll('.code-line'));
+    expect(plain!.querySelector('.code-mark')?.textContent).toBe('');
+    expect(changed!.hasAttribute('data-changed')).toBe(true);
+    expect(changed!.querySelector('.code-mark')?.textContent).toBe('+');
+    expect(changed!.querySelector('.code-mark')?.getAttribute('aria-hidden')).toBe('true');
+    expect(changed!.textContent).toBe('+Changed:   - name: Contract test API Pastry 2.0');
+    expect(await axeViolations(container)).toEqual([]);
+  });
+
+  it('has no mark column without changed lines', () => {
+    const { container } = render(<CodeBlock lines={[{ text: 'a' }, { text: 'b', selected: true }]} />);
+    expect(container.querySelector('figure')!.hasAttribute('data-diff')).toBe(false);
+    expect(container.querySelector('.code-mark')).toBeNull();
+  });
+});

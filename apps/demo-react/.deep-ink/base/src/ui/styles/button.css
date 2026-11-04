@@ -32,7 +32,29 @@
     line-height: 18px;
   }
 
+  /* Compact: 34px (TestCreate "Add header", Behavior and Cockpit toolbars). */
+  .button[data-size="compact"] {
+    min-height: 34px;
+    padding: 0 12px;
+    font-size: 13px;
+    line-height: 18px;
+  }
+  /* Large: 44px (form footers: TestCreate Cancel / Launch). */
+  .button[data-size="lg"] {
+    min-height: 44px;
+    padding: 0 16px;
+  }
+  .button[data-size="lg"][data-variant="primary"] { padding: 0 18px; }
+
   .button:hover {
+    background: var(--raised);
+  }
+
+  /* Outline: the secondary border without the surface fill (form footer Cancel). */
+  .button[data-variant="outline"] {
+    background: transparent;
+  }
+  .button[data-variant="outline"]:hover {
     background: var(--raised);
   }
 
@@ -56,6 +78,11 @@
   }
   .button[data-variant="ghost"]:hover {
     background: var(--raised);
+  }
+
+  /* Danger tone for the text variants: an inline Delete (Sources job card). */
+  .button:is([data-variant="ghost"], [data-variant="link"])[data-tone="danger"] {
+    color: var(--danger);
   }
 
   /* Link-style: a small text button (Copy, Clear list, Reset). */
@@ -136,6 +163,12 @@
   .button[data-icon-only][data-size="sm"] {
     min-width: 32px;
   }
+  .button[data-icon-only][data-size="compact"] {
+    min-width: 34px;
+  }
+  .button[data-icon-only][data-size="lg"] {
+    min-width: 44px;
+  }
 
   /* Disabled and busy: text and border stay readable (no opacity). */
   .button[data-variant]:disabled,
@@ -147,6 +180,13 @@
     color: var(--text-muted);
     box-shadow: none;
     cursor: not-allowed;
+  }
+
+  /* Disabled primary: a raised fill without a border (TestCreate "Launch"). */
+  .button[data-variant="primary"]:disabled,
+  .button[data-variant="primary"][aria-disabled="true"] {
+    background: var(--raised);
+    border-color: var(--raised);
   }
 
   .button[aria-busy="true"] {

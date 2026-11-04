@@ -60,6 +60,21 @@ describe('Button', () => {
     expect(screen.getByRole('link', { name: 'Go' }).className).toContain('button');
   });
 
+  it('exposes the outline variant, the compact and large sizes and the danger tone', () => {
+    render(
+      <div>
+        <Button variant="outline" size="lg">Cancel</Button>
+        <Button variant="dashed" size="compact" icon="plus">Add header</Button>
+        <Button variant="ghost" size="sm" tone="danger">Delete</Button>
+      </div>,
+    );
+    const cancel = screen.getByRole('button', { name: 'Cancel' });
+    expect(cancel.getAttribute('data-variant')).toBe('outline');
+    expect(cancel.getAttribute('data-size')).toBe('lg');
+    expect(screen.getByRole('button', { name: 'Add header' }).querySelector('svg')?.getAttribute('width')).toBe('14');
+    expect(screen.getByRole('button', { name: 'Delete' }).getAttribute('data-tone')).toBe('danger');
+  });
+
   it('has no axe violations', async () => {
     const { container } = render(
       <div>

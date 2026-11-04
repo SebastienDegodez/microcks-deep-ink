@@ -73,3 +73,23 @@ export const Numbered: StoryObj = {
     template: `<figure mkCodeBlock variant="plain" caption="Response body" lineNumbers [lines]="lines"></figure>`,
   }),
 };
+
+export const ChangedLines: StoryObj = {
+  name: 'Changed lines (diff)',
+  render: () => ({
+    props: {
+      tabs: [{ id: 'gh', label: 'GitHub Actions' }, { id: 'gl', label: 'GitLab CI' }, { id: 'cli', label: 'CLI' }],
+      tab: 'gh',
+      lines: [
+        { text: 'jobs:' },
+        { text: '  contract-test:' },
+        { text: '    steps:' },
+        { text: '      - name: Contract test API Pastry 2.0', changed: true },
+        { text: '        uses: microcks/test-github-action@v1', changed: true },
+        { text: '        with:' },
+        { text: "          runner: 'OPEN_API_SCHEMA'", changed: true },
+      ],
+    },
+    template: `<div style="max-width: 360px"><figure mkCodeBlock caption="contract-tests.yml" [tabs]="tabs" [(tab)]="tab" [lines]="lines"></figure></div>`,
+  }),
+};
