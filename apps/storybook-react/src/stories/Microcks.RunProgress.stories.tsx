@@ -26,3 +26,13 @@ export const Running: StoryObj = {
     </div>
   ),
 };
+
+/** A custom `label` for the progress bar and a `gap` between the segments. */
+export const LabelAndGap: StoryObj = {
+  name: 'Label and gap',
+  render: () => (
+    <div style={{ maxWidth: 560 }}>
+      <RunProgress label="Run #120 progress" done={3} total={6} caption="3 of 6 steps" gap={4} segments={['done', 'done', 'done', 'current', 'queued', 'queued']} />
+    </div>
+  ),
+};

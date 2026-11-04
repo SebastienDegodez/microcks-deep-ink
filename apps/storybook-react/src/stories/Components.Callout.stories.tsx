@@ -20,6 +20,17 @@ export const Default: StoryObj = {
   ),
 };
 
+/** `live="polite"` announces the callout when it appears. Use it for a message that follows an action. */
+export const LivePolite: StoryObj = {
+  name: 'Announced (polite and assertive)',
+  render: () => (
+    <div className="sb-col" style={{ maxWidth: 640 }}>
+      <Callout tone="success" title="Saved" live="polite">The service settings were saved.</Callout>
+      <Callout tone="danger" title="Import failed" live="assertive">The file is not a valid OpenAPI document.</Callout>
+    </div>
+  ),
+};
+
 export const AI: StoryObj = {
   name: 'AI generated',
   render: () => (

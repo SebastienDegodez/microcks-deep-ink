@@ -27,3 +27,18 @@ export const Tones: StoryObj = {
     );
   },
 };
+
+/** `tone="warning"`, a custom `icon`, `dismissLabel`, and `live="off"` for a box that is already on screen at load. */
+export const WarningDismissible: StoryObj = {
+  name: 'Warning, dismissible, not announced',
+  render: () => {
+    const [shown, setShown] = useState(true);
+    return shown ? (
+      <div style={{ maxWidth: 560 }}>
+        <ResultBox tone="warning" icon="spark" title="Partial result" live="off" onDismiss={() => setShown(false)} dismissLabel="Dismiss the partial result">
+          2 of 12 operations were skipped.
+        </ResultBox>
+      </div>
+    ) : <Button onClick={() => setShown(true)}>Show the result again</Button>;
+  },
+};

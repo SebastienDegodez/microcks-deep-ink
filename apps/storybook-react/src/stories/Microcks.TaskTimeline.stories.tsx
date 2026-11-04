@@ -19,6 +19,22 @@ export const States: StoryObj = {
   ),
 };
 
+/** The terminal states `auth-required`, `canceled` and `rejected`, a ghost tag, a custom `label` and `showUnreached={false}`. */
+export const OtherStates: StoryObj = {
+  name: 'Other states',
+  render: () => (
+    <div className="sb-col">
+      <div className="inline">
+        <TaskStateTag state="auth-required" />
+        <TaskStateTag state="canceled" />
+        <TaskStateTag state="rejected" />
+        <TaskStateTag state="completed" ghost />
+      </div>
+      <TaskTimeline label="Cancelled task" showUnreached={false} nodes={[{ state: 'submitted', at: '09:10:01' }, { state: 'working', at: '09:10:03', connector: '2 s' }, { state: 'canceled', at: '09:10:05', connector: '2 s' }]} />
+    </div>
+  ),
+};
+
 export const Timeline: StoryObj = {
   render: () => <TaskTimeline nodes={AGENT_LIFECYCLE} />,
 };

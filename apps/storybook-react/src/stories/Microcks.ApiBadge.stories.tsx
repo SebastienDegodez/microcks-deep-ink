@@ -26,6 +26,17 @@ export const Default: StoryObj = {
   ),
 };
 
+/** `versionTone="muted"` lowers the weight of the version next to the name. */
+export const MutedVersion: StoryObj = {
+  name: 'Muted version',
+  render: () => (
+    <div className="inline">
+      <ApiBadge protocol="REST" name="API Pastry" version="2.0" versionTone="muted" />
+      <ApiBadge protocol="EVENT" name="Pastry orders" version="0.1.0" versionTone="muted" size="lg" />
+    </div>
+  ),
+};
+
 export const Small: StoryObj = {
   render: () => <ApiBadge size="sm" protocol="REST" name="API Pastry" version="2.0" />,
 };

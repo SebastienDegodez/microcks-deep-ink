@@ -16,3 +16,13 @@ export const Default: StoryObj = {
     </div>
   ),
 };
+
+/** `width` sets the width of the last line or of a single block. */
+export const Widths: StoryObj = {
+  render: () => (
+    <div className="sb-col" style={{ maxWidth: 480 }}>
+      <Skeleton width={120} />
+      <Skeleton lines={3} width="70%" />
+    </div>
+  ),
+};

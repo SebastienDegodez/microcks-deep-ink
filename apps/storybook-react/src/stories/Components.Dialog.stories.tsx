@@ -35,4 +35,34 @@ function Demo({ danger }: { danger?: boolean }) {
 }
 
 export const Default: StoryObj = { render: () => <Demo /> };
+function SizeDemo({ size, closeOnBackdrop }: { size: 'sm' | 'lg'; closeOnBackdrop?: boolean }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <Button onClick={() => setOpen(true)}>{`Open the ${size === 'sm' ? 'small' : 'large'} dialog`}</Button>
+      <Dialog
+        open={open}
+        onClose={() => setOpen(false)}
+        size={size}
+        closeOnBackdrop={closeOnBackdrop}
+        title={size === 'sm' ? 'Discard changes?' : 'Operation details'}
+        description={closeOnBackdrop ? 'A click on the backdrop closes this dialog.' : undefined}
+        footer={<Button variant="ghost" onClick={() => setOpen(false)}>Close</Button>}
+      >
+        <p style={{ margin: 0 }}>{size === 'sm' ? 'Your edits are not saved.' : 'A wide dialog for forms and tables.'}</p>
+      </Dialog>
+    </>
+  );
+}
+
+/** `size="sm"` for confirmations, `size="lg"` for wide content. `closeOnBackdrop` also closes on a click outside. */
+export const Sizes: StoryObj = {
+  render: () => (
+    <div className="inline">
+      <SizeDemo size="sm" closeOnBackdrop />
+      <SizeDemo size="lg" />
+    </div>
+  ),
+};
+
 export const Destructive: StoryObj = { render: () => <Demo danger /> };

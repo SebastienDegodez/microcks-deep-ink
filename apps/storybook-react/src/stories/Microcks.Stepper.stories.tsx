@@ -18,6 +18,18 @@ export const Progress: StoryObj = {
   ),
 };
 
+/** `direction="vertical"` for a narrow column; `doneLabel` changes the word read for finished steps. */
+export const Vertical: StoryObj = {
+  render: () => (
+    <Stepper
+      label="Import steps"
+      direction="vertical"
+      doneLabel="completed"
+      steps={[{ label: 'Upload the contract', state: 'done' }, { label: 'Review the operations', state: 'current' }, { label: 'Publish', state: 'upcoming' }]}
+    />
+  ),
+};
+
 export const Instructions: StoryObj = {
   render: () => (
     <div style={{ maxWidth: 360 }}>

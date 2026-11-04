@@ -26,6 +26,26 @@ export const Streaming: StoryObj = {
   ),
 };
 
+/** The `WARN` level: a warning that does not fail the step. */
+export const WithWarning: StoryObj = {
+  name: 'With a warning',
+  render: () => (
+    <div style={{ maxWidth: 560 }}>
+      <RunnerLog
+        title="Run #118"
+        status="5 lines · completed with a warning"
+        lines={[
+          { time: '09:08:11', level: 'INFO', text: 'Run #118 · API Pastry 2.0 · 3 operations' },
+          { time: '09:08:11', level: 'SEND', text: 'GET /pastries/Millefeuille' },
+          { time: '09:08:12', level: 'WARN', text: 'Response has an undeclared field "calories"', emphasis: true },
+          { time: '09:08:12', level: 'PASS', text: '200 OK · schema valid · 55 ms' },
+          { time: '09:08:12', level: 'INFO', text: 'Completed with 1 warning' },
+        ]}
+      />
+    </div>
+  ),
+};
+
 export const Completed: StoryObj = {
   render: () => (
     <div style={{ maxWidth: 560 }}>
