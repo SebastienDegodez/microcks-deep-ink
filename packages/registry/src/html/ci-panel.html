@@ -2,6 +2,7 @@
   CiPanel. A region named by its title, disclosed by a native button with aria-expanded and aria-controls.
   The toggle is a secondary button with class="ci-panel-toggle": expanded, it takes the action border on selected.
   data-dashed: a projected command (not available today). The command wraps; Copy: see copy-button.
+  The copy button label is "Copy" by default; AgentTestRun says "Copy command".
 -->
 <button type="button" class="button ci-panel-toggle" data-variant="secondary" data-size="md" aria-expanded="true" aria-controls="ci-panel">Run it from CI</button>
 
@@ -11,7 +12,7 @@
       <p class="ci-panel-title"><span id="ci-panel-title">Run this test in your pipeline</span><span class="projection-pill">Projection · proposed CLI</span></p>
       <p class="ci-panel-hint">The existing <code>microcks test</code> command with the new runner name. It exits non-zero when a check fails.</p>
     </div>
-    <button type="button" class="button copy-button" data-variant="outline" data-size="sm" data-copy="#ci-cmd">Copy</button>
+    <button type="button" class="button copy-button" data-variant="outline" data-size="sm" data-copy="#ci-cmd">Copy command</button>
   </div>
   <pre class="ci-panel-code"><code id="ci-cmd">microcks test 'Pastry Concierge:1.0' https://concierge.acme.io/a2a A2A_CONFORMANCE --microcksURL=https://microcks.acme.io/api/</code></pre>
   <p class="ci-panel-foot">Add --keycloakClientId and --keycloakClientSecret when your instance has authentication on.</p>

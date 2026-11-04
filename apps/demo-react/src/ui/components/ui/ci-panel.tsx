@@ -15,13 +15,15 @@ export interface CiPanelProps extends Omit<HTMLAttributes<HTMLElement>, 'title'>
   footnote?: ReactNode;
   /** Dashed frame (a projected, not-yet-available command: AgentTestRun). */
   dashed?: boolean;
+  /** Label of the copy button (default "Copy"; "Copy command" on AgentTestRun). */
+  copyLabel?: string;
 }
 
 /**
  * "Run it from CI" panel. Show it with a `<Button className="ci-panel-toggle" aria-expanded aria-controls={id}>`
  * and give the panel that `id`.
  */
-export function CiPanel({ title, pill, hint, command, footnote, dashed, className, ...rest }: CiPanelProps) {
+export function CiPanel({ title, pill, hint, command, footnote, dashed, copyLabel = 'Copy', className, ...rest }: CiPanelProps) {
   const titleId = useId();
   return (
     <section {...rest} aria-labelledby={titleId} className={['ci-panel', className].filter(Boolean).join(' ')} data-dashed={dashed ? '' : undefined}>
@@ -33,7 +35,7 @@ export function CiPanel({ title, pill, hint, command, footnote, dashed, classNam
           </p>
           {hint ? <p className="ci-panel-hint">{hint}</p> : null}
         </div>
-        <CopyButton value={command} variant="outline" size="sm" />
+        <CopyButton value={command} label={copyLabel} variant="outline" size="sm" />
       </div>
       <pre className="ci-panel-code">
         <code>{command}</code>

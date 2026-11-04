@@ -457,10 +457,10 @@
     "ci-panel": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/ci-panel.tsx": "cb4076b42fd59d3f1dbe31fec31436c4b6f59151a818d486946fe7ac8e1864b1",
+        "src/ui/components/ui/ci-panel.tsx": "e766169d52d872a7f9343e1e88c123e1f7d1be4868f8aebe9d780fa3e229f220",
         "src/ui/styles/ci-panel.css": "0f7fa8c2159060d9b95ea76b80089506ce60bbd558d21ab1bafc899a20aa611c"
       },
-      "hash": "d3415d4d251764df"
+      "hash": "a3aa38ef952d201c"
     },
     "result-box": {
       "version": "0.2.0",

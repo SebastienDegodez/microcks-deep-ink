@@ -19,4 +19,9 @@ describe('CiPanel', () => {
     expect(screen.getByRole('button', { name: 'Run it from CI' }).getAttribute('aria-expanded')).toBe('true');
     expect(await axeViolations(container)).toEqual([]);
   });
+
+  it('takes a copy button label', () => {
+    render(<CiPanel title="Run this test in your pipeline" command="microcks test" copyLabel="Copy command" />);
+    expect(screen.getByRole('button', { name: 'Copy command' })).toBeTruthy();
+  });
 });
