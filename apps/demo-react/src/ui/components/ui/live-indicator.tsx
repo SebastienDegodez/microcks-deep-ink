@@ -8,10 +8,10 @@ export interface LiveIndicatorProps extends HTMLAttributes<HTMLSpanElement> {
   paused?: boolean;
   /** Text shown while paused, instead of "<label> · paused": "paused · 2 new calls". Write the word "paused". */
   pausedLabel?: string;
-  /** `sm`: 11px, padding 2px 8px. */
-  size?: 'md' | 'sm';
-  /** `inline`: no pill border, for KPI cards. */
-  variant?: 'pill' | 'inline';
+  /** `sm`: 11px, padding 2px 8px. `lg` (box only): 44px, 13px. */
+  size?: 'md' | 'sm' | 'lg';
+  /** `inline`: no pill border, for KPI cards. `box`: a dashed 36px (lg 44px) frame in place of a busy button. */
+  variant?: 'pill' | 'inline' | 'box';
 }
 
 /**

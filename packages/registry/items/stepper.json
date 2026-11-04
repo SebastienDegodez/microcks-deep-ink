@@ -1,0 +1,22 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "stepper",
+  "title": "Stepper",
+  "tier": "microcks",
+  "description": "Numbered steps in an ordered list. `progress` shows where a flow stands: 22px numbered dots for done, current and upcoming steps (Import \"Source · Preview · Live mock\", the TestCreate and Agent flows). `list` shows numbered instructions with a mono number and 12px text (TestCreate \"Before you paste\", Behavior).",
+  "registryDependencies": ["base"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "<ol aria-label> of <li>; the current step has aria-current=\"step\"",
+    "keyboard": [],
+    "aria": [
+      "The list is named (\"Progress\") and keeps its native order and count",
+      "aria-current=\"step\" marks the current step; done steps add a visually hidden \", done\"",
+      "The number is text inside the dot; the colour of the dot is never the only cue"
+    ],
+    "rgaa": ["9.3", "3.1", "7.1"],
+    "wcag": ["1.3.1", "1.4.1", "4.1.2"],
+    "notes": "Static item: the steps are not buttons. If users can jump to a step, put links or buttons inside the items."
+  },
+  "stories": ["Microcks/Stepper"]
+}

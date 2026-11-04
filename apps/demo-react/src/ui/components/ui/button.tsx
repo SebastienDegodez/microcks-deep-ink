@@ -4,14 +4,16 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactElement, ReactNod
 import { Icon } from './icon';
 import type { IconName } from './icon';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'link' | 'dashed' | 'danger';
-export type ButtonSize = 'md' | 'sm';
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'dashed' | 'danger';
+export type ButtonSize = 'sm' | 'compact' | 'tile' | 'md' | 'lg';
 
 interface ButtonOwnProps {
   /** One primary per task region. `link` is a small text button (Copy, Clear list); `dashed` an add / try action. */
   variant?: ButtonVariant;
-  /** `md` is 40px high. `sm` is 32px and is never used for the primary action of a page. */
+  /** `md` is 40px high. `sm` is 32px and `compact` 34px (never the primary action of a page); `tile` 36px (actions in a card footer); `lg` is 44px (form footers). */
   size?: ButtonSize;
+  /** `danger` (ghost and link only): the text in the danger colour (an inline Delete). */
+  tone?: 'danger';
   /** Filled danger, only inside a confirmation dialog. Use with `variant="danger"`. */
   confirm?: boolean;
   /** Leading icon name. */
@@ -47,7 +49,7 @@ function requireName(component: string, iconOnly: boolean | undefined, props: Re
 function contents(icon: IconName | undefined, size: ButtonSize, variant: ButtonVariant, children: ReactNode) {
   return (
     <>
-      {icon ? <Icon name={icon} size={size === 'sm' || variant === 'link' || variant === 'dashed' ? 14 : 16} /> : null}
+      {icon ? <Icon name={icon} size={size === 'sm' || size === 'compact' || size === 'tile' || variant === 'link' || variant === 'dashed' ? 14 : 16} /> : null}
       {children}
     </>
   );
@@ -64,6 +66,7 @@ export function Button({
   variant = 'secondary',
   size = 'md',
   confirm,
+  tone,
   icon,
   iconOnly,
   loading,
@@ -81,6 +84,7 @@ export function Button({
     'data-variant': variant,
     'data-size': size,
     'data-confirm': confirm ? '' : undefined,
+    'data-tone': tone,
     'data-icon-only': iconOnly ? '' : undefined,
     'aria-busy': loading ? true : undefined,
   };
@@ -105,6 +109,7 @@ export function ButtonLink({
   variant = 'secondary',
   size = 'md',
   confirm,
+  tone,
   icon,
   iconOnly,
   loading,
@@ -122,6 +127,7 @@ export function ButtonLink({
       data-variant={variant}
       data-size={size}
       data-confirm={confirm ? '' : undefined}
+      data-tone={tone}
       data-icon-only={iconOnly ? '' : undefined}
       aria-busy={loading ? true : undefined}
     >

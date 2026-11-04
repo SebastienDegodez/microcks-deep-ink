@@ -1,14 +1,13 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
-import { runHeadline, stoppedStep } from '@/domain/arazzo';
+import { stoppedStep } from '@/domain/arazzo';
 import { PageHeader, useQuery, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
-import { Menu } from '@/ui/components/ui/menu';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
-import { ErrorBlock, LoadingBlock, WORKFLOW_TABS, isWorkflowTab, runPath, runSetupPath, workflowPath, type WorkflowTab } from '../workflows/shared';
+import { ErrorBlock, LoadingBlock, WORKFLOW_TABS, isWorkflowTab, workflowPath, type WorkflowTab } from '../workflows/shared';
 import '../workflows/workflows.css';
+import './workflow.css';
+import { LastRunNote, WorkflowHeader } from './WorkflowHeader';
 import { LoomTab } from './tabs/LoomTab';
 import { StepsTab } from './tabs/StepsTab';
 import { SourceTab } from './tabs/SourceTab';
@@ -38,8 +37,9 @@ export default function WorkflowPage() {
   const runs = useQuery(() => uc.arazzo.listRuns(docId, workflowId), [docId, workflowId]);
   const examples = useQuery(() => uc.arazzo.listExamples(docId, workflowId), [docId, workflowId]);
   const sessions = useQuery(() => uc.arazzo.listSessions(docId, workflowId), [docId, workflowId]);
+  const catalog = useQuery(() => uc.catalog.listServices(), []);
 
-  usePageTitle(`${workflowId ? titleOf(workflowId) : 'Workflow'} · Microcks`);
+  usePageTitle(`${detail.data?.workflow.summary ?? (workflowId || 'Workflow')} · Microcks`);
 
   // A tab segment that is not a tab goes back to the Loom.
   useEffect(() => {
@@ -58,7 +58,7 @@ export default function WorkflowPage() {
   if (loadingAny || !detail.data) {
     return (
       <>
-        <PageHeader title={titleOf(workflowId)} />
+        <PageHeader title={workflowId} />
         <LoadingBlock label="Loading the workflow" rows={5} />
       </>
     );
@@ -70,8 +70,6 @@ export default function WorkflowPage() {
   const selectedRun = runList.find((r) => r.number === runNumber) ?? runList[0];
   const step = search.get('step') ?? undefined;
   const lastRun = runList[0];
-  const stopped = lastRun?.status === 'FAILURE' ? stoppedStep(lastRun) : undefined;
-  const canRun = workflow.runnability.runnable;
 
   const setQuery = (next: Record<string, string | undefined>) => {
     const params = new URLSearchParams(search);
@@ -89,82 +87,49 @@ export default function WorkflowPage() {
     navigate(workflowPath(docId, workflowId, id, query));
   };
   const onPickRun = (n: number) => setQuery({ run: String(n) });
-  const reloadAll = () => {
-    runs.reload();
-    sessions.reload();
-  };
 
   const asyncBlock = !workflow.runnability.runnable ? workflow.runnability : undefined;
+  const services = catalog.data ?? [];
+  const serviceLabel = (id: string) => {
+    const svc = services.find((x) => x.id === id);
+    return svc ? `${svc.name} ${svc.version}` : undefined;
+  };
+  const counts: Partial<Record<WorkflowTab, number | undefined>> = {
+    steps: workflow.steps.length,
+    sessions: sessions.data?.length || undefined,
+    examples: examples.data?.length || undefined,
+    // Runs are numbered per workflow: the latest number is the total.
+    runs: lastRun?.number,
+  };
 
   return (
-    <>
-      <PageHeader
-        title={workflow.workflowId}
-        breadcrumb={[{ label: 'Workflows', to: '/workflows' }, { label: document.file }]}
-        badge={<ApiBadge arazzo name="workflow" />}
-        actions={
-          <>
-            {canRun ? (
-              <Button variant="primary" icon="play" onClick={() => navigate(runSetupPath(docId, workflowId))}>
-                Run
-              </Button>
-            ) : (
-              <Button variant="primary" icon="play" disabled aria-describedby="wf-run-why">
-                Run
-              </Button>
-            )}
-            <Menu
-              label="More actions"
-              iconOnly
-              icon="more"
-              align="end"
-              items={[
-                { id: 'copy', label: 'Copy workflowId', onSelect: () => void navigator.clipboard?.writeText(workflow.workflowId).catch(() => undefined) },
-                { id: 'mock', label: 'Go to Mock URL', onSelect: () => goTab('mock-url') },
-                { id: 'run', label: 'Run…', disabled: !canRun, onSelect: () => navigate(runSetupPath(docId, workflowId)) },
-              ]}
-            />
-          </>
-        }
-      />
-      <p className="wf-lead">{workflow.summary}</p>
+    <div className="wf-workflow">
+      <WorkflowHeader document={document} workflow={workflow} runs={runList} serviceLabel={serviceLabel} onMockUrl={() => goTab('mock-url')} />
       {asyncBlock ? (
         <Callout tone="warning" title="This workflow cannot run yet">
           <span id="wf-run-why">{asyncBlock.message}.</span>
         </Callout>
       ) : null}
-      {lastRun && lastRun.status === 'FAILURE' && stopped ? (
-        <Callout
-          tone="danger"
-          title={`${runHeadline(lastRun).title} · ${runHeadline(lastRun).detail}`}
-          actions={
-            <Button size="sm" onClick={() => navigate(runPath(lastRun.id))}>
-              Open run #{lastRun.number}
-            </Button>
-          }
-        >
-          Last run of this workflow failed at <code>{stopped.stepId}</code>.
-        </Callout>
-      ) : null}
+      {lastRun ? <LastRunNote document={document} workflow={workflow} run={lastRun} /> : null}
 
-      <Tabs label="Workflow views" items={WORKFLOW_TABS.map((id) => ({ id, label: TAB_LABELS[id] }))} value={tab} onChange={goTab}>
+      <Tabs label="Workflow views" items={WORKFLOW_TABS.map((id) => ({ id, label: TAB_LABELS[id], count: counts[id] }))} value={tab} onChange={goTab}>
         <TabPanel id="loom" value={tab}>
-          <LoomTab detail={detail.data} runs={runList} run={selectedRun} step={step} onPickRun={onPickRun} onSelectStep={(s) => setQuery({ step: s })} inspectLink={inspectLink} />
+          <LoomTab detail={detail.data} runs={runList} run={selectedRun} step={step} sessions={sessions.data} serviceLabel={serviceLabel} onPickRun={onPickRun} onSelectStep={(s) => setQuery({ step: s })} inspectLink={inspectLink} />
         </TabPanel>
         <TabPanel id="steps" value={tab}>
           <StepsTab detail={detail.data} runs={runList} run={selectedRun} onPickRun={onPickRun} inspectLink={inspectLink} />
         </TabPanel>
         <TabPanel id="source" value={tab}>
-          <SourceTab detail={detail.data} />
+          <SourceTab detail={detail.data} step={step ?? (selectedRun?.status === 'FAILURE' ? stoppedStep(selectedRun)?.stepId : undefined)} onSelectStep={(s) => setQuery({ step: s })} serviceLabel={serviceLabel} />
         </TabPanel>
         <TabPanel id="mock-url" value={tab}>
-          <MockUrlTab detail={detail.data} runs={runList} />
+          <MockUrlTab detail={detail.data} runs={runList} onShowRuns={() => navigate(workflowPath(docId, workflowId, 'runs', { filter: 'mock-url' }))} />
         </TabPanel>
         <TabPanel id="sessions" value={tab}>
           {sessions.status === 'error' ? (
             <ErrorBlock error={sessions.error} onRetry={sessions.reload} />
           ) : sessions.data ? (
-            <SessionsTab detail={detail.data} sessions={sessions.data} runs={runList} onChanged={reloadAll} />
+            <SessionsTab detail={detail.data} sessions={sessions.data} runs={runList} />
           ) : (
             <LoadingBlock label="Loading the sessions" />
           )}
@@ -173,19 +138,15 @@ export default function WorkflowPage() {
           {examples.status === 'error' ? (
             <ErrorBlock error={examples.error} onRetry={examples.reload} />
           ) : examples.data ? (
-            <ExamplesTab detail={detail.data} runs={runList} examples={examples.data} />
+            <ExamplesTab detail={detail.data} runs={runList} examples={examples.data} serviceLabel={serviceLabel} />
           ) : (
             <LoadingBlock label="Loading the examples" />
           )}
         </TabPanel>
         <TabPanel id="runs" value={tab}>
-          {runs.status === 'error' ? <ErrorBlock error={runs.error} onRetry={runs.reload} /> : <RunsTab detail={detail.data} runs={runList} initialFilter={search.get('filter') ?? undefined} />}
+          {runs.status === 'error' ? <ErrorBlock error={runs.error} onRetry={runs.reload} /> : <RunsTab detail={detail.data} runs={runList} sessions={sessions.data} initialFilter={search.get('filter') ?? undefined} />}
         </TabPanel>
       </Tabs>
-    </>
+    </div>
   );
-}
-
-function titleOf(workflowId: string): string {
-  return workflowId === 'restock-pastry' ? 'Restock a pastry' : workflowId;
 }

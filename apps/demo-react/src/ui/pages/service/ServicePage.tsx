@@ -1,26 +1,24 @@
 import '../explore-kit/explore.css';
-import { useState } from 'react';
+import './service.css';
+import { useState, type HTMLAttributes } from 'react';
 import { Link as RouterLink, useNavigate, useParams, useSearchParams } from 'react-router';
-import { formatDay } from '@/domain/importing';
+import { formatDay, formatHourMinute } from '@/domain/importing';
 import { buildSnippet, exampleUrlPath, paramLines, requestHead, type SnippetFormat, type WorkflowUsage } from '@/domain/catalog';
 import { labelToString, type Example, type Operation } from '@/domain/shared';
-import { PageHeader, useAnnounce, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
-import { AiGhostRow } from '@/ui/components/ui/ai-ghost-row';
+import { PageHeader, useAnnounce, useClock, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
 import { Chip } from '@/ui/components/ui/chip';
 import { CodeBlock } from '@/ui/components/ui/code-block';
 import { CopyButton } from '@/ui/components/ui/copy-button';
-import { DescriptionList } from '@/ui/components/ui/description-list';
-import { Icon } from '@/ui/components/ui/icon';
+import { FactRow, Facts } from '@/ui/components/ui/facts';
+import { Icon, type IconName } from '@/ui/components/ui/icon';
+import { Input } from '@/ui/components/ui/input';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { Menu } from '@/ui/components/ui/menu';
 import { MethodTag } from '@/ui/components/ui/method-tag';
-import { MockUrl } from '@/ui/components/ui/mock-url';
-import { Panel } from '@/ui/components/ui/panel';
-import { Segmented } from '@/ui/components/ui/segmented';
-import { StatusBadge } from '@/ui/components/ui/status-badge';
+import { SectionLabel } from '@/ui/components/ui/section-label';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
 import AgentPage from '../agent/AgentPage';
@@ -28,27 +26,71 @@ import { fmt, pluralize } from '../explore-kit/format';
 
 type TabId = 'operations' | 'properties' | 'tests';
 const TAB_IDS: TabId[] = ['operations', 'properties', 'tests'];
+const DAY_MS = 86_400_000;
+const DAY_LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
+const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+const TARGET_LABEL = { mocks: 'Microcks mocks', implementations: 'Implementations', mixed: 'Mocks and implementations' } as const;
+const RECENT_RUNS = 3;
 
-function Sparkline({ values }: { values: number[] }) {
-  const max = Math.max(1, ...values);
-  const days = ['Fri', 'Sat', 'Sun', 'Mon', 'Tue', 'Wed', 'Thu'];
+const examplesLabel = (n: number) => pluralize(n, 'example');
+const exampleSub = (e: Example) => Object.entries(e.request.params).map(([k, v]) => `${k}=${v}`).join(' · ') || 'no parameter';
+
+/**
+ * A `<pre>` that may scroll sideways. The scroll container must be keyboard reachable (WCAG 2.1.1), so it is
+ * focusable and named, like the registry's code-block.
+ */
+function ScrollPre({ children, ...rest }: HTMLAttributes<HTMLPreElement> & { 'aria-label': string; 'data-tone'?: string; 'data-grow'?: string }) {
   return (
-    <div>
-      <div className="ex-sparkbars" style={{ height: 32 }} role="img" aria-label={`Calls per day over 7 days: ${values.join(', ')}`}>
-        {values.map((v, i) => <span key={i} style={{ height: `${Math.max(6, Math.round((v / max) * 100))}%` }} title={`${days[i % 7]}: ${v}`} />)}
+    // eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- named scroll region, see above
+    <pre tabIndex={0} role="region" {...rest}>
+      {children}
+    </pre>
+  );
+}
+
+/** Calls of the last 7 days, the last bar being today (demo clock). */
+function Sparkline({ values, total, today }: { values: number[]; total: number; today: Date }) {
+  const max = Math.max(1, ...values);
+  const days = values.map((_, i) => new Date(today.getTime() - (values.length - 1 - i) * DAY_MS));
+  const long = (d: Date | undefined) => !d ? '' : `${DAY_NAMES[d.getUTCDay()]}, ${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`;
+  return (
+    <div className="spark-box">
+      <div className="spark-box-head">
+        <span>Calls · 7 days</span>
+        <span className="spark-box-total">{fmt(total)}</span>
+      </div>
+      <div className="spark-box-bars" role="img" aria-label={`Calls over 7 days: ${values.map((v, i) => `${long(days[i])} ${fmt(v)}`).join(', ')}`}>
+        {values.map((v, i) => (
+          <span key={i} data-today={i === values.length - 1 ? '' : undefined} style={{ height: `${Math.max(6, Math.round((v / max) * 100))}%` }} title={`${long(days[i])}: ${fmt(v)} calls`} />
+        ))}
+      </div>
+      <div className="spark-box-days" aria-hidden="true">
+        {days.map((d, i) => <span key={i}>{DAY_LETTERS[d.getUTCDay()]}</span>)}
       </div>
     </div>
   );
 }
 
-function WorkflowResult({ usage }: { usage: WorkflowUsage }) {
+function WorkflowResult({ usage, relative }: { usage: WorkflowUsage; relative: (d: string) => string }) {
   const r = usage.result;
-  if (!r || r.kind === 'never') return <span className="ex-small ex-secondary"><Icon name="circle" size={12} /> never run</span>;
-  if (r.kind === 'blocked') return <span className="ex-small ex-secondary"><Icon name="warning" size={12} /> blocked · {r.reason}</span>;
+  let icon: IconName = 'minus-circle';
+  let text = 'Never run';
+  let tone = 'never';
+  if (r?.kind === 'blocked') {
+    icon = 'warning';
+    text = r.reason;
+    tone = 'blocked';
+  } else if (r?.kind === 'passed' || r?.kind === 'failed') {
+    icon = r.kind === 'passed' ? 'check-circle' : 'x-circle';
+    text = `${r.kind === 'passed' ? 'Passed' : 'Failed'} #${r.runNumber} · ${TARGET_LABEL[r.target]} · ${relative(r.at)}`;
+    tone = r.kind;
+  }
   return (
-    <RouterLink to={`/workflows/runs/${r.runId}`} className="ex-small">
-      <Icon name={r.kind === 'passed' ? 'check' : 'cross'} size={12} /> {r.kind === 'passed' ? 'Passed' : 'Failed'} · run #{r.runNumber} on {r.target}
-    </RouterLink>
+    <span className="wf-usage-result" data-tone={tone}>
+      <Icon name={icon} size={13} />
+      {text}
+    </span>
   );
 }
 
@@ -57,6 +99,7 @@ function ApiServicePage() {
   const [search, setSearch] = useSearchParams();
   const navigate = useNavigate();
   const uc = useUseCases();
+  const clock = useClock();
   const relative = useRelativeTime();
   const announce = useAnnounce();
   const tabId: TabId = TAB_IDS.includes(tab as TabId) ? (tab as TabId) : 'operations';
@@ -71,7 +114,11 @@ function ApiServicePage() {
   const opParam = search.get('op');
   // Like the prototype, open on the "by name" operation, the one that carries the AI proposal.
   const currentOp: Operation | undefined = ops.data?.find((o) => o.id === opParam) ?? ops.data?.find((o) => o.id === 'get-name') ?? ops.data?.[0];
-  const examples = useQuery(() => (currentOp ? uc.catalog.listExamples(serviceId, currentOp.id) : Promise.resolve([] as Example[])), [uc, serviceId, currentOp?.id]);
+  // Examples of every operation: the rail shows each operation's count and its pending AI proposal.
+  const allExamples = useQuery(
+    () => Promise.all((ops.data ?? []).map(async (o) => [o.id, await uc.catalog.listExamples(serviceId, o.id)] as const)).then((rows) => Object.fromEntries(rows) as Record<string, Example[]>),
+    [uc, serviceId, ops.data],
+  );
   usePageTitle(service.data ? `${service.data.name} ${service.data.version} · Microcks` : 'Service · Microcks');
 
   if (service.status === 'error' && !service.data) {
@@ -93,10 +140,14 @@ function ApiServicePage() {
     );
   }
 
-  const list = examples.data ?? [];
+  const list = (currentOp && allExamples.data?.[currentOp.id]) || [];
   const pending = list.filter((e) => e.reviewState === 'pending');
   const accepted = list.filter((e) => e.reviewState !== 'pending');
-  const selected = list.find((e) => e.id === search.get('example')) ?? accepted[0] ?? list[0];
+  const fromContract = accepted.filter((e) => !e.aiGenerated);
+  const aiAccepted = accepted.filter((e) => e.aiGenerated);
+  const ordered = [...accepted, ...pending];
+  const selected = ordered.find((e) => e.id === search.get('example')) ?? accepted[0] ?? ordered[0];
+  const pendingTotal = Object.values(allExamples.data ?? {}).reduce((n, l) => n + l.filter((e) => e.reviewState === 'pending').length, 0);
   const select = (patch: Record<string, string | undefined>) => {
     const next = new URLSearchParams(search);
     for (const [k, v] of Object.entries(patch)) {
@@ -111,77 +162,85 @@ function ApiServicePage() {
     ? { method: currentOp.method, pathTemplate: currentOp.path, example: selected, mockBase: det.mockBase, mcpBase: det.mcp?.httpUrl ?? '', mcpTool: currentOp.mcpTool }
     : undefined;
   const mockUrl = spec ? `${det.mockBase}${exampleUrlPath(spec.pathTemplate, spec.example.request.params)}` : det.mockBase;
-  const opUsages = (usages.data ?? []).filter((u) => (u.steps ?? []).some((s) => s.catalogOperationId === currentOp?.id));
-  const failed = svc.testStatus === 'failed';
+  const allUsages = usages.data ?? [];
+  const stepRefs = allUsages.flatMap((u) => (u.steps ?? []).filter((s) => s.catalogOperationId === currentOp?.id).map((s) => ({ ref: `${u.summary} › ${s.stepId}`, operationId: s.operationId })));
+  const recentRuns = (runs.data ?? []).slice(0, RECENT_RUNS);
+  const latestRun = runs.data?.[0];
+  // The AI proposal is built from the response schema, named after the API's resource ("API Pastry" → Pastry).
+  const schemaName = svc.name.split(' ').pop() ?? svc.name;
 
   const accept = async (e: Example) => {
     if (!currentOp) return;
     await uc.copilot.accept(serviceId, currentOp.id, e);
     announce(`Accepted ${e.name}. The mock serves it now.`);
-    examples.reload();
+    allExamples.reload();
   };
   const reject = async (e: Example) => {
     if (!currentOp) return;
     await uc.catalog.removeExample(serviceId, currentOp.id, e.id);
     setRejected(e);
+    if (selected?.id === e.id) select({ example: undefined });
     announce(`Rejected ${e.name}.`);
-    examples.reload();
+    allExamples.reload();
   };
   const undo = async () => {
     if (!currentOp || !rejected) return;
     await uc.catalog.addExamples(serviceId, currentOp.id, [rejected]);
     setRejected(undefined);
     announce('Proposal restored.');
-    examples.reload();
+    allExamples.reload();
   };
 
   const header = (
-    <>
-      <PageHeader
-        title={`${svc.name} ${svc.version}`}
-        breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}` }]}
-        badge={<ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} />}
-        actions={
-          <>
-            <Button asChild icon="play"><RouterLink to={`/tests/create?service=${svc.id}`}>Run a test</RouterLink></Button>
-            <Button asChild variant="secondary" icon="spark"><RouterLink to={`/services/${svc.id}/copilot${currentOp ? `?op=${currentOp.id}` : ''}`}>Generate examples (AI)</RouterLink></Button>
-            <Menu
-              label="More actions"
-              icon="more"
-              iconOnly
-              variant="secondary"
-              align="end"
-              items={[
-                { id: 'labels', label: 'Edit labels', onSelect: () => announce('Edit labels is not part of this demo.') },
-                { id: 'docs', label: 'View OpenAPI documentation', onSelect: () => announce('Documentation opens in the real product.') },
-                { id: 'download', label: 'Download contract', onSelect: () => announce('Contract download is not part of this demo.') },
-                { id: 'delete', label: 'Delete Service', danger: true, onSelect: () => announce('Delete is disabled in the demo.') },
-              ]}
-            />
-          </>
-        }
-      />
-      <div className="ex-stack" style={{ gap: 8 }}>
-        <p className="ex-row ex-secondary" style={{ margin: 0 }}>
-          <LiveIndicator label={`mock live · last call ${relative(det.lastCallAt)}`} />
-        </p>
-        <p style={{ margin: 0 }}>{det.description}</p>
-        <div className="ex-row">
-          {svc.labels.map((l) => <Chip key={labelToString(l)} variant="outline">{labelToString(l)}</Chip>)}
-          <span className="ex-small ex-muted">{det.createdLabel} · imported {formatDay(det.importedAt)}</span>
-        </div>
-        <div className="ex-row">
-          <ApiBadge label="conformance" value={svc.conformance === null ? 'untested' : `${svc.conformance}%`} status={svc.conformance === null ? 'neutral' : failed ? 'danger' : 'success'} size="sm" />
-          <ApiBadge label="mcp" value={svc.mcp ? 'agent-ready' : 'not exposed'} status={svc.mcp ? 'info' : 'neutral'} size="sm" />
-          <ApiBadge label="samples" value={String(svc.exampleCount ?? 0)} size="sm" />
-          {pending.length > 0 ? <ApiBadge label="" value={`+${pending.length} AI`} status="info" size="sm" /> : null}
-        </div>
+    <PageHeader
+      variant="badge"
+      align="start"
+      title={<ApiBadge protocol={svc.protocol} name={`${svc.name} ${svc.version}`} size="xl" />}
+      breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}` }]}
+      breadcrumbSeparator="/"
+      badge={<LiveIndicator label={`mock live · last call ${relative(det.lastCallAt)}`} />}
+      description={det.description}
+      descriptionTone="secondary"
+      actions={
+        <>
+          <Button asChild variant="primary" icon="play"><RouterLink to={`/tests/create?service=${svc.id}`}>Run a test</RouterLink></Button>
+          <Button asChild variant="secondary" icon="spark" className="service-ai-action"><RouterLink to={`/services/${svc.id}/copilot${currentOp ? `?op=${currentOp.id}` : ''}`}>Generate examples (AI)</RouterLink></Button>
+          <Menu
+            label="More actions"
+            icon="more-vertical"
+            iconOnly
+            variant="secondary"
+            align="end"
+            items={[
+              { id: 'labels', label: 'Edit labels', onSelect: () => announce('Edit labels is not part of this demo.') },
+              { id: 'docs', label: 'View OpenAPI documentation', onSelect: () => announce('Documentation opens in the real product.') },
+              { id: 'download', label: 'Download contract', onSelect: () => announce('Contract download is not part of this demo.') },
+              { id: 'delete', label: 'Delete Service', danger: true, separatorBefore: true, onSelect: () => announce('Delete is disabled in the demo.') },
+            ]}
+          />
+        </>
+      }
+    >
+      <div className="service-head-row">
+        {svc.labels.map((l) => <Chip key={labelToString(l)} variant="outline">{labelToString(l)}</Chip>)}
+        <span className="service-head-dates">Created {det.createdLabel} · imported {formatDay(det.importedAt)} at {formatHourMinute(det.importedAt)}</span>
       </div>
-    </>
+      <div className="service-head-proofs">
+        <ApiBadge label="conformance" value={svc.conformance === null ? 'untested' : `${svc.conformance}%`} status={svc.conformance === null ? 'neutral' : svc.conformance >= 90 ? 'success' : svc.conformance >= 60 ? 'warning' : 'danger'} />
+        <ApiBadge label="mcp" value={svc.mcp ? 'agent-ready' : 'not exposed'} status={svc.mcp ? 'info' : 'neutral'} />
+        <ApiBadge
+          label="samples"
+          value={String(svc.exampleCount ?? 0)}
+          status="action"
+          values={pendingTotal > 0 ? [{ value: `+${pendingTotal} AI`, status: 'warning' }] : undefined}
+          className="service-samples"
+        />
+      </div>
+    </PageHeader>
   );
 
   return (
-    <div className="ex-stack">
+    <div className="ex-stack service-page">
       {header}
       <Tabs
         label="Service sections"
@@ -191,149 +250,246 @@ function ApiServicePage() {
         items={[
           { id: 'operations', label: 'Operations', count: ops.data?.length },
           { id: 'properties', label: 'Properties & MCP' },
-          { id: 'tests', label: 'Tests', count: runs.data?.length },
+          { id: 'tests', label: 'Tests', count: runs.data ? recentRuns.length : undefined },
         ]}
       >
         <TabPanel id="operations" idPrefix="svc" value={tabId}>
-          <div className="ex-grid ex-ops-layout">
-              <div className="ex-stack">
-                <p className="ex-row-between ex-small ex-secondary" style={{ margin: 0 }}><span>{pluralize(ops.data?.length ?? 0, 'operation')}</span><span>calls · 7 d</span></p>
-                <ul className="ex-plain-list" aria-label={`Operations of ${svc.name} ${svc.version}`}>
-                  {(ops.data ?? []).map((o) => (
+          <div className="service-ops">
+            <div className="op-rail">
+              <SectionLabel as="p" size="sm" weight="regular" split className="op-rail-head"><span>{pluralize(ops.data?.length ?? 0, 'operation')}</span><span>calls · 7 d</span></SectionLabel>
+              <ul className="op-rail-list" aria-label={`Operations of ${svc.name} ${svc.version}`}>
+                {(ops.data ?? []).map((o) => {
+                  const exs = allExamples.data?.[o.id] ?? [];
+                  const ai = exs.filter((e) => e.reviewState === 'pending').length;
+                  return (
                     <li key={o.id}>
-                      <Button
-                        variant={o.id === currentOp?.id ? 'secondary' : 'ghost'}
-                        aria-pressed={o.id === currentOp?.id}
-                        onClick={() => select({ op: o.id, example: undefined })}
-                        style={{ width: '100%', justifyContent: 'flex-start', height: 'auto', padding: 8 }}
-                      >
-                        <span className="ex-stack" style={{ gap: 2, textAlign: 'start' }}>
-                          <span className="ex-row"><MethodTag method={o.method} protocol={svc.protocol} /> <span className="ex-mono">{o.path}</span></span>
-                          <span className="ex-small ex-secondary">{o.summary} · {fmt(o.calls)} calls</span>
+                      <button type="button" className="op-pick" aria-pressed={o.id === currentOp?.id} onClick={() => select({ op: o.id, example: undefined })}>
+                        <MethodTag method={o.method} protocol={svc.protocol} />
+                        <span className="op-pick-main">
+                          <span className="op-pick-path">{o.path}</span>
+                          <span className="op-pick-summary">{o.summary}</span>
+                          {allExamples.data ? <span className="op-pick-meta">{examplesLabel(exs.length - ai)}{ai ? ` · +${ai} AI` : ''}</span> : null}
                         </span>
-                      </Button>
+                        <span className="op-pick-calls"><span className="sr-only">Calls over 7 days: </span>{fmt(o.calls)}</span>
+                      </button>
                     </li>
-                  ))}
-                </ul>
-                <p className="ex-small ex-secondary">Every operation is served as soon as the contract is imported. No code, no deployment.</p>
-              </div>
-              {currentOp ? (
-                <section aria-label="Operation detail" className="ex-stack">
-                  <div className="ex-row-between">
-                    <div className="ex-stack" style={{ gap: 2 }}>
-                      <div className="ex-row"><MethodTag method={currentOp.method} protocol={svc.protocol} /><h2 className="ex-mono" style={{ margin: 0, fontSize: 'var(--type-heading)' }}>{currentOp.path}</h2></div>
-                      <span className="ex-small ex-secondary">{currentOp.summary}{currentOp.mcpTool ? <> · MCP tool <code>{currentOp.mcpTool}</code></> : null}</span>
+                  );
+                })}
+              </ul>
+              <p className="op-rail-note">Every operation is served as soon as the contract is imported. No code, no deployment.</p>
+            </div>
+            {currentOp ? (
+              <section aria-label="Operation detail" className="op-detail">
+                <div className="op-detail-head">
+                  <div className="op-detail-title">
+                    <div className="op-detail-title-row">
+                      <MethodTag method={currentOp.method} protocol={svc.protocol} />
+                      <h2>{currentOp.path}</h2>
                     </div>
-                    <div><span className="ex-small ex-secondary">Calls · 7 days</span> <strong>{fmt(currentOp.calls)}</strong><Sparkline values={currentOp.spark} /></div>
+                    <span className="op-detail-summary">{currentOp.summary}{currentOp.mcpTool ? <> · MCP tool <span className="op-detail-tool">{currentOp.mcpTool}</span></> : null}</span>
                   </div>
+                  <Sparkline values={currentOp.spark} total={currentOp.calls} today={clock.now()} />
+                </div>
 
-                  <MockUrl url={mockUrl} method={currentOp.method} mcpTool={currentOp.mcpTool} bare />
+                <div className="op-mock">
+                  <SectionLabel as="label" htmlFor="mock-url">Mock URL</SectionLabel>
+                  <div className="op-mock-url">
+                    <Input id="mock-url" mono readOnly value={mockUrl} />
+                    <CopyButton value={mockUrl} size="md" label="Copy" />
+                  </div>
                   {spec ? (
-                    <div className="ex-stack" style={{ gap: 8 }}>
-                      <Segmented label="Call format" value={format} onChange={(id) => setFormat(id as SnippetFormat)} options={[{ id: 'curl', label: 'curl' }, { id: 'httpie', label: 'HTTPie' }, ...(currentOp.mcpTool ? [{ id: 'mcp', label: 'MCP tool' }] : [])]} />
-                      <CodeBlock code={buildSnippet(format, spec)} caption="Call snippet" language="shell" copy />
-                    </div>
+                    <CodeBlock
+                      code={buildSnippet(format, spec)}
+                      language="shell"
+                      tabsLabel="Call format"
+                      tabs={[{ id: 'curl', label: 'curl' }, { id: 'httpie', label: 'HTTPie' }, ...(currentOp.mcpTool ? [{ id: 'mcp', label: 'MCP tool call' }] : [])]}
+                      tab={format}
+                      onTabChange={(id) => setFormat(id as SnippetFormat)}
+                      copy
+                    />
                   ) : null}
+                </div>
 
-                  <p className="ex-row ex-small" style={{ margin: 0 }}>
-                    <span><span className="ex-secondary">Dispatcher</span> <strong>{currentOp.dispatcher}</strong> <span className="ex-mono">{currentOp.rule}</span></span>
-                    <span><span className="ex-secondary">Delay</span> <strong>{currentOp.delayMs} ms</strong> fixed</span>
-                    <RouterLink to={`/services/${svc.id}/operations/${currentOp.id}`}>Edit behavior</RouterLink>
-                  </p>
+                <div className="dispatch-strip">
+                  <span className="dispatch-strip-item"><span className="dispatch-strip-key">Dispatcher</span><span className="dispatch-strip-value">{currentOp.dispatcher} · rule: {currentOp.rule}</span></span>
+                  <span className="dispatch-strip-sep" aria-hidden="true" />
+                  <span className="dispatch-strip-item"><span className="dispatch-strip-key">Delay</span><span className="dispatch-strip-value">{currentOp.delayMs} ms</span><span className="dispatch-strip-key">fixed</span></span>
+                  <Button asChild size="sm" variant="secondary" icon="pencil" className="dispatch-strip-edit"><RouterLink to={`/services/${svc.id}/operations/${currentOp.id}`}>Edit behavior</RouterLink></Button>
+                </div>
 
-                  <div role="group" aria-labelledby="wf-used-title" className="ex-stack" style={{ gap: 4 }}>
-                    <div className="ex-row-between">
-                      <h3 id="wf-used-title" style={{ margin: 0 }}>Used in {pluralize(opUsages.length, 'workflow')}</h3>
-                      <RouterLink to="/workflows">All workflows</RouterLink>
-                    </div>
-                    <span className="ex-small ex-secondary"><code>{currentOp.method} {currentOp.path}</code> is called by these workflow steps.</span>
-                    <ul className="ex-plain-list">
-                      {opUsages.map((u) => (
-                        <li key={`${u.documentId}/${u.workflowId}`} className="ex-row-between">
-                          <span className="ex-row">
-                            <RouterLink to={`/workflows/${u.documentId}/${u.workflowId}`}>{u.workflowId}</RouterLink>
-                            {(u.steps ?? []).filter((s) => s.catalogOperationId === currentOp.id).map((s) => <Chip key={s.stepId} variant="outline">{s.stepId}</Chip>)}
-                          </span>
-                          <WorkflowResult usage={u} />
-                        </li>
-                      ))}
-                      {opUsages.length === 0 ? <li className="ex-small ex-muted">No workflow calls this operation.</li> : null}
-                    </ul>
+                <div role="group" aria-labelledby="wf-used-title" className="wf-usage">
+                  <div className="wf-usage-head">
+                    <h3 id="wf-used-title"><Icon name="dispatcher" size={15} />Used in {pluralize(allUsages.length, 'workflow')}</h3>
+                    <RouterLink to="/workflows">All workflows</RouterLink>
                   </div>
+                  <span className="wf-usage-line">
+                    <span className="wf-usage-op">{currentOp.method} {currentOp.path}</span>{' '}
+                    {stepRefs.length === 0
+                      ? 'is not called by any workflow step.'
+                      : `is called by ${pluralize(stepRefs.length, 'workflow step')}: ${stepRefs.map((s) => s.ref).join(', ')} (operationId ${stepRefs[0]?.operationId}).`}
+                  </span>
+                  <ul className="wf-usage-list">
+                    {allUsages.map((u) => (
+                      <li key={`${u.documentId}/${u.workflowId}`}>
+                        <RouterLink to={`/workflows/${u.documentId}/${u.workflowId}`} className="wf-usage-name">{u.summary}</RouterLink>
+                        <span className="wf-usage-steps">
+                          {(u.steps ?? []).map((s) => {
+                            const on = s.catalogOperationId === currentOp.id;
+                            return (
+                              <span key={s.stepId} className="wf-usage-step" data-on={on ? '' : undefined} title={`operationId: ${s.operationId}${on ? ' · calls this operation' : ''}`}>
+                                {s.stepId}
+                                <span className="sr-only"> (operationId {s.operationId}{on ? ', calls this operation' : ''})</span>
+                              </span>
+                            );
+                          })}
+                        </span>
+                        <WorkflowResult usage={u} relative={relative} />
+                      </li>
+                    ))}
+                    {allUsages.length === 0 ? <li className="wf-usage-empty">No workflow calls this service.</li> : null}
+                  </ul>
+                </div>
 
-                  <div className="ex-stack" aria-busy={examples.status === 'loading'}>
-                    <div className="ex-row-between"><h3 style={{ margin: 0 }}>Examples</h3><span className="ex-small ex-secondary">{accepted.length} served{pending.length ? ` · ${pending.length} to review` : ''}</span></div>
-                    <ul className="ex-plain-list" aria-label="Examples of the operation">
-                      {accepted.map((e) => (
-                        <li key={e.id}>
-                          <Button variant={e.id === selected?.id ? 'secondary' : 'ghost'} aria-pressed={e.id === selected?.id} onClick={() => select({ example: e.id })} style={{ width: '100%', justifyContent: 'flex-start' }}>
-                            <span className="ex-row"><Chip tone="success">{e.response.status}</Chip> <strong>{e.name}</strong> <span className="ex-small ex-secondary">{Object.values(e.request.params).join(' · ') || 'no parameter'}</span>{e.aiGenerated ? <Chip tone="info">AI example accepted</Chip> : null}</span>
-                          </Button>
-                        </li>
-                      ))}
-                      {pending.map((e) => (
-                        <li key={e.id}>
-                          <AiGhostRow name={e.name} onAccept={() => void accept(e)} onReject={() => void reject(e)} onEdit={() => navigate(`/services/${svc.id}/copilot?op=${currentOp.id}`)}>
-                            {e.name} · {e.response.status} — generated by AI, review needed
-                          </AiGhostRow>
-                        </li>
-                      ))}
+                <div className="op-examples" aria-busy={allExamples.status === 'loading'}>
+                  <div className="op-examples-head">
+                    <h3>Examples</h3>
+                    <span>
+                      {examplesLabel(fromContract.length)} from the contract
+                      {pending.length ? ` · ${pluralize(pending.length, 'AI proposal')} pending` : ''}
+                      {aiAccepted.length ? ` · ${pluralize(aiAccepted.length, 'AI example')} accepted` : ''}
+                    </span>
+                  </div>
+                  <div className="op-examples-body">
+                    <div className="example-col">
+                    <ul className="example-list" aria-label="Examples of the operation">
+                      {ordered.map((e) => {
+                        const ghost = e.reviewState === 'pending';
+                        return (
+                          <li key={e.id} className="example-pick" data-ghost={ghost ? '' : undefined} data-selected={e.id === selected?.id ? '' : undefined}>
+                            <button type="button" aria-pressed={e.id === selected?.id} onClick={() => select({ example: e.id })}>
+                              <span className="example-pick-status">{e.response.status}</span>
+                              <span className="example-pick-main">
+                                <span className="example-pick-name">{e.name}</span>
+                                <span className="example-pick-sub">{exampleSub(e)}</span>
+                              </span>
+                            </button>
+                            {ghost ? (
+                              <div className="example-pick-review">
+                                <span className="example-pick-review-note"><Icon name="spark" size={13} />Generated by AI, review needed</span>
+                                <span className="example-pick-review-actions">
+                                  <button type="button" className="example-pick-accept" aria-label={`Accept ${e.name}`} onClick={() => void accept(e)}>Accept</button>
+                                  <button type="button" className="example-pick-reject" aria-label={`Reject ${e.name}`} onClick={() => void reject(e)}>Reject</button>
+                                </span>
+                              </div>
+                            ) : e.aiGenerated ? (
+                              <div className="example-pick-accepted"><Icon name="check" size={13} />AI example accepted by MA</div>
+                            ) : null}
+                          </li>
+                        );
+                      })}
                     </ul>
-                    {rejected ? <Callout tone="info" live="polite" actions={<Button size="sm" variant="secondary" onClick={() => void undo()}>Undo</Button>}>AI proposal rejected.</Callout> : null}
+                    {rejected ? (
+                      <div className="example-rejected" role="status">
+                        AI proposal rejected.
+                        <button type="button" onClick={() => void undo()}>Undo</button>
+                      </div>
+                    ) : null}
+                    </div>
                     {selected && spec ? (
-                      <div className="ex-grid ex-grid-2-even">
-                        {selected.reviewState === 'pending' ? <div role="note" className="ex-small" style={{ gridColumn: '1 / -1' }}>Proposed by AI from the contract's schema. The mock only serves it once accepted.</div> : null}
-                        <Panel title="Request" headingLevel={4} actions={<span className="ex-small ex-secondary">{selected.name}</span>}>
-                          <CodeBlock code={requestHead(spec)} language="http" caption="Request line and headers" />
-                          {Object.keys(selected.request.params).length ? <CodeBlock code={paramLines(spec.pathTemplate, selected.request.params)} caption="Parameters" /> : null}
-                          {selected.request.body ? <CodeBlock code={selected.request.body} language="json" caption="Request body" /> : null}
-                        </Panel>
-                        <Panel title="Response" headingLevel={4} actions={<span className="ex-small ex-secondary">{selected.response.status}</span>}>
-                          <CodeBlock code={'Content-Type: application/json'} caption="Response headers" />
-                          <CodeBlock code={selected.response.body} language="json" caption="Response body" copy />
-                        </Panel>
+                      <div className="example-detail">
+                        {selected.reviewState === 'pending' ? (
+                          <Callout tone="ai" variant="outline" title="">
+                            Proposed by AI from the contract's <span className="ex-mono">{schemaName}</span> schema. The mock only serves it once accepted.
+                          </Callout>
+                        ) : null}
+                        <div className="exchange">
+                          <section className="exchange-card" aria-label={`Request of ${selected.name}`}>
+                            <div className="exchange-card-head">
+                              <span className="exchange-card-title">Request</span>
+                              <span className="exchange-card-meta">{selected.name}</span>
+                            </div>
+                            <ScrollPre aria-label="Request line and headers">{requestHead(spec)}</ScrollPre>
+                            {Object.keys(selected.request.params).length ? <ScrollPre aria-label="Parameters" data-tone="params">{paramLines(spec.pathTemplate, selected.request.params)}</ScrollPre> : null}
+                            {selected.request.body ? <ScrollPre aria-label="Request body" data-tone="body">{selected.request.body}</ScrollPre> : null}
+                          </section>
+                          <div className="exchange-sep" aria-hidden="true">⇄</div>
+                          <section className="exchange-card" aria-label={`Response of ${selected.name}`}>
+                            <div className="exchange-card-head">
+                              <span className="exchange-card-title">Response</span>
+                              <span className="exchange-card-status">{selected.response.status}{selected.response.status === 200 ? ' OK' : ''}</span>
+                            </div>
+                            <ScrollPre aria-label="Response headers" data-tone="headers">{`Content-Type: application/json\nContent-Length: ${selected.response.body.length}`}</ScrollPre>
+                            <ScrollPre aria-label="Response body" data-tone="body" data-grow="">{selected.response.body}</ScrollPre>
+                          </section>
+                        </div>
                       </div>
                     ) : null}
                   </div>
-                </section>
-              ) : null}
+                </div>
+              </section>
+            ) : null}
           </div>
         </TabPanel>
 
         <TabPanel id="properties" idPrefix="svc" value={tabId}>
-          <div className="ex-stack">
-            <Panel title="Properties">
-              <DescriptionList
-                items={[
-                  { term: 'Version', value: svc.version },
-                  { term: 'Type', value: <span className="ex-row"><ApiBadge protocol={svc.protocol} size="sm" /> {svc.format}</span> },
-                  ...det.artifacts.map((a) => ({ term: a.role === 'primary' ? 'Primary artifact' : 'Secondary artifact', value: <span><code>{a.file}</code><br /><span className="ex-small ex-secondary">{a.kind} · {a.summary}</span></span> })),
-                  { term: 'Last import', value: <span>{formatDay(det.importedAt)} · {relative(det.importedAt)}<br /><span className="ex-small ex-secondary">{det.lastImportSummary}</span></span> },
-                  { term: 'Created', value: formatDay(det.createdAt) },
-                  { term: 'Statistics', value: <span>{fmt(det.calls7d)} calls over 7 days · <RouterLink to="/usage">Usage details</RouterLink></span> },
-                ]}
-              />
-            </Panel>
-            {det.mcp ? (
-              <Panel title="Agent-ready" actions={<span className="ex-row"><ApiBadge label="mcp" value={pluralize(det.mcp.tools.length, 'tool')} status="info" size="sm" /><CopyButton value={det.mcp.clientConfig} label="Copy client config" /></span>}>
-                <p>Every mock operation is published as an MCP tool. An AI agent discovers it via <code>tools/list</code> and calls it with arguments derived from the contract's schemas: path, query and body grouped under <code>params.arguments</code>.</p>
-                <h3>Endpoints</h3>
-                <ul className="ex-plain-list">
-                  <li className="ex-row"><strong>HTTP SSE</strong> <span className="ex-small ex-secondary">MCP 2024-11-05</span> <code className="ex-url-line">{det.mcp.sseUrl}</code> <CopyButton value={det.mcp.sseUrl} label="Copy SSE URL" /></li>
-                  <li className="ex-row"><strong>Streamable HTTP</strong> <span className="ex-small ex-secondary">MCP 2025-03-26</span> <code className="ex-url-line">{det.mcp.httpUrl}</code> <CopyButton value={det.mcp.httpUrl} label="Copy HTTP URL" /></li>
-                </ul>
-                <h3>Exposed tools, as an agent sees them</h3>
-                {det.mcp.tools.map((t) => (
-                  <div key={t.name} className="ex-stack" style={{ gap: 4 }}>
-                    <span className="ex-row"><strong className="ex-mono">{t.name}</strong><MethodTag method={t.method} protocol={svc.protocol} /><code>{t.path}</code></span>
-                    <span className="ex-small ex-secondary">{t.description}</span>
-                    <CodeBlock code={t.inputSchema} language="json" caption={`Input schema of ${t.name}`} />
-                  </div>
+          <div className="service-props">
+            <section aria-labelledby="props-title" className="service-card props-card">
+              <h2 id="props-title">Properties</h2>
+              <Facts size="lg" termWidth="150px">
+                <FactRow term="Version" mono>{svc.version}</FactRow>
+                <FactRow term="Type"><span className="facts-inline"><MethodTag method={svc.protocol} protocol={svc.protocol} className="facts-proto" /><span className="ex-secondary">{svc.format}</span></span></FactRow>
+                {det.artifacts.map((a) => (
+                  <FactRow key={a.file} term={a.role === 'primary' ? 'Primary artifact' : 'Secondary artifact'} sub={<span className="facts-kind">{a.kind} · {a.summary}</span>}>
+                    <span className="facts-file">{a.file}</span>
+                  </FactRow>
                 ))}
-                <h3>MCP client config</h3>
-                <CodeBlock code={det.mcp.clientConfig} language="json" caption="MCP client config" copy />
-                <p className="ex-small ex-secondary">Tested with MCP Inspector, Claude, Postman and Cherry Studio.</p>
-              </Panel>
+                <FactRow term="Last import" sub={det.lastImportSummary}>{formatDay(det.importedAt)} at {formatHourMinute(det.importedAt)} · {relative(det.importedAt)}</FactRow>
+                <FactRow term="Created">{formatDay(det.createdAt)}</FactRow>
+                <FactRow term="Statistics"><span className="facts-inline ex-secondary">{fmt(det.calls7d)} calls over 7 days <RouterLink to="/usage" className="facts-link">Usage details</RouterLink></span></FactRow>
+              </Facts>
+            </section>
+            {det.mcp ? (
+              <section aria-labelledby="agent-ready-title" className="service-card agent-card">
+                <div className="agent-card-head">
+                  <div className="agent-card-title">
+                    <h2 id="agent-ready-title">Agent-ready</h2>
+                    <ApiBadge label="mcp" value={pluralize(det.mcp.tools.length, 'tool')} status="info" />
+                  </div>
+                  <CopyButton value={det.mcp.clientConfig} label="Copy MCP config" size="md" variant="primary" />
+                </div>
+                <p className="agent-card-lead">Every mock operation is published as an MCP tool. An AI agent discovers it via <span className="ex-mono">tools/list</span> and calls it with arguments derived from the contract's schemas: path, query and body grouped under <span className="ex-mono">params.arguments</span>.</p>
+                <div className="agent-card-block">
+                  <SectionLabel as="h3">Endpoints</SectionLabel>
+                  {[
+                    { name: 'HTTP SSE', spec: 'MCP 2024-11-05', url: det.mcp.sseUrl },
+                    { name: 'Streamable HTTP', spec: 'MCP 2025-03-26', url: det.mcp.httpUrl },
+                  ].map((e) => (
+                    <div key={e.name} className="endpoint-row">
+                      <span className="endpoint-row-name"><span>{e.name}</span><span className="endpoint-row-spec">{e.spec}</span></span>
+                      <span className="endpoint-row-url" title={e.url}>{e.url}</span>
+                      <CopyButton value={e.url} label="Copy" variant="link" aria-label={`Copy ${e.name} URL`} className="endpoint-row-copy" />
+                    </div>
+                  ))}
+                </div>
+                <div className="agent-card-block">
+                  <SectionLabel as="h3">Exposed tools, as an agent sees them</SectionLabel>
+                  {det.mcp.tools.map((t) => (
+                    <div key={t.name} className="tool-card">
+                      <div className="tool-card-main">
+                        <span className="tool-card-name">{t.name}</span>
+                        <span className="tool-card-desc">{t.description}</span>
+                        <span className="tool-card-op"><MethodTag method={t.method} protocol={svc.protocol} className="tool-card-method" /><span className="ex-mono">{t.path}</span></span>
+                      </div>
+                      <ScrollPre aria-label={`Input schema of ${t.name}`} className="tool-card-schema">{t.inputSchema}</ScrollPre>
+                    </div>
+                  ))}
+                </div>
+                <div className="agent-card-block">
+                  <SectionLabel as="h3">MCP client config</SectionLabel>
+                  <ScrollPre aria-label="MCP client config" className="agent-card-config">{det.mcp.clientConfig}</ScrollPre>
+                  <span className="agent-card-foot">Tested with MCP Inspector, Claude, Postman and Cherry Studio.</span>
+                </div>
+              </section>
             ) : (
               <Callout tone="info" title="Not exposed to agents">This service is not published as MCP tools.</Callout>
             )}
@@ -341,24 +497,41 @@ function ApiServicePage() {
         </TabPanel>
 
         <TabPanel id="tests" idPrefix="svc" value={tabId}>
-          <Panel
-            title="Latest test runs"
-            actions={<span className="ex-row"><RouterLink to={`/tests/service/${svc.id}`}>All runs</RouterLink><Button asChild size="sm" variant="secondary" icon="plus"><RouterLink to={`/tests/create?service=${svc.id}`}>New test</RouterLink></Button></span>}
-          >
+          <section aria-labelledby="runs-title" className="service-card runs-card">
+            <div className="runs-card-head">
+              <div className="runs-card-title">
+                <h2 id="runs-title">Latest test runs</h2>
+                {latestRun ? <span><span className="ex-mono">{latestRun.runner}</span> against <span className="ex-mono">{latestRun.endpoint}</span></span> : null}
+              </div>
+              <div className="runs-card-actions">
+                <Button asChild variant="secondary" className="runs-card-all"><RouterLink to={`/tests/service/${svc.id}`}>All runs</RouterLink></Button>
+                <Button asChild variant="primary" icon="plus" className="runs-card-new"><RouterLink to={`/tests/create?service=${svc.id}`}>New test</RouterLink></Button>
+              </div>
+            </div>
             {runs.data && runs.data.length === 0 ? <p>No test run yet. Run a first test to get a conformance score.</p> : null}
-            <ul className="ex-plain-list">
-              {(runs.data ?? []).slice(0, 5).map((r) => (
-                <li key={r.id}>
-                  <RouterLink to={`/tests/runner/${r.id}`} className="ex-row">
-                    <strong>#{r.id}</strong>
-                    <StatusBadge size="sm" status={r.result === 'passed' ? 'conformant' : r.result === 'running' ? 'running' : 'failed'} />
-                    <span className="ex-small">{r.passed}/{r.total} steps</span>
-                    <span className="ex-small ex-secondary">{r.runner} · {r.environment} · {relative(r.startedAt)}</span>
-                  </RouterLink>
-                </li>
-              ))}
-            </ul>
-          </Panel>
+            {recentRuns.length ? (
+              <ul className="run-list">
+                {recentRuns.map((r) => {
+                  const tone = r.result === 'passed' ? 'passed' : r.result === 'running' ? 'running' : 'failed';
+                  return (
+                    <li key={r.id}>
+                      <RouterLink to={`/tests/runner/${r.id}`} className="run-list-row">
+                        <span className="run-list-id">#{r.id}</span>
+                        <span className="run-list-status" data-tone={tone}>
+                          <Icon name={tone === 'passed' ? 'check-circle' : tone === 'running' ? 'running' : 'x-circle'} size={14} />
+                          {tone === 'passed' ? 'Passed' : tone === 'running' ? 'Running' : 'Failed'}
+                        </span>
+                        <span className="run-list-score">{r.passed}/{r.total}</span>
+                        <span className="run-list-env">{r.environment}</span>
+                        <span className="run-list-when">{relative(r.startedAt)}</span>
+                        <Icon name="chevron" size={14} className="run-list-chevron" />
+                      </RouterLink>
+                    </li>
+                  );
+                })}
+              </ul>
+            ) : null}
+          </section>
         </TabPanel>
       </Tabs>
     </div>

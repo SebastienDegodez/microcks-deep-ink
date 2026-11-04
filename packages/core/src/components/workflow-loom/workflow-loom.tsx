@@ -1,6 +1,6 @@
-import { Component, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
+import { Component, Event, EventEmitter, Host, Method, Prop, State, h } from '@stencil/core';
 import { icon } from '../../utils/icons';
-import { LoomEdge, LoomGrid, LoomLayout, LoomPlacement, WovenThread, layoutLoom, loomGrid, operationParts, weaveThreads } from '../../utils/loom-layout';
+import { LoomEdge, LoomGrid, LoomLayout, LoomPlacement, WovenThread, checkRows, layoutLoom, loomGrid, operationParts, weaveThreads } from '../../utils/loom-layout';
 import {
   CheckState,
   LoomAction,
@@ -18,12 +18,6 @@ let uid = 0;
 
 const STATUS_WORD: Record<StepStatus, string> = { passed: 'Passed', failed: 'Failed', 'not-run': 'Not run' };
 const STATUS_ICON: Record<StepStatus, string> = { passed: 'check', failed: 'cross', 'not-run': 'dash' };
-const CHECK_WORD: Record<CheckState, string> = {
-  passed: 'Passed',
-  failed: 'Failed',
-  off: 'Off',
-  'not-evaluated': 'Not evaluated',
-};
 const CHECK_ICON: Record<CheckState, string> = { passed: 'check', failed: 'cross', off: 'dash', 'not-evaluated': 'circle' };
 
 /* Circled marks of the node (decorative: the words next to them carry the meaning). */
@@ -102,25 +96,26 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .io-v { color: var(--text-secondary); overflow-wrap: anywhere; }
     .io-v.none { color: var(--text-muted); }
     .io-note { max-width: 100%; font: 400 11px/1.4 var(--font-ui); color: var(--text-muted); text-align: right; }
-    .io-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font: var(--type-small); color: var(--text-secondary); }
+    .io-line { margin: 12px 0; display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font: var(--type-small); color: var(--text-secondary); }
     .io-line code { font: 400 12px/16px var(--font-mono); color: var(--text); background: var(--surface); border: 1px solid var(--border-control); border-radius: var(--radius-control); padding: 2px 6px; }
     .cell { position: relative; z-index: 1; display: flex; justify-content: center; min-width: 0; padding: 0 12px; }
     .node { position: relative; width: 100%; max-width: 190px; display: flex; flex-direction: column; align-items: stretch; gap: 6px; padding: 8px; text-align: left; color: var(--text); background: var(--surface); border: 1px solid var(--border-strong); border-radius: 12px; cursor: pointer; font: inherit; }
     .node[data-status="failed"] { border-color: var(--danger); }
     .node[data-status="not-run"] { background: var(--canvas); border-style: dashed; }
+    .node[data-status="not-run"] .id, .node[data-status="not-run"] .num { color: var(--text-secondary); }
     .node[aria-pressed="true"] { padding: 7px; background: var(--selected); border: 2px solid var(--action); }
     .hd { display: flex; align-items: center; gap: 6px; min-width: 0; }
     .num { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 999px; background: var(--raised); color: var(--text); font: 600 11px/1 var(--font-ui); }
     .node[data-status="failed"] .num { background: var(--danger); color: var(--on-status); }
-    .id { min-width: 0; font: 600 12px/16px var(--font-mono); overflow-wrap: anywhere; }
-    .op { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; font: 400 11px/16px var(--font-mono); }
-    .mt { --method-bg: var(--lane, var(--proto-rest)); flex: none; padding: 1px 4px; font: 600 10px/14px var(--font-mono); color: var(--on-proto); background: var(--method-bg); border-radius: 3px; }
+    .id { min-width: 0; font: 600 12px/normal var(--font-mono); overflow-wrap: anywhere; }
+    .op { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; font: 400 11px/normal var(--font-mono); }
+    .mt { --method-bg: var(--lane, var(--proto-rest)); flex: none; padding: 1px 4px; font: 600 10px/normal var(--font-mono); color: var(--on-proto); background: var(--method-bg); border-radius: 3px; }
     .mt[data-protocol="rest"][data-method="POST" i], .mt[data-protocol="rest"][data-method="PATCH" i], .mt[data-protocol="rest"][data-method="PUT" i] { --method-bg: var(--proto-event); }
     .mt[data-protocol="rest"][data-method="DELETE" i] { --method-bg: var(--danger); color: var(--on-status); }
     .pa { color: var(--text-secondary); overflow-wrap: anywhere; }
     .rule { height: 1px; background: var(--border); }
     .ring { flex: none; }
-    .st { display: inline-flex; align-items: center; gap: 5px; font: 600 12px/16px var(--font-ui); }
+    .st { display: inline-flex; align-items: center; gap: 5px; font: 600 12px/normal var(--font-ui); }
     .st.passed { color: var(--success); }
     .st.failed { color: var(--danger); }
     .st.not-run { color: var(--text-muted); }
@@ -129,7 +124,7 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .chk.passed .ring { color: var(--success); }
     .chk.failed, .chk.failed .ring { color: var(--danger); }
     .chk.off, .chk.not-evaluated { color: var(--text-muted); }
-    .res { font: 400 10px/14px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-muted); }
+    .res { font: 400 10px/normal var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-muted); }
     .c.passed { color: var(--success); }
     .c.failed { color: var(--danger); }
     .c.off, .c.not-evaluated { color: var(--text-muted); }
@@ -137,6 +132,7 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .heddle { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border); }
     .wl { position: relative; list-style: none; margin: 0; padding: 0; }
     .thr { position: relative; height: 46px; }
+    .thr.tall { height: 64px; }
     .tline, .tdot { transition: opacity .15s; }
     .thr.dim .tline, .thr.dim .tdot { opacity: .28; }
     .thr.dim .tx, .thr.dim .drop { color: var(--text-muted); }
@@ -154,7 +150,7 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .tv.missing { color: var(--danger); }
     .drop { position: absolute; top: 21px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px; white-space: nowrap; font: 400 11px/16px var(--font-mono); color: var(--text-secondary); background: var(--canvas); border: 1px solid var(--border-strong); border-radius: 999px; }
     .drop.idle { color: var(--text-muted); }
-    .drop.bad { color: var(--danger); border-color: var(--danger); }
+    .drop.bad { color: var(--danger); border-color: var(--danger); white-space: normal; text-align: center; border-radius: 10px; }
     .threads { list-style: none; margin: 0; padding: 0; }
     .thread-li { font: 400 11px/16px var(--font-mono); color: var(--text-secondary); }
     .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-panel); }
@@ -214,6 +210,20 @@ export class MkWorkflowLoom {
   /** Emitted when an input, an output or a thread label is pressed; `id` is undefined when the lens is cleared. */
   @Event() mkLensSelect!: EventEmitter<{ id?: string; expression?: string }>;
 
+  /**
+   * Moves focus to a step's node (and makes it the loom's tab stop), e.g. to return focus after a dialog:
+   * focus targets inside the shadow root are not reachable from the page. Resolves false when the step is unknown
+   * or not drawn (table view).
+   */
+  @Method()
+  async focusStep(stepId: string): Promise<boolean> {
+    const el = this.nodeEls.get(stepId);
+    if (!el || !el.isConnected) return false;
+    this.focusId = stepId;
+    el.focus();
+    return true;
+  }
+
   private select(stepId: string) {
     const next = this.selectedStep === stepId ? undefined : stepId;
     this.selectedStep = next;
@@ -240,12 +250,6 @@ export class MkWorkflowLoom {
     return this.statusPhrase(s);
   }
 
-  private checkStates(s: LoomStep): { successCriteria: CheckState; schemaValidation: CheckState } {
-    return {
-      successCriteria: s.checks?.successCriteria ?? 'not-evaluated',
-      schemaValidation: s.checks?.schemaValidation ?? 'not-evaluated',
-    };
-  }
 
   private actionText(a: LoomAction, s: LoomStep): string {
     if (a.type === 'end') {
@@ -326,7 +330,7 @@ export class MkWorkflowLoom {
           const far = t.drops.reduce((m, d) => Math.max(m, colOf(d.to)), from);
           const x = grid.pct(grid.centre(from));
           return (
-            <li class={{ thr: true, on: this.lens === t.id, dim: !!this.lens && this.lens !== t.id }}>
+            <li class={{ thr: true, tall: t.drops.some((d) => !!d.bad), on: this.lens === t.id, dim: !!this.lens && this.lens !== t.id }}>
               <span class="tline" aria-hidden="true" style={{ left: x, width: grid.pct(grid.centre(far) - grid.centre(from)) }} />
               <span class="tdot" aria-hidden="true" style={{ left: x }} />
               <button
@@ -341,7 +345,10 @@ export class MkWorkflowLoom {
                 {t.missing ? <span class="tv missing">— not produced</span> : t.value !== undefined && <span class="tv">{`= ${t.value}`}</span>}
               </button>
               {t.drops.map((d) => (
-                <span class={{ drop: true, idle: !!d.idle, bad: !!d.bad }} style={{ left: grid.pct(grid.centre(colOf(d.to))) }}>
+                <span
+                  class={{ drop: true, idle: !!d.idle, bad: !!d.bad }}
+                  style={{ left: grid.pct(grid.centre(colOf(d.to))), maxWidth: d.bad ? `calc(${grid.pct(1)} - 8px)` : undefined }}
+                >
                   <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                     <path d={d.bad ? 'M2 2l6 6M8 2L2 8' : 'M1 5h7M5 2l3 3-3 3'} />
                   </svg>
@@ -357,12 +364,11 @@ export class MkWorkflowLoom {
   }
 
   private renderNode(s: LoomStep, pl: LoomPlacement, layout: LoomLayout, tabStop: string | undefined, descId: string | undefined, protocol: string) {
-    const c = this.checkStates(s);
     const { method, path } = operationParts(s);
     const cut = path.indexOf('/{');
     const pathA = cut > 0 ? path.slice(0, cut) : path;
     const pathB = cut > 0 ? path.slice(cut) : '';
-    const checks = this.validatesSchemas ? (['successCriteria', 'schemaValidation'] as const) : [];
+    const checks = checkRows(s.checks, this.validatesSchemas);
     const lower = s.status || checks.length > 0 || s.result;
     return (
       <button
@@ -402,10 +408,10 @@ export class MkWorkflowLoom {
         {checks.length > 0 && (
           <span class="checks">
             {checks.map((k) => [
-              <span class={`chk ${c[k]}`}>
-                {ringed(CHECK_MARK[c[k]], 12)}
-                {k === 'successCriteria' ? 'Success criteria' : 'Schema validation'}
-                <span class="sr">{` ${CHECK_WORD[c[k]].toLowerCase()}`}</span>
+              <span class={`chk ${k.state}`}>
+                {ringed(CHECK_MARK[k.state], 12)}
+                {k.label}
+                <span class="sr">{` ${k.word}`}</span>
               </span>,
               ' ',
             ])}
@@ -445,7 +451,7 @@ export class MkWorkflowLoom {
               const p = layout.placements[i]!;
               const source = src(s.source);
               const status = this.statusVisible(s);
-              const c = this.checkStates(s);
+              const checks = checkRows(s.checks, this.validatesSchemas);
               return (
                 <tr>
                   <td class="mono">{p.number}</td>
@@ -472,20 +478,16 @@ export class MkWorkflowLoom {
                     )}
                   </td>
                   <td>
-                    {this.validatesSchemas ? (
+                    {checks.length ? (
                       <ul>
-                        <li>
-                          Success criteria:{' '}
-                          <span class={`c ${c.successCriteria}`}>
-                            {icon(CHECK_ICON[c.successCriteria], 12)} {CHECK_WORD[c.successCriteria]}
-                          </span>
-                        </li>
-                        <li>
-                          Schema validation:{' '}
-                          <span class={`c ${c.schemaValidation}`}>
-                            {icon(CHECK_ICON[c.schemaValidation], 12)} {CHECK_WORD[c.schemaValidation]}
-                          </span>
-                        </li>
+                        {checks.map((k) => (
+                          <li>
+                            {k.label}:{' '}
+                            <span class={`c ${k.state}`}>
+                              {icon(CHECK_ICON[k.state], 12)} {k.word.charAt(0).toUpperCase() + k.word.slice(1)}
+                            </span>
+                          </li>
+                        ))}
                       </ul>
                     ) : (
                       none
@@ -704,22 +706,6 @@ export class MkWorkflowLoom {
               })}
             </div>
           )}
-          {outputs.length > 0 && (
-            <div class="io out" style={{ gridRow: `${nodeFirst} / ${nodeEnd}` }}>
-              <span class="io-h">outputs</span>
-              {outputs.map((o) => {
-                const k = outputLens(o);
-                return (
-                  <button type="button" class={{ 'io-chip': true, on: lensOn(k.id), dim: dimmed(k.id) }} aria-pressed={lensOn(k.id) ? 'true' : 'false'} onClick={() => this.pickLens(k.id, k.expression)}>
-                    <span class="sr">Trace workflow output </span>
-                    <span class="io-x">{o.name}</span>{' '}
-                    {o.value !== undefined ? <span class="io-v">{o.value}</span> : [<span class="io-v none" aria-hidden="true">—</span>, <span class="sr">not produced</span>]}
-                  </button>
-                );
-              })}
-              {this.outputNote && <span class="io-note">{this.outputNote}</span>}
-            </div>
-          )}
           {steps.map((s, idx) => {
             const pl = layout.placements[idx];
             if (!pl) return null;
@@ -738,6 +724,23 @@ export class MkWorkflowLoom {
               </div>
             );
           })}
+          {/* After the steps in the DOM (reading and Tab order: inputs, steps, outputs); the grid places it on the right. */}
+          {outputs.length > 0 && (
+            <div class="io out" style={{ gridRow: `${nodeFirst} / ${nodeEnd}` }}>
+              <span class="io-h">outputs</span>
+              {outputs.map((o) => {
+                const k = outputLens(o);
+                return (
+                  <button type="button" class={{ 'io-chip': true, on: lensOn(k.id), dim: dimmed(k.id) }} aria-pressed={lensOn(k.id) ? 'true' : 'false'} onClick={() => this.pickLens(k.id, k.expression)}>
+                    <span class="sr">Trace workflow output </span>
+                    <span class="io-x">{o.name}</span>{' '}
+                    {o.value !== undefined ? <span class="io-v">{o.value}</span> : [<span class="io-v none" aria-hidden="true">—</span>, <span class="sr">not produced</span>]}
+                  </button>
+                );
+              })}
+              {this.outputNote && <span class="io-note">{this.outputNote}</span>}
+            </div>
+          )}
           {threads.length > 0 && (
             <div class="weft" style={{ gridRow: `${nodeEnd}` }}>
               {this.renderWeft(threads, grid, colOf)}
@@ -747,38 +750,37 @@ export class MkWorkflowLoom {
       </div>
     );
 
-    const ioBar = [
-      inputs.length > 0 && (
+    // Table view, in reading order too: inputs, the steps table, then outputs.
+    const inputsLine = inputs.length > 0 && (
         <div class="io-line">
           <span>Inputs</span>
           {inputs.map((n) => (
             <code>{n.value !== undefined ? `${n.name} = ${n.value}` : n.name}</code>
           ))}
         </div>
-      ),
-      outputs.length > 0 && (
+      );
+    const outputsLine = outputs.length > 0 && (
         <div class="io-line">
           <span>Outputs</span>
           {outputs.map((o) => (
             <code>{o.value !== undefined ? `${o.name} = ${o.value}` : o.name}</code>
           ))}
+          {this.outputNote && <span>{this.outputNote}</span>}
         </div>
-      ),
-    ];
+      );
 
     return (
       <Host>
         <div role="group" aria-label={this.label}>
           {this.tableToggle && (
             <div class="bar">
-              {this.asTable && ioBar}
               <button type="button" class="toggle" aria-pressed={this.asTable ? 'true' : 'false'} onClick={() => (this.asTable = !this.asTable)}>
                 {icon('table', 14)}
                 Show as table
               </button>
             </div>
           )}
-          {this.tableToggle && this.asTable ? this.renderTable(layout, steps, lanes, threads) : graph}
+          {this.tableToggle && this.asTable ? [inputsLine, this.renderTable(layout, steps, lanes, threads), outputsLine] : graph}
         </div>
       </Host>
     );

@@ -14,6 +14,12 @@ function setup() {
       store.push(created);
       return created;
     },
+    update: async (id, input) => {
+      const found = store.find((s) => s.id === id);
+      if (!found) throw new Error('missing');
+      Object.assign(found, { kind: input.kind, description: input.description });
+      return found;
+    },
     remove: async (id) => {
       store.splice(store.findIndex((s) => s.id === id), 1);
     },
@@ -69,6 +75,8 @@ describe('admin use cases', () => {
     await expect(uc.createSecret({ name: 'pastry-staging-oauth', kind: 'token', value: 'x' })).rejects.toThrow('already exists');
     await uc.createSecret({ name: 'gitlab-bakery', kind: 'token', value: 'glpat-1234' });
     expect((await uc.listSecrets()).map((s) => s.name)).toEqual(['pastry-staging-oauth', 'gitlab-bakery']);
+    expect((await uc.updateSecret('s2', { kind: 'token', description: 'GitLab', value: '' })).description).toBe('GitLab');
+    await expect(uc.updateSecret('nope', { kind: 'token', value: '' })).rejects.toBeInstanceOf(NotFoundError);
     await uc.deleteSecret('s2');
     expect(await uc.listSecrets()).toHaveLength(1);
   });
@@ -77,6 +85,8 @@ describe('admin use cases', () => {
     const uc = setup();
     const snapshot = await uc.exportSnapshot(['pastry2', 'orders']);
     expect(snapshot.operations).toBe(4);
+    expect(snapshot.sizeKb).toBe(28);
+    expect((await uc.listSnapshotServices()).map((x) => x.id)).toEqual(['pastry2', 'pastry1', 'orders', 'usersignedup', 'hellogrpc', 'movie', 'hellosoap', 'petstore', 'beer', 'rocks']);
     expect(JSON.parse(snapshot.json).services.map((s: { id: string }) => s.id)).toEqual(['pastry2', 'orders']);
     expect((await uc.previewSnapshotImport('x.json')).map((p) => p.kind)).toEqual(['replace', 'replace', 'new']);
     expect(await uc.importSnapshot('x.json')).toEqual({ created: 1, replaced: 2 });

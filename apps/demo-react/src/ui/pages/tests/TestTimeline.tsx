@@ -1,9 +1,9 @@
 import { Link as RouterLink } from 'react-router';
-import type { TestRunSummary } from '@/domain/testing';
+import { runConformance, type TestRunSummary } from '@/domain/testing';
+import { BarChart, type BarTone } from '@/ui/components/ui/bar-chart';
 import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { testRunHref } from '../explore-kit/format';
-import { useRovingSelection } from './roving';
 
 /** Bars taller than this duration are capped at 88% and labelled with their duration. */
 const CAP_MS = 3000;
@@ -12,6 +12,7 @@ const WINDOW = 20;
 type Result = TestRunSummary['result'];
 const WORD: Record<Result, string> = { passed: 'Passed', failed: 'Failed', timeout: 'Timed out', running: 'Running' };
 const ICON: Record<Result, IconName> = { passed: 'check', failed: 'cross', timeout: 'clock', running: 'running' };
+const TONE: Record<Result, BarTone> = { passed: 'success', failed: 'danger', timeout: 'warning', running: 'running' };
 const OP_WORD = { pass: 'passed', fail: 'failed', none: 'no result' } as const;
 
 const DATE = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
@@ -48,23 +49,15 @@ export interface TestTimelineProps {
 export function TestTimeline({ runs, operations, selectedId, onSelect, matches, filtered, relative }: TestTimelineProps) {
   const chrono = timelineRuns(runs);
   const n = chrono.length;
-  const selIndex = Math.max(0, chrono.findIndex((r) => r.id === selectedId));
   const selected = runs.find((r) => r.id === selectedId) ?? chrono[n - 1];
-  const roving = useRovingSelection(
-    (i) => {
-      const run = chrono[i];
-      if (run) onSelect(run.id);
-    },
-    (i, key) =>
-      key === 'ArrowRight' ? Math.min(i + 1, n - 1) : key === 'ArrowLeft' ? Math.max(i - 1, 0) : key === 'Home' ? 0 : key === 'End' ? n - 1 : undefined,
-  );
   if (n === 0) return null;
 
   const first = chrono[0];
   const last = chrono[n - 1];
   const year = last ? new Date(last.startedAt).getUTCFullYear() : '';
   const subtitle = `Last ${n} runs · ${first ? day(first.startedAt) : ''} → ${last ? day(last.startedAt) : ''}, ${year} · click a bar to inspect`;
-  const pct = (r: TestRunSummary) => (r.total === 0 ? 0 : (r.passed / r.total) * 100);
+  /** The line plots the run's conformance score (stored, or samples passed over samples). */
+  const pct = (r: TestRunSummary) => runConformance(r);
   const line = chrono
     .map((r, i) => `${((i + 0.5) * (200 / n)).toFixed(1)},${Math.min(100, Math.max(0, ((100 - pct(r)) / 50) * 100)).toFixed(1)}`)
     .join(' ');
@@ -99,93 +92,50 @@ export function TestTimeline({ runs, operations, selectedId, onSelect, matches, 
           <span><i data-tone="passed" />Passed</span>
           <span><i data-tone="failed" />Failed</span>
           <span><i data-tone="timeout" />Timed out</span>
-          <span><i data-tone="line" />Samples passed, %</span>
+          <span><i data-tone="line" />Conformance, %</span>
           <span className="test-timeline-muted">Bar height = duration</span>
         </div>
       </div>
 
-      <div className="bar-chart">
-        <div className="bar-chart-axis" aria-hidden="true">
-          <span>3 s</span><span>1.5 s</span><span>0</span>
-        </div>
-        <div className="bar-chart-main">
-          <div className="bar-chart-plot">
-            <div className="bar-chart-grid" aria-hidden="true" style={{ top: 0 }} />
-            <div className="bar-chart-grid" aria-hidden="true" style={{ top: '50%' }} />
-            <div className="bar-chart-bars" role="group" aria-label="Runs, oldest to newest. Use the arrow keys to move between bars." style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
-              {chrono.map((r, i) => {
-                const capped = r.durationMs > CAP_MS;
-                const height = capped ? 88 : Math.max(4, Math.round((r.durationMs / CAP_MS) * 100));
-                const pressed = i === selIndex;
-                return (
-                  <div key={r.id} className="bar-chart-cell" data-faded={filtered && !matches(r) ? '' : undefined}>
-                    {capped ? (
-                      <span className="bar-chart-cap" aria-hidden="true" style={{ bottom: `calc(${height}% + 2px)` }}>
-                        {Math.round(r.durationMs / 1000)} s
-                      </span>
-                    ) : null}
-                    <button
-                      ref={roving.register(i)}
-                      type="button"
-                      className="bar-chart-bar"
-                      aria-pressed={pressed}
-                      aria-label={aria(r)}
-                      title={aria(r)}
-                      tabIndex={pressed ? 0 : -1}
-                      onClick={() => onSelect(r.id)}
-                      onKeyDown={roving.onKeyDown(i)}
-                    >
-                      <span data-tone={r.result} style={{ height: `${height}%` }} />
-                    </button>
-                  </div>
-                );
-              })}
-            </div>
-            <svg className="bar-chart-line" aria-hidden="true" viewBox="0 0 200 100" preserveAspectRatio="none">
-              <polyline points={line} vectorEffect="non-scaling-stroke" />
-            </svg>
-          </div>
-          <div className="bar-chart-labels" aria-hidden="true" style={{ gridTemplateColumns: `repeat(${n}, minmax(0, 1fr))` }}>
-            {chrono.map((r, i) => {
-              const show = i === 0 || i === n - 1 || Number(r.id) % 5 === 0 || i === selIndex;
-              return (
-                <span key={r.id} data-selected={i === selIndex ? '' : undefined}>
-                  {show ? r.id : ''}
-                </span>
-              );
-            })}
-          </div>
-        </div>
-        <div className="bar-chart-axis" data-side="end" aria-hidden="true">
-          <span>100%</span><span>75%</span><span>50%</span>
-        </div>
-      </div>
-
-      <table className="sr-only">
-        <caption>Conformance timeline, last {n} runs, oldest first</caption>
-        <thead>
-          <tr>
-            <th scope="col">Run</th>
-            <th scope="col">Date</th>
-            <th scope="col">Result</th>
-            <th scope="col">Duration</th>
-            <th scope="col">Samples passed</th>
-            {operations.map((op) => <th scope="col" key={op.id}>{op.verb} {op.path}</th>)}
-          </tr>
-        </thead>
-        <tbody>
-          {chrono.map((r) => (
-            <tr key={r.id}>
-              <th scope="row">#{r.id}</th>
-              <td>{shortDate(r.startedAt)}</td>
-              <td>{WORD[r.result]}</td>
-              <td>{fmtDuration(r.durationMs)}</td>
-              <td>{samples(r)} ({Math.round(pct(r))}%)</td>
-              {operations.map((op, i) => <td key={op.id}>{OP_WORD[r.operations?.[i] ?? 'none']}</td>)}
-            </tr>
-          ))}
-        </tbody>
-      </table>
+      <BarChart
+        label="Runs, oldest to newest. Use the arrow keys to move between bars."
+        max={CAP_MS}
+        minHeight={4}
+        selectedId={selected?.id}
+        onSelect={onSelect}
+        ticks={['3 s', '1.5 s', '0']}
+        ticksEnd={['100%', '75%', '50%']}
+        bars={chrono.map((r, i) => {
+          const capped = r.durationMs > CAP_MS;
+          return {
+            id: r.id,
+            value: capped ? 0.88 * CAP_MS : r.durationMs,
+            cap: capped ? `${Math.round(r.durationMs / 1000)} s` : undefined,
+            description: aria(r),
+            label: i === 0 || i === n - 1 || Number(r.id) % 5 === 0 || r.id === selected?.id ? r.id : '',
+            tone: TONE[r.result],
+            faded: filtered && !matches(r),
+          };
+        })}
+        overlay={
+          <svg viewBox="0 0 200 100" preserveAspectRatio="none">
+            <polyline points={line} vectorEffect="non-scaling-stroke" />
+          </svg>
+        }
+        table={{
+          caption: `Conformance timeline, last ${n} runs, oldest first`,
+          columns: ['Run', 'Date', 'Result', 'Duration', 'Samples passed', 'Conformance', ...operations.map((op) => `${op.verb} ${op.path}`)],
+          rows: chrono.map((r) => [
+            `#${r.id}`,
+            shortDate(r.startedAt),
+            WORD[r.result],
+            fmtDuration(r.durationMs),
+            samples(r),
+            `${pct(r)}%`,
+            ...operations.map((_, i) => OP_WORD[r.operations?.[i] ?? 'none']),
+          ]),
+        }}
+      />
 
       {selected ? (
         <div className="test-timeline-strip" aria-live="polite" data-tone={selected.result}>

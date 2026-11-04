@@ -16,15 +16,21 @@ describe('loom model', () => {
     expect(props.validatesSchemas).toBe(true);
     expect(props.selectedStep).toBe('patchPastry');
     expect(props.sources).toEqual([{ name: 'apiPastry', type: 'openapi', protocol: 'REST', linked: true }]);
+    expect(props.tableToggle).toBe(false);
+    expect(props.outputNote).toBe('No outputs: #14 failed.');
+    expect(props.inputs).toEqual([{ name: 'size', value: '"M"' }, { name: 'newPrice', value: '3.9' }]);
     const [, get, patch, verify] = props.steps;
     expect(patch).toMatchObject({
       status: 'failed',
       attempts: 3,
       operation: 'PATCH /pastries/{name}',
+      method: 'PATCH',
+      path: '/pastries/{name}',
+      result: '200 · 3 attempts · 185 ms',
       checks: { successCriteria: 'passed', schemaValidation: 'failed' },
-      actions: [{ type: 'retry', retryAfter: 1, retryLimit: 2, applied: true }],
+      actions: [{ type: 'retry', retryAfter: 1, retryLimit: 2, applied: true, runLabel: '#14' }],
     });
-    expect(get?.actions).toEqual([{ type: 'end', name: 'alreadyAvailable', on: 'success', criteria: "$response.body#/status == 'available'", taken: false }]);
+    expect(get?.actions).toEqual([{ type: 'end', name: 'alreadyAvailable', on: 'success', criteria: "$response.body#/status == 'available'", label: "status == 'available'", taken: false, runLabel: '#14' }]);
     expect(verify).toMatchObject({ status: 'not-run', checks: { successCriteria: 'not-evaluated', schemaValidation: 'not-evaluated' } });
     expect(JSON.stringify(props)).not.toContain('goto');
   });
@@ -41,24 +47,49 @@ describe('loom model', () => {
     const uc = createUseCases();
     const { document, workflow } = await uc.arazzo.getWorkflow('beer', 'checkout-beer');
     expect(buildLoomProps(workflow, document, undefined, undefined).sources[0]).toMatchObject({ name: 'beerCatalog', linked: false });
-    const restock = await load('restock-pastry');
-    const threads = threadsOf(restock.workflow);
-    expect(threads).toContainEqual({ from: 'listPastries', to: 'getPastry', expression: '$steps.listPastries.outputs.firstName' });
-    expect(threads).toContainEqual({ from: '$inputs', to: 'listPastries', expression: '$inputs.size' });
-    expect(threads).toContainEqual({ from: 'patchPastry', to: '$outputs', expression: '$steps.patchPastry.outputs.newPrice' });
+    const restock = await load('restock-pastry', 14);
+    const threads = threadsOf(restock.workflow, restock.run);
+    expect(threads.map((t) => t.expression)).toEqual([
+      '$inputs.size',
+      '$steps.listPastries.outputs.firstName',
+      '$inputs.newPrice',
+      '$steps.getPastry.outputs.oldPrice',
+      '$steps.patchPastry.outputs.newPrice',
+    ]);
+    expect(threads[1]).toMatchObject({
+      from: 'listPastries',
+      value: '"Eclair Cafe"',
+      drops: [
+        { to: 'getPastry', label: 'name · path' },
+        { to: 'patchPastry', label: 'name · path' },
+        { to: 'verifyPastry', label: 'name · path', idle: true },
+        { to: '$outputs', label: 'pastryName', idle: true },
+      ],
+    });
+    expect(threads[2]?.drops).toEqual([{ to: 'patchPastry', label: '/price · body' }]);
+    expect(threads[4]).toMatchObject({ from: 'patchPastry', missing: true });
+    const session = await load('restock-pastry', 13);
+    expect(threadsOf(session.workflow, session.run)[1]?.drops[1]).toEqual({ to: 'patchPastry', label: 'name · path', bad: 'Millefeuille' });
+    expect(buildLoomProps(session.workflow, session.document, session.run, undefined).steps[2]?.checks).toEqual([
+      { label: 'Call #4', state: 'pass' },
+      { label: 'Data passing', state: 'fail' },
+      { label: 'Contract', state: 'pass' },
+    ]);
   });
 
   it('traces where a value is produced and consumed (the expression lens)', async () => {
     const { workflow, run } = await load('restock-pastry', 14);
     const lens = lensOf('$steps.listPastries.outputs.firstName', workflow, run);
     expect(lens.value).toBe('"Eclair Cafe"');
-    expect(lens.producedBy).toBe('Step 1, listPastries, output firstName');
-    expect(lens.uses.map((u) => u.who)).toEqual(['Step 2, getPastry', 'Step 3, patchPastry', 'Step 4, verifyPastry', 'Workflow outputs']);
-    expect(lensOf('$inputs.newPrice', workflow, run).uses[0]).toMatchObject({ who: 'Step 3, patchPastry', what: 'requestBody', value: '3.9' });
+    expect(lens.producedBy).toBe('listPastries · $response.body#/0/name');
+    expect(lens.uses.map((u) => u.who)).toEqual(['2 · getPastry', '3 · patchPastry', '4 · verifyPastry', 'workflow output']);
+    expect(lens.uses[2]).toMatchObject({ value: 'not run in #14', tone: 'idle' });
+    expect(lensOf('$inputs.newPrice', workflow, run).uses[0]).toMatchObject({ who: '3 · patchPastry', what: 'requestBody replacement /price', value: '3.9' });
+    expect(lensOf('$steps.patchPastry.outputs.newPrice', workflow, run).value).toBe('— (not produced: patchPastry failed)');
   });
 
   it('labels runs for the picker', async () => {
     const { runs } = await load('restock-pastry');
-    expect(runs.slice(0, 4).map(runPickLabel)).toEqual(['#16 · Mocks', '#15 · Mocks', '#14 · Implementations', '#13 · Session']);
+    expect(runs.slice(0, 4).map(runPickLabel)).toEqual(['#14 · Implementations', '#13 · Session', '#12 · Mocks · example', '#11 · Mock URL']);
   });
 });

@@ -1,88 +1,117 @@
-import { useState } from 'react';
-import type { AgentProfile, Conversation, ScriptPart, ScriptStep } from '@/domain/agents';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { Chip } from '@/ui/components/ui/chip';
+import './agent-skills.css';
+import { useId, useState } from 'react';
+import { Link as RouterLink } from 'react-router';
+import type { AgentProfile, AgentTaskState, Conversation, ScriptPart, ScriptStep } from '@/domain/agents';
+import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { SkillList, type SkillItem } from '@/ui/components/ui/skill-list';
 import { TaskStateTag, TaskTimeline, type TaskTimelineNode } from '@/ui/components/ui/task-timeline';
 
 const FALLBACK_ID = '__fallback';
 
-function Parts({ parts }: { parts: ScriptPart[] }) {
+/** Glyph of a terminal state, written next to the state word (conversation cards). */
+const END_ICON: Partial<Record<AgentTaskState, IconName>> = { completed: 'check-circle', failed: 'x-circle', rejected: 'ban', canceled: 'stop-circle' };
+
+function Part({ part }: { part: ScriptPart }) {
   return (
-    <>
-      {parts.map((p, i) => (
-        <div className="ag-part" key={i}>
-          <span className="ex-small ex-muted">{p.kind === 'text' ? 'text · text/plain' : 'data · application/json'}</span>
-          {p.kind === 'text' ? <p style={{ margin: 0 }}>{p.text}</p> : <pre>{p.body}</pre>}
-        </div>
-      ))}
-    </>
+    <div className="agent-part">
+      <span className="agent-part-label">{part.kind === 'text' ? 'text part · text/plain' : 'data part · application/json'}</span>
+      {part.kind === 'text' ? <span className="agent-part-text">{part.text}</span> : <pre className="agent-part-data">{part.body}</pre>}
+    </div>
   );
 }
 
-function ScriptRow({ step, streamed, selected }: { step: ScriptStep; streamed: boolean; selected: boolean }) {
-  const common = { 'data-kind': step.kind, 'data-selected': selected ? '' : undefined } as const;
+function StepBody({ step, streamed, serviceLink }: { step: ScriptStep; streamed: boolean; serviceLink?: string }) {
   switch (step.kind) {
     case 'state':
       return (
-        <li {...common}>
-          <span className="ex-row">
-            <span className="ex-small ex-mono ex-muted">{step.at}</span>
+        <>
+          <span className="agent-step-line">
             <TaskStateTag state={step.state} />
-            {streamed && step.event ? <span className="ex-small ex-mono ex-secondary">{step.event}</span> : null}
+            {streamed && step.event ? <span className="agent-step-event">{step.event}</span> : null}
           </span>
-          {step.message ? <span className="ex-small"><span className="ex-muted">agent · status.message: </span>{step.message}</span> : null}
-        </li>
+          {step.message ? (
+            <div className="agent-bubble" data-role="agent">
+              <span className="agent-bubble-head">agent · status.message</span>
+              <span className="agent-part-text">{step.message}</span>
+            </div>
+          ) : null}
+        </>
       );
     case 'user':
       return (
-        <li {...common}>
-          <span className="ex-small ex-muted"><span className="ex-mono">{step.at}</span> · user · <span className="ex-mono">{step.messageId}</span> · {step.meta}</span>
-          <Parts parts={step.parts} />
-        </li>
+        <div className="agent-bubble" data-role="user">
+          <span className="agent-bubble-head">
+            <span className="agent-bubble-who">user · {step.messageId}</span>
+            <span>{step.meta}</span>
+          </span>
+          {step.parts.map((p, i) => <Part key={i} part={p} />)}
+        </div>
       );
     case 'call':
       return (
-        <li {...common}>
-          <span className="ex-small ex-muted"><span className="ex-mono">{step.at}</span> · Agent calls API Pastry 2.0, served by its Microcks mock</span>
-          <span className="ex-mono">{step.text}</span>
-        </li>
+        <div className="agent-call">
+          <Icon name="swap" size={14} />
+          <span>Agent calls</span>
+          {serviceLink ? <RouterLink className="agent-call-link" to={serviceLink}>API Pastry 2.0</RouterLink> : <span className="agent-call-link">API Pastry 2.0</span>}
+          <span className="agent-call-path">{step.text}</span>
+          <span className="agent-call-status">200</span>
+          <span className="agent-call-note">served by its Microcks mock</span>
+        </div>
       );
     case 'turn':
       return (
-        <li {...common}>
-          <strong>{step.title}</strong>
-          <span className="ex-small ex-secondary">{step.text}</span>
-        </li>
+        <div className="agent-turn">
+          <span className="agent-turn-title">{step.title}</span>
+          <span className="agent-turn-text">{step.text}</span>
+        </div>
       );
     case 'artifact':
       return (
-        <li {...common}>
-          <span className="ex-small ex-muted"><span className="ex-mono">{step.at}</span> · artifact <strong>{step.name}</strong> · <span className="ex-mono">{step.artifactId}</span> · {streamed ? 'TaskArtifactUpdateEvent' : 'task.artifacts'}</span>
-          <Parts parts={step.parts} />
-        </li>
+        <div className="agent-artifact">
+          <div className="agent-artifact-head">
+            <Icon name="file" size={14} />
+            <span className="agent-artifact-name">{step.name}</span>
+            <span className="agent-artifact-id">artifactId {step.artifactId}</span>
+            <span className="agent-artifact-event">{streamed ? 'TaskArtifactUpdateEvent' : 'task.artifacts'}</span>
+          </div>
+          {step.parts.map((p, i) => (
+            <div className="agent-artifact-part" key={i}>
+              <Part part={p} />
+            </div>
+          ))}
+        </div>
       );
     case 'chunks':
       return (
-        <li {...common}>
-          <span className="ex-small ex-muted"><span className="ex-mono">{step.at}</span> · artifact <strong>{step.name}</strong> · <span className="ex-mono">{step.artifactId}</span> · TaskArtifactUpdateEvent</span>
-          <ol className="ex-plain-list">
-            {step.chunks.map((c) => (
-              <li key={c.n} className="ex-small">
-                <span className="ex-mono">chunk {c.n} · {c.at}</span> · “{c.text}” · <span className="ex-mono">append: {String(c.append)}</span> · <span className="ex-mono">lastChunk: {String(c.last)}</span>
+        <div className="agent-chunks">
+          <div className="agent-chunks-head">
+            <Icon name="file" size={14} />
+            <span className="agent-artifact-name">{step.name}</span>
+            <span className="agent-artifact-id">artifactId {step.artifactId} · streamed in {step.chunks.length} chunks</span>
+            <span className="agent-artifact-event">TaskArtifactUpdateEvent</span>
+          </div>
+          <ol className="agent-chunk-list" aria-label={`Chunks of ${step.name}`}>
+            {step.chunks.map((c, j) => (
+              <li key={c.n} className="agent-chunk" data-last={c.last ? '' : undefined} style={{ marginInlineStart: j * 18 }}>
+                <span className="agent-chunk-at">chunk {c.n} · {c.at}</span>
+                <span className="agent-chunk-text">“{c.text}”</span>
+                <span className="agent-chunk-flags">
+                  <span className="agent-flag" data-on={c.append ? '' : undefined} data-tone="a2a">append: {String(c.append)}</span>
+                  <span className="agent-flag" data-on={c.last ? '' : undefined} data-tone="success">lastChunk: {String(c.last)}</span>
+                </span>
               </li>
             ))}
           </ol>
-          <span className="ex-small ex-secondary">
-            Assembled artifact: parts <span className="ex-mono">[{step.chunks.map((c) => `"${c.text}"`).join(', ')}]</span>. The stream closes on <span className="ex-mono">lastChunk: true</span>, then the final status update.
+          <span className="agent-chunks-note">
+            Assembled artifact: parts <span className="agent-chunks-parts">[{step.chunks.map((c) => `"${c.text}"`).join(', ')}]</span>. The stream closes on <span className="ex-mono">lastChunk: true</span>, then the final status update.
           </span>
-        </li>
+        </div>
       );
   }
 }
 
-function Script({ conversation }: { conversation: Conversation }) {
+function Script({ conversation, serviceLink }: { conversation: Conversation; serviceLink?: string }) {
+  const titleId = useId();
   const [node, setNode] = useState<number | undefined>();
   const stateIdx = conversation.steps.flatMap((s, i) => (s.kind === 'state' ? [i] : []));
   const nodes: TaskTimelineNode[] = stateIdx.map((ri, j) => {
@@ -98,14 +127,30 @@ function Script({ conversation }: { conversation: Conversation }) {
   });
   const selectedStep = node === undefined ? undefined : stateIdx[node];
   return (
-    <div className="ex-stack">
-      <p className="ex-small ex-secondary" style={{ margin: 0 }}>
-        <span className="ex-mono">{conversation.method}</span> · {conversation.length} · contextId <span className="ex-mono">{conversation.contextId}</span> · taskId <span className="ex-mono">{conversation.taskId}</span> ·{' '}
-        {conversation.turns > 1 ? 'multi-turn: both turns share contextId and taskId' : 'single turn'} · match: {conversation.match}
-      </p>
+    <div role="group" aria-labelledby={titleId} className="agent-script-box">
+      <div className="agent-script-head">
+        <span className="agent-script-title">
+          <h3 id={titleId}>Task script</h3>
+          <span className="agent-script-id">{conversation.id}</span>
+        </span>
+        <span className="agent-script-length">{conversation.method} · {conversation.length}</span>
+      </div>
+      <div className="agent-script-meta">
+        <span>contextId <span className="agent-script-value">{conversation.contextId}</span></span>
+        <span>taskId <span className="agent-script-value">{conversation.taskId}</span></span>
+        <span>{conversation.turns > 1 ? 'multi-turn: both turns share contextId and taskId' : 'single turn'}</span>
+        <span>match: <span className="agent-script-match">{conversation.match}</span></span>
+      </div>
       <TaskTimeline label={`Lifecycle of ${conversation.id}`} nodes={nodes} selectedIndex={node} onSelectNode={setNode} />
-      <ol className="ag-script" aria-label={`Script of ${conversation.id}`}>
-        {conversation.steps.map((step, i) => <ScriptRow key={i} step={step} streamed={conversation.streamed} selected={selectedStep === i} />)}
+      <ol className="agent-script" aria-label={`Script of ${conversation.id}`}>
+        {conversation.steps.map((step, i) => (
+          <li key={i} data-kind={step.kind} data-selected={selectedStep === i ? '' : undefined}>
+            <span className="agent-at">{step.at}</span>
+            <div className="agent-step" data-align={step.kind === 'user' ? 'end' : undefined}>
+              <StepBody step={step} streamed={conversation.streamed} serviceLink={serviceLink} />
+            </div>
+          </li>
+        ))}
       </ol>
     </div>
   );
@@ -116,86 +161,119 @@ export function AgentSkillsTab({ agent }: { agent: AgentProfile }) {
   const [skillId, setSkillId] = useState(agent.skills[1]?.id ?? agent.skills[0]?.id ?? FALLBACK_ID);
   const [convId, setConvId] = useState<string | undefined>();
   const fallbackSelected = skillId === FALLBACK_ID;
-  const skill = agent.skills.find((s) => s.id === skillId);
+  const skill = fallbackSelected ? undefined : agent.skills.find((s) => s.id === skillId);
   const convs = fallbackSelected ? [agent.fallback] : agent.conversations.filter((c) => skill?.conversationIds.includes(c.id));
   const conversation = convs.find((c) => c.id === convId) ?? convs[0];
+  const serviceLink = skill?.usesService ? `/services/${skill.usesService}` : undefined;
 
   const items: SkillItem[] = [
     ...agent.skills.map((s) => ({
       id: s.id, name: s.name, calls: s.calls, tags: s.tags, result: s.lastTest.result, resultNote: s.lastTest.title,
       meta: `${s.conversationIds.length} ${s.conversationIds.length === 1 ? 'conversation' : 'conversations'}`,
     })),
-    { id: FALLBACK_ID, name: 'No skill matched', fallback: true, meta: 'fallback · out-of-scope · answers rejected' },
+    { id: FALLBACK_ID, name: 'No skill matched', fallback: true, calls: agent.fallbackCalls, meta: 'fallback · out-of-scope · answers rejected' },
   ];
   const pick = (id: string) => {
     setSkillId(id);
     setConvId(undefined);
   };
   return (
-    <div className="ag-layout">
-      <div className="ex-stack">
-        <p className="ex-row-between ex-small ex-secondary" style={{ margin: 0 }}><span>{agent.skills.length} skills</span><span>calls · 24 h</span></p>
+    <div className="agent-split">
+      <div className="agent-rail">
+        <p className="agent-rail-head"><span>{agent.skills.length} skills</span><span>calls · 24 h</span></p>
         <SkillList label={`Skills of ${agent.name} ${agent.version}`} skills={items} selectedId={skillId} onSelectSkill={pick} />
-        <p className="ex-small ex-secondary" style={{ margin: 0 }}>
-          Each skill of the Agent Card is served as an operation. Its conversations come from the APIExamples artifact, keyed by skill id.
+        <p className="agent-rail-note">
+          Each skill of the Agent Card is served as an operation. Its conversations come from the <span className="ex-mono">APIExamples</span> artifact, keyed by skill id.
         </p>
       </div>
-      <div className="ex-stack" role="region" aria-label="Skill detail">
-        <div className="ex-stack" style={{ gap: 8 }}>
-          <h2 style={{ margin: 0 }}>
-            {fallbackSelected ? 'No skill matched' : skill?.name} <Chip variant="outline">{fallbackSelected ? 'fallback' : 'skill'}</Chip>
-          </h2>
-          <p className="ex-mono ex-small ex-secondary" style={{ margin: 0 }}>{fallbackSelected ? 'out-of-scope' : skill?.id}</p>
-          <p style={{ margin: 0 }}>
+      <section className="agent-detail" aria-label="Skill detail">
+        <div className="agent-skill-head">
+          <div className="agent-skill-title">
+            <span className="agent-kind" data-fallback={fallbackSelected ? '' : undefined}>{fallbackSelected ? 'fallback' : 'skill'}</span>
+            <h2>{fallbackSelected ? 'No skill matched' : skill?.name}</h2>
+            <span className="agent-skill-id">{fallbackSelected ? agent.fallback.id : skill?.id}</span>
+          </div>
+          <p className="agent-skill-desc">
             {fallbackSelected
               ? 'Messages with no metadata.skillId and no conversation close enough to their first text or data part land here. The mock still answers with a well-formed task, in state rejected, with an agent message that explains its scope.'
               : skill?.description}
           </p>
-          {skill ? (
-            <dl className="dl">
-              <div><dt>inputModes</dt><dd className="ag-chips">{skill.inputModes.map((m) => <Chip key={m} variant="outline">{m}</Chip>)}</dd></div>
-              <div><dt>outputModes</dt><dd className="ag-chips">{skill.outputModes.map((m) => <Chip key={m} variant="outline">{m}</Chip>)}</dd></div>
-              <div><dt>tags</dt><dd className="ag-chips">{skill.tags.map((m) => <Chip key={m} variant="outline">{m}</Chip>)}</dd></div>
-              <div><dt>Sample prompts · skill.examples</dt><dd><ul className="ex-plain-list">{skill.examples.map((p) => <li key={p}>“{p}”</li>)}</ul></dd></div>
-            </dl>
-          ) : null}
         </div>
-        <section className="ex-stack" aria-label="Conversations">
-          <h3 style={{ margin: 0 }}>Conversations</h3>
-          <p className="ex-small ex-secondary" style={{ margin: 0 }}>
-            {fallbackSelected ? '1 fallback conversation, not keyed by a skill' : `${convs.length} ${convs.length === 1 ? 'conversation' : 'conversations'} in api-pastry-concierge-examples.yaml`}
-          </p>
-          <ul className="ex-plain-list" aria-label="Conversations of the selected skill">
+        {skill ? (
+          <>
+            <div className="agent-modes">
+              <div className="agent-mode">
+                <span className="agent-mode-label">inputModes</span>
+                <span className="agent-mode-chips">{skill.inputModes.map((m) => <span key={m} className="agent-mime">{m}</span>)}</span>
+              </div>
+              <span className="agent-mode-arrow"><Icon name="arrow-right-long" size={18} /></span>
+              <div className="agent-mode">
+                <span className="agent-mode-label">outputModes</span>
+                <span className="agent-mode-chips">{skill.outputModes.map((m) => <span key={m} className="agent-mime">{m}</span>)}</span>
+              </div>
+              <div className="agent-mode">
+                <span className="agent-mode-label">tags</span>
+                <span className="agent-mode-chips">{skill.tags.map((m) => <span key={m} className="agent-tag">{m}</span>)}</span>
+              </div>
+            </div>
+            <div className="agent-prompts-block">
+              <h3 className="agent-h3-sm">Sample prompts <span className="agent-h3-note">· skill.examples</span></h3>
+              <ul className="agent-prompts">{skill.examples.map((p) => <li key={p}>“{p}”</li>)}</ul>
+            </div>
+          </>
+        ) : null}
+        <div className="agent-convs">
+          <div className="agent-convs-head">
+            <h3>Conversations</h3>
+            <span className="agent-convs-count">
+              {fallbackSelected ? '1 fallback conversation, not keyed by a skill' : `${convs.length} ${convs.length === 1 ? 'conversation' : 'conversations'} in api-pastry-concierge-examples.yaml`}
+            </span>
+          </div>
+          <ul className="agent-conv-list" aria-label="Conversations of the selected skill">
             {convs.map((c) => {
               const states = c.steps.filter((s) => s.kind === 'state');
               const last = states.at(-1);
+              const end = last?.kind === 'state' ? last.state : undefined;
               const on = c.id === conversation?.id;
               return (
                 <li key={c.id}>
-                  <Button variant={on ? 'secondary' : 'ghost'} aria-pressed={on} onClick={() => setConvId(c.id)} style={{ width: '100%', justifyContent: 'flex-start' }}>
-                    <span className="ex-mono">{c.id}</span>
-                    {last?.kind === 'state' ? <TaskStateTag state={last.state} /> : null}
-                    <span className="ex-small ex-secondary">{c.turns > 1 ? `${c.turns} turns · ` : ''}{states.length} states{c.streamed ? ' · streamed' : ''}</span>
-                  </Button>
+                  <button type="button" className="agent-conv" aria-pressed={on} onClick={() => setConvId(c.id)}>
+                    <span className="agent-conv-id">{c.id}</span>
+                    <span className="agent-conv-meta">
+                      {end ? (
+                        <span className="agent-conv-end" data-state={end}>
+                          <Icon name={END_ICON[end] ?? 'circle'} size={13} />
+                          {end}
+                        </span>
+                      ) : null}
+                      <span>{c.turns > 1 ? `${c.turns} turns · ` : ''}{states.length} states{c.streamed ? ' · streamed' : ''}</span>
+                    </span>
+                  </button>
                 </li>
               );
             })}
           </ul>
-        </section>
-        {conversation ? (
-          <section className="ex-stack" aria-label="Task script">
-            <h3 style={{ margin: 0 }}>Task script · <span className="ex-mono">{conversation.id}</span></h3>
-            <Script key={conversation.id} conversation={conversation} />
-          </section>
-        ) : null}
-        <Callout tone="info" title="Dispatcher">
-          <p>
-            A2A_SKILL · metadata.skillId, else first text part.
-            {skill?.usesService ? ' This skill uses API Pastry 2.0, served by its own Microcks mock.' : ''}
-            {fallbackSelected ? ' No match answers a task in state rejected, not an HTTP error.' : ''}
-          </p>
-        </Callout>
-      </div>
+        </div>
+        {conversation ? <Script key={conversation.id} conversation={conversation} serviceLink={serviceLink} /> : null}
+        <div className="agent-dispatcher">
+          <span className="agent-dispatcher-item">
+            <span className="ex-muted">Dispatcher</span>
+            <span className="agent-dispatcher-rule">A2A_SKILL · metadata.skillId, else first text part</span>
+          </span>
+          {serviceLink ? (
+            <>
+              <span className="agent-dispatcher-sep" aria-hidden="true" />
+              <span className="agent-dispatcher-item">
+                <span className="ex-muted">uses</span>
+                <RouterLink className="agent-dispatcher-link" to={serviceLink}>API Pastry 2.0 · <span className="ex-mono">GET /pastries/{'{name}'}</span></RouterLink>
+              </span>
+            </>
+          ) : null}
+          {fallbackSelected ? (
+            <span className="ex-secondary">No match answers a task in state <span className="ex-mono">rejected</span>, not an HTTP error.</span>
+          ) : null}
+        </div>
+      </section>
     </div>
   );
 }

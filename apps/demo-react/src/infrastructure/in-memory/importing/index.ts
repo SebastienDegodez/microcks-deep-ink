@@ -19,12 +19,13 @@ export interface ImportingAdapters {
   clock: Clock;
 }
 
+/** Order, descriptions and dates of the Admin prototype (Secrets tab). `usedBy` is counted from the importers. */
 const SEED_SECRETS: SecretSummary[] = [
-  { id: 'sec-1', name: SECRET_STAGING, kind: 'oauth2', description: 'Client credentials for the pastry staging API', masked: '••••••••3f2a', createdAt: '2026-09-12T08:00:00Z' },
-  { id: 'sec-2', name: 'github-readonly', kind: 'token', description: 'Read-only token for the Git importers', masked: '••••••••c91d', createdAt: '2026-08-02T08:00:00Z' },
-  { id: 'sec-3', name: 'github-contracts', kind: 'token', description: 'Bearer token for the bakery-platform/contracts repository', masked: '••••••••a7e0', createdAt: '2026-10-30T17:40:00Z' },
-  { id: 'sec-4', name: 'gitlab-bakery', kind: 'token', description: 'PRIVATE-TOKEN for the internal GitLab', masked: '••••••••51bc', createdAt: '2026-09-18T15:00:00Z' },
-  { id: 'sec-5', name: 'postman-api', kind: 'token', description: 'X-Api-Key of the Postman workspace', masked: '••••••••9d42', createdAt: '2026-08-06T13:10:00Z' },
+  { id: 'sec-4', name: 'gitlab-bakery', kind: 'token', description: 'Read access to contracts on gitlab.bakery.internal', detail: 'header PRIVATE-TOKEN · token ••••••••', masked: '••••••••51bc', createdAt: '2026-09-18T15:00:00Z', updatedAt: '2026-10-21T10:00:00Z' },
+  { id: 'sec-3', name: 'github-contracts', kind: 'token', description: 'Fine-grained token, read-only on bakery-platform/contracts', detail: 'Authorization: Bearer · token ••••••••', masked: '••••••••a7e0', createdAt: '2026-08-30T17:40:00Z', updatedAt: '2026-09-30T17:40:00Z' },
+  { id: 'sec-5', name: 'postman-api', kind: 'token', description: 'Postman API key to fetch the Beer Catalog collection', detail: 'header X-Api-Key · token ••••••••', masked: '••••••••9d42', createdAt: '2026-08-06T13:10:00Z' },
+  { id: 'sec-1', name: SECRET_STAGING, kind: 'oauth2', description: 'Client credentials to get tokens for API Pastry tests on staging', detail: 'client pastry-tests · secret •••••••• · scope pastry:read pastry:write', masked: '••••••••3f2a', createdAt: '2026-09-12T08:00:00Z', updatedAt: '2026-10-30T08:00:00Z' },
+  { id: 'sec-2', name: 'kafka-staging-ca', kind: 'ca', description: 'CA chain of the staging Kafka broker', detail: 'PEM · 2 certificates', masked: '••••••••', createdAt: '2026-06-18T08:00:00Z' },
 ];
 
 /** "Recent sources" of the Import screen, as on the prototype (demo clock 2026-11-03T09:10:04Z). */
@@ -83,7 +84,7 @@ const AGENT_PREVIEW: Omit<AgentPreview, 'fileName'> = {
 export function createInMemoryImportingAdapters(deps: InMemoryDeps = {}): ImportingAdapters {
   const clock = deps.clock ?? new FixedClock();
   const importers = new Map(seedImporters().map((i) => [i.id, i]));
-  const removed = new Map<string, Importer>();
+  const removed = new Map<string, { importer: Importer; index: number }>();
   const secrets = new Map(SEED_SECRETS.map((s) => [s.id, s]));
   const previews = new Map<string, ImportPreview>();
   const recent: RecentImport[] = [...RECENT];
@@ -212,16 +213,20 @@ export function createInMemoryImportingAdapters(deps: InMemoryDeps = {}): Import
     remove: (id) =>
       after(() => {
         const found = importers.get(id);
-        if (found) removed.set(id, found);
+        if (found) removed.set(id, { importer: found, index: [...importers.keys()].indexOf(id) });
         importers.delete(id);
       }),
     restore: (id) =>
       after(() => {
-        const found = removed.get(id);
-        if (!found) throw new NotFoundError('Importer', id);
+        const entry = removed.get(id);
+        if (!entry) throw new NotFoundError('Importer', id);
         removed.delete(id);
-        importers.set(id, found);
-        return found;
+        // Put it back where it was, so the list order does not change after an undo.
+        const rest = [...importers.entries()];
+        rest.splice(Math.min(entry.index, rest.length), 0, [id, entry.importer]);
+        importers.clear();
+        for (const [k, v] of rest) importers.set(k, v);
+        return entry.importer;
       }),
     run: (id) => (listener) => {
       const inner = createSequenceStream([25, 50, 75, 100]);
@@ -248,16 +253,34 @@ export function createInMemoryImportingAdapters(deps: InMemoryDeps = {}): Import
       }),
   };
 
+  const usedBy = (name: string) => [...importers.values()].filter((i) => i.secretName === name).length;
+  const withUse = (x: SecretSummary): SecretSummary => ({ ...x, usedBy: usedBy(x.name) });
+  let nextSecret = SEED_SECRETS.length + 1;
   const secretRepo: SecretRepository = {
-    list: () => after(() => [...secrets.values()]),
+    list: () => after(() => [...secrets.values()].map(withUse)),
     create: (input) =>
       after(() => {
         const created: SecretSummary = {
-          id: `sec-${secrets.size + 1}`, name: input.name, kind: input.kind, description: input.description,
+          id: `sec-${nextSecret++}`, name: input.name, kind: input.kind, description: input.description, detail: input.detail,
           masked: `••••••••${input.value.slice(-4).padStart(4, '•')}`, createdAt: clock.now().toISOString(),
         };
-        secrets.set(created.id, created);
-        return created;
+        // Newest first, as on the prototype.
+        const rest = [...secrets.values()];
+        secrets.clear();
+        for (const x of [created, ...rest]) secrets.set(x.id, x);
+        return withUse(created);
+      }),
+    update: (id, input) =>
+      after(() => {
+        const found = secrets.get(id);
+        if (!found) throw new NotFoundError('Secret', id);
+        const updated: SecretSummary = {
+          ...found, kind: input.kind, description: input.description, detail: input.detail ?? found.detail,
+          ...(input.value ? { masked: `••••••••${input.value.slice(-4).padStart(4, '•')}` } : {}),
+          updatedAt: clock.now().toISOString(),
+        };
+        secrets.set(id, updated);
+        return withUse(updated);
       }),
     remove: (id) =>
       after(() => {

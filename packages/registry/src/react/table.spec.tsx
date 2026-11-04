@@ -76,6 +76,25 @@ describe('DataTable', () => {
     expect(sortRows(rows, { key: 'name', direction: 'descending' }).map((r) => r.id)).toEqual(['orders', 'pastry2']);
   });
 
+  it('sentence-case headers and row tones', () => {
+    const { container } = render(
+      <DataTable caption="Services" headerCase="sentence" columns={columns} rows={rows} rowKey="id" rowTone={(r) => (r.id === 'orders' ? 'idle' : 'failed')} />,
+    );
+    expect(container.querySelector('table')?.getAttribute('data-header')).toBe('sentence');
+    const trs = container.querySelectorAll('tbody tr');
+    expect(trs[0]!.getAttribute('data-tone')).toBe('failed');
+    expect(trs[1]!.getAttribute('data-tone')).toBe('idle');
+  });
+
+  it('row header columns and the danger row tone', async () => {
+    const { container } = render(
+      <DataTable caption="Example parameters" headerCase="sentence" columns={[{ ...columns[0]!, sortable: false, rowHeader: true }, columns[1]!]} rows={rows} rowKey="id" rowTone={(r) => (r.id === 'orders' ? 'danger' : undefined)} />,
+    );
+    expect(screen.getByRole('rowheader', { name: 'API Pastry' })).toBeTruthy();
+    expect(container.querySelectorAll('tbody tr')[1]!.getAttribute('data-tone')).toBe('danger');
+    expect(await axeViolations(container)).toEqual([]);
+  });
+
   it('has no axe violations', async () => {
     const { container } = render(
       <DataTable caption="Services" columns={columns} rows={rows} rowKey="id" rowHref={(r) => `/s/${r.id}`} selectedKey="orders" sort={{ key: 'name', direction: 'ascending' }} />,

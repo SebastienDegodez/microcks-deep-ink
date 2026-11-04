@@ -39,3 +39,16 @@ export const Live: StoryObj = {
     </div>
   ),
 };
+
+export const Outline: StoryObj = {
+  name: 'Outline note',
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 12, maxWidth: 560 }}>
+      <Callout tone="ai" variant="outline" title="">Proposed by AI from the contract's <code>Pastry</code> schema. The mock only serves it once accepted.</Callout>
+      <Callout tone="warning" variant="outline">The secondary artifact needs API Pastry 2.0 in Microcks first: install the main package, then come back.</Callout>
+      <div style={{ maxWidth: 360 }}>
+        <Callout tone="warning" variant="outline" size="sm">The token shown here is masked: paste the real secret in your CI settings.</Callout>
+      </div>
+    </div>
+  ),
+};

@@ -2,8 +2,8 @@ import { afterNextRender, booleanAttribute, Directive, effect, ElementRef, injec
 import { createIconElement } from './icon';
 import type { IconName } from './icon';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'link' | 'dashed' | 'danger';
-export type ButtonSize = 'md' | 'sm';
+export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'dashed' | 'danger';
+export type ButtonSize = 'sm' | 'compact' | 'tile' | 'md' | 'lg';
 
 /**
  * Native `<button>` or `<a>` with the `button` styling: `<button mkButton variant="primary">Save</button>`.
@@ -18,6 +18,7 @@ export type ButtonSize = 'md' | 'sm';
     '[attr.data-variant]': 'variant()',
     '[attr.data-size]': 'size()',
     '[attr.data-confirm]': "confirm() ? '' : null",
+    '[attr.data-tone]': 'tone() ?? null',
     '[attr.data-icon-only]': "iconOnly() ? '' : null",
     '[attr.aria-busy]': "loading() ? 'true' : null",
   },
@@ -25,7 +26,10 @@ export type ButtonSize = 'md' | 'sm';
 export class ButtonDirective {
   /** One primary per task region. */
   readonly variant = input<ButtonVariant>('secondary');
+  /** `md` is 40px high. `sm` is 32px and `compact` 34px (never the primary action of a page); `tile` 36px (actions in a card footer); `lg` is 44px (form footers). */
   readonly size = input<ButtonSize>('md');
+  /** `danger` (ghost and link only): the text in the danger colour (an inline Delete). */
+  readonly tone = input<'danger'>();
   /** Filled danger, only inside a confirmation dialog. Use with `variant="danger"`. */
   readonly confirm = input(false, { transform: booleanAttribute });
   /** Leading icon name. */
@@ -45,7 +49,7 @@ export class ButtonDirective {
     let iconEl: SVGSVGElement | null = null;
     effect(() => {
       const name = this.icon();
-      const size = this.size() === 'sm' || this.variant() === 'link' || this.variant() === 'dashed' ? 14 : 16;
+      const size = this.size() === 'sm' || this.size() === 'compact' || this.size() === 'tile' || this.variant() === 'link' || this.variant() === 'dashed' ? 14 : 16;
       iconEl?.remove();
       iconEl = null;
       if (name) {

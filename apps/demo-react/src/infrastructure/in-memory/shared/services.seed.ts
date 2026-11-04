@@ -98,7 +98,7 @@ const json = (value: unknown) => JSON.stringify(value, null, 2);
 
 const PASTRIES = {
   mille: { name: 'Millefeuille', description: 'Delicious Millefeuille, not caloric at all', size: 'L', price: 4.4, status: 'available' },
-  cafe: { name: 'Eclair Cafe', description: 'Delicious Coffee Eclair, not caloric at all', size: 'M', price: 2.4, status: 'unknown' },
+  cafe: { name: 'Eclair Cafe', description: 'Delicious Coffee Eclair, not caloric at all', size: 'M', price: 2.5, status: 'available' },
   choco: { name: 'Eclair Chocolat', description: 'Delicious Chocolate Eclair, not caloric at all', size: 'M', price: 2.4, status: 'unknown' },
   fraise: { name: 'Tartelette Fraise', description: 'Delicious Strawberry Tartlet, fresh strawberries', size: 'S', price: 2.0, status: 'available' },
   tarte: { name: 'Tartelette Framboise', description: 'Raspberry tartlet with fresh raspberries on pastry cream', size: 'S', price: 3.1, status: 'available' },

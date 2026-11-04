@@ -1,0 +1,8 @@
+/* Screen 18 · header: chips beside the badge title, labels + import line, proof badges. */
+.agent-head-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+.agent-head-row[data-gap='badges'] { gap: 10px; }
+.agent-import-line { font-size: 12px; color: var(--text-muted); }
+.agent-badge-link { display: inline-flex; text-decoration: none; border-radius: 6px; }
+.agent-badge-link:hover .api-badge { filter: brightness(1.08); }
+.agent-badge-link:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
+.agent-page { gap: 22px; }

@@ -1,7 +1,7 @@
 import { matchesTraceFilter, type DomainConformance, type InvocationPoint, type Invocations, type Period, type TraceCall, type TraceFilter } from '@/domain/observe';
 import type { MetricsRepository, TraceStream, TrafficStream } from '@/application/ports/observe';
 import { SERVICES, after, createTickingStream, type InMemoryDeps } from '../shared';
-import { HISTORY_LENGTH, CLIENT_EDGES, recentTraffic, EXAMPLE_EDGES, TOPOLOGY_CLIENTS, TOPOLOGY_ENDPOINTS, TOPOLOGY_EXAMPLES, historyCalls, makeCall } from './seed/traces.seed';
+import { HISTORY_LENGTH, CLIENT_EDGES, TRACE_TICK_MS, atOf, trafficAt, recentTraffic, EXAMPLE_EDGES, TOPOLOGY_CLIENTS, TOPOLOGY_ENDPOINTS, TOPOLOGY_EXAMPLES, historyCalls, makeCall } from './seed/traces.seed';
 import { CONFORMANCE_INDEX, usageDataFor } from './seed/usage.seed';
 
 export { makeCall } from './seed/traces.seed';
@@ -30,12 +30,28 @@ function invocations(serviceId: string, period: Period): Invocations {
 
 export function createInMemoryObserveAdapters(_deps: InMemoryDeps = {}): ObserveAdapters {
   let replays = 0;
-  // Streamed calls continue after the history, so a subscriber starts at call 11.
-  const stream = createTickingStream((tick) => makeCall(HISTORY_LENGTH + tick + 1));
+  // Time of the newest call handed out, so a replay is always stamped after it.
+  let newestAt = Date.parse(atOf(HISTORY_LENGTH));
+  // Streamed calls continue after the history, so a subscriber starts at call 11. Live traces ticks every
+  // 3.2 s like the prototype (~19 calls/min); the Cockpit ticker keeps its own stream at the default pace.
+  const stream = createTickingStream(
+    (tick) => {
+      const call = makeCall(HISTORY_LENGTH + tick + 1);
+      newestAt = Math.max(newestAt, Date.parse(call.at));
+      return call;
+    },
+    { intervalMs: TRACE_TICK_MS },
+  );
+  const trafficStream = createTickingStream((tick) => {
+    const seq = HISTORY_LENGTH + tick + 1;
+    return { ...makeCall(seq), at: trafficAt(seq) };
+  });
 
   const metrics: MetricsRepository = {
     invocations: (serviceId, period) => after(() => invocations(serviceId, period)),
     usageData: (scope) => after(() => usageDataFor(scope)),
+    // Only API Pastry 2.0 has detailed series, as in the prototype.
+    usageScopes: () => after(() => [{ id: 'pastry2', label: 'API Pastry 2.0' }, { id: 'all', label: 'All services' }]),
     conformanceByDomain: () =>
       after<DomainConformance[]>(() => {
         const byDomain = new Map<string, DomainConformance>();
@@ -74,7 +90,8 @@ export function createInMemoryObserveAdapters(_deps: InMemoryDeps = {}): Observe
         replays += 1;
         // Replayed calls get their own number range, so they never collide with the live ones.
         const seq = 1000 + replays;
-        return { ...makeCall(original), seq, callId: `call-${seq}`, at: new Date(Date.parse('2026-11-03T09:10:04.208Z') + replays * 400).toISOString() };
+        newestAt += 250;
+        return { ...makeCall(original), seq, callId: `call-${seq}`, at: new Date(newestAt).toISOString() };
       }),
     get: (callId) => after(() => makeCall(Number(callId.replace('call-', '')) || 1)),
     topology: () =>
@@ -88,6 +105,6 @@ export function createInMemoryObserveAdapters(_deps: InMemoryDeps = {}): Observe
       })),
   };
 
-  const traffic: TrafficStream = { subscribe: stream, recent: (limit) => after(() => recentTraffic().slice(0, limit)) };
+  const traffic: TrafficStream = { subscribe: trafficStream, recent: (limit) => after(() => recentTraffic().slice(0, limit)) };
   return { metrics, traces, traffic };
 }

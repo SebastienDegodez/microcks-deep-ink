@@ -32,6 +32,8 @@ const PATHS = {
   // workflow
   retry: ['M20 11a8 8 0 1 0-2 6', 'M20 4v7h-7'],
   end: ['M12 4a8 8 0 1 1 0 16a8 8 0 1 1 0-16', 'M9 9h6v6H9z'],
+  /** Early end (Workflow loom legend and end pill): a ring r8 around a rounded 6px square. */
+  'early-end': ['M20 12a8 8 0 1 1-16 0a8 8 0 1 1 16 0', 'M10 9h4a1 1 0 0 1 1 1v4a1 1 0 0 1-1 1h-4a1 1 0 0 1-1-1v-4a1 1 0 0 1 1-1z'],
   branch: ['M6 3v18', 'M18 3v6a6 6 0 0 1-6 6H6'],
   play: ['M7 5l12 7-12 7z'],
   pause: ['M8 5v14M16 5v14'],
@@ -40,6 +42,8 @@ const PATHS = {
   undo: ['M9 14L4 9l5-5', 'M4 9h10a6 6 0 0 1 0 12h-3'],
   // actions
   search: ['M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14', 'M20 20l-3.5-3.5'],
+  /** Small magnifier (Workflow "Trace on the loom", lens note): circle r6 at 10,10. `search` is r7 at 11,11. */
+  lens: ['M16 10a6 6 0 1 1-12 0a6 6 0 1 1 12 0', 'M20 20l-5.5-5.5'],
   copy: ['M11 9h7a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2h-7a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2z', 'M5 15V5a2 2 0 0 1 2-2h10'],
   upload: ['M12 16V4', 'M6 10l6-6 6 6', 'M4 20h16'],
   trash: ['M4 7h16', 'M9 7V4h6v3', 'M6 7l1 13h10l1-13', 'M10 11v6M14 11v6'],
@@ -86,6 +90,8 @@ const PATHS = {
   swap: ['M4 8h13M13 4l4 4-4 4M20 16H7M11 12l-4 4 4 4'],
   'close-sm': ['M7 7l10 10M17 7L7 17'],
   reset: ['M3 12a9 9 0 1 0 3-6.7', 'M3 4v5h5'],
+  /** Replay a call (Traces "Replay this call"): open arc, arrow at the top left. */
+  replay: ['M4 12a8 8 0 1 0 2.3-5.7', 'M4 4v4h4'],
   refresh: ['M21 12a9 9 0 1 1-3-6.7', 'M21 4v5h-5'],
   'refresh-arrows': ['M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3', 'M18 3v4h-4M6 21v-4h4'],
   sync: ['M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4'],

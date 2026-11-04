@@ -5,6 +5,8 @@
   - A row link is the first cell's <a class="table-rowlink">, stretched over the row. No clickable <tr>.
   A column header can be visually hidden (<th scope="col"><span class="sr-only">Open</span></th>) for an icon-only column.
   Cells wrap; add data-nowrap on a cell (or column) to keep it on one line. Only thead th is uppercase.
+  data-header="sentence" on the table: sentence-case 12px headers, top-aligned cells, tabular figures.
+  data-tone="failed" (surface fill), "danger" (danger tint) or "idle" (muted text, never opacity) on a body <tr>; the row still writes its state.
 -->
 <div class="table-wrap" role="region" aria-labelledby="svc-caption" tabindex="0">
   <table class="table" data-density="comfortable">
