@@ -122,7 +122,7 @@ export default function CataloguePage() {
     { key: 'calls', header: 'Mock 24 h', align: 'end', mono: true, nowrap: true, render: callsText },
     { key: 'updated', header: 'Updated', nowrap: true, render: (s) => <span className="ex-muted">{relative(s.updatedAt)}</span> },
     {
-      key: 'open', header: 'Open', align: 'end',
+      key: 'open', header: 'Open', headerHidden: true, align: 'end',
       render: (s) => (
         <RouterLink to={`/services/${s.id}`} className="catalogue-open" aria-label={`Open ${s.name} ${s.version}`}>
           <Icon name="chevron" size={14} />
@@ -221,7 +221,7 @@ export default function CataloguePage() {
           {data.services.map((s) => (
             <article key={s.id} className="catalogue-card">
               <div className="catalogue-card-head">
-                <ApiBadge protocol={s.protocol} name={s.name} version={s.version} />
+                <ApiBadge protocol={s.protocol} name={s.name} version={s.version} size="card" />
                 <span className="catalogue-format">{s.format} · {pluralize(s.operationCount, operationUnit(s.protocol))}</span>
               </div>
               <div className="catalogue-shields">

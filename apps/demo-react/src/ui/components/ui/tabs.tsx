@@ -1,6 +1,7 @@
 // Deep Ink · tabs@0.2.0 · copied from packages/registry. You own this file.
 import { createContext, useContext, useId, useRef } from 'react';
 import type { KeyboardEvent, ReactNode } from 'react';
+import { Icon, type IconName } from './icon';
 
 export interface TabItem {
   id: string;
@@ -13,6 +14,10 @@ export interface TabItem {
   alertLabel?: string;
   /** Live dot before the label. Read as "Tasks, live". */
   live?: boolean;
+  /** Decorative 16px icon before the label (Import source types). */
+  icon?: IconName;
+  /** 12px muted text after the label, read as "Upload, one-off file". */
+  hint?: string;
   disabled?: boolean;
 }
 
@@ -30,6 +35,8 @@ export interface TabsProps {
    * panels passed as `children` find it by themselves.
    */
   idPrefix?: string;
+  /** `line` (default): the strip under a page header. `card`: at the top of a card (padding 0 8px, taller tabs that wrap). */
+  variant?: 'line' | 'card';
   /** Panels, rendered after the tab list. */
   children?: ReactNode;
   className?: string;
@@ -44,7 +51,7 @@ const panelId = (prefix: string, id: string) => `${prefix}-panel-${id}`;
  * Tabs with the WAI-ARIA tabs pattern: roving tabindex, arrow keys with wrap, Home and End.
  * Put `TabPanel`s in `children`, or render them yourself with the same `idPrefix`.
  */
-export function Tabs({ label, items, value, onChange, activation = 'automatic', idPrefix, children, className }: TabsProps) {
+export function Tabs({ label, items, value, onChange, activation = 'automatic', idPrefix, variant = 'line', children, className }: TabsProps) {
   const generated = useId();
   const prefix = idPrefix ?? generated;
   const refs = useRef<Array<HTMLButtonElement | null>>([]);
@@ -87,7 +94,7 @@ export function Tabs({ label, items, value, onChange, activation = 'automatic', 
 
   return (
     <PrefixContext.Provider value={prefix}>
-      <div className={['tabs', className].filter(Boolean).join(' ')}>
+      <div className={['tabs', className].filter(Boolean).join(' ')} data-variant={variant === 'card' ? 'card' : undefined}>
         <div role="tablist" className="tablist" aria-label={label}>
           {items.map((t, i) => {
             const selected = i === selectedIndex;
@@ -109,7 +116,13 @@ export function Tabs({ label, items, value, onChange, activation = 'automatic', 
                 onKeyDown={(e) => onKeyDown(e, i)}
               >
                 {t.live ? <span className="tab-live" aria-hidden="true" /> : null}
+                {t.icon ? <Icon name={t.icon} size={16} /> : null}
                 {t.label}
+                {t.hint ? (
+                  <span className="tab-hint">
+                    <span className="sr-only">,</span> {t.hint}
+                  </span>
+                ) : null}
                 {t.live ? <span className="sr-only">, live</span> : null}
                 {t.count !== undefined ? (
                   <span className="tab-count">

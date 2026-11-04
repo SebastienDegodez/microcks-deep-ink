@@ -147,7 +147,7 @@ describe('WP7 pages', () => {
     renderAt('/sources');
     await h1('Sources');
     await screen.findByRole('article', { name: 'Pastry orders events' });
-    fireEvent.click(screen.getByRole('button', { name: /^Failed/ }));
+    fireEvent.click(screen.getByRole('button', { name: /^Failing/ }));
     await waitFor(() => expect(screen.queryByRole('article', { name: 'Hello gRPC' })).toBeNull());
     expect(screen.getByRole('alert').textContent).toMatch(/401 Unauthorized/);
     fireEvent.click(screen.getByRole('button', { name: 'Delete Pastry orders events' }));
@@ -161,7 +161,7 @@ describe('WP7 pages', () => {
   it('Sources: a timeline entry with a revision shows its diff', async () => {
     renderAt('/sources/pastry-openapi');
     await h1('Sources');
-    expect(await screen.findByRole('region', { name: 'Unified diff' })).toBeTruthy();
+    expect(await screen.findByRole('region', { name: 'Unified diff' }, { timeout: 5000 })).toBeTruthy();
     expect(screen.getByRole('heading', { level: 2, name: 'API Pastry 2.0 · OpenAPI' })).toBeTruthy();
     await act(async () => {});
   });

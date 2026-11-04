@@ -1,6 +1,7 @@
 <!--
   Button recipe. One primary action per task region.
-  Variants: data-variant="primary | secondary | ghost | link | dashed | danger". Size: data-size="md | sm".
+  Variants: data-variant="primary | secondary | outline | ghost | link | dashed | danger".
+  Size: data-size="sm (32px) | compact (34px) | md (40px) | lg (44px)". data-tone="danger" on ghost or link: danger text.
   Native <button>: Enter and Space activate it. Always set type.
 -->
 <button type="button" class="button" data-variant="primary" data-size="md">Run test</button>
@@ -8,6 +9,9 @@
 <button type="button" class="button" data-variant="ghost" data-size="sm">Details</button>
 <button type="button" class="button" data-variant="danger" data-size="md">Delete</button>
 <button type="button" class="button" data-variant="link">Clear list</button>
+<button type="button" class="button" data-variant="ghost" data-size="sm" data-tone="danger">Delete</button>
+<button type="button" class="button" data-variant="dashed" data-size="compact">Add header</button>
+<button type="button" class="button" data-variant="outline" data-size="lg">Cancel</button>
 <button type="button" class="button" data-variant="dashed" aria-pressed="false">Show empty install</button>
 
 <!-- Filled danger, only inside a confirmation dialog -->

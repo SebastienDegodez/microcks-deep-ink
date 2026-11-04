@@ -64,3 +64,28 @@ export const LiveAndAlert: StoryObj = {
     );
   },
 };
+
+const SOURCE_TABS = [
+  { id: 'file', label: 'Upload', hint: 'one-off file', icon: 'document' as const },
+  { id: 'url', label: 'URL', hint: 'fetched on demand', icon: 'link' as const },
+  { id: 'git', label: 'Git repository', hint: 'kept in sync', icon: 'git-branch' as const },
+  { id: 'direct', label: 'Direct API', hint: 'no contract', icon: 'zap' as const },
+];
+
+export const CardWithIcons: StoryObj = {
+  name: 'Card variant, icons and hints (Import)',
+  render: () => {
+    const [v, setV] = useState('file');
+    return (
+      <div style={{ border: '1px solid var(--border)', borderRadius: 8, background: 'var(--canvas)' }}>
+        <Tabs label="Source type" variant="card" items={SOURCE_TABS} value={v} onChange={setV}>
+          {SOURCE_TABS.map((t) => (
+            <TabPanel key={t.id} id={t.id} value={v}>
+              <p style={{ margin: 0, padding: '0 20px 20px' }}>Content of the {t.label} tab.</p>
+            </TabPanel>
+          ))}
+        </Tabs>
+      </div>
+    );
+  },
+};

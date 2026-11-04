@@ -25,6 +25,8 @@ export class CalloutActionsDirective {}
   host: {
     class: 'callout',
     '[attr.data-tone]': 'tone()',
+    '[attr.data-variant]': "variant() === 'outline' ? 'outline' : null",
+    '[attr.data-size]': "size() === 'sm' ? 'sm' : null",
     '[attr.role]': 'role()',
     '[attr.aria-labelledby]': 'heading() ? titleId : null',
     // `title` is an input here: do not leave it on the element as a tooltip.
@@ -48,6 +50,10 @@ export class CalloutComponent {
   readonly title = input<string>();
   /** polite renders role="status", assertive renders role="alert", false renders no live role. */
   readonly live = input<'polite' | 'assertive' | false>(false);
+  /** `outline`: a thin tone-coloured frame, no fill, tone-coloured 13px text, 14px icon; a `role="note"` by default. */
+  readonly variant = input<'filled' | 'outline'>('filled');
+  /** `sm` (outline): 12px text, padding 9px 11px. */
+  readonly size = input<'md' | 'sm'>('md');
 
   protected readonly actions = contentChild(CalloutActionsDirective);
   protected readonly titleId = `mk-callout-title-${++nextId}`;
@@ -63,6 +69,6 @@ export class CalloutComponent {
   }
   protected role(): string | null {
     const live = this.live();
-    return live === 'assertive' ? 'alert' : live === 'polite' ? 'status' : null;
+    return live === 'assertive' ? 'alert' : live === 'polite' ? 'status' : this.variant() === 'outline' ? 'note' : null;
   }
 }

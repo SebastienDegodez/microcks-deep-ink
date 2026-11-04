@@ -20,7 +20,7 @@
     height: 8px;
     border-radius: var(--radius-pill);
     background: var(--live);
-    animation: live-pulse 1.4s ease-in-out infinite;
+    animation: live-pulse 1.6s ease-in-out infinite;
   }
   .live[data-size="sm"] .live-dot,
   .live[data-variant="inline"] .live-dot { width: 7px; height: 7px; }

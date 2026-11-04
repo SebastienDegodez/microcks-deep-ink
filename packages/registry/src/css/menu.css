@@ -1,7 +1,7 @@
 @layer deep-ink.components {
   .menu {
     box-sizing: border-box;
-    min-width: 12rem;
+    min-width: var(--menu-min-width, 264px);
     max-width: calc(100vw - 16px);
     /* The popover is positioned by script next to its trigger. */
     position: fixed;
