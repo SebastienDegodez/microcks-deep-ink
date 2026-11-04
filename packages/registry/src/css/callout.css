@@ -35,6 +35,8 @@
     color: var(--callout-text, var(--callout-color));
     font: 400 13px/1.5 var(--font-ui);
   }
+  /* AI outline: the same frame, dashed (Service "Proposed by AI" note). */
+  .callout[data-variant="outline"][data-tone="ai"] { border-style: dashed; }
   .callout[data-variant="outline"] > .icon { width: 14px; height: 14px; }
   .callout[data-variant="outline"] :is(.callout-title, .callout-content) { color: inherit; font: inherit; }
   .callout[data-variant="outline"] .callout-title { font-weight: 600; }

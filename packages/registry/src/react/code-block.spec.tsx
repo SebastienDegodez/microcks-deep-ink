@@ -31,6 +31,12 @@ describe('CodeBlock', () => {
     expect(container.querySelectorAll('.code-line')[1]!.textContent).toContain('schema: number');
   });
 
+  it('names the region with label, keeping the caption visible', () => {
+    render(<CodeBlock caption="SendMessage · curl" label="SendMessage · curl, JSON-RPC binding" code="curl -X POST" />);
+    expect(screen.getByRole('region', { name: 'SendMessage · curl, JSON-RPC binding' })).toBeTruthy();
+    expect(screen.getByText('SendMessage · curl')).toBeTruthy();
+  });
+
   it('narrow gutter, danger frame and an 11px cross on the bad line', () => {
     const { container } = render(
       <CodeBlock variant="plain" caption="Response body" lineNumbers gutter="narrow" tone="danger" lines={[{ text: '{' }, { text: '  "price": "2.5"', bad: true, note: 'schema: number' }]} />,

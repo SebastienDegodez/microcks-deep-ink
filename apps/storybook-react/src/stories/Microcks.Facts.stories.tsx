@@ -50,3 +50,36 @@ export const Columns: StoryObj = {
     </div>
   ),
 };
+
+export const SurfaceAndGap: StoryObj = {
+  name: 'Boxed on surface, custom gap',
+  render: () => (
+    <div className="stack" style={{ maxWidth: 560 }}>
+      <Facts
+        layout="columns"
+        columns={2}
+        boxed="surface"
+        gap="10px 16px"
+        items={[
+          { term: 'Client', value: 'microcks-arazzo · 10.0.2.8', mono: true },
+          { term: 'Dispatcher', value: 'URI_PARTS', mono: true },
+          { term: 'Dispatch criteria', value: '/name=Eclair Cafe', mono: true, tone: 'warning' },
+          { term: 'Matched example', value: 'no match', tone: 'warning' },
+        ]}
+      />
+      <Facts
+        layout="inline"
+        gap="9px 12px"
+        items={[
+          { term: 'Workflow', value: 'restock-pastry', mono: true },
+          { term: 'Timeout per step', value: '10000 ms', mono: true },
+        ]}
+      />
+    </div>
+  ),
+};
+
+export const LargeRows: StoryObj = {
+  name: 'Large rows (Service)',
+  render: () => <Facts size="lg" termWidth="150px" style={{ maxWidth: 560 }} items={[{ term: 'Version', value: '2.0', mono: true }, { term: 'Type', value: 'REST · OpenAPI 3.1' }, { term: 'Created', value: 'Oct 12, 2026' }]} />,
+};

@@ -21,6 +21,8 @@ export function AgentMockTab({ agent }: { agent: AgentProfile }) {
           <span className="agent-mock-version">A2A-Version: 1.0</span>; another version gets <span className="ex-mono">VersionNotSupportedError</span>.
         </p>
         <Segmented
+          variant="joined"
+          size="sm"
           label="Call"
           value={mode}
           onChange={(v) => setMode(v as CallMode)}
@@ -38,15 +40,15 @@ export function AgentMockTab({ agent }: { agent: AgentProfile }) {
             <div className="agent-transport-url">
               <label htmlFor={`url-${t.id}`}>{t.urlLabel}</label>
               <div className="agent-transport-url-row">
-                <Input id={`url-${t.id}`} mono readOnly value={t.mockUrl} />
-                <CopyButton value={t.mockUrl} label="Copy" aria-label={`Copy the ${t.name} URL`} />
+                <Input id={`url-${t.id}`} mono readOnly value={t.mockUrl} className="agent-url-input" />
+                <CopyButton value={t.mockUrl} label="Copy" size="compact" className="agent-copy-plain agent-url-copy" aria-label={`Copy the ${t.name} URL`} />
               </div>
             </div>
             <p className="agent-transport-stream">
               <Icon name="activity" size={13} />
               <span>{transportStreamingNote(t, mode)}</span>
             </p>
-            <CodeBlock className="agent-transport-sample" code={transportSample(t, mode)} language="bash" caption={`${method} · ${t.id === 'grpc' ? 'grpcurl' : 'curl'}`} />
+            <CodeBlock className="agent-transport-sample" code={transportSample(t, mode)} language="bash" caption={`${method} · ${t.id === 'grpc' ? 'grpcurl' : 'curl'}`} label={`${method} · ${t.id === 'grpc' ? 'grpcurl' : 'curl'}, ${t.name} binding`} />
             <div className="agent-also">
               <span className="agent-also-label">Also served</span>
               <span className="agent-also-list">{t.more}</span>

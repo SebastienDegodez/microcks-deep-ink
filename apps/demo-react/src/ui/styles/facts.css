@@ -33,7 +33,7 @@
     --facts-term: 92px;
     display: grid;
     grid-template-columns: minmax(var(--facts-term), max-content) minmax(0, 1fr);
-    gap: 8px 16px;
+    gap: var(--facts-gap, 8px 16px);
   }
   .facts[data-layout="inline"] > .facts-row { display: contents; }
   .facts[data-layout="inline"] > .facts-row > dd { display: block; }
@@ -43,7 +43,7 @@
     --facts-min: 200px;
     display: grid;
     grid-template-columns: var(--facts-cols, repeat(auto-fit, minmax(min(100%, var(--facts-min)), 1fr)));
-    gap: 8px 16px;
+    gap: var(--facts-gap, 8px 16px);
   }
   .facts[data-layout="columns"] > .facts-row {
     flex-direction: column;
@@ -64,6 +64,9 @@
     background: var(--bg);
   }
 
+  /* Boxed on the surface fill (Traces call detail). */
+  .facts[data-boxed="surface"] { padding: 12px; background: var(--surface); }
+
   /* Strong values: figures (Usage totals 14px, WorkflowRun stats). */
   .facts[data-strong] > .facts-row > dd { font-size: 14px; font-weight: 600; }
 
@@ -75,4 +78,8 @@
   .facts-row > dd[data-tone="danger"] { color: var(--danger); }
   .facts-row > dd[data-tone="muted"] { color: var(--text-secondary); }
   .facts-sub { font-family: var(--font-ui); font-size: 12px; font-weight: 400; color: var(--text-muted); }
+  /* Large rows (Service Properties): 14px, padding 8px 0, mono values 14px. */
+  .facts[data-size="lg"] { font-size: 14px; }
+  .facts[data-size="lg"] > .facts-row { padding: 8px 0; }
+  .facts[data-size="lg"] > .facts-row > dd[data-mono] { font-size: 14px; }
 }
