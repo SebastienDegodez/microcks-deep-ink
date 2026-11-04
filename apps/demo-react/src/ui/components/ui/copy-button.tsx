@@ -60,7 +60,7 @@ export function CopyButton({
     const ok = await writeClipboard(value);
     setState(ok ? 'copied' : 'failed');
     clearTimeout(timer.current);
-    timer.current = setTimeout(() => setState('idle'), 2000);
+    timer.current = setTimeout(() => setState('idle'), 1800);
   };
 
   const text = state === 'copied' ? copiedLabel : label;
@@ -77,6 +77,7 @@ export function CopyButton({
         iconOnly={iconOnly}
         icon={state === 'copied' ? 'check' : 'copy'}
         className={['copy-button', className].filter(Boolean).join(' ')}
+        data-state={state === 'idle' ? undefined : state}
         onClick={copy}
       >
         {iconOnly ? null : text}
