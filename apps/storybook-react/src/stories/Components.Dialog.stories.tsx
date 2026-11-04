@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Dialog',
+  component: Dialog,
   parameters: itemParams(['dialog', 'button'], 'A native `<dialog>` opened with `showModal()`: focus is trapped by the browser, Escape closes it and focus returns to the opener.'),
-} satisfies Meta;
+} satisfies Meta<typeof Dialog>;
 
 function Demo({ danger }: { danger?: boolean }) {
   const [open, setOpen] = useState(false);
@@ -36,3 +37,18 @@ function Demo({ danger }: { danger?: boolean }) {
 
 export const Default: StoryObj = { render: () => <Demo /> };
 export const Destructive: StoryObj = { render: () => <Demo danger /> };
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Dialog> = {
+  args: { title: 'Import a contract', description: 'Choose an OpenAPI, AsyncAPI, gRPC or GraphQL file.', size: 'md', closeOnBackdrop: false, children: <p>The file stays on your machine until you confirm.</p> },
+  argTypes: { size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] }, open: { table: { disable: true } }, onClose: { table: { disable: true } } },
+  render: (args) => {
+    const [open, setOpen] = useState(false);
+    return (
+      <>
+        <Button variant="primary" onClick={() => setOpen(true)}>Open the dialog</Button>
+        <Dialog {...args} open={open} onClose={() => setOpen(false)} footer={<Button onClick={() => setOpen(false)}>Close</Button>} />
+      </>
+    );
+  },
+};

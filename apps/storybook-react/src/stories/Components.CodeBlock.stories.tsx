@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/CodeBlock',
+  component: CodeBlock,
   parameters: itemParams(['code-block', 'copy-button'], 'A `<figure>` with a focusable `<pre>` so keyboard users can scroll it. A bad line has a "✕" marker and a visible note, not color alone.'),
-} satisfies Meta;
+} satisfies Meta<typeof CodeBlock>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -115,4 +116,26 @@ export const RegionLabel: StoryObj = {
       <CodeBlock caption="SendMessage · curl" label="SendMessage · curl, HTTP+JSON binding" code="curl -X POST https://agent.acme.io/v1/message:send" />
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof CodeBlock> = {
+  args: {
+    code: 'GET /pastries/{name}\nAccept: application/json\n\n200 OK\n{ "name": "Millefeuille", "price": 3.9 }',
+    language: 'http',
+    caption: 'Request and response',
+    label: 'Example exchange',
+    copy: true,
+    variant: 'framed',
+    lineNumbers: true,
+    startLine: 1,
+    gutter: 'wide',
+    tone: undefined,
+    maxHeight: 240,
+  },
+  argTypes: {
+    variant: { control: 'inline-radio', options: ['framed', 'plain'] },
+    gutter: { control: 'inline-radio', options: ['wide', 'narrow'] },
+    tone: { control: 'inline-radio', options: [undefined, 'danger'] },
+  },
 };

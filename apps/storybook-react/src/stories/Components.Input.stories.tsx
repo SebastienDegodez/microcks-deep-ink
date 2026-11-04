@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Input',
+  component: Input,
   parameters: itemParams(['input'], 'Native `<input>` and `<textarea>`. The border uses `--border-control` (3:1 against every ground). Always pair with a visible label, see Field.'),
-} satisfies Meta;
+} satisfies Meta<typeof Input>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -64,4 +65,13 @@ export const OnPageBackground: StoryObj = {
       <Input id="in-bg" mono surface="bg" defaultValue="https://gitlab.acme.io/bakery/pastry-api.git" />
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Input> = {
+  args: { 'aria-label': 'Search services', placeholder: 'Search services', size: 'md', mono: false, surface: undefined, type: 'text', disabled: false },
+  argTypes: {
+    size: { control: 'inline-radio', options: ['sm', 'md'] },
+    surface: { control: 'inline-radio', options: [undefined, 'surface', 'bg'] },
+  },
 };

@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Kbd',
+  component: Kbd,
   parameters: itemParams(['kbd'], 'The native `<kbd>` element for key names. Write the key in words where a symbol is ambiguous.'),
-} satisfies Meta;
+} satisfies Meta<typeof Kbd>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -14,4 +15,9 @@ export const Default: StoryObj = {
       Press <Kbd>Ctrl</Kbd> + <Kbd>K</Kbd> to open the command bar, <Kbd>Esc</Kbd> to close it.
     </p>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Kbd> = {
+  args: { children: 'Ctrl K' },
 };
