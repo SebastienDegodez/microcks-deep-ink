@@ -437,9 +437,33 @@
         "src/ui/styles/facts.css": "389c8b4df96600f5fc693fe62511a4ad511c7699b765a0a02a97870e45b3235d"
       },
       "hash": "cf99aa18463b422a"
+    },
+    "projection-pill": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/projection-pill.tsx": "a1bbf8c1fc02a014150dd010b2a174256def29f28b89551cfec7d8f8b6442ef0",
+        "src/ui/styles/projection-pill.css": "444468d898c44df552662d8f22f467caf399e13f01639de95d5d1ebbe2ae7e27"
+      },
+      "hash": "2be41a92ef1bfb0e"
+    },
+    "run-meta": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/run-meta.tsx": "4e8b5d5fbb31e9b637d88f4dc65f8ada1db1e61831b64c46b308d4364f51cdea",
+        "src/ui/styles/run-meta.css": "dca3fb4a84cd24b9af01b87676e00b0f1f1eb0f0a09d67fb56360755220c6ae8"
+      },
+      "hash": "bb17329eebb1705a"
+    },
+    "ci-panel": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/ci-panel.tsx": "cb4076b42fd59d3f1dbe31fec31436c4b6f59151a818d486946fe7ac8e1864b1",
+        "src/ui/styles/ci-panel.css": "0f7fa8c2159060d9b95ea76b80089506ce60bbd558d21ab1bafc899a20aa611c"
+      },
+      "hash": "d3415d4d251764df"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "e6cca92f96d101c3c4e0b6c709723983c56dfccc65b2a75995ca7b2299f4b07a"
+    "src/ui/styles/index.css": "380938228db5296d4768b6de3007def27b3a9ec22accfaece04e63c570487635"
   }
 }

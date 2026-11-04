@@ -1,0 +1,37 @@
+/* Deep Ink · ci-panel@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  /* The toggle: a secondary button; expanded, it takes the action border on the selected fill. */
+  .button.ci-panel-toggle[aria-expanded="true"] { border-color: var(--action); background: var(--selected); }
+
+  /* "Run it from CI" panel (TestRun, AgentTestRun). */
+  .ci-panel {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    min-width: 0;
+    padding: 14px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-panel);
+    background: var(--surface);
+    color: var(--text);
+  }
+  .ci-panel[data-dashed] { border-style: dashed; }
+  .ci-panel-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
+  .ci-panel-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
+  .ci-panel-title { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; font: 600 14px/20px var(--font-ui); }
+  .ci-panel-hint { max-width: 72ch; margin: 0; color: var(--text-muted); font: 400 12px/1.5 var(--font-ui); }
+  .ci-panel-code {
+    margin: 0;
+    padding: 12px 14px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-control);
+    background: var(--bg);
+    color: var(--text-secondary);
+    font: 400 12px/1.6 var(--font-mono);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .ci-panel-code code { font: inherit; }
+  .ci-panel-foot { margin: 0; color: var(--text-muted); font: 400 12px/1.5 var(--font-ui); }
+}

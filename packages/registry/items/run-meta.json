@@ -1,0 +1,21 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "run-meta",
+  "title": "RunMeta",
+  "tier": "microcks",
+  "description": "The meta line under a run header: muted key + value pairs that wrap (Endpoint, Runner, Started, Duration, Launched by). Used on TestRun, AgentTestRun and WorkflowRun.",
+  "registryDependencies": ["base"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "Native <dl>: each pair is a <div> with a <dt> and one or two <dd>",
+    "keyboard": [],
+    "aria": [
+      "Screen readers announce each key with its value",
+      "A url value is only coloured like a link: wrap it in a real <a href> when it navigates"
+    ],
+    "rgaa": ["9.3", "3.2"],
+    "wcag": ["1.3.1", "1.4.3"],
+    "notes": "Muted keys and the muted date keep 4.5:1. Values wrap (overflow-wrap: anywhere), so a long endpoint never widens the page."
+  },
+  "stories": ["Microcks/RunMeta"]
+}
