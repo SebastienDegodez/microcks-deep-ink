@@ -14,38 +14,18 @@
 .button.button-dashed[aria-pressed='true'] { background: var(--selected); }
 .button.button-dashed .icon { width: 14px; height: 14px; }
 
-/* KPI strip. Local classes until the registry ships `kpi-card` (also on Usage). */
-.kpi-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); }
-.kpi-card {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  min-width: 0;
-  padding: 16px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--canvas);
-}
-.kpi-card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
-.kpi-card-title {
-  margin: 0;
-  font: 600 12px/16px var(--font-ui);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-.kpi-card-head > a { font-size: 12px; color: var(--link); text-decoration: none; }
-.kpi-card-head > a:hover { text-decoration: underline; }
-.kpi-card-figure { display: flex; align-items: baseline; gap: 10px; }
-.kpi-card-value { font: 800 40px/1 var(--font-brand); color: var(--text); }
-.kpi-card-unit { font: 400 13px/1.4 var(--font-ui); color: var(--text-secondary); }
-.kpi-card-foot { font: 400 12px/1.4 var(--font-ui); color: var(--text-muted); }
+/* KPI strip: registry stat-card, with the Cockpit's 240px minimum and 10px rhythm. */
+.cockpit-stats { --stat-min: 240px; }
+.cockpit-stats .stat-card, .cockpit-stats .stat-card-body { gap: 10px; }
+.cockpit-stats .stat-card[data-empty] .stat-card-value { color: var(--text-muted); }
+.stat-card-action > a { color: var(--link); text-decoration: none; }
+.stat-card-action > a:hover { text-decoration: underline; }
+.cockpit-stat-foot { font: 400 12px/1.4 var(--font-ui); color: var(--text-muted); }
 
 [data-level='high'] { --level: var(--success); }
 [data-level='mid'] { --level: var(--warning); }
 [data-level='low'] { --level: var(--danger); }
 [data-level='none'] { --level: var(--text-muted); }
-.kpi-card-value[data-level] { color: var(--level); }
 
 .kpi-protocols { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
 .kpi-bars { display: flex; align-items: flex-end; gap: 2px; height: 22px; border-bottom: 1px solid var(--border); }
