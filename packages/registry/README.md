@@ -24,6 +24,8 @@ pnpm build:strict                                          # from the root: warn
 
 Outputs in `dist/`: `registry.json` (index), `registry.full.json` (with file contents and the tokens CSS),
 `deep-ink-components.css` (base first, then every item in dependency order; Storybook only).
+`scripts/build-css.mjs` (part of `build`) also writes `deep-ink.css` and `deep-ink.no-fonts.css`: the layer order, the tokens
+(unlayered), then base and every item in its layer, in the order of `css-order.json`. Packages ship this file.
 The build fails on an unknown dependency, a cycle, a missing CSS file or a schema error. Every copied file gets a header
 (`// Deep Ink · <name>@0.2.0 · copied from packages/registry. You own this file.`).
 Element items list `"elements": ["workflow-loom"]` (or `command-bar`, `plugin-slot`); `scripts/sync-elements.mjs` copies the self-contained bundles from `packages/core/dist/elements`.
