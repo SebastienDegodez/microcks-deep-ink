@@ -1,9 +1,10 @@
-import { useEffect, useId, useRef, useState, type ChangeEvent } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import type { Snapshot, SnapshotImportPreviewItem } from '@/domain/govern';
 import { useQuery, useUseCases } from '@/ui/app';
 import { ApiBadge, type Protocol } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
+import { DropZone } from '@/ui/components/ui/drop-zone';
 import { Icon } from '@/ui/components/ui/icon';
 import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
 import { plural, type Notify } from './notify';
@@ -89,14 +90,15 @@ function ImportCard({ notify }: { notify: Notify }) {
   const uc = useUseCases();
   const inputId = useId();
   const [fileName, setFileName] = useState('');
-  const [dragging, setDragging] = useState(false);
   const [preview, setPreview] = useState<SnapshotImportPreviewItem[] | null>(null);
   const [result, setResult] = useState<{ created: number; replaced: number } | null>(null);
   // Each step removes the control that had focus: move it to the control that replaces it.
   const focusRef = useRef('');
+  const sectionRef = useRef<HTMLElement>(null);
   useEffect(() => {
     if (!focusRef.current) return;
-    const el = document.getElementById(focusRef.current);
+    // The drop zone's file input has an id of its own: find it by class.
+    const el = focusRef.current === 'file' ? sectionRef.current?.querySelector<HTMLElement>('.drop-zone-input') : document.getElementById(focusRef.current);
     if (el) {
       el.focus();
       focusRef.current = '';
@@ -107,48 +109,14 @@ function ImportCard({ notify }: { notify: Notify }) {
     focusRef.current = `${inputId}-change`;
     setFileName(name);
     setResult(null);
-    setDragging(false);
     setPreview(name ? await uc.govern.previewSnapshotImport(name) : null);
   };
   const clear = () => {
-    focusRef.current = inputId;
+    focusRef.current = 'file';
     setFileName('');
     setPreview(null);
     setResult(null);
   };
-  const onFile = (e: ChangeEvent<HTMLInputElement>) => {
-    const f = e.target.files?.[0];
-    e.target.value = '';
-    if (f) void pick(f.name);
-  };
-  // Drag and drop is an enhancement attached as DOM listeners (as in the registry drop-zone): the zone
-  // itself is not a control; the file input and the sample button do everything with the keyboard.
-  const zoneRef = useRef<HTMLDivElement>(null);
-  const pickRef = useRef(pick);
-  useEffect(() => {
-    pickRef.current = pick;
-  });
-  useEffect(() => {
-    const zone = zoneRef.current;
-    if (!zone) return;
-    const over = (e: Event) => {
-      e.preventDefault();
-      setDragging(true);
-    };
-    const leave = () => setDragging(false);
-    const drop = (e: Event) => {
-      e.preventDefault();
-      void pickRef.current((e as globalThis.DragEvent).dataTransfer?.files[0]?.name ?? 'microcks-repository.json');
-    };
-    zone.addEventListener('dragover', over);
-    zone.addEventListener('dragleave', leave);
-    zone.addEventListener('drop', drop);
-    return () => {
-      zone.removeEventListener('dragover', over);
-      zone.removeEventListener('dragleave', leave);
-      zone.removeEventListener('drop', drop);
-    };
-  }, [fileName]);
   const doImport = async () => {
     const r = await uc.govern.importSnapshot(fileName);
     focusRef.current = `${inputId}-open`;
@@ -157,25 +125,20 @@ function ImportCard({ notify }: { notify: Notify }) {
   };
 
   return (
-    <section className="ad-snap-card ad-snap-import" aria-labelledby="ad-import-title">
+    <section ref={sectionRef} className="ad-snap-card ad-snap-import" aria-labelledby="ad-import-title">
       <h2 id="ad-import-title">Import</h2>
       {!fileName ? (
-        <div
-          ref={zoneRef}
-          role="group"
-          aria-labelledby={`${inputId}-heading`}
-          className="ad-drop"
-          data-dragging={dragging ? '' : undefined}
+        <DropZone
+          size="sm"
+          heading="Drop a snapshot here"
+          hint={<>A <code className="ad-mono">microcks-repository.json</code> exported from any Microcks instance</>}
+          accept="application/json,.json"
+          multiple={false}
+          chooseLabel="Choose a file"
+          onFiles={(files) => void pick(files[0]?.name ?? 'microcks-repository.json')}
         >
-          <Icon name="upload" size={28} className="ad-drop-icon" />
-          <span className="ad-drop-heading" id={`${inputId}-heading`}>Drop a snapshot here</span>
-          <span className="ad-drop-hint" id={`${inputId}-hint`}>A <span className="ad-mono">microcks-repository.json</span> exported from any Microcks instance</span>
-          <div className="ad-drop-actions">
-            <input id={inputId} type="file" className="ad-drop-input sr-only" accept="application/json,.json" aria-describedby={`${inputId}-hint`} onChange={onFile} />
-            <label htmlFor={inputId} className="button ad-drop-choose">Choose a file</label>
-            <button type="button" className="ad-link-button ad-drop-sample" onClick={() => pick(SAMPLE)}>Use a sample snapshot</button>
-          </div>
-        </div>
+          <button type="button" className="ad-link-button ad-drop-sample" onClick={() => pick(SAMPLE)}>Use a sample snapshot</button>
+        </DropZone>
       ) : (
         <div className="ad-snap-preview">
           <div className="ad-snap-filerow">

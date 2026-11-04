@@ -29,19 +29,7 @@
 .ad-ok { flex: none; color: var(--success); }
 .ad-snap-file { font: 600 13px/normal var(--font-mono); color: var(--text); }
 
-/* Compact drop zone (the Import screen has the large one). */
-.ad-drop {
-  display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 28px 16px; text-align: center;
-  border: 1.5px dashed var(--border-strong); border-radius: 12px; background: var(--surface);
-}
-.ad-drop[data-dragging] { border-color: var(--action); background: var(--selected); }
-.ad-drop-icon { color: var(--text-muted); }
-.ad-drop-heading { font-size: 14px; font-weight: 600; }
-.ad-drop-hint { font-size: 12px; color: var(--text-muted); }
-.ad-drop-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 4px; }
-.ad-drop-choose { min-height: 36px; padding-inline: 12px; cursor: pointer; }
 .ad-drop-sample { height: 36px; padding: 0 10px; }
-.ad-drop-input:focus-visible + .ad-drop-choose { outline: 2px solid var(--action); outline-offset: 2px; box-shadow: var(--shadow-focus); }
 
 .ad-snap-preview { display: flex; flex-direction: column; gap: 10px; }
 .ad-snap-filerow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
