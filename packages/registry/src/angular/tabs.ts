@@ -5,6 +5,12 @@ export interface TabItem {
   label: string;
   /** Shown after the label. Read as "Operations, 4". */
   count?: number;
+  /** Warning pill after the count. Read as "Users, 2 pending changes" with `alertLabel`. */
+  alert?: number;
+  /** Words read after the alert number (default "need attention"). */
+  alertLabel?: string;
+  /** Live dot before the label. Read as "Tasks, live". */
+  live?: boolean;
   disabled?: boolean;
 }
 
@@ -34,7 +40,7 @@ let nextId = 0;
           [disabled]="!!t.disabled"
           (click)="value.set(t.id)"
           (keydown)="onKeyDown($event, i)"
-        >{{ t.label }}@if (t.count !== undefined) {<span class="tab-count"><span class="sr-only">, </span>{{ t.count }}</span>}</button>
+        >@if (t.live) {<span class="tab-live" aria-hidden="true"></span>}{{ t.label }}@if (t.live) {<span class="sr-only">, live</span>}@if (t.count !== undefined) {<span class="tab-count"><span class="sr-only">, </span>{{ t.count }}</span>}@if (t.alert) {<span class="tab-alert"><span class="sr-only">, </span>{{ t.alert }}<span class="sr-only"> {{ t.alertLabel ?? 'need attention' }}</span></span>}</button>
       }
     </div>
     <ng-content />

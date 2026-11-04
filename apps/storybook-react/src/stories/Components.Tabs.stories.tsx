@@ -44,3 +44,23 @@ export const WithDisabledTab: StoryObj = {
     );
   },
 };
+
+export const LiveAndAlert: StoryObj = {
+  name: 'Live dot and warning count',
+  parameters: { docs: { description: { story: 'A live dot before the label (read "Tasks, live") and a warning pill (read "Users, 2 pending changes").' } } },
+  render: () => {
+    const [v, setV] = useState('tasks');
+    const items = [
+      { id: 'tasks', label: 'Tasks', count: 5, live: true },
+      { id: 'users', label: 'Users', count: 12, alert: 2, alertLabel: 'pending changes' },
+      { id: 'secrets', label: 'Secrets', count: 3 },
+    ];
+    return (
+      <Tabs label="Sections" items={items} value={v} onChange={setV}>
+        <TabPanel id={v} value={v}>
+          <p style={{ margin: 0 }}>Content of the {v} tab.</p>
+        </TabPanel>
+      </Tabs>
+    );
+  },
+};

@@ -229,10 +229,10 @@
     "panel": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/panel.tsx": "4d4b9ea600d987a7eef9b284e28cb9e33af13ebee4841d2260e233df477d95d0",
-        "src/ui/styles/panel.css": "3ec60de80d38fcca23537701a212ee6e8331e41f8970f1aec202e1c906a04035"
+        "src/ui/components/ui/panel.tsx": "f57692d87ae62baa1bbbb3b0b9e8b7b9bdacd6c7871de525948c3c16242276dc",
+        "src/ui/styles/panel.css": "49a7480be80c37d13fc4212b9cfb7fd179f5e67b60be68c50ad766a839421d8f"
       },
-      "hash": "17d4785159aa4aef"
+      "hash": "a51cfbaa2d0123eb"
     },
     "progress": {
       "version": "0.2.0",
@@ -309,10 +309,10 @@
     "tabs": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/tabs.tsx": "82dc3d069854848385e3378e966325bcad497c24466e3e3916f60cc9403fcefa",
-        "src/ui/styles/tabs.css": "c539a7951c9f4311770720f36a26640a10feb75ca855b591fb120f212e66c7e5"
+        "src/ui/components/ui/tabs.tsx": "72b69507aae7338b51309d5ed6b5b4ff5f1e9c463cf68e2a9061d85d1111d394",
+        "src/ui/styles/tabs.css": "7c3baaa4d0debac91532b694b5774ca6a11f5f07db2c73f51859533ebfebf007"
       },
-      "hash": "78ee7bb96d2be20c"
+      "hash": "eacbeba4f7d09d15"
     },
     "theme-toggle": {
       "version": "0.2.0",
