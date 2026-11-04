@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { AiGhostRowComponent } from '@microcks-deep-ink/registry/angular/ai-ghost-row';
 import { MethodTagComponent } from '@microcks-deep-ink/registry/angular/method-tag';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/AiGhostRow',
+  argTypes: argTypesFor('ai-ghost-row', ['AiGhostRowComponent']),
   decorators: [moduleMetadata({ imports: [AiGhostRowComponent, MethodTagComponent] })],
   parameters: itemParams(['ai-ghost-row', 'button', 'icon', 'method-tag'], "A suggestion that is not saved until accepted. The group is named \"AI suggestion: <name>\" and each button repeats the name for screen readers (\"Accept getPastry example\")."),
 };

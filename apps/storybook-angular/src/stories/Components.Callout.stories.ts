@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { CalloutComponent, CalloutActionsDirective } from '@microcks-deep-ink/registry/angular/callout';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Callout',
+  argTypes: argTypesFor('callout', ['CalloutComponent']),
   decorators: [moduleMetadata({ imports: [CalloutComponent, CalloutActionsDirective, ButtonDirective] })],
   parameters: itemParams(['callout', 'button'], "Tone is carried by an icon and a title as well as color. Use `live` only for a message that appears after an action; a static callout is not announced."),
 };

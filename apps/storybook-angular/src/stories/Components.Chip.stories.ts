@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ChipComponent } from '@microcks-deep-ink/registry/angular/chip';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Chip',
+  argTypes: argTypesFor('chip', ['ChipComponent']),
   decorators: [moduleMetadata({ imports: [ChipComponent] })],
   parameters: itemParams(['chip'], "Static labels are a `<span>`. A chip with `pressed` is a toggle `<button aria-pressed>`. A removable chip has a remove button named \"Remove <text>\"."),
 };

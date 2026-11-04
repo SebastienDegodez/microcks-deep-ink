@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { FieldComponent } from '@microcks-deep-ink/registry/angular/field';
 import { InputDirective } from '@microcks-deep-ink/registry/angular/input';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Field',
+  argTypes: argTypesFor('field', ['FieldComponent']),
   decorators: [moduleMetadata({ imports: [FieldComponent, InputDirective] })],
   parameters: itemParams(['field', 'input'], "Links the visible label, help and error to the control through `id` and `aria-describedby`, and sets `aria-invalid`. The error shows an icon and text, never color alone."),
 };

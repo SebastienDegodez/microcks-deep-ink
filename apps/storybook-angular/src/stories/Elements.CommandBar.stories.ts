@@ -3,10 +3,11 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { CommandBarDirective } from '@microcks-deep-ink/registry/angular/command-bar';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
 import { COMMANDS } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Elements/CommandBar',
+  argTypes: argTypesFor('command-bar', ['CommandBarDirective']),
   decorators: [moduleMetadata({ imports: [CommandBarDirective, ButtonDirective], schemas: [CUSTOM_ELEMENTS_SCHEMA] })],
   parameters: itemParams(['command-bar'], "A search field and a list of commands (ARIA 1.2 combobox): arrows move, Enter runs, Escape closes, Ctrl/\u2318K opens it from anywhere. In modal mode it uses a native `<dialog>` and returns focus to the opener. The host component needs `schemas: [CUSTOM_ELEMENTS_SCHEMA]`."),
 };
@@ -21,6 +22,15 @@ export const Inline: StoryObj = {
         <p role="status" class="sb-note">Last command: {{ last }}</p>
       </div>
     `,
+  }),
+};
+
+/** `[globalShortcut]="false"` turns Ctrl/\u2318K off; `label` names the field. */
+export const NoShortcut: StoryObj = {
+  name: 'Without the global shortcut',
+  render: () => ({
+    props: { commands: COMMANDS },
+    template: `<command-bar inline [items]="commands" [globalShortcut]="false" label="Local commands" placeholder="Type a command"></command-bar>`,
   }),
 };
 

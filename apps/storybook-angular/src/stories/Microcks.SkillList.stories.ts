@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { SkillListComponent } from '@microcks-deep-ink/registry/angular/skill-list';
 import { AGENT_SKILLS } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/SkillList',
+  argTypes: argTypesFor('skill-list', ['SkillListComponent']),
   decorators: [moduleMetadata({ imports: [SkillListComponent] })],
   parameters: itemParams(['skill-list', 'icon'], 'The skills of an A2A Agent Card: id, name, calls in 24 h, tags and the last test result. A selectable list uses `aria-pressed` buttons and leaves the detail to a region next to it. The fallback entry stands for messages no skill matched.'),
 };

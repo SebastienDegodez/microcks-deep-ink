@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { InputDirective } from '@microcks-deep-ink/registry/angular/input';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Input',
+  argTypes: argTypesFor('input', ['InputDirective']),
   decorators: [moduleMetadata({ imports: [InputDirective] })],
   parameters: itemParams(['input'], "Native `<input>` and `<textarea>`. The border uses `--border-control` (3:1 against every ground). Always pair with a visible label, see Field."),
 };

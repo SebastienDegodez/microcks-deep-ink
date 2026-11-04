@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { TabsComponent, TabPanelComponent } from '@microcks-deep-ink/registry/angular/tabs';
 import { SERVICE_TABS } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Tabs',
+  argTypes: argTypesFor('tabs', ['TabsComponent', 'TabPanelComponent']),
   decorators: [moduleMetadata({ imports: [TabsComponent, TabPanelComponent] })],
   parameters: itemParams(['tabs'], "WAI-ARIA tabs. Use them to switch views of one page, not to navigate between pages. The count is read with the label (\"Operations, 4\")."),
 };
@@ -19,6 +20,20 @@ export const Default: StoryObj = {
           <div mkTabPanel [tab]="t.id"><p style="margin:0">Content of the {{ t.label }} tab.</p></div>
         }
       </mk-tabs>
+    `,
+  }),
+};
+
+/** `idPrefix` keeps tab and panel ids unique when two tab lists share a page. */
+export const IdPrefix: StoryObj = {
+  name: 'Two lists on a page (idPrefix)',
+  render: () => ({
+    props: { items: SERVICE_TABS, a: 'operations', b: 'operations' },
+    template: `
+      <div class="stack">
+        <mk-tabs label="Service A" idPrefix="a" [items]="items" [(value)]="a">@for (t of items; track t.id) { <div mkTabPanel [tab]="t.id" idPrefix="a"><p style="margin:0">Service A, {{ t.label }}.</p></div> }</mk-tabs>
+        <mk-tabs label="Service B" idPrefix="b" variant="card" [items]="items" [(value)]="b">@for (t of items; track t.id) { <div mkTabPanel [tab]="t.id" idPrefix="b"><p style="margin:0">Service B, {{ t.label }}.</p></div> }</mk-tabs>
+      </div>
     `,
   }),
 };

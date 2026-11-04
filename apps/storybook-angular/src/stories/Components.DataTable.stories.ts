@@ -3,10 +3,11 @@ import { DataTableComponent, CellDirective, TableDirective } from '@microcks-dee
 import { IconComponent } from '@microcks-deep-ink/registry/angular/icon';
 import { type CatalogueRow, CATALOGUE_COLUMNS, CATALOGUE_ROWS } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { type SortState, sortRows } from '@microcks-deep-ink/registry/angular/table';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Data table',
+  argTypes: argTypesFor('table', ['DataTableComponent', 'CellDirective', 'TableDirective']),
   decorators: [moduleMetadata({ imports: [TableDirective, DataTableComponent, CellDirective, IconComponent] })],
   parameters: itemParams(['table', 'icon'], "A native `<table>` with a caption, `th scope=\"col\"`, `aria-sort` on sortable headers (a real button inside) and a focusable scroll region. With `rowHref` the first cell holds a link stretched over the row: no clickable `<tr>`."),
 };

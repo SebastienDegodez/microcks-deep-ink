@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { MenuComponent } from '@microcks-deep-ink/registry/angular/menu';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Menu',
+  argTypes: argTypesFor('menu', ['MenuComponent']),
   decorators: [moduleMetadata({ imports: [MenuComponent] })],
   parameters: itemParams(['menu', 'button'], "A disclosure menu on the native `popover` attribute: the trigger is a button with `aria-expanded`, Escape and click outside close it natively. It is not an ARIA `role=\"menu\"` application menu."),
 };

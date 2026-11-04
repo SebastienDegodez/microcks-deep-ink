@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Progress',
+  component: Progress,
   parameters: itemParams(['progress'], 'Native `<progress>` and `<meter>`, each with a visible label. Without a value the progress is indeterminate.'),
-} satisfies Meta;
+} satisfies Meta<typeof Progress>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -25,4 +26,9 @@ export const MeterStory: StoryObj = {
       <Meter label="Operations passing" value={5} max={12} low={8} high={11} optimum={12} valueText="5 of 12" />
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Progress> = {
+  args: { label: 'Importing operations', value: 60, max: 100 },
 };

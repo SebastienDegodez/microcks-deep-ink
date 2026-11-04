@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ConformanceBandComponent } from '@microcks-deep-ink/registry/angular/conformance-band';
 import { CONFORMANCE } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/ConformanceBand',
+  argTypes: argTypesFor('conformance-band', ['ConformanceBandComponent']),
   decorators: [moduleMetadata({ imports: [ConformanceBandComponent] })],
   parameters: itemParams(['conformance-band'], "One segment per operation. The band is `role=\"img\"` with a sentence (\"11 of 12 operations pass, 1 fails\"). Failed segments are hatched as well as colored, and the full size writes the summary."),
 };

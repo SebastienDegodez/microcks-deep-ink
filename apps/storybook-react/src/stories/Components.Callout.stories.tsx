@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Callout',
+  component: Callout,
   parameters: itemParams(['callout', 'button'], 'Tone is carried by an icon and a title as well as color. Use `live` only for a message that appears after an action; a static callout is not announced.'),
-} satisfies Meta;
+} satisfies Meta<typeof Callout>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -51,4 +52,15 @@ export const Outline: StoryObj = {
       </div>
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Callout> = {
+  args: { tone: 'info', title: 'Contract imported', children: '12 operations were found in the OpenAPI file.', variant: 'filled', size: 'md', live: false },
+  argTypes: {
+    tone: { control: 'select', options: ['info', 'success', 'warning', 'danger', 'ai'] },
+    variant: { control: 'inline-radio', options: ['filled', 'outline'] },
+    size: { control: 'inline-radio', options: ['md', 'sm'] },
+    live: { control: 'inline-radio', options: [false, 'polite', 'assertive'] },
+  },
 };

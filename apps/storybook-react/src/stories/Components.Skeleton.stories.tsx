@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Skeleton',
+  component: Skeleton,
   parameters: itemParams(['skeleton'], 'Placeholder lines, hidden from assistive technology. The container sets `aria-busy` and a status message says what loads. Static under reduced motion.'),
-} satisfies Meta;
+} satisfies Meta<typeof Skeleton>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -15,4 +16,9 @@ export const Default: StoryObj = {
       <Skeleton lines={3} />
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Skeleton> = {
+  args: { lines: 3, width: '60%' },
 };

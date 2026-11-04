@@ -10,10 +10,11 @@ import { CodeBlockComponent } from '@microcks-deep-ink/registry/angular/code-blo
 import { PanelComponent, PanelActionsDirective } from '@microcks-deep-ink/registry/angular/panel';
 import { StepStatusComponent, StepChecksComponent } from '@microcks-deep-ink/registry/angular/step-status';
 import { LOOM_RESTOCK_RUN14, RUN14_FAILURE } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Patterns/Workflow run #14',
+  argTypes: argTypesFor('workflow-loom', ['WorkflowLoomDirective']),
   decorators: [moduleMetadata({ imports: [WorkflowLoomDirective, ApiBadgeComponent, StatusBadgeComponent, RunTargetComponent, RunOriginComponent, CalloutComponent, CalloutActionsDirective, CodeBlockComponent, PanelComponent, PanelActionsDirective, StepStatusComponent, StepChecksComponent], schemas: [CUSTOM_ELEMENTS_SCHEMA] })],
   parameters: itemParams(['workflow-loom', 'step-status', 'api-badge', 'status-badge', 'callout', 'code-block', 'run-target', 'run-origin', 'panel'], "Run #14 of `restock-pastry`: the loom shows a retry loop, an end branch that was not taken and a step that never ran. Below it, the failing response with the offending line marked in text."),
 };

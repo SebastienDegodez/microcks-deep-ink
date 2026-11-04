@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { EmptyStateComponent, EmptyActionsDirective } from '@microcks-deep-ink/registry/angular/empty-state';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/EmptyState',
+  argTypes: argTypesFor('empty-state', ['EmptyStateComponent']),
   decorators: [moduleMetadata({ imports: [EmptyStateComponent, EmptyActionsDirective, ButtonDirective] })],
   parameters: itemParams(['empty-state', 'button'], "Says what is missing and offers the next step. The title is a heading: choose its level with `headingLevel`."),
 };

@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Chip',
+  component: Chip,
   parameters: itemParams(['chip'], 'Static labels are a `<span>`. A chip with `pressed` is a toggle `<button aria-pressed>`. A removable chip has a remove button named "Remove <text>".'),
-} satisfies Meta;
+} satisfies Meta<typeof Chip>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -81,5 +82,16 @@ export const Filters: StoryObj = {
         </div>
       </div>
     );
+  },
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Chip> = {
+  args: { children: 'Conformant', tone: 'success', variant: 'solid', size: 'md', pressed: undefined, count: undefined, protocol: undefined, removeLabel: undefined },
+  argTypes: {
+    tone: { control: 'select', options: ['neutral', 'info', 'success', 'warning', 'danger'] },
+    variant: { control: 'inline-radio', options: ['solid', 'outline', 'dashed'] },
+    size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] },
+    protocol: { control: 'select', options: [undefined, 'REST', 'SOAP', 'EVENT', 'gRPC', 'GRAPHQL', 'DIRECT', 'A2A'] },
   },
 };

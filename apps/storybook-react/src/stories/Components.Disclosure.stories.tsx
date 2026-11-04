@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Disclosure',
+  component: Disclosure,
   parameters: itemParams(['disclosure'], 'A native `<details>`/`<summary>`: Enter and Space toggle it, the open state is exposed by the browser.'),
-} satisfies Meta;
+} satisfies Meta<typeof Disclosure>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -19,4 +20,9 @@ export const Default: StoryObj = {
       </Disclosure>
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Disclosure> = {
+  args: { summary: 'Advanced options', defaultOpen: false, children: <p>Timeout, retries and authentication headers.</p> },
 };

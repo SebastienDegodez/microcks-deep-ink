@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
-import { SummaryStripComponent } from '@microcks-deep-ink/registry/angular/summary-strip';
-import { itemParams } from './_meta';
+import { SUMMARY_STRIP } from '@microcks-deep-ink/registry/angular/summary-strip';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/SummaryStrip',
-  decorators: [moduleMetadata({ imports: [SummaryStripComponent] })],
+  argTypes: argTypesFor('summary-strip'),
+  decorators: [moduleMetadata({ imports: [...SUMMARY_STRIP] })],
   parameters: itemParams(['summary-strip'], 'Key facts in one bordered row, separated by decorative 1px rules. The words carry the meaning; add role="note" for a page summary.'),
 };
 export default meta;
@@ -29,5 +30,12 @@ export const Dispatcher: StoryObj = {
   render: () => ({
     props: { parts: [{ text: 'Dispatcher', kind: 'label' }, { text: 'URI_PARTS' }, { text: 'name', sep: true }] },
     template: `<div mkSummaryStrip gap="roomy" values="text" style="max-width: 900px" [parts]="parts"><a href="#/behavior">Edit the behaviour</a></div>`,
+  }),
+};
+
+export const FromContent: StoryObj = {
+  name: 'Built from content',
+  render: () => ({
+    template: `<div mkSummaryStrip style="max-width: 900px"><span class="summary-strip-label">Saved</span><span class="summary-strip-value">URI_PARTS · rule: name</span><span mkSummaryStripSep></span><span class="summary-strip-value">delay 0 ms fixed</span><span mkSummaryStripSep></span><a href="#/behavior">Edit the behaviour</a></div>`,
   }),
 };
