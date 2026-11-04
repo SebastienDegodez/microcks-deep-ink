@@ -7,7 +7,6 @@
 /* The prototype header section keeps 14px between the description and the search row (the page gap is 20px). */
 .hb-filters { display: flex; flex-direction: column; gap: 14px; margin-block-start: -6px; }
 .hb-search-row { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
-.hb-search { flex: 1 1 280px; max-width: 480px; height: 40px; }
 .hb-count { font-size: 13px; color: var(--text-muted); }
 .hb-cats { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 
@@ -18,7 +17,6 @@
 .hb-empty-reset { padding: 0; border: 0; background: transparent; color: var(--link); font: 600 14px/20px var(--font-ui); cursor: pointer; }
 .hb-installed { display: inline-flex; align-items: center; gap: 6px; padding: 0 4px; color: var(--success); font-size: 14px; font-weight: 600; }
 .hb-installed > .icon { stroke-width: 2.4; }
-.hb-live { min-height: 34px; border-style: dashed; border-radius: var(--radius-control); }
 .hb-mono { font-family: var(--font-mono); }
 
 .hb-detail { flex: 1 1 400px; max-width: 560px; min-width: 0; }
@@ -69,12 +67,8 @@
 .hb-created-text > span:first-child { color: var(--text); }
 .hb-created-sub { font: 400 12px/1.5 var(--font-mono); color: var(--text-muted); overflow-wrap: anywhere; }
 
-/* Future registry item (requested): warning note */
-.hb-note { display: flex; align-items: flex-start; gap: 8px; padding: 9px 12px; border: 1px solid var(--warning); border-radius: var(--radius-badge); color: var(--warning); font-size: 13px; line-height: 1.5; }
-.hb-note > .icon { flex: none; margin-top: 3px; }
 
 /* Action bar */
 .hb-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding-top: 14px; border-top: 1px solid var(--border); }
-.hb-actions .hb-live { min-height: 44px; padding: 0 14px; font-size: 13px; }
 .hb-hint { font-size: 12px; color: var(--text-muted); }
 .hb-detail-title > .tile-tag { flex: none; }
