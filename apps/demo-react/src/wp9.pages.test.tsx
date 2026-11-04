@@ -66,24 +66,35 @@ describe('Run a test (/tests/create)', () => {
 describe('Test run (/tests/runner/:id)', () => {
   it('shows the finished run #118 as passed, with a runner log and no violation', async () => {
     renderAt('/tests/runner/118');
-    expect(await screen.findByRole('heading', { level: 1, name: 'Test run #118' })).toBeTruthy();
-    expect(await screen.findByRole('log', { name: 'Runner log' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Run #118' })).toBeTruthy();
+    expect(screen.getByRole('navigation', { name: 'Breadcrumb' }).textContent).toContain('Tests');
+    expect(await screen.findByRole('log', { name: 'Runner log lines' })).toBeTruthy();
+    expect(screen.getByRole('region', { name: 'Verdict' }).textContent).toContain('Passed');
     expect(screen.queryByText('$.price')).toBeNull();
   });
 
-  it('streams the 7 steps of #119, can be paused, and explains the price violation', async () => {
+  it('runs #119 live from step 3, steps forward, skips to the result and explains the price violation', async () => {
     vi.useFakeTimers({ shouldAdvanceTime: true });
     renderAt('/tests/runner/119');
-    await screen.findByRole('button', { name: 'Pause' });
+    const progress = await screen.findByRole('region', { name: 'Progress' });
+    expect(progress.textContent).toContain('3/7');
+    fireEvent.click(screen.getByRole('button', { name: 'Step forward' }));
+    expect(progress.textContent).toContain('4/7');
+    expect(screen.getByRole('button', { name: /Millefeuille/ }).getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByRole('button', { name: /Eclair Chocolat · price/ }).getAttribute('aria-disabled')).toBe('true');
     await act(async () => {
-      await vi.advanceTimersByTimeAsync(9000);
+      await vi.advanceTimersByTimeAsync(6000);
     });
-    await waitFor(() => expect(document.querySelectorAll('.tr-step-btn')).toHaveLength(7));
-    expect(screen.queryByRole('button', { name: 'Pause' })).toBeNull();
-    const detail = document.getElementById('tr-detail') as HTMLElement;
-    expect(detail.textContent).toContain('$.price');
-    expect(detail.textContent).toContain('$.status');
-    expect(screen.getByRole('link', { name: /Open workflow run #14/ }).getAttribute('href')).toContain('6729a1d27e4c0b5f93a8c214');
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Skip to result' })).toBeNull());
+    expect(screen.getByRole('region', { name: 'Verdict' }).textContent).toContain('86%');
+    const diff = screen.getByRole('region', { name: /Contract versus actual response for Eclair Chocolat · price/ });
+    expect(diff.textContent).toContain('$.price');
+    expect(diff.textContent).toContain('$.status');
+    expect(screen.getByRole('link', { name: /Same contract violation breaks workflow Restock a pastry/ }).getAttribute('href')).toContain('6729a1d27e4c0b5f93a8c214');
+    fireEvent.click(screen.getByRole('button', { name: 'Add to CI' }));
+    expect(screen.getByRole('region', { name: 'Add to CI' }).textContent).toContain('MICROCKS_CLIENT_SECRET');
+    fireEvent.click(screen.getByRole('button', { name: 'Replay run' }));
+    expect((await screen.findByRole('region', { name: 'Progress' })).textContent).toContain('0/7');
   });
 });
 
