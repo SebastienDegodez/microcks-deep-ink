@@ -1,9 +1,9 @@
-/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- the request and response blocks scroll, so they are focusable regions (WCAG 2.1.1) */
 import { useEffect, useId, useRef } from 'react';
 import { findCriteriaConflict, validateExampleDraft } from '@/domain/copilot';
 import type { Example, Operation } from '@/domain/shared';
 import { exampleUrlPath } from '@/domain/catalog';
 import { Button } from '@/ui/components/ui/button';
+import { Exchange, ExchangeCard } from '@/ui/components/ui/exchange-card';
 import { Icon } from '@/ui/components/ui/icon';
 import { Input, Textarea } from '@/ui/components/ui/input';
 
@@ -100,21 +100,27 @@ export function ProposalRow({ item, op, target, served, onPatch, onAccept, onRej
       ) : null}
 
       {open ? (
-        <div className="exchange proposal-body">
-          <section className="exchange-card" data-size="sm" aria-label={`Request of ${e.name}`}>
-            <div className="exchange-card-head"><h3 className="exchange-card-title">Request</h3></div>
-            <pre role="region" tabIndex={0} aria-label="Request line and headers" data-tone="secondary">{reqText}</pre>
-            <pre role="region" tabIndex={0} aria-label="Parameters" data-tone="params">{paramLines(op, e.request.params)}</pre>
-            {e.request.body ? <pre role="region" tabIndex={0} aria-label="Request body">{e.request.body}</pre> : null}
-          </section>
-          <section className="exchange-card" data-size="sm" aria-label={`Response of ${e.name}`}>
-            <div className="exchange-card-head">
-              <h3 className="exchange-card-title">Response</h3>
-              <span className="exchange-card-status">{e.response.status} · application/json</span>
-            </div>
-            <pre role="region" tabIndex={0} aria-label="Response body" data-grow="">{e.response.body}</pre>
-          </section>
-        </div>
+        <Exchange separator={false} className="proposal-body">
+          <ExchangeCard
+            size="sm"
+            headingLevel={3}
+            title="Request"
+            label={`Request of ${e.name}`}
+            blocks={[
+              { label: 'Request line and headers', text: reqText, tone: 'secondary' },
+              { label: 'Parameters', text: paramLines(op, e.request.params), tone: 'params' },
+              ...(e.request.body ? [{ label: 'Request body', text: e.request.body }] : []),
+            ]}
+          />
+          <ExchangeCard
+            size="sm"
+            headingLevel={3}
+            title="Response"
+            label={`Response of ${e.name}`}
+            status={`${e.response.status} · application/json`}
+            blocks={[{ label: 'Response body', text: e.response.body, grow: true }]}
+          />
+        </Exchange>
       ) : null}
 
       {item.editing ? (

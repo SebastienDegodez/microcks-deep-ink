@@ -10,6 +10,7 @@ import { CopyButton } from '@/ui/components/ui/copy-button';
 import { Icon } from '@/ui/components/ui/icon';
 import { Textarea } from '@/ui/components/ui/input';
 import { MethodTag } from '@/ui/components/ui/method-tag';
+import { OpPickList } from '@/ui/components/ui/op-pick';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
 import { fresh, ProposalRow, type Item, type MockTarget } from './ProposalRow';
 
@@ -232,36 +233,27 @@ export default function CopilotPage() {
         <div className="copilot-settings">
           <section aria-labelledby="sec-op" className="copilot-op">
             <h2 id="sec-op" className="copilot-section-label">1 · Operation</h2>
-            <div role="radiogroup" aria-labelledby="sec-op" className="op-pick-list">
-              {operations.map((o) => {
+            <OpPickList
+              mode="radio"
+              labelledBy="sec-op"
+              value={op.id}
+              onChange={setOpId}
+              options={operations.map((o) => {
                 const its = byOp[o.id]?.items ?? [];
                 const pe = its.filter((i) => i.status === 'pending').length;
                 const ac = its.filter((i) => i.status === 'accepted').length;
                 const ai = generating === o.id ? 'generating' : pe ? `+${pe} pending` : ac ? `+${ac} accepted` : '';
-                const sel = o.id === op.id;
-                return (
-                  <button key={o.id} type="button" role="radio" aria-checked={sel} tabIndex={sel ? 0 : -1} className="op-pick" onClick={() => setOpId(o.id)}
-                    onKeyDown={(ev) => {
-                      const i = operations.indexOf(o);
-                      const d = ev.key === 'ArrowDown' || ev.key === 'ArrowRight' ? 1 : ev.key === 'ArrowUp' || ev.key === 'ArrowLeft' ? -1 : 0;
-                      if (!d) return;
-                      ev.preventDefault();
-                      const next = operations[(i + d + operations.length) % operations.length];
-                      if (next) setOpId(next.id);
-                      const group = ev.currentTarget.parentElement;
-                      requestAnimationFrame(() => (group?.querySelector('[aria-checked="true"]') as HTMLElement | null)?.focus());
-                    }}
-                  >
-                    <MethodTag method={o.method} protocol={svc.protocol} />{' '}
-                    <span className="op-pick-main">
-                      <span className="op-pick-path">{o.path}</span>{' '}
-                      <span className="op-pick-summary">{exWord(contractOf(o.id))} in the contract</span>
-                    </span>
-                    {ai ? <span className="op-pick-end" data-tone={ac && !pe && generating !== o.id ? 'success' : 'warning'}>{' '}<Icon name="spark" size={11} />{ai}</span> : null}
-                  </button>
-                );
+                return {
+                  id: o.id,
+                  method: o.method,
+                  protocol: svc.protocol,
+                  path: o.path,
+                  summary: `${exWord(contractOf(o.id))} in the contract`,
+                  end: ai ? <><Icon name="spark" size={11} />{ai}</> : undefined,
+                  endTone: ac && !pe && generating !== o.id ? 'success' : 'warning',
+                };
               })}
-            </div>
+            />
           </section>
 
           <section aria-labelledby="sec-settings" className="copilot-box">

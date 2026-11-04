@@ -12,12 +12,14 @@ import { Callout } from '@/ui/components/ui/callout';
 import { Chip } from '@/ui/components/ui/chip';
 import { CodeBlock } from '@/ui/components/ui/code-block';
 import { CopyButton } from '@/ui/components/ui/copy-button';
+import { Exchange, ExchangeCard } from '@/ui/components/ui/exchange-card';
 import { FactRow, Facts } from '@/ui/components/ui/facts';
 import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { Input } from '@/ui/components/ui/input';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { Menu } from '@/ui/components/ui/menu';
 import { MethodTag } from '@/ui/components/ui/method-tag';
+import { OpPickList } from '@/ui/components/ui/op-pick';
 import { SectionLabel } from '@/ui/components/ui/section-label';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
@@ -257,25 +259,25 @@ function ApiServicePage() {
           <div className="service-ops">
             <div className="op-rail">
               <SectionLabel as="p" size="sm" weight="regular" split className="op-rail-head"><span>{pluralize(ops.data?.length ?? 0, 'operation')}</span><span>calls · 7 d</span></SectionLabel>
-              <ul className="op-rail-list" aria-label={`Operations of ${svc.name} ${svc.version}`}>
-                {(ops.data ?? []).map((o) => {
+              <OpPickList
+                label={`Operations of ${svc.name} ${svc.version}`}
+                value={currentOp?.id}
+                onChange={(id) => select({ op: id, example: undefined })}
+                options={(ops.data ?? []).map((o) => {
                   const exs = allExamples.data?.[o.id] ?? [];
                   const ai = exs.filter((e) => e.reviewState === 'pending').length;
-                  return (
-                    <li key={o.id}>
-                      <button type="button" className="op-pick" aria-pressed={o.id === currentOp?.id} onClick={() => select({ op: o.id, example: undefined })}>
-                        <MethodTag method={o.method} protocol={svc.protocol} />
-                        <span className="op-pick-main">
-                          <span className="op-pick-path">{o.path}</span>
-                          <span className="op-pick-summary">{o.summary}</span>
-                          {allExamples.data ? <span className="op-pick-meta">{examplesLabel(exs.length - ai)}{ai ? ` · +${ai} AI` : ''}</span> : null}
-                        </span>
-                        <span className="op-pick-calls"><span className="sr-only">Calls over 7 days: </span>{fmt(o.calls)}</span>
-                      </button>
-                    </li>
-                  );
+                  return {
+                    id: o.id,
+                    method: o.method,
+                    protocol: svc.protocol,
+                    path: o.path,
+                    summary: o.summary,
+                    meta: allExamples.data ? `${examplesLabel(exs.length - ai)}${ai ? ` · +${ai} AI` : ''}` : undefined,
+                    end: fmt(o.calls),
+                    endLabel: 'Calls over 7 days: ',
+                  };
                 })}
-              </ul>
+              />
               <p className="op-rail-note">Every operation is served as soon as the contract is imported. No code, no deployment.</p>
             </div>
             {currentOp ? (
@@ -402,26 +404,29 @@ function ApiServicePage() {
                             Proposed by AI from the contract's <span className="ex-mono">{schemaName}</span> schema. The mock only serves it once accepted.
                           </Callout>
                         ) : null}
-                        <div className="exchange">
-                          <section className="exchange-card" aria-label={`Request of ${selected.name}`}>
-                            <div className="exchange-card-head">
-                              <span className="exchange-card-title">Request</span>
-                              <span className="exchange-card-meta">{selected.name}</span>
-                            </div>
-                            <ScrollPre aria-label="Request line and headers">{requestHead(spec)}</ScrollPre>
-                            {Object.keys(selected.request.params).length ? <ScrollPre aria-label="Parameters" data-tone="params">{paramLines(spec.pathTemplate, selected.request.params)}</ScrollPre> : null}
-                            {selected.request.body ? <ScrollPre aria-label="Request body" data-tone="body">{selected.request.body}</ScrollPre> : null}
-                          </section>
-                          <div className="exchange-sep" aria-hidden="true">⇄</div>
-                          <section className="exchange-card" aria-label={`Response of ${selected.name}`}>
-                            <div className="exchange-card-head">
-                              <span className="exchange-card-title">Response</span>
-                              <span className="exchange-card-status">{selected.response.status}{selected.response.status === 200 ? ' OK' : ''}</span>
-                            </div>
-                            <ScrollPre aria-label="Response headers" data-tone="headers">{`Content-Type: application/json\nContent-Length: ${selected.response.body.length}`}</ScrollPre>
-                            <ScrollPre aria-label="Response body" data-tone="body" data-grow="">{selected.response.body}</ScrollPre>
-                          </section>
-                        </div>
+                        <Exchange>
+                          <ExchangeCard
+                            title="Request"
+                            label={`Request of ${selected.name}`}
+                            meta={selected.name}
+                            headingLevel="none"
+                            blocks={[
+                              { label: 'Request line and headers', text: requestHead(spec), tone: 'secondary' },
+                              ...(Object.keys(selected.request.params).length ? [{ label: 'Parameters', text: paramLines(spec.pathTemplate, selected.request.params), tone: 'params' as const }] : []),
+                              ...(selected.request.body ? [{ label: 'Request body', text: selected.request.body }] : []),
+                            ]}
+                          />
+                          <ExchangeCard
+                            title="Response"
+                            label={`Response of ${selected.name}`}
+                            status={`${selected.response.status}${selected.response.status === 200 ? ' OK' : ''}`}
+                            headingLevel="none"
+                            blocks={[
+                              { label: 'Response headers', text: `Content-Type: application/json\nContent-Length: ${selected.response.body.length}`, tone: 'headers' },
+                              { label: 'Response body', text: selected.response.body, grow: true },
+                            ]}
+                          />
+                        </Exchange>
                       </div>
                     ) : null}
                   </div>
