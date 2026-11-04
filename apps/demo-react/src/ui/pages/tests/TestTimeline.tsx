@@ -1,5 +1,5 @@
 import { Link as RouterLink } from 'react-router';
-import type { TestRunSummary } from '@/domain/testing';
+import { runConformance, type TestRunSummary } from '@/domain/testing';
 import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { testRunHref } from '../explore-kit/format';
@@ -64,7 +64,8 @@ export function TestTimeline({ runs, operations, selectedId, onSelect, matches, 
   const last = chrono[n - 1];
   const year = last ? new Date(last.startedAt).getUTCFullYear() : '';
   const subtitle = `Last ${n} runs · ${first ? day(first.startedAt) : ''} → ${last ? day(last.startedAt) : ''}, ${year} · click a bar to inspect`;
-  const pct = (r: TestRunSummary) => (r.total === 0 ? 0 : (r.passed / r.total) * 100);
+  /** The line plots the run's conformance score (stored, or samples passed over samples). */
+  const pct = (r: TestRunSummary) => runConformance(r);
   const line = chrono
     .map((r, i) => `${((i + 0.5) * (200 / n)).toFixed(1)},${Math.min(100, Math.max(0, ((100 - pct(r)) / 50) * 100)).toFixed(1)}`)
     .join(' ');
@@ -99,7 +100,7 @@ export function TestTimeline({ runs, operations, selectedId, onSelect, matches, 
           <span><i data-tone="passed" />Passed</span>
           <span><i data-tone="failed" />Failed</span>
           <span><i data-tone="timeout" />Timed out</span>
-          <span><i data-tone="line" />Samples passed, %</span>
+          <span><i data-tone="line" />Conformance, %</span>
           <span className="test-timeline-muted">Bar height = duration</span>
         </div>
       </div>
@@ -170,6 +171,7 @@ export function TestTimeline({ runs, operations, selectedId, onSelect, matches, 
             <th scope="col">Result</th>
             <th scope="col">Duration</th>
             <th scope="col">Samples passed</th>
+            <th scope="col">Conformance</th>
             {operations.map((op) => <th scope="col" key={op.id}>{op.verb} {op.path}</th>)}
           </tr>
         </thead>
@@ -180,7 +182,8 @@ export function TestTimeline({ runs, operations, selectedId, onSelect, matches, 
               <td>{shortDate(r.startedAt)}</td>
               <td>{WORD[r.result]}</td>
               <td>{fmtDuration(r.durationMs)}</td>
-              <td>{samples(r)} ({Math.round(pct(r))}%)</td>
+              <td>{samples(r)}</td>
+              <td>{pct(r)}%</td>
               {operations.map((op, i) => <td key={op.id}>{OP_WORD[r.operations?.[i] ?? 'none']}</td>)}
             </tr>
           ))}

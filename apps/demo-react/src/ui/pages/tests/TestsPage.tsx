@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router';
 import { filterRuns, runConformance, type TestRunSummary } from '@/domain/testing';
 import { PageHeader, useQuery, useRelativeTime, usePageTitle, useUseCases } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
+import { ApiBadge, type ProofStatus } from '@/ui/components/ui/api-badge';
+import { Icon } from '@/ui/components/ui/icon';
 import { Button } from '@/ui/components/ui/button';
 import { EmptyState } from '@/ui/components/ui/empty-state';
 import { Field } from '@/ui/components/ui/field';
@@ -12,7 +13,7 @@ import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
 import { StatusBadge, type Outcome } from '@/ui/components/ui/status-badge';
 import { ErrorBlock, LoadingBlock } from './PageStates';
 import { testRunHref } from '../explore-kit/format';
-import { TestTimeline } from './TestTimeline';
+import { TestTimeline, timelineRuns } from './TestTimeline';
 import './tests.css';
 
 const LIMIT = 12;
@@ -30,28 +31,67 @@ export default function TestsPage() {
   const data = query.data;
   const service = data?.[1].services.find((s) => s.id === serviceId);
 
+  const runs = data?.[0] ?? [];
+  const latest = runs.reduce<TestRunSummary | undefined>((a, r) => (!a || r.startedAt > a.startedAt ? r : a), undefined);
+  const recent = timelineRuns(runs);
+  const passRate = recent.length ? Math.round((recent.filter((r) => r.result === 'passed').length / recent.length) * 100) : null;
+  const examples = service?.exampleCount;
+
   return (
     <>
       <PageHeader
-        title={service ? `Tests of ${service.name} ${service.version}` : 'Test history'}
+        title="Test history"
         breadcrumb={[
           { label: 'APIs & Services', to: '/services' },
           ...(service ? [{ label: `${service.name} ${service.version}`, to: `/services/${serviceId}` }] : []),
           { label: 'Test history' },
         ]}
+        badge={
+          service ? (
+            <RouterLink className="tests-title-badge" to={`/services/${serviceId}`} aria-label={`${service.protocol} ${service.name} ${service.version}, open the service`}>
+              <ApiBadge protocol={service.protocol} name={service.name} version={service.version} size="xl" />
+            </RouterLink>
+          ) : null
+        }
+        description={
+          service
+            ? `Conformance tests run against the implementations of this contract, on every endpoint. Each run replays the ${examples ?? ''}${examples ? ' ' : ''}contract examples and checks responses against the ${service.format.split(' ')[0]} schemas.`
+            : undefined
+        }
+        descriptionTone="secondary"
+        align="start"
         actions={
-          <Button asChild variant="primary" icon="play">
-            <RouterLink to={`/tests/create?service=${serviceId}`}>Run a test</RouterLink>
+          <Button asChild variant="primary" icon="plus">
+            <RouterLink to={`/tests/create?service=${serviceId}`}>New test</RouterLink>
           </Button>
         }
       />
-      {service && service.protocol !== 'A2A' ? <OtherServices /> : null}
+      {service ? (
+        <div className="tests-head-extra">
+          <ul className="tests-kpis" aria-label="Test summary">
+            {service.conformance !== null ? (
+              <li><ApiBadge label="conformance" value={`${service.conformance}%`} status={tone(service.conformance)} /></li>
+            ) : null}
+            {latest ? (
+              <li><ApiBadge label="last test" value={LAST_WORD[latest.result]} status={LAST_TONE[latest.result]} /></li>
+            ) : null}
+            {passRate !== null ? (
+              <li><ApiBadge label={`pass rate · ${recent.length} runs`} value={`${passRate}%`} status={tone(passRate)} /></li>
+            ) : null}
+          </ul>
+          {service.protocol !== 'A2A' ? <OtherServices /> : null}
+        </div>
+      ) : null}
       {query.status === 'loading' && !data ? <LoadingBlock label="the test history" /> : null}
       {query.status === 'error' ? <ErrorBlock error={query.error} what="Test history" onRetry={query.reload} /> : null}
-      {data ? <History key={serviceId} runs={data[0]} operations={data[1].targets.find((t) => t.serviceId === serviceId)?.operations ?? []} service={service} /> : null}
+      {data ? <History key={serviceId} runs={data[0]} operations={data[1].targets.find((t) => t.serviceId === serviceId)?.operations ?? []} /> : null}
     </>
   );
 }
+
+const LAST_WORD: Record<TestRunSummary['result'], string> = { passed: 'passed', failed: 'failed', timeout: 'timed out', running: 'running' };
+const LAST_TONE: Record<TestRunSummary['result'], ProofStatus> = { passed: 'success', failed: 'danger', timeout: 'warning', running: 'info' };
+const tone = (pct: number): ProofStatus => (pct >= 80 ? 'success' : pct >= 50 ? 'warning' : 'danger');
 
 /** The agent tests live on their own screen: point to the latest one from the history of any other service. */
 function OtherServices() {
@@ -64,25 +104,21 @@ function OtherServices() {
   if (!agent.data) return null;
   const { svc, run } = agent.data;
   return (
-    <p className="ex-row" style={{ margin: 0 }}>
+    <RouterLink to={testRunHref(run)} className="tests-other">
       <span>Other services:</span>
-      <RouterLink to={testRunHref(run)} className="ex-row">
-        <ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} size="sm" />
-        <span>run #{run.id} {run.result} {run.passed}/{run.total}</span>
-       
-      </RouterLink>
-    </p>
+      <ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} size="sm" />
+      <span className="tests-other-run" data-result={run.result}>run #{run.id} {run.result} {run.passed}/{run.total}</span>
+      <Icon name="arrow-right" size={13} className="tests-other-arrow" />
+    </RouterLink>
   );
 }
 
 function History({
   runs,
   operations,
-  service,
 }: {
   runs: TestRunSummary[];
   operations: { id: string; verb: string; path: string }[];
-  service?: { protocol: Parameters<typeof ApiBadge>[0]['protocol']; name: string; version: string };
 }) {
   const relative = useRelativeTime();
   const [result, setResult] = useState<'all' | 'passed' | 'failed'>('all');
@@ -122,8 +158,6 @@ function History({
 
   return (
     <div className="stack">
-      {service ? <ApiBadge protocol={service.protocol} name={service.name} version={service.version} /> : null}
-
       <TestTimeline
         runs={runs}
         operations={operations}
