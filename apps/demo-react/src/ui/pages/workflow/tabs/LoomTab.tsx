@@ -1,8 +1,8 @@
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Link } from 'react-router';
 import { stoppedStep, type Session, type WorkflowRun } from '@/domain/arazzo';
 import type { WorkflowDetail } from '@/application/arazzo';
-import { useQuery, useRelativeTime, useUseCases } from '@/ui/app';
+import { useQuery, useRelativeTime, useReturnFocus, useUseCases } from '@/ui/app';
 import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
 import { Icon } from '@/ui/components/ui/icon';
@@ -33,7 +33,20 @@ export function LoomTab({ detail, runs, run, step, sessions, serviceLabel, onPic
   const { workflow, document } = detail;
   const uc = useUseCases();
   const ago = useRelativeTime();
-  const [lensId, setLensId] = useState<string | undefined>(undefined);
+  const [lensId, setLensIdState] = useState<string | undefined>(undefined);
+  const { focusLater } = useReturnFocus();
+  // The control that turned the lens on (in the page or inside the loom's shadow root), to return focus on Clear.
+  const lensTrigger = useRef<HTMLElement | null>(null);
+  const setLensId = (id: string | undefined) => {
+    if (id) lensTrigger.current = deepActive();
+    setLensIdState(id);
+  };
+  const nodeOf = (stepId: string | undefined) => () => {
+    const host = window.document.querySelector('workflow-loom');
+    const nodes = host?.shadowRoot?.querySelectorAll<HTMLElement>('button.node');
+    const i = workflow.steps.findIndex((s) => s.stepId === stepId);
+    return (i >= 0 ? nodes?.[i] : undefined) ?? host?.shadowRoot?.querySelector<HTMLElement>('button.node[tabindex="0"]') ?? null;
+  };
   const others = useQuery(() => uc.arazzo.listWorkflows(), []);
   const props = buildLoomProps(workflow, document, run, step, serviceLabel);
   const lens = lensId ? lensOf(lensId, workflow, run) : undefined;
@@ -57,13 +70,13 @@ export function LoomTab({ detail, runs, run, step, sessions, serviceLabel, onPic
       <section aria-label="Workflow loom" className="wf-loom">
         <div className="wf-loom-toolbar">
           <RunPicker runs={runs} run={run} onPick={onPickRun} label="Show results and resolved values from a run" caption="Results & values from" />
-          <div aria-label="Legend" role="group" className="wf-legend">
+          <div aria-label="Legend" role="group" className="wf-loom-legend">
             <span>
-              <span aria-hidden="true" className="wf-legend-warp" />
+              <span aria-hidden="true" className="wf-loom-legend-warp" />
               warp: {sourceNames}
             </span>
             <span>
-              <span aria-hidden="true" className="wf-legend-thread" />
+              <span aria-hidden="true" className="wf-loom-legend-thread" />
               data thread
             </span>
             <span>
@@ -119,7 +132,15 @@ export function LoomTab({ detail, runs, run, step, sessions, serviceLabel, onPic
                 = {lens.value}
               </span>
               {run ? <span className="wf-lens-run">in run #{run.number}</span> : null}
-              <Button size="sm" className="wf-lens-clear" onClick={() => setLensId(undefined)}>
+              <Button
+                size="sm"
+                className="wf-lens-clear"
+                onClick={() => {
+                  const back = lensTrigger.current;
+                  setLensIdState(undefined);
+                  focusLater(() => (back?.isConnected ? back : window.document.querySelector<HTMLElement>('workflow-loom')));
+                }}
+              >
                 Clear lens
               </Button>
             </div>
@@ -189,10 +210,36 @@ export function LoomTab({ detail, runs, run, step, sessions, serviceLabel, onPic
         serviceLabel={serviceLabel}
         lens={lensId}
         onTrace={trace}
-        onSelectFailed={() => failedStepId && onSelectStep(failedStepId)}
-        onClose={() => onSelectStep(undefined)}
+        onSelectFailed={() => {
+          if (!failedStepId) return;
+          onSelectStep(failedStepId);
+          afterRender(() => window.document.getElementById('wf-ins-title'));
+        }}
+        onClose={() => {
+          onSelectStep(undefined);
+          afterRender(nodeOf(step));
+        }}
       />
     </div>
   );
 }
 
+
+/** The focused element, looking inside shadow roots (the loom's inputs, outputs and thread labels). */
+function deepActive(): HTMLElement | null {
+  let el = window.document.activeElement as HTMLElement | null;
+  while (el?.shadowRoot?.activeElement) el = el.shadowRoot.activeElement as HTMLElement;
+  return el;
+}
+
+/**
+ * Focuses `target()` once the route change has rendered (the step lives in the URL, so it renders after the
+ * handler). A node of the loom lives in its shadow root, which `useReturnFocus` cannot check, hence this helper.
+ */
+function afterRender(target: () => HTMLElement | null | undefined, tries = 10) {
+  requestAnimationFrame(() => {
+    const el = target();
+    if (el?.isConnected) el.focus();
+    else if (tries > 0) afterRender(target, tries - 1);
+  });
+}

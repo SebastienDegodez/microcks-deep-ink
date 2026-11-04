@@ -29,7 +29,7 @@
 .wf-mu-box-head[data-kind='mono'] { display: block; font: 400 11px/1.4 var(--font-mono); color: var(--text-secondary); overflow-wrap: anywhere; }
 .wf-mu-box-title { font-weight: 600; color: var(--text-secondary); }
 .wf-mu-box-sub { font-weight: 400; color: var(--text-muted); }
-.wf-mu-pre { flex: 1; margin: 0; padding: 10px 12px; background: var(--bg); color: var(--text); font: 400 12px/1.6 var(--font-mono); white-space: pre; overflow-x: auto; }
+.wf-mu-pre { flex: 1; margin: 0; padding: 10px 12px; background: var(--bg); color: var(--text); font: 400 12px/1.6 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
 .wf-mu-pre[data-tone='secondary'] { color: var(--text-secondary); }
 .wf-mu-code { flex: none; min-width: 34px; box-sizing: border-box; text-align: center; padding: 1px 6px; border-radius: 4px; font: 600 12px/1.4 var(--font-mono); color: var(--on-status); }
 .wf-mu-code[data-tone='success'] { background: var(--success); }
@@ -57,3 +57,4 @@
 .wf-mu-box[data-size='curl'] .wf-mu-box-head { flex-wrap: nowrap; }
 .wf-mu-box[data-size='curl'] .wf-mu-box-title { min-width: 0; }
 .wf-mu-box-head .button { flex: none; }
+.wf-mu-row > .method { display: inline-flex; align-items: center; height: 38px; padding: 0 10px; box-sizing: border-box; font-size: 12px; }

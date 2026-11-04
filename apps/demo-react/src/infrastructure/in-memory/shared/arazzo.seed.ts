@@ -374,7 +374,7 @@ export function seedRuns(): WorkflowRun[] {
     run14(),
     sessionRun13(),
     mocksSuccess(12, RUN_IDS[12], '2026-11-02T16:42:04Z', { kind: 'ui' }, 'restock-eclair', [41, 38, 52, 36]),
-    mocksSuccess(11, RUN_IDS[11], '2026-11-01T08:42:04Z', { kind: 'mock-url' }, 'restock-eclair', [44, 35, 49, 33]),
+    mocksSuccess(11, RUN_IDS[11], '2026-11-01T10:15:04Z', { kind: 'mock-url' }, 'restock-eclair', [44, 35, 49, 33]),
     checkMenuRun(),
   ];
 }

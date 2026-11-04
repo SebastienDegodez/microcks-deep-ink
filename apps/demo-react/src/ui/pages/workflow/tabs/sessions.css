@@ -31,7 +31,7 @@
 .wf-se-req-head h2 { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14px; }
 .wf-se-req-path { font-size: 13px; font-weight: 400; }
 .wf-se-req-actions { display: flex; gap: 6px; }
-.wf-se-pre { flex: 1; margin: 0; padding: 10px 12px; border-radius: 6px; background: var(--bg); color: var(--text); font: 400 12px/1.6 var(--font-mono); white-space: pre; overflow-x: auto; }
+.wf-se-pre { flex: 1; margin: 0; padding: 10px 12px; border-radius: 6px; background: var(--bg); color: var(--text); font: 400 12px/1.6 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
 .wf-se-answer { display: flex; flex-direction: column; gap: 4px; font-size: 12px; }
 .wf-se-answer-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 8px; }
 .wf-se-answer-line .wf-se-sub { font-size: 12px; }

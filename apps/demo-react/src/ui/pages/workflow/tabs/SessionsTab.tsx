@@ -396,6 +396,8 @@ export function SessionsTab({ detail, sessions, runs }: SessionsTabProps) {
               </span>
               <DataTable<SessionCall>
                 captionHidden
+                headerCase="sentence"
+                density="compact"
                 caption="Received calls, in the order of receipt, each mapped to its step"
                 columns={callColumns}
                 rows={selected.calls}

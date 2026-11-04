@@ -138,7 +138,7 @@ export function WorkflowHeader({ document, workflow, runs, serviceLabel, onMockU
         })}
         <span aria-hidden="true" className="wf-proof-divider" />
         {lastRun && lastWord ? (
-          <Link to={runPath(lastRun.id)} className="wf-badge-link" aria-label={`Last run: ${lastWord}, run ${lastRun.number}, ${lastHow}`}>
+          <Link to={runPath(lastRun.id)} className="wf-badge-link">
             <ApiBadge
               label="last run"
               value={`${lastWord} #${lastRun.number}`}

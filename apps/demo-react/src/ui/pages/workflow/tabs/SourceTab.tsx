@@ -155,7 +155,7 @@ export function SourceTab({ detail, step, onSelectStep, serviceLabel }: SourceTa
     if (block && fold && block.id !== selected?.id) {
       const n = block.to - block.from;
       rows.push(
-        <button key={`f${i}`} type="button" className="wf-src-row wf-src-fold" onClick={() => pick(block)} aria-label={`Unfold step ${block.id}, lines ${block.from + 1} to ${block.to + 1}`}>
+        <button key={`f${i}`} type="button" className="wf-yaml-row wf-src-fold" onClick={() => pick(block)} aria-label={`Unfold step ${block.id}, lines ${block.from + 1} to ${block.to + 1}`}>
           <span aria-hidden="true" className="wf-src-n">
             {i + 1}
           </span>
@@ -173,7 +173,7 @@ export function SourceTab({ detail, step, onSelectStep, serviceLabel }: SourceTa
     }
     const inSel = selected !== undefined && i >= selected.from && i <= selected.to;
     rows.push(
-      <div key={`l${i}`} className="wf-src-row" data-selected={inSel ? '' : undefined}>
+      <div key={`l${i}`} className="wf-yaml-row" data-selected={inSel ? '' : undefined}>
         <span aria-hidden="true" className="wf-src-n">
           {i + 1}
         </span>
@@ -187,7 +187,7 @@ export function SourceTab({ detail, step, onSelectStep, serviceLabel }: SourceTa
 
   return (
     <div className="wf-source-tab">
-      <nav aria-labelledby="wf-outline-title" className="wf-outline">
+      <nav aria-labelledby="wf-outline-title" className="wf-src-outline">
         <h2 id="wf-outline-title">Outline</h2>
         <span className="wf-outline-file">{document.file}</span>
         {blocks.map((b) => (
@@ -269,7 +269,8 @@ export function SourceTab({ detail, step, onSelectStep, serviceLabel }: SourceTa
         </div>
         {error ? <ErrorBlock error={error} /> : null}
 
-        <div className="wf-src-code">
+        {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex -- the code scrolls sideways: keyboard users must reach it (RGAA 7.3) */}
+        <div className="wf-src-code" role="region" aria-label={`${document.file}, lines`} tabIndex={0}>
           <div className="wf-src-lines">{rows}</div>
         </div>
       </section>

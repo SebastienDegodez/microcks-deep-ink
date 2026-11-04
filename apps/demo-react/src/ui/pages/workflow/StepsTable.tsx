@@ -154,6 +154,11 @@ export function StepsTable({ workflow, document, run, loomLink }: StepsTableProp
       <DataTable<Row>
         caption={`${workflow.steps.length} steps of ${workflow.workflowId}${run ? `, results of run #${run.number}` : ', definition only'}`}
         captionHidden
+        headerCase="sentence"
+        rowTone={({ step }) => {
+          const st = run?.steps.find((r) => r.stepId === step.stepId)?.status;
+          return st === 'failed' ? 'failed' : st === 'not-run' ? 'idle' : undefined;
+        }}
         columns={columns}
         rows={rows}
         rowKey={(r) => r.step.stepId}

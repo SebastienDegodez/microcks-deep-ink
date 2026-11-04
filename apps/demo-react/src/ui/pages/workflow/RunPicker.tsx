@@ -25,13 +25,16 @@ export function RunPicker({ runs, run, onPick, label, caption }: { runs: Workflo
             type="button"
             className="wf-run-pick"
             aria-pressed={on}
-            aria-label={`Show run ${n}, ${target}, ${WORD[r.status]}`}
             data-status={r.status}
             onClick={() => onPick(r.number)}
           >
             <Icon name={r.status === 'SUCCESS' ? 'check-circle' : r.status === 'FAILURE' ? 'x-circle' : 'running'} size={13} strokeWidth={2.2} />
             {n}
-            <span className="wf-run-pick-target">{target}</span>
+            <span className="wf-run-pick-target">
+              <span className="sr-only"> </span>
+              {target}
+            </span>
+            <span className="sr-only">, {WORD[r.status].toLowerCase()}</span>
           </button>
         );
       })}
