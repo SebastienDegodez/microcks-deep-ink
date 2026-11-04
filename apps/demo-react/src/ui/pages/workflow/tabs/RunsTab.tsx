@@ -4,6 +4,7 @@ import { formatClock, formatDuration } from '@/domain/shared';
 import { callTotals, matchesRunKind, stoppedStep, verdictExplanation, type RunKindFilter, type Session, type StepStatus, type WorkflowRun } from '@/domain/arazzo';
 import type { WorkflowDetail } from '@/application/arazzo';
 import { useRelativeTime } from '@/ui/app';
+import { Chip } from '@/ui/components/ui/chip';
 import { Button } from '@/ui/components/ui/button';
 import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { MethodTag } from '@/ui/components/ui/method-tag';
@@ -121,10 +122,9 @@ export function RunsTab({ detail, runs, sessions = [], initialFilter }: RunsTabP
           </span>
           <div role="group" aria-label="Filter runs by origin" className="wf-runs-filters">
             {FILTERS.map((f) => (
-              <button key={f.id} type="button" className="wf-runs-filter" aria-pressed={f.id === filter} onClick={() => setFilter(f.id)}>
+              <Chip key={f.id} size="lg" pressed={f.id === filter} count={runs.filter((r) => match(r, f.id)).length} onClick={() => setFilter(f.id)}>
                 {f.label}
-                <span className="wf-runs-filter-n">{runs.filter((r) => match(r, f.id)).length}</span>
-              </button>
+              </Chip>
             ))}
           </div>
         </div>
@@ -180,7 +180,7 @@ export function RunsTab({ detail, runs, sessions = [], initialFilter }: RunsTabP
                         {word}
                       </span>
                       <span data-col="origin" className="wf-runs-origin">
-                        <span className="wf-runs-pill">{originWord(r)}</span>
+                        <Chip size="sm">{originWord(r)}</Chip>
                         <span className="wf-runs-sub">{originSub(r)}</span>
                       </span>
                       <span data-col="inputs" className="wf-runs-inputs">

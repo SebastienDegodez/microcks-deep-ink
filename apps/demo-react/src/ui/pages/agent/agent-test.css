@@ -8,10 +8,6 @@
 .run-badges { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 12px; align-self: center; }
 .run-badge-link { display: inline-flex; border-radius: var(--radius-badge); text-decoration: none; }
 .run-badge-link:hover { text-decoration: none; }
-.run-running { display: inline-flex; align-items: center; gap: 6px; color: var(--running); font: 600 14px/1.2 var(--font-ui); }
-.run-spin { animation: run-spin 0.9s linear infinite; transform-origin: 50% 50%; }
-@keyframes run-spin { to { transform: rotate(360deg); } }
-@media (prefers-reduced-motion: reduce) { .run-spin { animation: none; } }
 
 .demo-page-header-text:has(.run-meta) { gap: 12px; flex-basis: 520px; }
 
