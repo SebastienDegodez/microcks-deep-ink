@@ -3,6 +3,9 @@ import { IconComponent } from './icon';
 
 export type ChipTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger';
 export type ChipVariant = 'solid' | 'outline' | 'dashed';
+export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
+
+const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
 
 /**
  * Small label. `<span mkChip>` is static; `<button mkChip [pressed]="on">` is a toggle (filters);
@@ -16,15 +19,24 @@ export type ChipVariant = 'solid' | 'outline' | 'dashed';
     class: 'chip',
     '[attr.data-tone]': 'tone()',
     '[attr.data-variant]': 'variant()',
+    '[attr.data-size]': 'size()',
+    '[attr.data-protocol]': 'protocolAttr()',
+    "[attr.data-empty]": "count() === 0 ? '' : null",
     '[attr.aria-pressed]': 'ariaPressed()',
   },
-  template: `@if (labelKey()) {<span class="chip-key">{{ labelKey() }}=</span>}<ng-content />@if (removable() && !isButton) {<button type="button" class="chip-remove" [attr.aria-label]="removeName()" (click)="removed.emit()"><svg mkIcon name="close" [size]="12"></svg></button>}`,
+  template: `<span class="chip-label">@if (labelKey()) {<span class="chip-key">{{ labelKey() }}</span><span class="chip-eq">=</span>}<span class="chip-value"><ng-content /></span></span>@if (count() !== undefined) {&ngsp;<span class="chip-count">{{ count() }}</span>}@if (removable() && !isButton) {<button type="button" class="chip-remove" [attr.aria-label]="removeName()" (click)="removed.emit()"><svg mkIcon name="close" [size]="12"></svg></button>}`,
 })
 export class ChipComponent {
   /** Key rendered before the text for `key=value` labels. */
   readonly labelKey = input<string>();
   readonly tone = input<ChipTone>('neutral');
   readonly variant = input<ChipVariant>('solid');
+  /** `sm`: 11px, padding 1px 8px (row labels). */
+  readonly size = input<'md' | 'sm'>('md');
+  /** Protocol filter: square corners and a colour swatch; pressed fills with the protocol colour. */
+  readonly protocol = input<Protocol>();
+  /** Count after the text, read as "REST 4". A zero count dims the chip. */
+  readonly count = input<number>();
   /** On a `<button mkChip>`: the toggle state, exposed as `aria-pressed`. */
   readonly pressed = input<boolean | undefined>(undefined);
   /** Adds a remove button. Ignored on toggle chips. */
@@ -40,14 +52,13 @@ export class ChipComponent {
   constructor() {
     if (this.host instanceof HTMLButtonElement && !this.host.hasAttribute('type')) this.host.type = 'button';
     afterEveryRender(() => {
-      let t = '';
-      this.host.childNodes.forEach((n) => {
-        const el = n as HTMLElement;
-        if (n.nodeType === Node.TEXT_NODE) t += n.textContent ?? '';
-        else if (el.classList && !el.classList.contains('chip-key') && !el.classList.contains('chip-remove')) t += el.textContent ?? '';
-      });
-      this.text.set(t.trim());
+      this.text.set((this.host.querySelector('.chip-value')?.textContent ?? '').trim());
     });
+  }
+
+  protected protocolAttr(): string | null {
+    const p = this.protocol();
+    return p ? PROTOCOL_ATTR[p] : null;
   }
 
   protected ariaPressed(): string | null {

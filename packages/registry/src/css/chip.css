@@ -13,8 +13,17 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-pill);
   }
-  .chip-key {
+  /* key=value reads as one word on a static chip: no gap inside the label. */
+  .chip-label { display: inline; min-width: 0; }
+  .chip-key,
+  .chip-eq,
+  .chip-count {
     color: var(--text-muted);
+  }
+  .chip[data-size="sm"] {
+    min-height: 0;
+    padding: 1px 8px;
+    font-size: 11px;
   }
 
   /* Tones. Text and tint pairs are contrast-tested in the tokens package. */
@@ -46,29 +55,69 @@
   .chip[data-variant="dashed"] {
     border-style: dashed;
   }
-  .chip[data-tone="neutral"][data-variant="outline"],
   .chip[data-tone="neutral"][data-variant="dashed"] {
     border-color: var(--border-control);
   }
 
-  /* Toggle chip (filter) */
+  /* Toggle chip (filter): "domain = pastry 4", the value in bold. */
   button.chip {
+    min-height: 28px;
+    padding: 0 11px;
+    gap: 6px;
     cursor: pointer;
   }
+  button.chip .chip-label { display: inline-flex; align-items: baseline; gap: 6px; }
+  button.chip .chip-key ~ .chip-value { color: var(--text); font-weight: 600; }
   button.chip:hover {
     background: var(--raised);
   }
+  /* Pressed: selected fill and action border; aria-pressed carries the state. */
   button.chip[aria-pressed="true"] {
     color: var(--text);
     background: var(--selected);
     border-color: var(--action);
-    box-shadow: inset 0 0 0 1px var(--action);
+  }
+  button.chip[aria-pressed="true"] .chip-key { color: var(--link); }
+  /* Zero count: muted text (never opacity, which would break 4.5:1) and a faded swatch. */
+  .chip[data-empty]:not([aria-pressed="true"]),
+  .chip[data-empty]:not([aria-pressed="true"]) .chip-value,
+  .chip[data-empty]:not([aria-pressed="true"]) .chip-key { color: var(--text-muted); font-weight: 400; }
+  .chip[data-empty]::before { opacity: 0.45; }
+
+  /* Protocol filter: square corners, a 9px swatch in the protocol colour, filled when pressed. */
+  .chip[data-protocol] {
+    --chip-proto: var(--proto-rest);
+    gap: 8px;
+    min-height: 30px;
+    padding: 0 10px;
+    border-radius: var(--radius-control);
+    color: var(--text);
     font-weight: 600;
   }
-  /* Pressed also adds a check mark, so the state is not carried by color alone. The empty alt hides it from screen readers. */
-  button.chip[aria-pressed="true"]::before {
-    content: "✓";
-    content: "✓" / "";
+  .chip[data-protocol="soap"] { --chip-proto: var(--proto-soap); }
+  .chip[data-protocol="event"] { --chip-proto: var(--proto-event); }
+  .chip[data-protocol="grpc"] { --chip-proto: var(--proto-grpc); }
+  .chip[data-protocol="graphql"] { --chip-proto: var(--proto-graphql); }
+  .chip[data-protocol="direct"] { --chip-proto: var(--proto-direct); }
+  .chip[data-protocol="a2a"] { --chip-proto: var(--proto-a2a); }
+  .chip[data-protocol]::before {
+    content: "";
+    flex: none;
+    width: 9px;
+    height: 9px;
+    border-radius: 2px;
+    background: var(--chip-proto);
+  }
+  .chip[data-protocol] .chip-count { color: inherit; font-weight: 400; }
+  button.chip[data-protocol][aria-pressed="true"] {
+    color: var(--on-proto);
+    background: var(--chip-proto);
+    border-color: var(--chip-proto);
+  }
+  button.chip[data-protocol][aria-pressed="true"]::before { background: var(--on-proto); }
+
+  @media (forced-colors: active) {
+    button.chip[aria-pressed="true"] { border-width: 2px; border-color: Highlight; }
   }
 
   .chip-remove {

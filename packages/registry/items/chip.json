@@ -15,7 +15,7 @@
     "aria": ["Toggle chips use aria-pressed", "Remove buttons are named \"Remove <text>\"", "Tones use a tint background and text of at least 4.5:1"],
     "rgaa": ["3.1", "3.2", "7.1", "11.9"],
     "wcag": ["1.4.1", "1.4.3", "4.1.2"],
-    "notes": "A tone (success, danger) is never the only signal: put the meaning in the text. Pressed chips add a check mark and a thicker border."
+    "notes": "A tone (success, danger) is never the only signal: put the meaning in the text. Pressed chips change fill and border (a 2px Highlight border in forced colours); aria-pressed carries the state. A protocol chip always writes the protocol as text."
   },
   "stories": ["Components/Chip"]
 }

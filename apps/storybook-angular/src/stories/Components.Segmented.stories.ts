@@ -24,3 +24,36 @@ export const Default: StoryObj = {
     `,
   }),
 };
+
+export const DotsAndIcons: StoryObj = {
+  name: "Dots and icons",
+  render: () => ({
+    props: {
+      r: 'all',
+      view: 'table',
+      results: [
+        { id: 'all', label: 'All', count: 11, dot: 'neutral' },
+        { id: 'ok', label: 'Conformant', count: 3, dot: 'success' },
+        { id: 'ko', label: 'Failing', count: 5, dot: 'danger' },
+        { id: 'never', label: 'Never tested', count: 3, dot: 'muted' },
+      ],
+      views: [
+        { id: 'table', label: 'Table', icon: 'list' },
+        { id: 'wall', label: 'Badge wall', icon: 'badge-wall' },
+      ],
+    },
+    template: `
+      <div class="inline">
+        <mk-segmented label="Last test" [options]="results" [(value)]="r" />
+        <mk-segmented label="View" [options]="views" [(value)]="view" />
+      </div>
+    `,
+  }),
+};
+
+export const Joined: StoryObj = {
+  render: () => ({
+    props: { v: 'groovy', options: [{ id: 'groovy', label: 'Groovy' }, { id: 'js', label: 'JavaScript' }] },
+    template: `<mk-segmented label="Script language" variant="joined" [options]="options" [(value)]="v" />`,
+  }),
+};

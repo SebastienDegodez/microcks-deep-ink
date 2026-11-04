@@ -3,12 +3,19 @@ import { Icon } from './icon';
 
 export type ChipTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger';
 export type ChipVariant = 'solid' | 'outline' | 'dashed';
+export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 
 interface ChipOwnProps {
   /** Key rendered before the text for `key=value` labels. */
   labelKey?: string;
   tone?: ChipTone;
   variant?: ChipVariant;
+  /** `sm`: 11px, padding 1px 8px (row labels). */
+  size?: 'md' | 'sm';
+  /** Protocol filter: square corners and a colour swatch; pressed fills with the protocol colour. */
+  protocol?: Protocol;
+  /** Count after the text, read as "REST 4". A zero count dims the chip. */
+  count?: number;
   /** When defined the chip is a toggle `<button aria-pressed>` (filters). */
   pressed?: boolean;
   /** Adds a remove button. Ignored on toggle chips. */
@@ -34,12 +41,34 @@ function textOf(node: ReactNode): string {
  * Small label. Static chips are a `<span>`; with `pressed` they become a toggle button;
  * with `onRemove` they get a remove button named "Remove <text>".
  */
-export function Chip({ labelKey, tone = 'neutral', variant = 'solid', pressed, onRemove, removeLabel, className, children, ref, onClick, ...rest }: ChipProps) {
+const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
+
+export function Chip({ labelKey, tone = 'neutral', variant = 'solid', size = 'md', protocol, count, pressed, onRemove, removeLabel, className, children, ref, onClick, ...rest }: ChipProps) {
   const cls = ['chip', className].filter(Boolean).join(' ');
+  const data = {
+    'data-tone': tone,
+    'data-variant': variant,
+    'data-size': size,
+    'data-protocol': protocol ? PROTOCOL_ATTR[protocol] : undefined,
+    'data-empty': count === 0 ? '' : undefined,
+  };
   const body = (
     <>
-      {labelKey ? <span className="chip-key">{labelKey}=</span> : null}
-      {children}
+      <span className="chip-label">
+        {labelKey ? (
+          <>
+            <span className="chip-key">{labelKey}</span>
+            <span className="chip-eq">=</span>
+          </>
+        ) : null}
+        <span className="chip-value">{children}</span>
+      </span>
+      {count !== undefined ? (
+        <>
+          {' '}
+          <span className="chip-count">{count}</span>
+        </>
+      ) : null}
     </>
   );
 
@@ -50,8 +79,7 @@ export function Chip({ labelKey, tone = 'neutral', variant = 'solid', pressed, o
         type="button"
         {...(rest as ButtonHTMLAttributes<HTMLButtonElement>)}
         className={cls}
-        data-tone={tone}
-        data-variant={variant}
+        {...data}
         aria-pressed={pressed}
         onClick={onClick}
       >
@@ -62,7 +90,7 @@ export function Chip({ labelKey, tone = 'neutral', variant = 'solid', pressed, o
 
   const name = removeLabel ?? `Remove ${[labelKey, textOf(children)].filter(Boolean).join(' ')}`.trim();
   return (
-    <span ref={ref as Ref<HTMLSpanElement>} {...rest} className={cls} data-tone={tone} data-variant={variant}>
+    <span ref={ref as Ref<HTMLSpanElement>} {...rest} className={cls} {...data}>
       {body}
       {onRemove ? (
         <button type="button" className="chip-remove" aria-label={name} onClick={onRemove}>
