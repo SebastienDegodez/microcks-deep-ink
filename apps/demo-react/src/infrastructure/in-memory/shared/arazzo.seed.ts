@@ -121,6 +121,7 @@ const RUNNABLE = { runnable: true } as const;
 export const WORKFLOWS: Workflow[] = [
   {
     workflowId: 'restock-pastry', documentId: 'pastry', summary: 'Restock a pastry',
+    description: 'Lists the pastries of a size and reads the first one. When it is already available the workflow ends there; otherwise it is made available again at a new price, then read again to verify.',
     inputs: [{ name: 'size', type: 'string', example: 'M' }, { name: 'newPrice', type: 'number', example: '3.9' }],
     steps: RESTOCK_STEPS,
     outputs: [
@@ -356,23 +357,25 @@ function sessionRun13(): WorkflowRun {
     number: 13, id, startedAt: '2026-11-03T07:08:04Z', origin: { kind: 'session', sessionId: SESSION_ID, app: 'checkout-web' },
     target: { kind: 'mocks' }, options: { inputs: { size: 'M', newPrice: 3.9 }, timeoutMs: 10_000, validateSchemas: false },
     status: 'FAILURE',
+    // A verification judges the calls the application made: each step carries the number of its call.
     steps: [
-      passedStep(id, 'restock-pastry', LIST, MOCK_BASE, 0, { firstName: 'Eclair Cafe' }),
-      passedStep(id, 'restock-pastry', GET, MOCK_BASE, 0, { oldPrice: 2.4, status: 'unknown' }),
+      { ...passedStep(id, 'restock-pastry', LIST, MOCK_BASE, 0, { firstName: 'Eclair Cafe' }), attempts: [attempt(1, 0, 'call #1')] },
+      { ...passedStep(id, 'restock-pastry', GET, MOCK_BASE, 0, { oldPrice: 2.4, status: 'unknown' }), attempts: [attempt(1, 0, 'call #2')] },
       patch,
-      passedStep(id, 'restock-pastry', VERIFY, MOCK_BASE, 0),
+      { ...passedStep(id, 'restock-pastry', VERIFY, MOCK_BASE, 0), attempts: [attempt(1, 0, 'call #5')] },
     ],
   });
 }
 
-function mocksSuccess(number: number, id: string, startedAt: string, origin: RunOrigin, example: string): WorkflowRun {
+/** A passing run on the mocks; `ms` are the durations of its 4 calls (the prototype's: #12 41/38/52/36, #11 44/35/49/33). */
+function mocksSuccess(number: number, id: string, startedAt: string, origin: RunOrigin, example: string, ms: readonly [number, number, number, number]): WorkflowRun {
   return restockRun({
     number, id, startedAt, origin, target: { kind: 'mocks' }, options: MOCK_OPTS(example, { size: 'M', newPrice: 3.9 }), status: 'SUCCESS',
     steps: [
-      passedStep(id, 'restock-pastry', LIST, MOCK_BASE, 6, { firstName: 'Eclair Cafe' }),
-      passedStep(id, 'restock-pastry', GET, MOCK_BASE, 5, { oldPrice: 2.4, status: 'unknown' }),
-      passedStep(id, 'restock-pastry', PATCH, MOCK_BASE, 7, { newPrice: 3.9 }),
-      passedStep(id, 'restock-pastry', VERIFY, MOCK_BASE, 5),
+      passedStep(id, 'restock-pastry', LIST, MOCK_BASE, ms[0], { firstName: 'Eclair Cafe' }),
+      passedStep(id, 'restock-pastry', GET, MOCK_BASE, ms[1], { oldPrice: 2.4, status: 'unknown' }),
+      passedStep(id, 'restock-pastry', PATCH, MOCK_BASE, ms[2], { newPrice: 3.9 }),
+      passedStep(id, 'restock-pastry', VERIFY, MOCK_BASE, ms[3]),
     ],
     outputs: { pastryName: 'Eclair Cafe', oldPrice: 2.4, newPrice: 3.9 },
   });
@@ -427,8 +430,8 @@ export function seedRuns(): WorkflowRun[] {
   return [
     run14(),
     sessionRun13(),
-    mocksSuccess(12, RUN_IDS[12], '2026-11-02T16:42:04Z', { kind: 'ui' }, 'restock-eclair'),
-    mocksSuccess(11, RUN_IDS[11], '2026-11-01T08:42:04Z', { kind: 'mock-url' }, 'restock-eclair'),
+    mocksSuccess(12, RUN_IDS[12], '2026-11-02T16:42:04Z', { kind: 'ui' }, 'restock-eclair', [41, 38, 52, 36]),
+    mocksSuccess(11, RUN_IDS[11], '2026-11-01T10:15:04Z', { kind: 'mock-url' }, 'restock-eclair', [44, 35, 49, 33]),
     checkMenuRun(),
   ];
 }
@@ -459,7 +462,7 @@ export function seedSessions(): Session[] {
   return [
     {
       id: SESSION_ID, app: 'checkout-web · saga tests', documentId: 'pastry', workflowId: 'restock-pastry', state: 'closed',
-      openedAt: '2026-11-03T07:05:04Z', inputs: { size: 'M', newPrice: 3.9 },
+      openedAt: '2026-11-03T07:05:04Z', closedAt: '2026-11-03T07:05:45Z', inputs: { size: 'M', newPrice: 3.9 },
       calls: [
         call(1, 'GET', '/pastries?size=M', 200, 'listPastries', 'size from the inputs'),
         call(2, 'GET', '/pastries/Eclair%20Cafe', 200, 'getPastry', 'name from listPastries'),
@@ -490,7 +493,7 @@ export function seedSessions(): Session[] {
     },
     {
       id: 's-c4d07a18', app: 'checkout-web · saga tests', documentId: 'pastry', workflowId: 'restock-pastry', state: 'closed',
-      openedAt: '2026-11-02T11:20:04Z', inputs: { size: 'M', newPrice: 3.9 },
+      openedAt: '2026-11-02T11:20:04Z', closedAt: '2026-11-02T11:20:42Z', inputs: { size: 'M', newPrice: 3.9 },
       calls: [
         call(1, 'GET', '/pastries?size=M', 200, 'listPastries', 'size from the inputs'),
         call(2, 'GET', '/pastries/Eclair%20Cafe', 200, 'getPastry', 'name from listPastries'),
@@ -524,6 +527,8 @@ export const EXAMPLES: WorkflowExample[] = [
       { stepId: 'getPastry', status: 200, outputs: { status: 'available' } },
     ],
     stopsAt: 'getPastry',
-    outputs: { pastryName: 'Millefeuille' },
+    // The overlay expects no outputs for this example (the run ends early).
+    outputs: {},
+    lastJudged: { runNumber: 9, at: '2026-10-29T08:40:04Z', matched: true },
   },
 ];
