@@ -45,3 +45,17 @@ export const ConditionalTab: StoryObj = {
     `,
   }),
 };
+
+export const NavContribution: StoryObj = {
+  name: 'nav.items',
+  render: () => ({
+    props: { ctx: REST_SERVICE },
+    template: `
+      <div style="width:260px">
+        <section mkPanel title="Plugins" [headingLevel]="2">
+          <nav aria-label="Plugin navigation"><plugin-slot point="nav.items" [context]="ctx" outlined></plugin-slot></nav>
+        </section>
+      </div>
+    `,
+  }),
+};

@@ -1,13 +1,13 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
-import { CiPanelComponent } from '@microcks-deep-ink/registry/angular/ci-panel';
+import { CI_PANEL } from '@microcks-deep-ink/registry/angular/ci-panel';
 import { ProjectionPillComponent } from '@microcks-deep-ink/registry/angular/projection-pill';
 import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/CiPanel',
-  argTypes: argTypesFor('ci-panel', ['CiPanelComponent']),
-  decorators: [moduleMetadata({ imports: [ButtonDirective, CiPanelComponent, ProjectionPillComponent] })],
+  argTypes: argTypesFor('ci-panel'),
+  decorators: [moduleMetadata({ imports: [ButtonDirective, ...CI_PANEL, ProjectionPillComponent] })],
   parameters: itemParams(['ci-panel', 'copy-button', 'button'], '"Run it from CI": a region named by its title, shown by a toggle button with `aria-expanded` and `aria-controls`. Copy announces its result; the command wraps.'),
 };
 export default meta;
@@ -26,8 +26,8 @@ export const Default: StoryObj = {
         @if (open) {
           <section mkCiPanel id="sb-ci-ng" dashed title="Run this test in your pipeline" [command]="cmd" copyLabel="Copy command">
             <span mkCiPanelPill mkProjectionPill>Projection · proposed CLI</span>
-            <p mkCiPanelHint class="ci-panel-hint">Proposed, not available today: the existing microcks test command with the new runner name. It exits non-zero when a check fails.</p>
-            <p mkCiPanelFoot class="ci-panel-foot">Add --keycloakClientId and --keycloakClientSecret when your Microcks instance has authentication on.</p>
+            <p mkCiPanelHint>Proposed, not available today: the existing microcks test command with the new runner name. It exits non-zero when a check fails.</p>
+            <p mkCiPanelFoot>Add --keycloakClientId and --keycloakClientSecret when your Microcks instance has authentication on.</p>
           </section>
         }
       </div>
