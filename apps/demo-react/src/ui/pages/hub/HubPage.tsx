@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import {
   packageTotals,
@@ -11,7 +11,7 @@ import {
   type InstallStatus,
   type PreviewRow,
 } from '@/domain/govern';
-import { PageHeader, useAnnounce, usePageTitle, useQuery, useUseCases } from '@/ui/app';
+import { PageHeader, useAnnounce, usePageTitle, useQuery, useReturnFocus, useUseCases } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
@@ -41,13 +41,9 @@ export default function HubPage() {
   const [status, setStatus] = useState<Record<string, InstallStatus>>({});
   const [how, setHow] = useState<Record<string, InstallMode>>({});
   const [error, setError] = useState('');
-  // Id of the element that takes focus once it renders: the install button unmounts when clicked.
-  const [focusId, setFocusId] = useState('');
-  useEffect(() => {
-    if (!focusId) return;
-    const el = document.getElementById(focusId);
-    if (el) el.focus();
-  }, [focusId, status]);
+  // The install button unmounts when clicked: focus goes to the element that replaces it once it renders.
+  const { focusLater } = useReturnFocus();
+  const setFocusId = (id: string) => focusLater(() => document.getElementById(id));
   const categories = useQuery(() => uc.govern.listCategories(), []);
   // Counts follow the search: fetch by query, filter the category here.
   const list = useQuery(() => uc.govern.listPackages({ query: search || undefined }), [search]);
@@ -80,7 +76,7 @@ export default function HubPage() {
       announce(`${pkg.name} installed.`);
     } catch (e) {
       setStatus((s) => ({ ...s, [pkg.id]: '' }));
-      setFocusId('');
+      setFocusId(target);
       setError(e instanceof Error ? e.message : 'The install failed.');
     }
   };

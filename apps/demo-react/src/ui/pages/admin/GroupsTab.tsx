@@ -1,7 +1,7 @@
 import { useRef } from 'react';
 import type { AdminGroup, AdminUser } from '@/domain/govern';
 import { membershipChanges, membershipKey } from '@/domain/govern';
-import { useUseCases, type QueryResult } from '@/ui/app';
+import { useReturnFocus, useUseCases, type QueryResult } from '@/ui/app';
 import { Button } from '@/ui/components/ui/button';
 import { Icon } from '@/ui/components/ui/icon';
 import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
@@ -23,6 +23,8 @@ export function GroupsTab({ users, groups, draft, setDraft, notify, onChanged }:
   const uc = useUseCases();
   // Discard and Apply remove the pending bar (and the focused button): focus moves to the section heading.
   const headingRef = useRef<HTMLHeadingElement>(null);
+  // Apply and Discard remove the draft controls: focus goes back to the section heading.
+  const { focusLater } = useReturnFocus();
   if (groups.status === 'error') return <ErrorBlock error={groups.error} what="Groups" onRetry={groups.reload} />;
   if (users.status === 'error') return <ErrorBlock error={users.error} what="Users" onRetry={users.reload} />;
   if (!groups.data || !users.data) return <LoadingBlock label="groups" />;
@@ -49,7 +51,7 @@ export function GroupsTab({ users, groups, draft, setDraft, notify, onChanged }:
     }
     notify(`${plural(changes.length, 'membership change')} applied in Keycloak realm microcks.`);
     setDraft(null);
-    headingRef.current?.focus();
+    focusLater(headingRef);
     onChanged();
   };
 
@@ -135,7 +137,7 @@ export function GroupsTab({ users, groups, draft, setDraft, notify, onChanged }:
             <span className="ad-pending-list">
               {changes.map((c) => (c.kind === 'add' ? `+ ${c.userId} → ${pathOf(c.groupId)}` : `− ${c.userId} ✕ ${pathOf(c.groupId)}`)).join('   ')}
             </span>
-            <Button onClick={() => { setDraft(null); headingRef.current?.focus(); }}>Discard</Button>
+            <Button onClick={() => { setDraft(null); focusLater(headingRef); }}>Discard</Button>
             <Button variant="primary" onClick={apply}>Apply to Keycloak</Button>
           </div>
         ) : null}
