@@ -10,6 +10,11 @@ export interface CodeLine {
   note?: string;
   /** Highlights the line (selected block). */
   selected?: boolean;
+  /**
+   * Marks a changed line of a diff (CI snippet): a visible "+" in a 22px mark column, the selected fill and a hidden
+   * "Changed: " prefix. When one line is changed, every line keeps the empty column so the text stays aligned.
+   */
+  changed?: boolean;
 }
 
 export interface CodeTab {
@@ -62,6 +67,7 @@ export function CodeBlock({
   const value = code ?? (lines ?? []).map((l) => l.text).join('\n');
   const tabLabel = tabs?.find((t) => t.id === tab)?.label;
   const label = caption ?? (tabLabel ? `${tabLabel} code` : language ? `${language} code` : 'Code');
+  const diff = rows?.some((l) => l.changed) ?? false;
   const header = variant !== 'plain' && (caption || copy || tabs?.length);
   return (
     <figure
@@ -70,6 +76,7 @@ export function CodeBlock({
       data-language={language}
       data-variant={variant}
       data-numbered={lineNumbers ? '' : undefined}
+      data-diff={diff ? '' : undefined}
     >
       {header ? (
         <figcaption>
@@ -85,7 +92,7 @@ export function CodeBlock({
           <span className="code-caption" id={captionId}>
             {caption ?? ''}
           </span>
-          {copy ? <CopyButton value={value} className="code-copy" /> : null}
+          {copy ? <CopyButton value={value} variant="link" className="code-copy" /> : null}
         </figcaption>
       ) : null}
       {/* The scroll container must be keyboard reachable (WCAG 2.1.1), so it is focusable and named. */}
@@ -93,11 +100,19 @@ export function CodeBlock({
         <code className={language ? `language-${language}` : undefined}>
           {rows
             ? rows.map((line, i) => (
-                <span className="code-line" data-bad={line.bad ? '' : undefined} data-selected={line.selected ? '' : undefined} key={i}>
+                <span className="code-line" data-bad={line.bad ? '' : undefined} data-selected={line.selected ? '' : undefined} data-changed={line.changed ? '' : undefined} key={i}>
                   {lineNumbers ? (
                     <span className="code-ln" aria-hidden="true">
                       {startLine + i}
                     </span>
+                  ) : null}
+                  {diff ? (
+                    <>
+                      <span className="code-mark" data-kind="changed" aria-hidden="true">
+                        {line.changed ? '+' : ''}
+                      </span>
+                      {line.changed ? <span className="sr-only">Changed: </span> : null}
+                    </>
                   ) : null}
                   {line.bad ? (
                     <>

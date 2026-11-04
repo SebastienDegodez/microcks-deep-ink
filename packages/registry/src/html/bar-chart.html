@@ -1,0 +1,30 @@
+<!--
+  BarChart. One <button aria-pressed> per bar with a full aria-label; ONE tab stop (tabindex="0" on the selected bar,
+  -1 elsewhere); Left/Right/Home/End select and focus. Axes, gridlines, labels and overlay are aria-hidden; the
+  visually hidden table is the text equivalent. data-selection="outline" (Tests) | "fill" (Usage, --link fill).
+  Set the fill height in %. Tune --bar-chart-height (160px) and --bar-chart-gap (4px).
+  A future slot is <div class="bar-chart-cell" aria-hidden="true"><span class="bar-chart-future"></span></div>.
+-->
+<div class="bar-chart" data-selection="outline">
+  <div class="bar-chart-axis" aria-hidden="true"><span>3 s</span><span>1.5 s</span><span>0</span></div>
+  <div class="bar-chart-main">
+    <div class="bar-chart-plot">
+      <div class="bar-chart-grid" aria-hidden="true" style="top: 0"></div>
+      <div class="bar-chart-grid" aria-hidden="true" style="top: 50%"></div>
+      <div class="bar-chart-bars" role="group" aria-label="Runs, oldest to newest. Use the arrow keys to move between bars.">
+        <div class="bar-chart-cell"><button type="button" class="bar-chart-bar" aria-pressed="false" tabindex="-1" aria-label="Run #117, passed, 960 ms"><span class="bar-chart-fill" data-tone="success" style="height: 32%"></span></button></div>
+        <div class="bar-chart-cell"><button type="button" class="bar-chart-bar" aria-pressed="true" tabindex="0" aria-label="Run #118, failed, 1.84 s"><span class="bar-chart-fill" data-tone="danger" style="height: 61%"></span></button></div>
+        <div class="bar-chart-cell" aria-hidden="true"><span class="bar-chart-future"></span></div>
+      </div>
+    </div>
+    <div class="bar-chart-labels" aria-hidden="true"><span>117</span><span data-selected>118</span><span></span></div>
+  </div>
+</div>
+<table class="sr-only">
+  <caption>Conformance timeline, oldest first</caption>
+  <thead><tr><th scope="col">Run</th><th scope="col">Result</th><th scope="col">Duration</th></tr></thead>
+  <tbody>
+    <tr><th scope="row">#117</th><td>Passed</td><td>960 ms</td></tr>
+    <tr><th scope="row">#118</th><td>Failed</td><td>1.84 s</td></tr>
+  </tbody>
+</table>

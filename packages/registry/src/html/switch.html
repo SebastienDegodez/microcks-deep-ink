@@ -1,8 +1,15 @@
 <!--
   Switch recipe. A native checkbox with role="switch" inside its label.
   Space toggles it. Name the setting, not the state ("Notifications", not "On").
+  data-size="lg": a 42 x 24 track (default 36 x 20).
 -->
 <label class="choice">
   <input type="checkbox" role="switch" class="switch" name="stateful" checked />
+  <span><span class="choice-label">Stateful mock</span></span>
+</label>
+
+<!-- Large: 42 x 24 track (Behavior). -->
+<label class="choice">
+  <input type="checkbox" role="switch" class="switch" data-size="lg" name="stateful-lg" />
   <span><span class="choice-label">Stateful mock</span></span>
 </label>

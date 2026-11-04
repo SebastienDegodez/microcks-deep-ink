@@ -18,6 +18,7 @@ import {
   SERVICES,
   WORKFLOWS,
   after,
+  scenarioRuns,
   seedRuns,
   seedSessions,
   type InMemoryDeps,
@@ -47,7 +48,7 @@ const BEER_YAML = [
 ].join('\n');
 
 /**
- * In-memory Arazzo adapters over the shared seed (2 documents, 5 workflows, the 7 seeded runs, 3 sessions,
+ * In-memory Arazzo adapters over the shared seed (2 documents, 5 workflows, the 5 seeded runs (+ #15, #16 on their scenario), 3 sessions,
  * 2 examples). The runner is a real simulation (see `runner.ts` and `world.ts`); sessions are verified against
  * the workflow (`verifySession`) and a verification creates a run with the origin "session".
  */
@@ -55,7 +56,7 @@ export function createInMemoryArazzoAdapters(deps: InMemoryDeps = {}): ArazzoAda
   const clock = deps.clock ?? new FixedClock();
   const documents = DOCUMENTS.map((d): ArazzoDocument => ({ ...d, sources: d.sources.map((s) => ({ ...s })) }));
   const workflows = WORKFLOWS.map((w): Workflow => ({ ...w }));
-  const state = createArazzoState({ runs: seedRuns(), sessions: seedSessions(), workflows });
+  const state = createArazzoState({ runs: seedRuns(), reserved: scenarioRuns(), sessions: seedSessions(), workflows });
 
   const repo: ArazzoRepository = {
     documents: () => after(() => documents),

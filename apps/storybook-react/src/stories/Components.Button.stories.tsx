@@ -5,7 +5,7 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Button',
-  parameters: itemParams(['button'], 'A sturdy, near-square native `<button>`. One primary per task region. The medium size is 44px high; the small size (32px) is never used for the primary action of a page.'),
+  parameters: itemParams(['button'], 'A sturdy, near-square native `<button>`. One primary per task region. The medium size is 40px high, large 44px (form footers); small (32px) and compact (34px) are never used for the primary action of a page.'),
 } satisfies Meta;
 
 export const Default: StoryObj = {
@@ -21,10 +21,30 @@ export const Default: StoryObj = {
   ),
 };
 
+export const FormFooter: StoryObj = {
+  name: 'Form footer, inline delete',
+  render: () => (
+    <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
+      <div className="inline">
+        <Button variant="outline" size="lg">Cancel</Button>
+        <Button variant="primary" size="lg" icon="play">Launch test</Button>
+        <Button variant="primary" size="lg" icon="play" disabled>Launch test</Button>
+      </div>
+      <div className="inline">
+        <Button variant="dashed" size="compact" icon="plus">Add header</Button>
+        <Button variant="ghost" size="sm" tone="danger" icon="trash">Delete</Button>
+      </div>
+    </div>
+  ),
+};
+
 export const Sizes: StoryObj = {
   render: () => (
     <div className="inline">
-      <Button size="md">Medium (44px)</Button>
+      <Button size="lg">Large (44px)</Button>
+      <Button size="md">Medium (40px)</Button>
+      <Button size="tile">Tile (36px)</Button>
+      <Button size="compact">Compact (34px)</Button>
       <Button size="sm">Small (32px)</Button>
     </div>
   ),
@@ -56,4 +76,14 @@ export const States: StoryObj = {
 export const AsLink: StoryObj = {
   name: 'As a link',
   render: () => <ButtonLink href="#service" variant="primary">Open service</ButtonLink>,
+};
+
+export const CardFooter: StoryObj = {
+  name: 'Card footer (tile, 36px)',
+  render: () => (
+    <div className="inline">
+      <Button variant="primary" size="tile" icon="download">Install</Button>
+      <ButtonLink size="tile" href="#">View in catalogue</ButtonLink>
+    </div>
+  ),
 };

@@ -8,6 +8,12 @@ export const USAGE_PERIODS: { id: UsagePeriod; label: string }[] = [
   { id: '30d', label: '30 days' },
 ];
 
+/** A scope the Usage page can show: a service id, or `all`. */
+export interface UsageScope {
+  id: string;
+  label: string;
+}
+
 export interface UsageRowData {
   id: string;
   name: string;

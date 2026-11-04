@@ -45,6 +45,7 @@ async function writeClipboard(text: string): Promise<boolean> {
       [size]="size()"
       [iconOnly]="iconOnly()"
       [icon]="state() === 'copied' ? 'check' : 'copy'"
+      [attr.data-state]="state() === 'idle' ? null : state()"
       [attr.aria-label]="iconOnly() ? text() : null"
       (click)="copy()"
     >{{ iconOnly() ? '' : text() }}</button>
@@ -78,6 +79,6 @@ export class CopyButtonComponent {
     const ok = await writeClipboard(this.value());
     this.state.set(ok ? 'copied' : 'failed');
     clearTimeout(this.timer);
-    this.timer = setTimeout(() => this.state.set('idle'), 2000);
+    this.timer = setTimeout(() => this.state.set('idle'), 1800);
   }
 }

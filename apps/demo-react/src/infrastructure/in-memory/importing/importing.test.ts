@@ -115,6 +115,13 @@ describe('Sources screen', () => {
     expect((await uc.importing.listImporters()).map((i) => i.id)).toContain('beer-catalog');
   });
 
+  it('puts an undone source back at its original place', async () => {
+    const before = (await uc.importing.listImporters()).map((i) => i.id);
+    await uc.importing.deleteImporter('pastry-openapi');
+    await uc.importing.undoDeleteImporter('pastry-openapi');
+    expect((await uc.importing.listImporters()).map((i) => i.id)).toEqual(before);
+  });
+
   it('pauses scans and returns the diff of a timeline entry', async () => {
     expect((await uc.importing.setImporterActive('hello-soap', false)).active).toBe(false);
     const diff = await uc.importing.getImporterDiff('pastry-openapi', '3c9e1d0', 'a41f9c2');

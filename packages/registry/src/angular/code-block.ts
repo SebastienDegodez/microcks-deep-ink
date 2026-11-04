@@ -9,6 +9,11 @@ export interface CodeLine {
   note?: string;
   /** Highlights the line (selected block). */
   selected?: boolean;
+  /**
+   * Marks a changed line of a diff (CI snippet): a visible "+" in a 22px mark column, the selected fill and a hidden
+   * "Changed: " prefix. When one line is changed, every line keeps the empty column so the text stays aligned.
+   */
+  changed?: boolean;
 }
 
 export interface CodeTab {
@@ -30,6 +35,7 @@ export interface CodeTab {
     '[attr.data-language]': 'language() || null',
     '[attr.data-variant]': 'variant()',
     '[attr.data-numbered]': "lineNumbers() ? '' : null",
+    '[attr.data-diff]': "diff() ? '' : null",
   },
   template: `
     @if (header()) {
@@ -43,11 +49,11 @@ export interface CodeTab {
         }
         <span class="code-caption" [id]="captionId">{{ caption() ?? '' }}</span>
         @if (copy()) {
-          <mk-copy-button class="code-copy" [value]="value()" />
+          <mk-copy-button class="code-copy" variant="link" [value]="value()" />
         }
       </figcaption>
     }
-    <pre tabindex="0" role="region" [attr.aria-label]="name()" [style.max-height]="maxHeight() ?? null"><code [class]="language() ? 'language-' + language() : ''">@if (rows(); as ls) {@for (line of ls; track $index) {<span class="code-line" [attr.data-bad]="line.bad ? '' : null" [attr.data-selected]="line.selected ? '' : null">@if (lineNumbers()) {<span class="code-ln" aria-hidden="true">{{ startLine() + $index }}</span>}@if (line.bad) {<span class="code-mark" aria-hidden="true">✕</span><span class="sr-only">Problem: </span>}<span class="code-text">{{ line.text }}</span>@if (line.note) {<span class="code-note">{{ line.note }}</span>}</span>}} @else {{{ code() }}}</code></pre>
+    <pre tabindex="0" role="region" [attr.aria-label]="name()" [style.max-height]="maxHeight() ?? null"><code [class]="language() ? 'language-' + language() : ''">@if (rows(); as ls) {@for (line of ls; track $index) {<span class="code-line" [attr.data-bad]="line.bad ? '' : null" [attr.data-selected]="line.selected ? '' : null" [attr.data-changed]="line.changed ? '' : null">@if (lineNumbers()) {<span class="code-ln" aria-hidden="true">{{ startLine() + $index }}</span>}@if (diff()) {<span class="code-mark" data-kind="changed" aria-hidden="true">{{ line.changed ? '+' : '' }}</span>@if (line.changed) {<span class="sr-only">Changed: </span>}}@if (line.bad) {<span class="code-mark" aria-hidden="true">✕</span><span class="sr-only">Problem: </span>}<span class="code-text">{{ line.text }}</span>@if (line.note) {<span class="code-note">{{ line.note }}</span>}</span>}} @else {{{ code() }}}</code></pre>
   `,
 })
 export class CodeBlockComponent {
@@ -77,6 +83,7 @@ export class CodeBlockComponent {
     const c = this.code();
     return this.lineNumbers() && c !== undefined ? c.split('\n').map((text) => ({ text })) : undefined;
   });
+  protected readonly diff = computed(() => this.rows()?.some((l) => l.changed) ?? false);
   protected header(): boolean {
     return this.variant() !== 'plain' && Boolean(this.caption() || this.copy() || this.tabs()?.length);
   }

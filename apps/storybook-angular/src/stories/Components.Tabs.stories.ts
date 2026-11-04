@@ -73,3 +73,27 @@ export const LiveAndAlert: StoryObj = {
     `,
   }),
 };
+
+export const CardWithIcons: StoryObj = {
+  name: "Card variant, icons and hints (Import)",
+  render: () => ({
+    props: {
+      tabs: [
+        { id: 'file', label: 'Upload', hint: 'one-off file', icon: 'document' },
+        { id: 'url', label: 'URL', hint: 'fetched on demand', icon: 'link' },
+        { id: 'git', label: 'Git repository', hint: 'kept in sync', icon: 'git-branch' },
+        { id: 'direct', label: 'Direct API', hint: 'no contract', icon: 'zap' },
+      ],
+      v: 'file',
+    },
+    template: `
+      <div style="border: 1px solid var(--border); border-radius: 8px; background: var(--canvas)">
+        <mk-tabs label="Source type" variant="card" [items]="tabs" [(value)]="v">
+          @for (t of tabs; track t.id) {
+            <div mkTabPanel [tab]="t.id"><p style="margin:0; padding: 0 20px 20px">Content of the {{ t.label }} tab.</p></div>
+          }
+        </mk-tabs>
+      </div>
+    `,
+  }),
+};

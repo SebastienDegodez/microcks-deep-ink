@@ -38,6 +38,8 @@
     border: 1px solid var(--border-strong);
     border-radius: var(--radius-control);
   }
+  /* Large: a 40px search heading a page (Hub), up to 480px. */
+  .filter-bar-search[data-size="lg"] { flex: 1 1 280px; max-width: 480px; height: 40px; }
   .filter-bar-search:focus-within { border-color: var(--action); box-shadow: var(--shadow-focus); }
   .filter-bar-search > .icon { flex: none; }
   .filter-bar-search > input {
