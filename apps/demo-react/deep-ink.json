@@ -421,9 +421,17 @@
         "src/ui/styles/section-label.css": "17215c6135327222fcb6f6c72591ca8c6821cfffe54b0bb71863665aea23264c"
       },
       "hash": "45dd753bd200c6b9"
+    },
+    "stepper": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/stepper.tsx": "2d1c22bd34bd727f91a11dfb304320b3376efec480c42666534b67aea8765fda",
+        "src/ui/styles/stepper.css": "7edfb51ee99107d6d27030f6e0e4248ab8973e223e8d2bbf7cb76aa4437d8804"
+      },
+      "hash": "5388483ef7828416"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "72826b4a4eb01789632b037a8539699dddf10537015287b80c82c42f449b0077"
+    "src/ui/styles/index.css": "252c507132f306920178076e36948e96094714d1511f81340fea78a9a0335ef3"
   }
 }
