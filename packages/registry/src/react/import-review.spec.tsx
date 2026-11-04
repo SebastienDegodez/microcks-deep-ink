@@ -17,6 +17,11 @@ describe('Import review options', () => {
     expect(screen.getByText('GET').style.getPropertyValue('--method-min-width')).toBe('52px');
   });
 
+  it('method tag small size', () => {
+    render(<MethodTag method="PATCH" size="sm" />);
+    expect(screen.getByText('PATCH').getAttribute('data-size')).toBe('sm');
+  });
+
   it('keeps the empty drop-zone status as a live region, flagged empty', () => {
     render(<DropZone heading="Drop a contract" hint="OpenAPI, AsyncAPI" onFiles={() => {}} />);
     const status = screen.getByRole('status');

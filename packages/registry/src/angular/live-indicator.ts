@@ -23,8 +23,8 @@ export class LiveIndicatorComponent {
   readonly paused = input(false, { transform: booleanAttribute });
   /** Text shown while paused, instead of "<label> · paused": "paused · 2 new calls". Write the word "paused". */
   readonly pausedLabel = input<string>();
-  /** `sm`: 11px, padding 2px 8px. */
-  readonly size = input<'md' | 'sm'>('md');
-  /** `inline`: no pill border, for KPI cards. */
-  readonly variant = input<'pill' | 'inline'>('pill');
+  /** `sm`: 11px, padding 2px 8px. `lg` (box only): 44px, 13px. */
+  readonly size = input<'md' | 'sm' | 'lg'>('md');
+  /** `inline`: no pill border, for KPI cards. `box`: a dashed 36px (lg 44px) frame in place of a busy button. */
+  readonly variant = input<'pill' | 'inline' | 'box'>('pill');
 }

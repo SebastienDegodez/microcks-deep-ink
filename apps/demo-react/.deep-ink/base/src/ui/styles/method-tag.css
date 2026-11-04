@@ -13,6 +13,8 @@
     text-align: center;
     white-space: nowrap;
   }
+  /* Small: 11px 600, padding 1px 5px, 44px wide by default (WorkflowRun step lists). */
+  .method[data-size="sm"] { min-width: var(--method-min-width, 44px); padding: 1px 5px; font-size: 11px; font-weight: 600; line-height: 14px; }
   .method[data-protocol="rest"] { --method-bg: var(--proto-rest); }
   .method[data-protocol="soap"] { --method-bg: var(--proto-soap); }
   .method[data-protocol="event"] { --method-bg: var(--proto-event); }

@@ -81,6 +81,11 @@ export const Filters: StoryObj = {
           <button mkChip labelKey="domain" [count]="4" [pressed]="label === 'domain=pastry'" (click)="label = 'domain=pastry'">pastry</button>
           <button mkChip labelKey="domain" [count]="1" [pressed]="label === 'domain=movies'" (click)="label = 'domain=movies'">movies</button>
         </div>
+        <div class="inline" role="group" aria-label="Categories">
+          <button mkChip size="lg" [count]="8" [pressed]="true">All</button>
+          <button mkChip size="lg" [count]="3" [pressed]="false">Samples</button>
+          <button mkChip size="lg" [count]="1" [pressed]="false">Banking</button>
+        </div>
         <div class="inline">
           <span mkChip size="sm" labelKey="domain">pastry</span>
           <span mkChip size="sm" labelKey="team">bakery</span>

@@ -1,0 +1,76 @@
+/* Screen 18 · Tasks tab: live task list, then the selected task (history bubbles, artifact cards). */
+.agent-tasks { display: flex; flex-direction: column; gap: 16px; min-width: 0; }
+.agent-tasks-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
+.agent-tasks-title { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.agent-tasks-title h2 { margin: 0; font: 600 16px/1.3 var(--font-ui); }
+.agent-tasks-summary { font-size: 13px; color: var(--text-muted); }
+.agent-tasks-kept { font-size: 12px; color: var(--text-muted); }
+
+/* Task list. */
+.agent-task-table-wrap { border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); overflow-x: auto; contain: inline-size; }
+.agent-task-table { width: 100%; min-width: 860px; border-collapse: collapse; font-size: 13px; }
+.agent-task-table :is(th, td) { padding: 9px 14px; text-align: start; vertical-align: middle; border-top: 1px solid var(--border); font-weight: 400; }
+.agent-task-table thead th { padding-block: 9px; border-top: 0; font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+.agent-task-table [data-align='end'] { text-align: end; }
+.agent-task-table tr[data-selected] { background: var(--selected); }
+.agent-task-pick { all: unset; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font: 600 13px/1.4 var(--font-mono); color: var(--text); }
+.agent-task-pick:hover { text-decoration: underline; }
+.agent-task-pick:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; border-radius: 2px; }
+.agent-task-live { width: 7px; height: 7px; border-radius: 999px; background: var(--live); }
+.agent-task-ctx { font-family: var(--font-mono); color: var(--text-secondary); }
+.agent-task-skill { font: 400 12px/1.4 var(--font-mono); color: var(--text); }
+.agent-task-skill[data-none] { color: var(--text-muted); }
+.agent-task-transport { font: 400 12px/1.4 var(--font-mono); color: var(--text-secondary); }
+.agent-task-client { color: var(--text-secondary); }
+.agent-task-updated { font: 400 12px/1.4 var(--font-mono); color: var(--text-muted); white-space: nowrap; }
+.agent-task-updated[data-now] { color: var(--live-text); }
+
+/* Selected task. */
+.agent-task-detail { display: flex; flex-direction: column; gap: 16px; padding: 20px; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); min-width: 0; }
+.agent-task-detail-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.agent-task-detail-text { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.agent-task-detail-title { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.agent-task-detail-title h3 { margin: 0; font: 600 18px/1.3 var(--font-mono); }
+.agent-task-meta { font-size: 12px; color: var(--text-muted); }
+.agent-task-meta-value { font-family: var(--font-mono); color: var(--text-secondary); }
+.agent-task-actions { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+.agent-task-buttons { display: flex; flex-wrap: wrap; gap: 8px; }
+.agent-task-note { margin: 0; font-size: 12px; color: var(--text-muted); text-align: end; }
+
+.agent-task-cols { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
+.agent-task-history { flex: 3 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.agent-task-artifacts { flex: 2 1 280px; min-width: 0; display: flex; flex-direction: column; gap: 8px; }
+.agent-task-cols h4 { margin: 0; font: 600 14px/1.4 var(--font-ui); }
+.agent-h4-note { font-weight: 400; color: var(--text-muted); }
+
+.agent-history { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 8px; }
+.agent-history > li { display: flex; justify-content: flex-start; }
+.agent-history > li[data-role='user'] { justify-content: flex-end; }
+.agent-history-msg { max-width: 85%; box-sizing: border-box; display: flex; flex-direction: column; gap: 4px; padding: 8px 12px; border-radius: 8px; border: 1px solid var(--border); background: var(--surface); }
+.agent-history > li[data-role='user'] .agent-history-msg { border-color: var(--raised); background: var(--raised); }
+.agent-history > li[data-role='system'] .agent-history-msg { background: transparent; }
+.agent-history-role { font: 400 11px/1.4 var(--font-mono); color: var(--text-muted); }
+.agent-history > li[data-role='agent'] .agent-history-role { color: var(--proto-a2a); }
+.agent-history-text { font: 400 14px/1.5 var(--font-ui); overflow-wrap: anywhere; }
+
+.agent-task-empty { margin: 0; padding: 10px 12px; border-radius: 6px; border: 1px dashed var(--border); font-size: 13px; color: var(--text-muted); }
+.agent-task-artifact { display: flex; flex-direction: column; border: 1px solid var(--proto-a2a); border-radius: 8px; overflow: hidden; }
+.agent-task-artifact-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; padding: 7px 12px; background: var(--surface); font-size: 12px; }
+.agent-task-artifact-name { font-family: var(--font-mono); font-weight: 600; }
+.agent-task-artifact-id { font-family: var(--font-mono); color: var(--text-muted); }
+.agent-task-artifact-note { margin-inline-start: auto; font-family: var(--font-mono); color: var(--text-muted); }
+.agent-task-artifact-note[data-done] { color: var(--success); }
+.agent-task-artifact-body { margin: 0; padding: 10px 12px; background: var(--bg); color: var(--text); font: 400 12px/1.55 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+/* Prototype column widths (96 / 84 / 140 / 150 / 96 / flex / 80 with 12px gaps and 14px edges). */
+.agent-task-table { table-layout: fixed; }
+.agent-task-table :is(th, td) { box-sizing: border-box; padding-inline: 6px; line-height: normal; }
+.agent-task-table :is(th, td):first-child { padding-inline-start: 14px; }
+.agent-task-table :is(th, td):last-child { padding-inline-end: 14px; }
+.agent-task-table thead th:nth-child(1) { width: 116px; }
+.agent-task-table thead th:nth-child(2) { width: 96px; }
+.agent-task-table thead th:nth-child(3) { width: 152px; }
+.agent-task-table thead th:nth-child(4) { width: 162px; }
+.agent-task-table thead th:nth-child(5) { width: 108px; }
+.agent-task-table thead th:nth-child(7) { width: 100px; }
+/* GetTask / CancelTask: method names, 36px, mono 12/600. */
+.agent-task-method { min-height: 36px; font: 600 12px/16px var(--font-mono); }
