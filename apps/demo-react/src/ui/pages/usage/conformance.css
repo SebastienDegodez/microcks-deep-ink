@@ -71,10 +71,10 @@
 .index-bar-score { position: absolute; inset: 5px auto 5px 0; border-radius: 0 2px 2px 0; background: var(--band); }
 .index-bar-axis { display: flex; justify-content: space-between; font: 400 10px/1.4 var(--font-mono); color: var(--text-muted); }
 .index-defs { display: flex; flex-direction: column; gap: 10px; margin: 0; font-size: 13px; line-height: 1.5; }
-.index-defs > div { display: flex; gap: 10px; }
+.index-defs > div { position: relative; padding-left: 24px; }
 .index-defs dt { display: inline; font-weight: 600; }
 .index-defs dd { display: inline; margin: 0; color: var(--text-secondary); }
-.index-swatch { flex: none; box-sizing: border-box; width: 14px; height: 14px; margin-top: 3px; border-radius: 2px; background: var(--band); }
+.index-swatch { position: absolute; left: 0; top: 3px; box-sizing: border-box; width: 14px; height: 14px; border-radius: 2px; background: var(--band); }
 .index-swatch[data-kind='index'] { background: var(--index-fill); border-right: 2px solid var(--text-secondary); }
 .index-note {
   display: flex; gap: 10px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface);

@@ -162,20 +162,21 @@ function IndexCard({ view, domains, selected }: { view: UsageView; domains: Doma
       </div>
       <dl className="index-defs">
         <div>
-          <span className="index-swatch" data-kind="index" aria-hidden="true" />
-          <div>
-            <dt>Conformance index:</dt>{' '}
-            <dd>
-              the maximum score your tests can reach with the examples attached to the contract. It grows with the number of examples per operation and the
-              coverage of dispatching rules.
-            </dd>
-          </div>
+          <dt>
+            <span className="index-swatch" data-kind="index" aria-hidden="true" />
+            Conformance index:
+          </dt>{' '}
+          <dd>
+            the maximum score your tests can reach with the examples attached to the contract. It grows with the number of examples per operation and the
+            coverage of dispatching rules.
+          </dd>
         </div>
         <div>
-          <span className="index-swatch" data-band={band} aria-hidden="true" />
-          <div>
-            <dt>Current score:</dt> <dd>the score of the latest test. It equals the index only when every operation passes.</dd>
-          </div>
+          <dt>
+            <span className="index-swatch" data-band={band} aria-hidden="true" />
+            Current score:
+          </dt>{' '}
+          <dd>the score of the latest test. It equals the index only when every operation passes.</dd>
         </div>
       </dl>
       {c.advice ? (
