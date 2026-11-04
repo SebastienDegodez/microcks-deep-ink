@@ -16,6 +16,7 @@ let nextId = 0;
         type="checkbox"
         role="switch"
         class="switch"
+        [attr.data-size]="size() === 'lg' ? 'lg' : null"
         [checked]="checked()"
         [attr.aria-checked]="checked()"
         [disabled]="disabled()"
@@ -39,6 +40,8 @@ export class SwitchComponent {
   readonly checked = model(false);
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly name = input<string>();
+  /** `md` (default): 36 x 20 track. `lg`: 42 x 24 track (Behavior). */
+  readonly size = input<'md' | 'lg'>('md');
 
   private readonly uid = `mk-switch-${++nextId}`;
   protected readonly labelId = `${this.uid}-label`;
