@@ -106,3 +106,13 @@ export const SchemaMismatch: StoryObj = {
     />
   ),
 };
+
+export const RegionLabel: StoryObj = {
+  name: 'Same caption, distinct region names',
+  render: () => (
+    <div className="stack">
+      <CodeBlock caption="SendMessage · curl" label="SendMessage · curl, JSON-RPC binding" code={"curl -X POST https://agent.acme.io/a2a -d '{\"jsonrpc\":\"2.0\",\"method\":\"message/send\"}'"} />
+      <CodeBlock caption="SendMessage · curl" label="SendMessage · curl, HTTP+JSON binding" code="curl -X POST https://agent.acme.io/v1/message:send" />
+    </div>
+  ),
+};
