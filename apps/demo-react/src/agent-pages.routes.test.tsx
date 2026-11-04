@@ -17,7 +17,8 @@ function renderAt(path: string) {
   return router;
 }
 
-const h1 = (name: string) => screen.findByRole('heading', { level: 1, name });
+// The first route of the file loads its lazy chunks cold: give the h1 more than the 1 s default.
+const h1 = (name: string) => screen.findByRole('heading', { level: 1, name }, { timeout: 5000 });
 
 beforeEach(() => {
   resetPageFocusState();
@@ -28,17 +29,19 @@ afterEach(() => vi.useRealTimers());
 describe('Agent (screen 18)', () => {
   it('opens the Pastry concierge on the service route, with its skills, the failing ones flagged', async () => {
     renderAt('/services/concierge/skills');
-    await h1('Pastry concierge 1.0');
+    await h1('A2A Pastry concierge 1.0');
     await waitFor(() => expect(document.title).toBe('Pastry concierge 1.0 · Microcks'));
     const skills = await screen.findByRole('list', { name: 'Skills of Pastry concierge 1.0' });
     expect(within(skills).getAllByRole('listitem')).toHaveLength(4);
     expect(screen.getByRole('tab', { name: /Mock endpoints/ })).toBeTruthy();
     expect(screen.getByText(/A2A spec 1\.0/)).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Run a test' }).getAttribute('href')).toContain('/tests/agent');
+    expect(screen.getByRole('tab', { name: /Tasks/ })).toBeTruthy();
   });
 
   it('shows the task script of a conversation and moves between conversations of a skill', async () => {
     renderAt('/services/concierge/skills');
-    await h1('Pastry concierge 1.0');
+    await h1('A2A Pastry concierge 1.0');
     await screen.findByRole('list', { name: /Script of eclair-size-m/ });
     fireEvent.click(screen.getByRole('button', { name: /Track an order/ }));
     fireEvent.click(await screen.findByRole('button', { name: /unknown-order/ }));
@@ -47,7 +50,7 @@ describe('Agent (screen 18)', () => {
 
   it('serves the card as published and as the mock rewrites it', async () => {
     renderAt('/services/concierge/card');
-    await h1('Pastry concierge 1.0');
+    await h1('A2A Pastry concierge 1.0');
     fireEvent.click(await screen.findByRole('button', { name: 'Served by the mock' }));
     expect(await screen.findByText(/supportedInterfaces rewritten to the mock/)).toBeTruthy();
     const lines = screen.getByRole('list', { name: 'Lines of the mock copy, changed lines marked' });
@@ -56,7 +59,7 @@ describe('Agent (screen 18)', () => {
 
   it('writes one sample per binding and switches to the streaming call', async () => {
     renderAt('/services/concierge/mock');
-    await h1('Pastry concierge 1.0');
+    await h1('A2A Pastry concierge 1.0');
     expect((await screen.findAllByText(/A2A-Version: 1\.0/)).length).toBeGreaterThan(0);
     fireEvent.click(screen.getByRole('button', { name: 'SendStreamingMessage' }));
     expect(await screen.findByRole('heading', { level: 2, name: 'What the stream returns' })).toBeTruthy();
@@ -64,7 +67,7 @@ describe('Agent (screen 18)', () => {
 
   it('lists the tasks and cancels a live one; a terminal one cannot be canceled', async () => {
     renderAt('/services/concierge/tasks');
-    await h1('Pastry concierge 1.0');
+    await h1('A2A Pastry concierge 1.0');
     const table = await screen.findByRole('table');
     expect(within(table).getAllByRole('row').length).toBeGreaterThan(6);
     fireEvent.click(within(table).getByRole('button', { name: 'task-41b8' }));
