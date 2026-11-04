@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { CheckboxComponent, RadioComponent, RadioGroupComponent } from '@microcks-deep-ink/registry/angular/checkbox';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Checkbox',
@@ -51,3 +51,6 @@ export const CompactCards: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('checkbox', 'CheckboxComponent', { label: 'Run on every push', description: 'The test starts from your CI pipeline.', variant: 'plain', disabled: false }, '');

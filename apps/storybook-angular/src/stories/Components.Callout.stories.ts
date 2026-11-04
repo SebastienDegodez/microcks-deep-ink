@@ -1,7 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { CalloutComponent, CalloutActionsDirective } from '@microcks-deep-ink/registry/angular/callout';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Callout',
@@ -61,3 +61,6 @@ export const Outline: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('callout', 'CalloutComponent', { tone: 'info', title: 'Contract imported', variant: 'filled', size: 'md', live: false }, '12 operations were found in the OpenAPI file.');

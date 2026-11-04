@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { InputDirective } from '@microcks-deep-ink/registry/angular/input';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Input',
@@ -79,3 +79,6 @@ export const OnPageBackground: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('input', 'InputDirective', { mono: false, size: 'md' }, '', 'aria-label="Search services" placeholder="Search services"');

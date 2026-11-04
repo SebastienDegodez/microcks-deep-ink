@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Button',
@@ -103,3 +103,6 @@ export const CardFooter: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('button', 'ButtonDirective', { variant: 'primary', size: 'md', iconOnly: false, loading: false, confirm: false }, 'Run test');

@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { MenuComponent } from '@microcks-deep-ink/registry/angular/menu';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Menu',
@@ -49,3 +49,6 @@ export const SeparatorAndDescription: StoryObj = {
     template: `<mk-menu label="More actions" icon="more-vertical" iconOnly [items]="items" />`,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('menu', 'MenuComponent', { label: 'Actions', iconOnly: false, variant: 'secondary', size: 'md', align: 'start', items: [{ id: 'edit', label: 'Edit' }, { id: 'export', label: 'Export' }, { id: 'delete', label: 'Delete', danger: true, separatorBefore: true }] }, '');

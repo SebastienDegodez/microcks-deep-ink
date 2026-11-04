@@ -1,3 +1,4 @@
+import type { StoryObj } from '@storybook/angular';
 // Shared helper for the story metas. Every meta declares what the Copy panel shows
 // (`parameters.deepInk.items`) and documents keyboard + ARIA from the registry (`a11yDoc`).
 import { a11yDoc } from '../../../shared/copy-panel/a11y-doc';
@@ -41,4 +42,26 @@ export function argTypesFor(item: string, classes?: string[], controls = false):
     }
   }
   return out;
+}
+
+/**
+ * A `Playground` story whose Controls drive the real component. The template is built from the registry
+ * selector (`tag[attr]`) and binds every key of `args` as an input; `inner` is the projected content.
+ * The story file's meta must already import the component (`moduleMetadata`).
+ */
+export function playground(item: string, className: string, args: Record<string, unknown>, inner = '', attrs = ''): StoryObj {
+  const doc = (REGISTRY_INPUTS[item] ?? []).find((c) => c.className === className);
+  const sel = (doc?.selector ?? 'div').split(',')[0].trim();
+  const m = /^([a-z0-9-]*)(?:\[(\w+)\])?$/.exec(sel);
+  const tag = m?.[1] || 'div';
+  const attr = m?.[2] ? ` ${m[2]}` : '';
+  return {
+    args: args as StoryObj['args'],
+    argTypes: argTypesFor(item, [className], true) as StoryObj['argTypes'],
+    render: (a: Record<string, unknown>) => {
+      const bind = Object.keys(args).map((k) => `[${k}]="${k}"`).join(' ');
+      const open = `<${tag}${attr}${attrs ? ' ' + attrs : ''} ${bind}${tag === 'input' ? ' />' : `>${inner}</${tag}>`}`;
+      return { props: a, template: open };
+    },
+  };
 }

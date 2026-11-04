@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ChipComponent } from '@microcks-deep-ink/registry/angular/chip';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Chip',
@@ -95,3 +95,6 @@ export const Filters: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('chip', 'ChipComponent', { tone: 'success', variant: 'solid', size: 'md', removable: false }, 'Conformant');
