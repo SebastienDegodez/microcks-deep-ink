@@ -1,0 +1,6 @@
+# React workspace: the @microcks/deep-ink package and its Storybook.
+# It is NOT part of the root workspace. It consumes the root's built CSS and element bundles
+# through `link:` devDependencies only, so build the root packages (`pnpm build` at the root) first.
+packages:
+  - packages/*
+  - apps/*
