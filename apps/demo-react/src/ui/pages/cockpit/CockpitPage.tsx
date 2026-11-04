@@ -13,7 +13,6 @@ import { Chip } from '@/ui/components/ui/chip';
 import { ConformanceBand, type OperationResult } from '@/ui/components/ui/conformance-band';
 import { Icon } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { Panel } from '@/ui/components/ui/panel';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
 import { PROTOCOL_ORDER, fmt, operationUnit, pluralize, testRunHref } from '../explore-kit/format';
 import { buildAttention } from './attention';
@@ -236,42 +235,58 @@ export default function CockpitPage() {
       </section>
 
       {empty ? (
-        <section aria-label="Getting started" className="ex-grid ex-grid-2">
-          <Panel title="Getting started" actions={<span className="ex-small ex-secondary">{stepsDone} of 3 done</span>}>
-            <p className="ex-secondary">This Microcks instance has no API yet. Three steps take you from a contract to a live mock and a conformance proof.</p>
-            <ol className="ex-plain-list">
-              {START_STEPS.map((step, i) => (
-                <li key={step.id} className="ex-tile" data-live={i === firstOpen ? '' : undefined}>
-                  <div className="ex-row">
-                    <Button
-                      size="sm"
-                      variant={done[step.id] ? 'primary' : 'secondary'}
-                      aria-pressed={Boolean(done[step.id])}
-                      aria-label={`Mark step ${i + 1} as ${done[step.id] ? 'not done' : 'done'}`}
-                      onClick={() => setDone({ ...done, [step.id]: !done[step.id] })}
+        <section aria-labelledby="start-title" className="start">
+          <div className="start-main">
+            <div className="start-intro">
+              <div className="start-heading">
+                <h2 id="start-title" className="start-title">Getting started</h2>
+                <span className="start-progress">{stepsDone} of 3 done</span>
+              </div>
+              <p className="start-lead">This Microcks instance has no API yet. Three steps take you from a contract to a live mock and a conformance proof.</p>
+            </div>
+            <ol className="start-steps">
+              {START_STEPS.map((step, i) => {
+                const isDone = Boolean(done[step.id]);
+                const current = i === firstOpen;
+                return (
+                  <li key={step.id} className="start-step" data-current={current ? '' : undefined} data-done={isDone ? '' : undefined}>
+                    <button
+                      type="button"
+                      className="start-step-toggle"
+                      aria-pressed={isDone}
+                      aria-label={`Mark step ${i + 1} as ${isDone ? 'not done' : 'done'}`}
+                      onClick={() => setDone({ ...done, [step.id]: !isDone })}
                     >
-                      {done[step.id] ? <Icon name="check" size={14} /> : i + 1}
-                    </Button>
-                    <span className="ex-tile-title">{step.title}</span>
-                  </div>
-                  <span className="ex-secondary">{step.desc}</span>
-                  {step.code ? <pre className="ex-mono ex-small">{step.code}</pre> : null}
-                  <div>
-                    <Button asChild variant={i === firstOpen ? 'primary' : 'secondary'} size="sm">
-                      <RouterLink to={step.to}>{step.cta}</RouterLink>
-                    </Button>
-                  </div>
-                </li>
-              ))}
+                      {isDone ? <Icon name="check" size={14} /> : i + 1}
+                    </button>
+                    <div className="start-step-text">
+                      <span className="start-step-title">{step.title}</span>
+                      <span className="start-step-desc">{step.desc}</span>
+                      {step.code ? <pre className="start-step-code">{step.code}</pre> : null}
+                    </div>
+                    <RouterLink className="start-step-cta" to={step.to}>{step.cta}</RouterLink>
+                  </li>
+                );
+              })}
             </ol>
-          </Panel>
-          <Panel as="aside" title="Other ways to start" headingLevel={3} aria-label="Other ways to start">
-            <ul className="ex-plain-list">
-              <li><RouterLink to="/hub">Browse the Hub</RouterLink> <span className="ex-secondary">Install a ready-made API from the community catalogue.</span></li>
-              <li><RouterLink to="/sources">Connect a Git repository</RouterLink> <span className="ex-secondary">A scheduled Importer keeps mocks in sync with your contracts.</span></li>
-              <li><a href="https://microcks.io/documentation/tutorials/getting-started/" target="_blank" rel="noreferrer">Read the getting-started tutorial (opens in a new tab)</a></li>
-            </ul>
-          </Panel>
+          </div>
+          <aside aria-labelledby="start-other-title" className="start-other">
+            <h3 id="start-other-title" className="start-other-title">Other ways to start</h3>
+            <RouterLink to="/hub" className="start-other-link">
+              <span className="start-other-name">Browse the Hub</span>
+              <span className="start-other-desc">Install a ready-made API from the community catalogue.</span>
+            </RouterLink>
+            <div aria-hidden="true" className="start-other-rule" />
+            <RouterLink to="/sources" className="start-other-link">
+              <span className="start-other-name">Connect a Git repository</span>
+              <span className="start-other-desc">A scheduled Importer keeps mocks in sync with your contracts.</span>
+            </RouterLink>
+            <div aria-hidden="true" className="start-other-rule" />
+            <a href="https://microcks.io/documentation/tutorials/getting-started/" target="_blank" rel="noreferrer" className="start-other-link">
+              <span className="start-other-name">Read the getting-started tutorial</span>
+              <span className="start-other-desc">microcks.io documentation, opens in a new tab.</span>
+            </a>
+          </aside>
         </section>
       ) : (
         <>
