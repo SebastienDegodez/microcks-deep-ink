@@ -20,3 +20,17 @@
   <div role="tabpanel" class="tabpanel" id="panel-properties" aria-labelledby="tab-properties" tabindex="0" hidden></div>
   <div role="tabpanel" class="tabpanel" id="panel-tests" aria-labelledby="tab-tests" tabindex="0" hidden></div>
 </div>
+
+<!-- Card variant with icons and hints (Import source types). The icon is decorative; the hint follows a hidden ", ". -->
+<div class="tabs" data-variant="card">
+  <div role="tablist" class="tablist" aria-label="Source type">
+    <button type="button" role="tab" class="tab" id="tab-file" aria-selected="true" aria-controls="panel-file" tabindex="0">
+      <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5"/></svg>Upload<span class="tab-hint"><span class="sr-only">,</span> one-off file</span>
+    </button>
+    <button type="button" role="tab" class="tab" id="tab-git" aria-selected="false" aria-controls="panel-git" tabindex="-1">
+      <svg class="icon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="6" cy="5" r="2"/><circle cx="6" cy="19" r="2"/><circle cx="18" cy="7" r="2"/><path d="M6 7v10"/><path d="M18 9c0 5-6 4-12 8"/></svg>Git repository<span class="tab-hint"><span class="sr-only">,</span> kept in sync</span>
+    </button>
+  </div>
+  <div role="tabpanel" class="tabpanel" id="panel-file" aria-labelledby="tab-file" tabindex="0">…</div>
+  <div role="tabpanel" class="tabpanel" id="panel-git" aria-labelledby="tab-git" tabindex="0" hidden></div>
+</div>

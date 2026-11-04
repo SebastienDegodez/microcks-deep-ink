@@ -309,10 +309,10 @@
     "tabs": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/tabs.tsx": "72b69507aae7338b51309d5ed6b5b4ff5f1e9c463cf68e2a9061d85d1111d394",
-        "src/ui/styles/tabs.css": "7c3baaa4d0debac91532b694b5774ca6a11f5f07db2c73f51859533ebfebf007"
+        "src/ui/components/ui/tabs.tsx": "e80b3a00b644ac13ea33fe039d75e0df313d8d294764edc1940ddc6546a7d078",
+        "src/ui/styles/tabs.css": "1e08562083324a9c969ec09218cf2403e4ed4088d6360a040efdaaa523994ed2"
       },
-      "hash": "eacbeba4f7d09d15"
+      "hash": "18a3529725a8b853"
     },
     "theme-toggle": {
       "version": "0.2.0",
