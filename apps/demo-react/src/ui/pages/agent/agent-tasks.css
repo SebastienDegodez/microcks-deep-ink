@@ -16,7 +16,6 @@
 .agent-task-pick { all: unset; display: inline-flex; align-items: center; gap: 6px; cursor: pointer; font: 600 13px/1.4 var(--font-mono); color: var(--text); }
 .agent-task-pick:hover { text-decoration: underline; }
 .agent-task-pick:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; border-radius: 2px; }
-.agent-task-live { width: 7px; height: 7px; border-radius: 999px; background: var(--live); }
 .agent-task-ctx { font-family: var(--font-mono); color: var(--text-secondary); }
 .agent-task-skill { font: 400 12px/1.4 var(--font-mono); color: var(--text); }
 .agent-task-skill[data-none] { color: var(--text-muted); }

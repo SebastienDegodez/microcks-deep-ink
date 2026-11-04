@@ -66,12 +66,7 @@
 .setup-run-help { font-size: 12px; color: var(--text-muted); }
 .setup-run-help[data-problem] { color: var(--warning); }
 
-/* Setup strip (running and done) */
-.setup-strip {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 6px 18px; padding: 10px 14px; border: 1px solid var(--border); border-radius: 8px;
-  background: var(--canvas); font-size: 13px;
-}
-.setup-strip-label { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
+/* Setup strip (running and done): SummaryStrip variant="canvas"; these rules style its children. */
 .setup-strip-text { color: var(--text-secondary); }
 .setup-strip > span:not([class]) { display: inline-flex; gap: 6px; }
 .edit-setup { margin-inline-start: auto; background: transparent; border-color: var(--border-strong); font-size: 13px; font-weight: 500; }
@@ -149,7 +144,6 @@
 .cell-facts dd[data-tone='muted'] { color: var(--text-muted); }
 
 .detail-block { display: flex; flex-direction: column; gap: 6px; }
-.detail-block-title { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
 .detail-block > .exchange + .exchange { margin-top: 2px; }
 .lifecycle-box { display: flex; flex-direction: column; gap: 10px; padding: 14px; overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); }
 .lifecycle-note {
@@ -157,11 +151,6 @@
   font-size: 12px; line-height: 1.5; color: var(--danger);
 }
 .lifecycle-note > .icon { flex: none; margin-top: 2px; stroke-width: 2.4; }
-.verdict-box { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 6px; background: var(--raised); }
-.verdict-box > .icon { flex: none; margin-top: 3px; color: var(--danger); stroke-width: 2.6; }
-.verdict-box > span { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-.verdict-box-title { font-size: 14px; font-weight: 600; color: var(--text); }
-.verdict-box-body { max-width: 80ch; font-size: 13px; line-height: 1.55; color: var(--text-secondary); }
 
 .exchange { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border); border-radius: 6px; }
 .exchange[data-highlight] { border-color: var(--danger); }
