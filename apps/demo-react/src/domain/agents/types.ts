@@ -135,6 +135,8 @@ export interface AgentProfile {
   conversations: Conversation[];
   /** Conversation answered when no skill matches. */
   fallback: Conversation;
+  /** Mock calls over 24 h that matched no skill (answered by the fallback). */
+  fallbackCalls: number;
   transports: AgentTransport[];
   /** Mock URL of the card. */
   mockCardUrl: string;

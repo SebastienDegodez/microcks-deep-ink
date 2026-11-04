@@ -99,7 +99,7 @@ export function DropZone({ heading, hint, accept, multiple = true, chooseLabel =
       <label htmlFor={id} className="button drop-zone-choose" data-variant="primary">
         {chooseLabel}
       </label>
-      <p className="drop-zone-status" role="status">
+      <p className="drop-zone-status" role="status" data-empty={message ? undefined : ''}>
         {message}
       </p>
     </div>

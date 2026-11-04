@@ -468,12 +468,13 @@ function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: st
               </div>
             ) : null}
             <div className="tc-header-actions">
-              <Button variant="dashed" size="sm" icon="plus" onClick={() => update({ headers: [...d.headers, { id: d.nextId, scope: 'globals', name: '', values: '' }], nextId: d.nextId + 1 })}>
+              <Button variant="dashed" size="compact" icon="plus" onClick={() => update({ headers: [...d.headers, { id: d.nextId, scope: 'globals', name: '', values: '' }], nextId: d.nextId + 1 })}>
                 Add header
               </Button>
               {d.headers.length === 0 ? (
                 <Button
-                  size="sm"
+                  variant="outline"
+                  size="compact"
                   className="tc-apikey"
                   onClick={() => update({ headers: [{ id: d.nextId, scope: 'globals', name: 'x-api-key', values: 'staging-4f2a9c' }], nextId: d.nextId + 1 })}
                 >
@@ -495,12 +496,13 @@ function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: st
         <div className="tc-actions">
           <span className="tc-summary">{summarizeSelection(target, selected, d.runner, waitSec)}</span>
           <div className="tc-actions-buttons">
-            <Button asChild>
+            <Button asChild variant="outline" size="lg">
               <RouterLink to={`/services/${target.serviceId}`}>Cancel</RouterLink>
             </Button>
             <Button
               type="submit"
               variant="primary"
+              size="lg"
               icon="play"
               loading={busy}
               aria-disabled={blockReason ? true : undefined}

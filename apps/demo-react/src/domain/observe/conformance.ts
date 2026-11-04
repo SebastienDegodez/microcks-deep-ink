@@ -38,10 +38,10 @@ export function treemapRows(domains: readonly DomainConformance[]): TreemapRow[]
   return rows.map((r) => ({ operations: r.reduce((n, d) => n + d.operations, 0), domains: r }));
 }
 
-/** Services sorted by the gap between their index and their score; never tested services last. Pure. */
+/** Services sorted by the gap between their index and their score, ties by protocol code (EVENT, SOAP, gRPC…); never tested last. Pure. */
 export function gapList(domains: readonly DomainConformance[]): ConformanceItem[] {
   const gap = (i: ConformanceItem) => i.index - (i.score ?? 0);
   return domains
     .flatMap((d) => d.items ?? [])
-    .sort((a, b) => Number(a.score === null) - Number(b.score === null) || gap(b) - gap(a));
+    .sort((a, b) => Number(a.score === null) - Number(b.score === null) || gap(b) - gap(a) || (a.protocol < b.protocol ? -1 : a.protocol > b.protocol ? 1 : 0));
 }

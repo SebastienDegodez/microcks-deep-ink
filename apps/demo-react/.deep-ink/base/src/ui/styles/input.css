@@ -6,7 +6,7 @@
     min-height: 40px;
     margin: 0;
     padding: 0 12px;
-    font: 400 15px/22px var(--font-ui);
+    font: 400 14px/20px var(--font-ui);
     color: var(--text);
     background: var(--surface);
     border: 1px solid var(--border-control);
@@ -22,6 +22,9 @@
   .input[data-mono] {
     font: var(--type-code);
   }
+
+  /* On the page background instead of the surface (Import source forms). */
+  .input[data-surface="bg"] { background: var(--bg); }
 
   .input[data-size="sm"] {
     min-height: 32px;

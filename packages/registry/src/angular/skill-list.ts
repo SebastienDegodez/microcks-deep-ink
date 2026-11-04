@@ -50,7 +50,7 @@ export interface SkillItem {
     <ng-template #result let-s>
       @if (s.result) {
         <span class="skill-item-result" [attr.data-result]="s.result">
-          <svg mkIcon [name]="s.result === 'pass' ? 'check' : 'cross'" [size]="12"></svg>
+          <svg mkIcon [name]="s.result === 'pass' ? 'check-circle' : 'x-circle'" [size]="12"></svg>
           {{ s.result === 'pass' ? 'passed' : 'failed' }}
           @if (s.resultNote) {
             <span class="sr-only">: {{ s.resultNote }}</span>
