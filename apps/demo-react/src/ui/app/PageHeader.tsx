@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router';
+import { Icon } from '@/ui/components/ui/icon';
 import { PAGE_TITLE_ID } from './usePageTitle';
 
 export interface Crumb {
@@ -13,6 +14,8 @@ export interface PageHeaderProps {
   title: string;
   /** Trail of parent pages, rendered as `<nav aria-label="Breadcrumb">` above the title row. */
   breadcrumb?: Crumb[];
+  /** Breadcrumb separator: `›` (default, most screens), `/` (Service) or `chevron` (a 12px icon, Workflow). */
+  breadcrumbSeparator?: '›' | '/' | 'chevron';
   /** Mono pill beside the title ("11 services · 29 operations"). */
   meta?: ReactNode;
   /** Badge next to the title (an ApiBadge, a StatusBadge...). */
@@ -36,7 +39,7 @@ export interface PageHeaderProps {
  * focus to it when the route changes. Section headings below it are `<h2>`.
  * The wrapper is a `div`, not a `header`, so the page has exactly one banner landmark (the top bar).
  */
-export function PageHeader({ title, breadcrumb, meta, badge, description, descriptionTone = 'muted', actions, size = 'md', variant = 'brand', align = 'end' }: PageHeaderProps) {
+export function PageHeader({ title, breadcrumb, breadcrumbSeparator = '›', meta, badge, description, descriptionTone = 'muted', actions, size = 'md', variant = 'brand', align = 'end' }: PageHeaderProps) {
   return (
     <div className="demo-page-header" data-align={align}>
       {breadcrumb && breadcrumb.length > 0 ? (
@@ -48,7 +51,7 @@ export function PageHeader({ title, breadcrumb, meta, badge, description, descri
                 <li key={i}>
                   {i > 0 ? (
                     <span aria-hidden="true" className="demo-breadcrumb-sep">
-                      ›
+                      {breadcrumbSeparator === 'chevron' ? <Icon name="chevron" size={12} /> : breadcrumbSeparator}
                     </span>
                   ) : null}
                   {c.to && !last ? <Link to={c.to}>{c.label}</Link> : <span aria-current={last ? 'page' : undefined}>{c.label}</span>}

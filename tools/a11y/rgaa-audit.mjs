@@ -199,8 +199,18 @@ async function launchBrowser(path) {
   });
   const close = async () => {
     try { await send('Browser.close'); } catch { /* already gone */ }
+    // Wait (briefly) for the process to exit, so it no longer writes into the profile while we delete it.
+    const exited = child.exitCode !== null || child.signalCode !== null
+      ? Promise.resolve()
+      : new Promise((res) => { child.once('exit', res); setTimeout(res, 2000); });
     child.kill('SIGKILL');
-    rmSync(profile, { recursive: true, force: true });
+    await exited;
+    // Cleanup must never stop the report from being written (ENOTEMPTY / EBUSY while Chrome lets go of files).
+    try {
+      rmSync(profile, { recursive: true, force: true, maxRetries: 3, retryDelay: 200 });
+    } catch (e) {
+      console.error(`rgaa-audit: could not remove the temporary browser profile ${profile} (${e.code || e.message}); ignored`);
+    }
   };
   return { send, waitFor, close };
 }
