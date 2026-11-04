@@ -6,7 +6,7 @@ import {
   defaultDiffEntry, diffStats, filterImporters, formatDay, formatHourMinute, formatShortClock, importerStatus, originCounts, splitRevision, statusCounts, SOURCE_ORIGINS,
   type Importer, type SourceOrigin, type SourceStatus, type SyncEntry,
 } from '@/domain/importing';
-import { PageHeader, useAnnounce, useClock, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
+import { PageHeader, useAnnounce, useClock, useQuery, useRelativeTime, useReturnFocus, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { CopyButton } from '@/ui/components/ui/copy-button';
@@ -66,6 +66,9 @@ export default function SourcesPage() {
   /** Card whose name takes focus once the list has reloaded (after an undo). */
   const focusId = useRef<string | undefined>(undefined);
   const undoRef = useRef<HTMLButtonElement>(null);
+  const { focusLater } = useReturnFocus();
+  /** Closing the inline confirmation gives focus back to the card's Delete button. */
+  const backToDelete = (id: string) => focusLater(() => document.getElementById(`source-delete-${id}`));
   const autoRuns = useRef(new Map<string, () => void>());
   const [entryId, setEntryId] = useState<string | undefined>();
   // The inline confirmation takes focus once, when it opens.
@@ -85,10 +88,7 @@ export default function SourcesPage() {
     return () => runs.forEach((u) => u());
   }, []);
 
-  // After a delete, focus moves to Undo; after an undo, to the restored card's name.
-  useEffect(() => {
-    if (undoing) undoRef.current?.focus();
-  }, [undoing]);
+  // After an undo, focus moves to the restored card's name once the list has reloaded.
   useEffect(() => {
     const id = focusId.current;
     if (!id || !list.data?.some((i) => i.id === id)) return;
@@ -137,6 +137,8 @@ export default function SourcesPage() {
     await uc.importing.deleteImporter(gone.id);
     setConfirm(undefined);
     setUndoing({ importer: gone, wasSelected: selected?.id === gone.id });
+    // The card and its confirmation are gone: focus moves to Undo.
+    focusLater(undoRef);
     list.reload();
     if (importerId === gone.id) navigate('/sources', { replace: true });
     announce(`${gone.name} deleted. Undo is available.`);
@@ -261,10 +263,10 @@ export default function SourcesPage() {
                 {confirm === j.id ? (
                   // Escape cancels, as in a dialog, and gives focus back to the card's Delete button.
                   // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
-                  <div role="alertdialog" aria-label={`Confirm deletion of ${j.name}`} className="delete-confirm" onKeyDown={(e) => { if (e.key === 'Escape') { setConfirm(undefined); document.getElementById(`source-delete-${j.id}`)?.focus(); } }}>
+                  <div role="alertdialog" aria-label={`Confirm deletion of ${j.name}`} className="delete-confirm" onKeyDown={(e) => { if (e.key === 'Escape') { setConfirm(undefined); backToDelete(j.id); } }}>
                     <span className="delete-confirm-text">Delete this source? Services already discovered remain but will no longer be updated.</span>
                     <Button size="sm" variant="danger" confirm ref={focusOnOpen} onClick={() => void doDelete(j)}>Delete source</Button>
-                    <Button size="sm" variant="secondary" className="delete-confirm-cancel" onClick={() => { setConfirm(undefined); document.getElementById(`source-delete-${j.id}`)?.focus(); }}>Cancel</Button>
+                    <Button size="sm" variant="secondary" className="delete-confirm-cancel" onClick={() => { setConfirm(undefined); backToDelete(j.id); }}>Cancel</Button>
                   </div>
                 ) : null}
                 <div className="source-card-actions">

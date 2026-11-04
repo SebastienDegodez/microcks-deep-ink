@@ -1,7 +1,7 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { useId, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import type { Snapshot, SnapshotImportPreviewItem } from '@/domain/govern';
-import { useQuery, useUseCases } from '@/ui/app';
+import { useQuery, useReturnFocus, useUseCases } from '@/ui/app';
 import { ApiBadge, type Protocol } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { DropZone } from '@/ui/components/ui/drop-zone';
@@ -93,34 +93,26 @@ function ImportCard({ notify }: { notify: Notify }) {
   const [preview, setPreview] = useState<SnapshotImportPreviewItem[] | null>(null);
   const [result, setResult] = useState<{ created: number; replaced: number } | null>(null);
   // Each step removes the control that had focus: move it to the control that replaces it.
-  const focusRef = useRef('');
   const sectionRef = useRef<HTMLElement>(null);
-  useEffect(() => {
-    if (!focusRef.current) return;
-    // The drop zone's file input has an id of its own: find it by class.
-    const el = focusRef.current === 'file' ? sectionRef.current?.querySelector<HTMLElement>('.drop-zone-input') : document.getElementById(focusRef.current);
-    if (el) {
-      el.focus();
-      focusRef.current = '';
-    }
-  });
+  const { focusLater } = useReturnFocus();
 
   const pick = async (name: string) => {
-    focusRef.current = `${inputId}-change`;
     setFileName(name);
     setResult(null);
+    focusLater(() => document.getElementById(`${inputId}-change`));
     setPreview(name ? await uc.govern.previewSnapshotImport(name) : null);
   };
   const clear = () => {
-    focusRef.current = 'file';
+    // The drop zone's file input has an id of its own: find it by class.
+    focusLater(() => sectionRef.current?.querySelector<HTMLElement>('.drop-zone-input'));
     setFileName('');
     setPreview(null);
     setResult(null);
   };
   const doImport = async () => {
     const r = await uc.govern.importSnapshot(fileName);
-    focusRef.current = `${inputId}-open`;
     setResult(r);
+    focusLater(() => document.getElementById(`${inputId}-open`));
     notify(`Snapshot ${fileName} imported: ${plural(r.created, 'Service')} created, ${r.replaced} replaced.`);
   };
 

@@ -8,7 +8,7 @@ import {
   validateSecretForm,
   type SecretFormKind,
 } from '@/domain/govern';
-import { useClock, useUseCases, type QueryResult } from '@/ui/app';
+import { useClock, useReturnFocus, useUseCases, type QueryResult } from '@/ui/app';
 import { Button } from '@/ui/components/ui/button';
 import { Field } from '@/ui/components/ui/field';
 import { Icon } from '@/ui/components/ui/icon';
@@ -47,19 +47,9 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
   const clock = useClock();
   const [form, setForm] = useState<FormState | null>(null);
   const [confirming, setConfirming] = useState('');
-  // Id of the control to focus after the next render: a removed control must not drop focus to the page body.
-  const focusRef = useRef('');
-  const setFocusId = (id: string) => {
-    focusRef.current = id;
-  };
-  useEffect(() => {
-    if (!focusRef.current) return;
-    const el = document.getElementById(focusRef.current);
-    if (el) {
-      el.focus();
-      focusRef.current = '';
-    }
-  });
+  // Focus after the next render: a removed control must not drop focus to the page body.
+  const { focusLater } = useReturnFocus();
+  const setFocusId = (id: string) => focusLater(() => document.getElementById(id));
 
   if (secrets.status === 'error') return <ErrorBlock error={secrets.error} what="Secrets" onRetry={secrets.reload} />;
   if (!secrets.data) return <LoadingBlock label="secrets" />;
