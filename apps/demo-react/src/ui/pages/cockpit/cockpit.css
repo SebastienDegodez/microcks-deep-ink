@@ -1,0 +1,68 @@
+/* Cockpit (screen 03, Cockpit.dc.html). Colors come from the design tokens only. */
+.cockpit { display: flex; flex-direction: column; gap: 22px; min-width: 0; }
+
+/* Header: dashed toggle. Local class until the registry ships `Button variant="dashed"` (also on Test create). */
+.button.button-dashed {
+  padding: 0 12px;
+  gap: 8px;
+  border: 1px dashed var(--border-strong);
+  background: transparent;
+  color: var(--text-secondary);
+  font-size: 13px;
+  font-weight: 400;
+}
+.button.button-dashed[aria-pressed='true'] { background: var(--selected); }
+.button.button-dashed .icon { width: 14px; height: 14px; }
+
+/* KPI strip. Local classes until the registry ships `kpi-card` (also on Usage). */
+.kpi-grid { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr)); }
+.kpi-card {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+  padding: 16px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--canvas);
+}
+.kpi-card-head { display: flex; justify-content: space-between; align-items: baseline; gap: 8px; }
+.kpi-card-title {
+  margin: 0;
+  font: 600 12px/16px var(--font-ui);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+.kpi-card-head > a { font-size: 12px; color: var(--link); text-decoration: none; }
+.kpi-card-head > a:hover { text-decoration: underline; }
+.kpi-card-figure { display: flex; align-items: baseline; gap: 10px; }
+.kpi-card-value { font: 800 40px/1 var(--font-brand); color: var(--text); }
+.kpi-card-unit { font: 400 13px/1.4 var(--font-ui); color: var(--text-secondary); }
+.kpi-card-foot { font: 400 12px/1.4 var(--font-ui); color: var(--text-muted); }
+
+[data-level='high'] { --level: var(--success); }
+[data-level='mid'] { --level: var(--warning); }
+[data-level='low'] { --level: var(--danger); }
+[data-level='none'] { --level: var(--text-muted); }
+.kpi-card-value[data-level] { color: var(--level); }
+
+.kpi-protocols { display: flex; flex-wrap: wrap; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.kpi-bars { display: flex; align-items: flex-end; gap: 2px; height: 22px; border-bottom: 1px solid var(--border); }
+.kpi-bars > span { flex: 1; background: var(--action); border-radius: 1px 1px 0 0; }
+.kpi-bars > span[data-current] { background: var(--link); }
+.kpi-bars > span[data-future] { background: var(--border); }
+.kpi-meter { display: flex; gap: 2px; height: 8px; border-radius: 2px; overflow: hidden; background: var(--raised); }
+.kpi-meter > span { display: block; height: 100%; }
+.kpi-gauge { position: relative; height: 8px; border-radius: 2px; background: var(--raised); }
+.kpi-gauge > span { position: absolute; inset: 0 auto 0 0; border-radius: 2px; background: var(--level); }
+.kpi-counts { display: flex; flex-wrap: wrap; gap: 14px; font: 600 13px/1.4 var(--font-ui); }
+.kpi-counts > span { display: inline-flex; align-items: center; gap: 6px; }
+.kpi-counts .icon { stroke-width: 2.2; }
+.kpi-workflows { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font: 400 12px/1.4 var(--font-ui); color: var(--text-muted); }
+.kpi-workflows > a { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; color: var(--link); text-decoration: none; }
+.kpi-workflows > a:hover { text-decoration: underline; }
+.tone-success { color: var(--success); }
+.tone-danger { color: var(--danger); }
+.tone-warning { color: var(--warning); }
+.tone-muted { color: var(--text-muted); }
