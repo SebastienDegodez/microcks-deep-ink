@@ -176,6 +176,9 @@ function Bars({ view }: { view: UsageView }) {
   );
 }
 
+/** Weekday labels of the heatmap rows, every other day as in the prototype. */
+const HEAT_ROW_LABELS = ['Mon', '', 'Wed', '', 'Fri', '', 'Sun'] as const;
+
 function Heatmap({ view }: { view: UsageView }) {
   const { heatmap } = view;
   const [sel, setSel] = useState(heatmap.defaultSelected);
@@ -190,12 +193,27 @@ function Heatmap({ view }: { view: UsageView }) {
   const cell = heatmap.cells.find((c) => c.index === sel);
   const weeks = heatmapWeeks(heatmap.cells);
   return (
-    <Panel title="Daily calendar">
+    <Panel title="Daily invocations · last 12 weeks">
       <p className="demo-muted">{heatmap.subtitle}</p>
       <p>
         {formatCount(heatmap.total)} invocations over the period, {formatCount(heatmap.weekdayAverage)} per weekday on average. Busiest day: {heatmap.busiest}.
       </p>
-      <div className="us-heat" role="group" aria-label="Calendar heatmap, one button per day. Use the arrow keys to move between days.">
+      <div
+        className="us-heat"
+        role="group"
+        aria-label="Calendar heatmap, one button per day. Use the arrow keys to move between days."
+        style={{ ['--heat-weeks' as string]: heatmap.months.length }}
+      >
+        {heatmap.months.map((m, w) => (
+          <span key={`m-${w}`} className="us-heat-month" aria-hidden="true" style={{ gridColumn: w + 2, gridRow: 1 }}>
+            {m}
+          </span>
+        ))}
+        {HEAT_ROW_LABELS.map((d, r) => (
+          <span key={`d-${r}`} className="us-heat-weekday" aria-hidden="true" style={{ gridColumn: 1, gridRow: r + 2 }}>
+            {d}
+          </span>
+        ))}
         {heatmap.cells.map((c) => (
           <button
             key={c.index}
@@ -203,17 +221,21 @@ function Heatmap({ view }: { view: UsageView }) {
             type="button"
             className="us-day"
             data-level={c.level}
-            style={{ gridColumn: c.week + 1, gridRow: c.weekday + 1 }}
+            style={{ gridColumn: c.week + 2, gridRow: c.weekday + 2 }}
             aria-pressed={c.index === sel}
             tabIndex={c.index === sel ? 0 : -1}
-            aria-label={`${c.name}: ${formatCount(c.value)} invocations, level ${c.level} of 3`}
+            aria-label={`${c.name}: ${formatCount(c.value)} invocations`}
             onClick={() => setSel(c.index)}
             onKeyDown={roving.onKeyDown(c.index)}
           />
         ))}
+        {Array.from({ length: heatmap.months.length * 7 - heatmap.cells.length }, (_, i) => {
+          const day = heatmap.cells.length + i;
+          return <span key={`f-${day}`} className="us-day-future" aria-hidden="true" style={{ gridColumn: Math.floor(day / 7) + 2, gridRow: (day % 7) + 2 }} />;
+        })}
       </div>
       <p role="status" style={{ margin: '8px 0' }}>
-        {cell ? `${cell.name}: ${formatCount(cell.value)} invocations, level ${cell.level} of 3` : ''}
+        {cell ? `${cell.name}: ${formatCount(cell.value)} invocations` : ''}
       </p>
       <Disclosure summary="Show data table">
         <div className="demo-scroll">

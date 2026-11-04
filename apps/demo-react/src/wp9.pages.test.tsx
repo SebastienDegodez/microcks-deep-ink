@@ -242,3 +242,15 @@ describe('Administration (/admin/:tab?)', () => {
     await waitFor(() => expect(screen.getByText('staging-token')).toBeTruthy());
   });
 });
+
+describe('Usage heatmap (/metrics/pastry2)', () => {
+  it('names each day with its count and selects the latest day', async () => {
+    renderAt('/metrics/pastry2');
+    await screen.findByRole('heading', { level: 1 });
+    const heat = await screen.findByRole('group', { name: /Calendar heatmap/ }, { timeout: 3000 });
+    expect(screen.getByRole('heading', { level: 2, name: 'Daily invocations · last 12 weeks' })).toBeTruthy();
+    const days = within(heat).getAllByRole('button');
+    expect(days).toHaveLength(79);
+    expect(days.find((d) => d.getAttribute('aria-pressed') === 'true')?.getAttribute('aria-label')).toBe('Tue, Nov 3: 296 invocations');
+  });
+});
