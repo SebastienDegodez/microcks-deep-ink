@@ -16,3 +16,12 @@ export const Default: StoryObj = {
     </EmptyState>
   ),
 };
+
+export const NoResults: StoryObj = {
+  name: 'No results (icon)',
+  render: () => (
+    <EmptyState title="No service matches" icon="search-x" actions={<Button variant="primary" icon="reset">Reset filters</Button>}>
+      <p>None of the 11 services matches: “zzz”. Remove a filter or reset the selection.</p>
+    </EmptyState>
+  ),
+};
