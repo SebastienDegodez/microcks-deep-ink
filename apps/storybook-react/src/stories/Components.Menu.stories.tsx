@@ -23,6 +23,16 @@ export const Default: StoryObj = {
   ),
 };
 
+/** `align="end"` opens the list towards the start of the page, for a menu at the right edge. */
+export const AlignEnd: StoryObj = {
+  name: 'Aligned to the end',
+  render: () => (
+    <div style={{ display: 'flex', justifyContent: 'flex-end', minHeight: 180 }}>
+      <Menu label="Actions" align="end" items={[{ id: 'edit', label: 'Edit' }, { id: 'delete', label: 'Delete', danger: true, separatorBefore: true }]} />
+    </div>
+  ),
+};
+
 export const IconOnly: StoryObj = {
   name: 'Icon only',
   render: () => (

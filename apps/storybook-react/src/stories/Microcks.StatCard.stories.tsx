@@ -26,6 +26,16 @@ export const KeyFigures: StoryObj = {
   ),
 };
 
+/** `tone` colours the value; `headingLevel` keeps the page outline right inside a section. */
+export const Tones: StoryObj = {
+  render: () => (
+    <StatGrid label="Last 24 hours">
+      <StatCard title="Passed" headingLevel={3} value="9" tone="success">Runs without a failure.</StatCard>
+      <StatCard title="Failed" headingLevel={3} value="3" tone="danger">Runs with a failing step.</StatCard>
+    </StatGrid>
+  ),
+};
+
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof StatCard> = {
   args: { title: 'Conformance', headingLevel: 2, value: '92', unit: '%', tone: 'success', children: 'Across 12 operations.' },

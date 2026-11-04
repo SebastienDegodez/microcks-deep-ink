@@ -14,6 +14,12 @@ export const Default: StoryObj = {
   render: () => <ConformanceBand outcomes={CONFORMANCE} />,
 };
 
+/** `unit` changes the noun in the accessible summary ("3 of 4 conversations passed"). */
+export const CustomUnit: StoryObj = {
+  name: 'Custom unit',
+  render: () => <ConformanceBand outcomes={['pass', 'pass', 'pass', 'fail']} unit="conversation" showSummary />,
+};
+
 export const Mini: StoryObj = {
   render: () => (
     <div className="inline">
