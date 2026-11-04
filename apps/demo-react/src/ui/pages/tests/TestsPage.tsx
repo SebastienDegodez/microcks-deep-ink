@@ -4,16 +4,15 @@ import { filterRuns, runConformance, type TestRunSummary } from '@/domain/testin
 import { PageHeader, useQuery, useRelativeTime, usePageTitle, useUseCases } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
-import { Disclosure } from '@/ui/components/ui/disclosure';
 import { EmptyState } from '@/ui/components/ui/empty-state';
 import { Field } from '@/ui/components/ui/field';
-import { Icon } from '@/ui/components/ui/icon';
 import { Panel } from '@/ui/components/ui/panel';
 import { Select } from '@/ui/components/ui/select';
 import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
 import { StatusBadge, type Outcome } from '@/ui/components/ui/status-badge';
 import { ErrorBlock, LoadingBlock } from './PageStates';
 import { testRunHref } from '../explore-kit/format';
+import { TestTimeline } from './TestTimeline';
 import './tests.css';
 
 const LIMIT = 12;
@@ -25,16 +24,21 @@ export default function TestsPage() {
   usePageTitle('Test history · Microcks');
   const uc = useUseCases();
   const query = useQuery(
-    () => Promise.all([uc.testing.listForService(serviceId, { limit: 1000 }), uc.testing.timeline(serviceId), uc.testing.getCreateForm(serviceId)]),
+    () => Promise.all([uc.testing.listForService(serviceId, { limit: 1000 }), uc.testing.getCreateForm(serviceId)]),
     [serviceId],
   );
   const data = query.data;
-  const service = data?.[2].services.find((s) => s.id === serviceId);
+  const service = data?.[1].services.find((s) => s.id === serviceId);
 
   return (
     <>
       <PageHeader
         title={service ? `Tests of ${service.name} ${service.version}` : 'Test history'}
+        breadcrumb={[
+          { label: 'APIs & Services', to: '/services' },
+          ...(service ? [{ label: `${service.name} ${service.version}`, to: `/services/${serviceId}` }] : []),
+          { label: 'Test history' },
+        ]}
         actions={
           <Button asChild variant="primary" icon="play">
             <RouterLink to={`/tests/create?service=${serviceId}`}>Run a test</RouterLink>
@@ -44,7 +48,7 @@ export default function TestsPage() {
       {service && service.protocol !== 'A2A' ? <OtherServices /> : null}
       {query.status === 'loading' && !data ? <LoadingBlock label="the test history" /> : null}
       {query.status === 'error' ? <ErrorBlock error={query.error} what="Test history" onRetry={query.reload} /> : null}
-      {data ? <History key={serviceId} runs={data[0]} timeline={data[1]} operations={data[2].targets.find((t) => t.serviceId === serviceId)?.operations ?? []} service={service} /> : null}
+      {data ? <History key={serviceId} runs={data[0]} operations={data[1].targets.find((t) => t.serviceId === serviceId)?.operations ?? []} service={service} /> : null}
     </>
   );
 }
@@ -73,12 +77,10 @@ function OtherServices() {
 
 function History({
   runs,
-  timeline,
   operations,
   service,
 }: {
   runs: TestRunSummary[];
-  timeline: { runId: string; startedAt: string; result: TestRunSummary['result']; conformance: number }[];
   operations: { id: string; verb: string; path: string }[];
   service?: { protocol: Parameters<typeof ApiBadge>[0]['protocol']; name: string; version: string };
 }) {
@@ -91,8 +93,10 @@ function History({
   const runners = useMemo(() => [...new Set(runs.map((r) => r.runner))], [runs]);
   const endpoints = useMemo(() => [...new Set(runs.map((r) => r.endpoint))], [runs]);
   const filtered = filterRuns(runs, { result, runner }).filter((r) => endpoint === 'all' || r.endpoint === endpoint);
+  const matchIds = new Set(filtered.map((r) => r.id));
+  const matches = (r: TestRunSummary) => matchIds.has(r.id);
   const visible = showAll ? filtered : filtered.slice(0, LIMIT);
-  const selectedKey = runs.find((r) => r.id === '117') ? '117' : runs[0]?.id;
+  const [sel, setSel] = useState(() => (runs.find((r) => r.id === '117') ? '117' : runs[0]?.id));
 
   const columns: DataTableColumn<TestRunSummary>[] = [
     { key: 'id', header: 'Run', mono: true, render: (r) => `#${r.id}` },
@@ -116,68 +120,19 @@ function History({
     );
   }
 
-  const latest = timeline[timeline.length - 1];
-  const first = timeline[0];
-  const summary = latest && first
-    ? `${timeline.length} runs. Conformance went from ${first.conformance}% (run #${first.runId}) to ${latest.conformance}% (run #${latest.runId}, ${WORD[latest.result].toLowerCase()}).`
-    : '';
-
-  const W = 640;
-  const H = 200;
-  const x = (i: number) => 40 + (timeline.length <= 1 ? 280 : (i * 560) / (timeline.length - 1));
-  const y = (v: number) => 20 + ((100 - v) * 140) / 100;
-
-  const matrixRuns = runs.slice(0, 6);
-
   return (
     <div className="stack">
       {service ? <ApiBadge protocol={service.protocol} name={service.name} version={service.version} /> : null}
 
-      <Panel title="Conformance timeline">
-        <p>{summary}</p>
-        <svg className="ts-svg" viewBox={`0 0 ${W} ${H}`} role="img" aria-labelledby="ts-title ts-desc">
-          <title id="ts-title">Conformance of each test run</title>
-          <desc id="ts-desc">{summary} The table below gives every value.</desc>
-          {[0, 50, 100].map((v) => (
-            <g key={v}>
-              <line className="ts-grid" x1="40" x2="600" y1={y(v)} y2={y(v)} />
-              <text x="4" y={y(v) + 4}>{v}%</text>
-            </g>
-          ))}
-          <polyline className="ts-line" points={timeline.map((p, i) => `${x(i)},${y(p.conformance)}`).join(' ')} />
-          {timeline.map((p, i) =>
-            p.result === 'passed' ? (
-              <circle key={p.runId} className="ts-ok" cx={x(i)} cy={y(p.conformance)} r="6" />
-            ) : (
-              <rect key={p.runId} className="ts-ko" x={x(i) - 6} y={y(p.conformance) - 6} width="12" height="12" />
-            ),
-          )}
-          {timeline.map((p, i) => (
-            <text key={`l${p.runId}`} x={x(i) - 10} y="190">#{p.runId}</text>
-          ))}
-        </svg>
-        <p className="demo-muted">Circles are passed runs, squares are failed runs.</p>
-        <Disclosure summary="Show data table">
-          <div className="demo-scroll">
-            <table className="ts-matrix">
-              <caption className="sr-only">Conformance of each test run</caption>
-              <thead>
-                <tr><th scope="col">Run</th><th scope="col">Started</th><th scope="col">Result</th><th scope="col">Conformance</th></tr>
-              </thead>
-              <tbody>
-                {timeline.map((p) => (
-                  <tr key={p.runId}>
-                    <th scope="row">#{p.runId}</th>
-                    <td>{relative(p.startedAt)}</td>
-                    <td>{WORD[p.result]}</td>
-                    <td>{p.conformance}%</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Disclosure>
-      </Panel>
+      <TestTimeline
+        runs={runs}
+        operations={operations}
+        selectedId={sel}
+        onSelect={setSel}
+        matches={matches}
+        filtered={result !== 'all' || runner !== 'all' || endpoint !== 'all'}
+        relative={relative}
+      />
 
       <Panel title="Runs">
         <div className="stack">
@@ -217,7 +172,7 @@ function History({
             columns={columns}
             rows={visible}
             rowKey="id"
-            selectedKey={selectedKey}
+            selectedKey={sel}
             rowHref={(r) => `/tests/runner/${r.id}`}
             emptyText="No run matches these filters."
             renderRowLink={(r, props) => (
@@ -236,39 +191,6 @@ function History({
         </div>
       </Panel>
 
-      {operations.length > 0 ? (
-        <Panel title="Operations by run">
-          <div className="demo-scroll">
-            <table className="ts-matrix">
-              <caption className="sr-only">Result of each operation in the latest test runs</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Operation</th>
-                  {matrixRuns.map((r) => <th scope="col" key={r.id}>#{r.id}</th>)}
-                </tr>
-              </thead>
-              <tbody>
-                {operations.map((op, i) => (
-                  <tr key={op.id}>
-                    <th scope="row"><span className="demo-mono">{op.verb} {op.path}</span></th>
-                    {matrixRuns.map((r) => {
-                      const o = r.operations?.[i];
-                      return (
-                        <td key={r.id}>
-                          <span className="ts-cell">
-                            <Icon name={o === 'pass' ? 'check' : o === 'fail' ? 'cross' : 'dash'} size={16} />
-                            {o === 'pass' ? 'Pass' : o === 'fail' ? 'Fail' : 'No result'}
-                          </span>
-                        </td>
-                      );
-                    })}
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        </Panel>
-      ) : null}
     </div>
   );
 }
