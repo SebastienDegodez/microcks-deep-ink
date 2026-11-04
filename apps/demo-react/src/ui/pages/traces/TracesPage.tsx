@@ -448,7 +448,7 @@ function CallDetail({ call: c, replayNote, onClose, onReplay }: { call: TraceCal
         </button>
       </div>
 
-      <Facts layout="columns" columns={2} boxed="surface" gap="10px 16px" className="tr2-facts">
+      <Facts layout="columns" columns={2} boxed="surface" gap="10px 16px" size="sm" className="tr2-facts">
         <FactRow term="Client" mono>
           {c.clientName} · {c.clientIp}
         </FactRow>

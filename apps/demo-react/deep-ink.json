@@ -21,10 +21,10 @@
     "icon": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/icon.tsx": "bc02e15990bda85fc8939ebd13693e892cb85dbed3c1aafbe48cb08e4a0af37f",
+        "src/ui/components/ui/icon.tsx": "647c82fa6f91ea4acb64f9545da268e6f30f34bb138ba12796b85ba4be2b524d",
         "src/ui/styles/icon.css": "81d763ab1f1ad70eaf528ddbb31b0848567b4afa708ac887b7bb8aebbcf84d2c"
       },
-      "hash": "920a88d74bc2cb0b"
+      "hash": "eb4e829e661bcd11"
     },
     "button": {
       "version": "0.2.0",
@@ -433,21 +433,45 @@
     "facts": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/facts.tsx": "4af3abd2c6e660382f578ddb4eee8a7684629a9c8fcc9f19b939f090eba3f7ae",
-        "src/ui/styles/facts.css": "f7d2dba9484899925448067060762495e8716fb2960990880c2160ba55cb4f89"
+        "src/ui/components/ui/facts.tsx": "d02ec87e0490c92a08602563ba02d2a41c08676fbff89a205380f03a5d937c67",
+        "src/ui/styles/facts.css": "690d766410791ca28f6a686b185c325cb70120e5a3dae492b400d3b82a861368"
       },
-      "hash": "5fc2017c9fc38091"
+      "hash": "7ac97e276ef8d3b8"
     },
-    "split-pane": {
+    "projection-pill": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/split-pane.tsx": "c58dcf1a0d445fcbce25cfccf3b586fd17a6c3f2c86bb5bfd7e14b22dda77fd7",
-        "src/ui/styles/split-pane.css": "3932a121239887c52cd7954c35d55ad0335ae81e4a7a75e30b58fa642cdd29f0"
+        "src/ui/components/ui/projection-pill.tsx": "a1bbf8c1fc02a014150dd010b2a174256def29f28b89551cfec7d8f8b6442ef0",
+        "src/ui/styles/projection-pill.css": "444468d898c44df552662d8f22f467caf399e13f01639de95d5d1ebbe2ae7e27"
       },
-      "hash": "7d7c09386333e0a6"
+      "hash": "2be41a92ef1bfb0e"
+    },
+    "run-meta": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/run-meta.tsx": "4e8b5d5fbb31e9b637d88f4dc65f8ada1db1e61831b64c46b308d4364f51cdea",
+        "src/ui/styles/run-meta.css": "dca3fb4a84cd24b9af01b87676e00b0f1f1eb0f0a09d67fb56360755220c6ae8"
+      },
+      "hash": "bb17329eebb1705a"
+    },
+    "ci-panel": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/ci-panel.tsx": "cb4076b42fd59d3f1dbe31fec31436c4b6f59151a818d486946fe7ac8e1864b1",
+        "src/ui/styles/ci-panel.css": "0f7fa8c2159060d9b95ea76b80089506ce60bbd558d21ab1bafc899a20aa611c"
+      },
+      "hash": "d3415d4d251764df"
+    },
+    "result-box": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/result-box.tsx": "07f21a3fd73122eb57e7842f835504e8acf1987493beaa0bbff45930c3c732b7",
+        "src/ui/styles/result-box.css": "814250668bd0637e38bcf40e6cee84b559b33546ea6c9fcf087de9c503639369"
+      },
+      "hash": "f1124ffd828eafd8"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "12e86cc3db5b6a625162284f2db038c083b3950fbea3df0d6c2ff1d61b05d511"
+    "src/ui/styles/index.css": "b8e1bbc19fc08904165967fa10d6da6003e3b3844d45ca9568d55ace9bc08d55"
   }
 }
