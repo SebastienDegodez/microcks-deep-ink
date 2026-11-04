@@ -78,4 +78,8 @@
   .facts-row > dd[data-tone="danger"] { color: var(--danger); }
   .facts-row > dd[data-tone="muted"] { color: var(--text-secondary); }
   .facts-sub { font-family: var(--font-ui); font-size: 12px; font-weight: 400; color: var(--text-muted); }
+  /* Large rows (Service Properties): 14px, padding 8px 0, mono values 14px. */
+  .facts[data-size="lg"] { font-size: 14px; }
+  .facts[data-size="lg"] > .facts-row { padding: 8px 0; }
+  .facts[data-size="lg"] > .facts-row > dd[data-mono] { font-size: 14px; }
 }
