@@ -115,7 +115,8 @@ export const PASTRY2_EXAMPLES: Record<string, Example[]> = {
   ],
   'get-name': [
     { id: 'millefeuille', name: 'Millefeuille', request: { params: { name: 'Millefeuille' } }, response: ok(PASTRIES.mille) },
-    { id: 'eclair-cafe', name: 'Eclair Cafe', request: { params: { name: 'Eclair Cafe' } }, response: ok(PASTRIES.cafe) },
+    { id: 'eclair-cafe', name: 'Eclair Cafe', request: { params: { name: 'Eclair Cafe' } },
+      response: ok({ ...PASTRIES.cafe, price: 2.5, status: 'available' }) },
     { id: 'eclair-chocolat', name: 'Eclair Chocolat', request: { params: { name: 'Eclair Chocolat' } }, response: ok(PASTRIES.choco) },
     { id: 'tartelette', name: 'Tartelette Framboise', request: { params: { name: 'Tartelette Framboise' } }, response: ok(PASTRIES.tarte),
       aiGenerated: true, reviewState: 'pending' },

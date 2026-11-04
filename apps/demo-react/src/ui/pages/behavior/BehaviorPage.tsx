@@ -1,9 +1,10 @@
 import '../explore-kit/explore.css';
+import './behavior.css';
 import { useMemo, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router';
 import {
   isValidRegExp, parseJsonBodyRule, reachability, ruleNames, scriptSample, storedAs,
-  type Behavior, type BehaviorDispatcher, type ParameterConstraint, type SimulationResult,
+  type Behavior, type BehaviorDispatcher, type ParameterConstraint,
 } from '@/domain/catalog';
 import { PageHeader, useAnnounce, useQuery, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
@@ -20,6 +21,7 @@ import { Segmented } from '@/ui/components/ui/segmented';
 import { Select } from '@/ui/components/ui/select';
 import { Switch } from '@/ui/components/ui/switch';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
+import { SimulatorPanel } from './SimulatorPanel';
 
 const CARDS: { id: BehaviorDispatcher; desc: string; tag?: string; disabled?: boolean }[] = [
   { id: 'URI_PARTS', desc: 'Matches path segments, here {name}.', tag: 'inferred from contract' },
@@ -30,11 +32,8 @@ const CARDS: { id: BehaviorDispatcher; desc: string; tag?: string; disabled?: bo
   { id: 'FALLBACK', desc: 'A dispatcher, plus a default example when nothing matches.' },
   { id: 'PROXY_FALLBACK', desc: 'A dispatcher, else forwards to the real backend.' },
 ];
-const SIM_PRESETS = ['/pastries/Eclair%20Cafe', '/pastries/Millefeuille', '/pastries/Kouign-amann', '/pastries/Eclair%20Chocolat?size=XL'];
 const DELAY_PRESETS = [0, 100, 250, 500, 1000];
 const JSON_RULE_SAMPLE = JSON.stringify({ exp: '/name', operator: 'equals', cases: { Millefeuille: 'Millefeuille', 'Eclair Cafe': 'Eclair Cafe', default: 'Millefeuille' } }, null, 2);
-
-interface HistoryItem { id: number; path: string; code: string; what: string; }
 
 export default function BehaviorPage() {
   const { serviceId = '', operationId = '' } = useParams();
@@ -50,12 +49,7 @@ export default function BehaviorPage() {
   const editKey = `${serviceId}/${operationId}`;
   const draft = edits?.key === editKey ? edits.value : saved.data;
   const setDraft = (value: Behavior | undefined) => setEdits(value ? { key: editKey, value } : undefined);
-  const [simPath, setSimPath] = useState('/pastries/Eclair%20Cafe');
-  const [sendKey, setSendKey] = useState(true);
-  const [sim, setSim] = useState<SimulationResult | undefined>();
-  const [history, setHistory] = useState<HistoryItem[]>([]);
   const [switched, setSwitched] = useState(false);
-  const [store, setStore] = useState<Record<string, number>>({});
   const [savedAt, setSavedAt] = useState(false);
 
   const dirty = useMemo(() => Boolean(draft && saved.data && JSON.stringify(draft) !== JSON.stringify(saved.data)), [draft, saved.data]);
@@ -95,15 +89,6 @@ export default function BehaviorPage() {
   const setConstraint = (i: number, patch: Partial<ParameterConstraint>) =>
     edit({ constraints: draft.constraints.map((c, j) => (j === i ? { ...c, ...patch } : c)) });
 
-  const run = async (path: string) => {
-    setSimPath(path);
-    const headers = sendKey ? { 'x-api-key': 'demo-7f3a' } : undefined;
-    const result = await uc.catalog.simulate(serviceId, operationId, { path, params: {}, headers, store }, draft);
-    setSim(result);
-    if (result.storeKey) setStore((s) => ({ ...s, [result.storeKey as string]: (s[result.storeKey as string] ?? 0) + 1 }));
-    setHistory((h) => [{ id: Date.now() + h.length, path, code: result.status === null ? 'fwd' : String(result.status), what: result.chain }, ...h].slice(0, 6));
-    announce(`Simulation: ${result.statusLabel}.`);
-  };
   const save = async () => {
     await uc.catalog.saveBehavior(serviceId, operationId, draft);
     saved.reload();
@@ -119,7 +104,7 @@ export default function BehaviorPage() {
   );
 
   return (
-    <div className="ex-stack">
+    <div className="behavior-page">
       <PageHeader
         title={operation.path}
         breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}`, to: `/services/${svc.id}` }, { label: `${operation.method} ${operation.path}` }]}
@@ -142,10 +127,10 @@ export default function BehaviorPage() {
         {savedAt ? <span role="status"><Icon name="check" size={14} /> Behavior saved</span> : null}
       </div>
 
-      <div className="ex-grid ex-grid-2">
-        <div className="ex-stack">
-          <Panel title="Dispatcher" id="sec-dispatcher" actions={<a href="https://microcks.io/documentation/explanations/dispatching/" target="_blank" rel="noreferrer">Dispatching reference</a>}>
-            <p className="ex-secondary" style={{ marginTop: 0 }}>Turns an incoming request into dispatch criteria, then into the example to return.</p>
+      <div className="behavior-layout">
+        <div className="behavior-config">
+          <Panel padding="lg" title="Dispatcher" id="sec-dispatcher" actions={<a href="https://microcks.io/documentation/explanations/dispatching/" target="_blank" rel="noreferrer">Dispatching reference</a>}>
+            <p className="panel-lead">Turns an incoming request into dispatch criteria, then into the example to return.</p>
             <fieldset className="ex-fieldset">
               <legend className="sr-only">Dispatcher type</legend>
               <div className="ex-radio-cards">
@@ -235,8 +220,8 @@ export default function BehaviorPage() {
             <CodeBlock code={storedAs(draft)} caption="Stored as" />
           </Panel>
 
-          <Panel title="Delay" id="sec-delay">
-            <p className="ex-secondary" style={{ marginTop: 0 }}>Simulates the dependency's response time. Applies to every call unless the caller overrides it.</p>
+          <Panel padding="lg" title="Delay" id="sec-delay">
+            <p className="panel-lead">Simulates the dependency's response time. Applies to every call unless the caller overrides it.</p>
             <div className="ex-row">
               <Field label="Default delay (range)">{(c) => <Input {...c} type="range" min={0} max={2000} step={50} value={draft.delayMs} onChange={(e) => edit({ delayMs: Number(e.target.value) })} />}</Field>
               <Field label="Default delay in milliseconds">{(c) => <Input {...c} type="number" min={0} step={50} value={draft.delayMs} onChange={(e) => edit({ delayMs: Math.max(0, Number(e.target.value) || 0) })} />}</Field>
@@ -251,8 +236,8 @@ export default function BehaviorPage() {
             <p className="ex-small ex-secondary">Per endpoint: <code>?delay=500</code> · Per request: <code>x-microcks-delay: 800</code> header, wins over all others</p>
           </Panel>
 
-          <Panel title="Parameter constraints" id="sec-constraints" actions={<span className="ex-small ex-secondary">{draft.constraints.length} {draft.constraints.length === 1 ? 'constraint' : 'constraints'}</span>}>
-            <p className="ex-secondary" style={{ marginTop: 0 }}>Expectations the contract cannot express. A violated constraint returns 400 before dispatching.</p>
+          <Panel padding="lg" title="Parameter constraints" id="sec-constraints" actions={<span className="ex-small ex-secondary">{draft.constraints.length} {draft.constraints.length === 1 ? 'constraint' : 'constraints'}</span>}>
+            <p className="panel-lead">Expectations the contract cannot express. A violated constraint returns 400 before dispatching.</p>
             <div className="ex-small" style={{ overflowX: 'auto' }}>
               <table className="table" aria-label="Parameter constraints">
                 <thead><tr><th scope="col">In</th><th scope="col">Name</th><th scope="col">Required</th><th scope="col">Recopy</th><th scope="col">Must match regexp</th><th scope="col"><span className="sr-only">Remove</span></th></tr></thead>
@@ -284,7 +269,7 @@ export default function BehaviorPage() {
             </div>
           </Panel>
 
-          <Panel title="Stateful mock" id="sec-stateful">
+          <Panel padding="lg" title="Stateful mock" id="sec-stateful">
             <Switch label="Stateful mock" description="Persist state between calls, e.g. count views, keep a cart, reflect a PATCH in later GETs." checked={draft.stateful} onChange={toggleStateful} />
             <ul className="ex-plain-list ex-small ex-secondary" style={{ marginTop: 8 }}>
               <li><strong>Runs in a SCRIPT dispatcher.</strong> Turning it on switches the dispatcher to SCRIPT and loads a sample that reads and writes the <code>store</code>.</li>
@@ -295,50 +280,14 @@ export default function BehaviorPage() {
           </Panel>
         </div>
 
-        <Panel title="Request simulator" id="sec-sim">
-          <p className="ex-secondary" style={{ marginTop: 0 }}>Dry run against the configuration on this page, saved or not. Nothing reaches the live mock.</p>
-          <form className="ex-stack" onSubmit={(e) => { e.preventDefault(); void run(simPath); }}>
-            <Field label="Request" help="http://microcks.local:8080/rest/API+Pastry/2.0 + path">
-              {(c) => <div className="ex-row" style={{ flexWrap: 'nowrap' }}><MethodTag method={operation.method} protocol={svc.protocol} /><Input {...c} mono spellCheck={false} value={simPath} onChange={(e) => setSimPath(e.target.value)} /></div>}
-            </Field>
-            <div className="ex-row" role="group" aria-label="Request examples">
-              {SIM_PRESETS.map((p) => <Button key={p} type="button" size="sm" variant="secondary" onClick={() => void run(p)}>{p}</Button>)}
-            </div>
-            <Checkbox label={<>Send header <code>x-api-key: demo-7f3a</code></>} checked={sendKey} onChange={(e) => setSendKey(e.target.checked)} />
-            <div><Button type="submit" icon="play">Simulate</Button></div>
-          </form>
-          <div role="status" aria-live="polite" className="ex-stack" style={{ marginTop: 12 }}>
-            {sim ? (
-              <>
-                <p className="ex-row" style={{ margin: 0 }}>
-                  <Icon name={sim.status === null ? 'running' : sim.status < 300 ? 'check' : 'cross'} size={16} />
-                  <strong>{sim.requestLine}</strong> <span>{sim.statusLabel}</span>
-                </p>
-                <p className="ex-mono ex-small" style={{ margin: 0 }}>{sim.chain}</p>
-                <ol className="ex-plain-list">
-                  {sim.steps.map((s, i) => (
-                    <li key={i} className="ex-row ex-small">
-                      <Icon name={s.kind === 'ok' ? 'check' : s.kind === 'fail' ? 'cross' : s.kind === 'warn' ? 'warning' : s.kind === 'skip' ? 'dash' : 'info'} size={14} />
-                      <strong>{s.label}</strong> <span className="ex-secondary">{s.value}</span>
-                    </li>
-                  ))}
-                </ol>
-                <CodeBlock code={sim.headers.join('\n')} caption={`Response headers · ${sim.mediaType}`} />
-                <CodeBlock code={sim.body} language="json" caption="Response body" copy maxHeight={220} />
-              </>
-            ) : <p className="ex-muted">Pick a request above or type one, then press Simulate.</p>}
-          </div>
-          {history.length ? (
-            <div className="ex-stack" style={{ marginTop: 12 }}>
-              <div className="ex-row-between"><strong>Recent runs</strong><Button size="sm" variant="ghost" onClick={() => setHistory([])}>Clear</Button></div>
-              <ul className="ex-plain-list">
-                {history.map((h) => (
-                  <li key={h.id}><Button variant="ghost" size="sm" onClick={() => void run(h.path)}><span className="ex-row"><strong>{h.code}</strong> <code>{h.path}</code> <span className="ex-small ex-secondary">{h.what}</span></span></Button></li>
-                ))}
-              </ul>
-            </div>
-          ) : null}
-        </Panel>
+        <SimulatorPanel
+          serviceId={serviceId}
+          operationId={operationId}
+          method={operation.method}
+          protocol={svc.protocol}
+          mockBase={`http://microcks.local:8080/rest/${svc.name.replace(/ /g, '+')}/${svc.version}`}
+          draft={draft}
+        />
       </div>
     </div>
   );
