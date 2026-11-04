@@ -1,13 +1,17 @@
+/* eslint-disable jsx-a11y/no-noninteractive-tabindex -- scrollable code regions must be reachable by keyboard (WCAG 2.1.1) */
 import '../explore-kit/explore.css';
-import './agent.css';
-import { useEffect, useMemo, useState } from 'react';
+import './agent-test.css';
+import { Fragment, useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import { Link as RouterLink, useParams, useSearchParams } from 'react-router';
 import {
+  AGENT_TRANSPORT_NAMES,
+  agentCellName,
+  agentElapsedMs,
+  agentRunnerLog,
   agentRunPassed,
   cellKey,
   setupSummary,
   totalsOf,
-  transportScore,
   validateSetup,
   type AgentCheck,
   type AgentCheckDetail,
@@ -15,41 +19,54 @@ import {
   type AgentTestRunWithDetails,
   type AgentTestSetup,
   type DetailTone,
+  type DetailVerdict,
   type TransportId,
 } from '@/domain/agents';
-import { PageHeader, useAnnounce, useQuery, usePageTitle, useUseCases } from '@/ui/app';
+import { formatClock } from '@/domain/shared';
+import { PAGE_TITLE_ID, PageHeader, useAnnounce, usePageTitle, useQuery, useRelativeTime, useUseCases } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
-import { Checkbox, RadioGroup } from '@/ui/components/ui/checkbox';
-import { CodeBlock } from '@/ui/components/ui/code-block';
+import { Checkbox, Radio } from '@/ui/components/ui/checkbox';
 import { ConformanceMatrix, type CheckResult, type MatrixGroup, type MatrixRow } from '@/ui/components/ui/conformance-matrix';
-import { Disclosure } from '@/ui/components/ui/disclosure';
+import { CopyButton } from '@/ui/components/ui/copy-button';
 import { Field } from '@/ui/components/ui/field';
 import { Icon } from '@/ui/components/ui/icon';
 import { Input } from '@/ui/components/ui/input';
+import { LiveIndicator } from '@/ui/components/ui/live-indicator';
+import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
+import { RunnerLog, type RunnerLevel } from '@/ui/components/ui/runner-log';
 import { Select } from '@/ui/components/ui/select';
-import { StatusBadge } from '@/ui/components/ui/status-badge';
 import { TaskLanes } from '@/ui/components/ui/task-timeline';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
 
+/** The runner fills one matrix cell every 800 ms, as in the prototype. */
+const CHECK_MS = 800;
 const CARD_ROWS: { id: string; label: string; sub: string; perTransport: boolean }[] = [
   { id: 'schema', label: 'Schema · required fields', sub: 'A2A v1.0 JSON Schema · name, version, supportedInterfaces, capabilities, skills…', perTransport: false },
   { id: 'iface', label: 'Interfaces reachable', sub: 'each supportedInterfaces entry answers with A2A-Version: 1.0', perTransport: true },
   { id: 'caps', label: 'Capabilities honoured', sub: 'streaming and pushNotifications declared true are exercised', perTransport: true },
   { id: 'sig', label: 'Signature (JWS)', sub: 'optional in v1.0 · absent is a warning, not an error', perTransport: false },
 ];
-const TRANSPORT_LABEL: Record<TransportId, { label: string; sub: string }> = {
-  jsonrpc: { label: 'JSON-RPC', sub: 'preferred · SSE' },
-  http: { label: 'HTTP+JSON', sub: 'SSE' },
-  grpc: { label: 'gRPC', sub: 'stream' },
-};
+const TRANSPORT_SUB: Record<TransportId, string> = { jsonrpc: 'preferred · SSE', http: 'SSE', grpc: 'stream' };
+const RESULT_WORD: Record<'pass' | 'fail' | 'warn', string> = { pass: 'passed', fail: 'failed', warn: 'absent' };
+const SEGMENT: Record<CheckResult, RunSegment> = { pass: 'done', fail: 'failed', warn: 'warn', running: 'current', queued: 'queued' };
 const fmtMs = (ms: number): string => (ms >= 1000 ? `${(ms / 1000).toFixed(2)} s` : `${ms} ms`);
 const TONE_WORD: Record<DetailTone, string> = { ok: 'ok', bad: 'problem', warn: 'warning', muted: '', plain: '' };
+const CLI = "microcks test 'Pastry concierge:1.0' https://concierge.staging.acme.io A2A_CONFORMANCE --microcksURL=http://microcks.local:8080/api/ --waitFor=30sec";
 
-function Setup({ defaults, onRun }: { defaults: AgentTestDefaults; onRun: (setup: AgentTestSetup) => void }) {
-  const [setup, setSetup] = useState<AgentTestSetup>(defaults.setup);
-  const [timeout, setTimeoutText] = useState(String(defaults.setup.timeoutMs));
+/** Text with `code` segments between backticks. */
+function Coded({ text }: { text: string }) {
+  return (
+    <>
+      {text.split('`').map((part, i) => (i % 2 === 1 ? <code key={i} className="mono">{part}</code> : <Fragment key={i}>{part}</Fragment>))}
+    </>
+  );
+}
+
+function Setup({ defaults, initial, onRun }: { defaults: AgentTestDefaults; initial: AgentTestSetup; onRun: (setup: AgentTestSetup) => void }) {
+  const [setup, setSetup] = useState<AgentTestSetup>(initial);
+  const [timeout, setTimeoutText] = useState(String(initial.timeoutMs));
   const merged: AgentTestSetup = { ...setup, timeoutMs: Number.parseInt(timeout, 10) };
   const problem = validateSetup(merged);
   const urlOk = /^https?:\/\/\S+$/.test(setup.cardUrl.trim());
@@ -57,59 +74,114 @@ function Setup({ defaults, onRun }: { defaults: AgentTestDefaults; onRun: (setup
   const secret = defaults.secrets.find((s) => s.name === setup.secret);
   const toggle = <T extends string>(list: T[], id: T): T[] => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
   return (
-    <form className="ag-setup" onSubmit={(e) => { e.preventDefault(); if (!problem) onRun(merged); }} noValidate>
-      <Field label="Agent Card URL" required error={urlOk ? undefined : 'Enter an http(s) URL, usually ending in /.well-known/agent-card.json.'} help="Microcks reads the card, then calls each interface listed in supportedInterfaces.">
-        {(c) => <Input {...c} mono value={setup.cardUrl} onChange={(e) => setSetup({ ...setup, cardUrl: e.target.value })} />}
-      </Field>
-      <fieldset className="ag-choices">
-        <legend>Transports</legend>
-        {defaults.transports.map((t) => (
-          <Checkbox
-            key={t.id}
-            label={`${t.label}${t.preferred ? ' · preferred' : ''}`}
-            description={`${t.sub} · ${t.url}`}
-            checked={setup.transports.includes(t.id)}
-            onChange={() => setSetup({ ...setup, transports: toggle(setup.transports, t.id) })}
-          />
-        ))}
-      </fieldset>
-      <fieldset className="ag-choices">
-        <legend>Conversations · {setup.conversations.length} of {defaults.conversations.length}</legend>
-        {defaults.conversations.map((c) => (
-          <Checkbox
-            key={c.id}
-            label={c.id}
-            description={`skill ${c.skillId} · ${c.turns} · expects ${c.expect}`}
-            checked={setup.conversations.includes(c.id)}
-            onChange={() => setSetup({ ...setup, conversations: toggle(setup.conversations, c.id) })}
-          />
-        ))}
-      </fieldset>
-      <Field label="Secret" help={secret?.help}>
-        {(c) => (
-          <Select {...c} value={setup.secret} onChange={(e) => setSetup({ ...setup, secret: e.target.value })}>
-            {defaults.secrets.map((s) => <option key={s.name} value={s.name}>{s.name || 'None'}</option>)}
-          </Select>
-        )}
-      </Field>
-      <Field label="Timeout (ms)" required error={timeoutOk ? undefined : 'Enter a number of milliseconds greater than 0.'} help="Per agent message, not per conversation. LLM agents can take several seconds to answer.">
-        {(c) => <Input {...c} inputMode="numeric" value={timeout} onChange={(e) => setTimeoutText(e.target.value)} />}
-      </Field>
-      <RadioGroup
-        legend="Text comparison"
-        value={setup.textMode}
-        onChange={(v) => setSetup({ ...setup, textMode: v as 'contains' | 'regex' })}
-        options={[
-          { value: 'contains', label: 'Contains', description: '"Millefeuille" in the answer' },
-          { value: 'regex', label: 'Regex', description: '/mille-?feuille/i' },
-        ]}
-      />
-      <Checkbox label="Validate data parts against their JSON Schema" checked={setup.dataSchema} onChange={(e) => setSetup({ ...setup, dataSchema: e.target.checked })} />
-      <div className="ex-row">
-        <Button type="submit" icon="play" disabled={Boolean(problem)} aria-describedby="ag-run-help">Run the test</Button>
-        <span id="ag-run-help" className="ex-small ex-secondary">{problem ?? setupSummary(merged)}</span>
+    <section aria-labelledby="setup-title" className="setup-card">
+      <div className="setup-card-head">
+        <h2 id="setup-title">Test a real agent against its card</h2>
+        <p>
+          Microcks reads the Agent Card, checks it, then replays each conversation of the <span className="mono">APIExamples</span> artifact on every selected transport.
+          The transport result and the task state are judged separately: a <span className="mono">200 OK</span> carrying a <span className="mono">failed</span> task is
+          still a failure.
+        </p>
       </div>
-    </form>
+      <form className="setup-grid" onSubmit={(e) => { e.preventDefault(); if (!problem) onRun(merged); }} noValidate>
+        <div className="setup-col" data-col="main">
+          <Field label="Agent Card URL" error={urlOk ? undefined : 'Enter an http(s) URL, usually ending in /.well-known/agent-card.json.'} help={urlOk ? 'Microcks reads the card, then calls each interface listed in supportedInterfaces.' : undefined} className="setup-url">
+            {(c) => <Input {...c} required type="url" spellCheck={false} autoComplete="off" mono value={setup.cardUrl} onChange={(e) => setSetup({ ...setup, cardUrl: e.target.value })} />}
+          </Field>
+          <fieldset className="setup-fieldset">
+            <legend>
+              Transports to test <span className="setup-legend-hint">· read from <span className="mono">supportedInterfaces</span></span>
+            </legend>
+            <div className="transport-choices">
+              {defaults.transports.map((t) => (
+                <Checkbox
+                  key={t.id}
+                  variant="card"
+                  className="transport-choice-input"
+                  label={<span className="transport-choice-name">{t.label}{t.preferred ? <span className="preferred-chip">preferred</span> : null}</span>}
+                  description={<><span>{t.sub}</span><span className="transport-choice-url">{t.url}</span></>}
+                  checked={setup.transports.includes(t.id)}
+                  onChange={() => setSetup({ ...setup, transports: toggle(setup.transports, t.id) })}
+                />
+              ))}
+            </div>
+          </fieldset>
+          <fieldset className="setup-fieldset">
+            <legend>
+              Conversations to replay{' '}
+              <span className="setup-legend-hint">
+                · {setup.conversations.length} of {defaults.conversations.length} selected · from <span className="mono">pastry-concierge-1.0-examples.yaml</span>
+              </span>
+            </legend>
+            <div className="conversation-list">
+              {defaults.conversations.map((c) => (
+                <label key={c.id} className="conversation-option">
+                  <input
+                    type="checkbox"
+                    className="checkbox"
+                    checked={setup.conversations.includes(c.id)}
+                    onChange={() => setSetup({ ...setup, conversations: toggle(setup.conversations, c.id) })}
+                  />
+                  <span className="conversation-option-id">{c.id}</span>
+                  <span className="conversation-option-skill"><span className="muted">skill</span><span className="mono" data-none={c.skillId === '(none)' ? '' : undefined}>{c.skillId}</span></span>
+                  <span className="conversation-option-turns">{c.turns}</span>
+                  <span className="conversation-option-expect"><span className="muted">expects</span><span className="mono">{c.expect}</span></span>
+                </label>
+              ))}
+            </div>
+          </fieldset>
+        </div>
+        <div className="setup-col" data-col="side">
+          <Field label="Secret" help={secret?.help} className={secret?.matches ? 'setup-secret' : 'setup-secret setup-secret-warn'}>
+            {(c) => (
+              <Select {...c} value={setup.secret} onChange={(e) => setSetup({ ...setup, secret: e.target.value })}>
+                {defaults.secrets.map((s) => <option key={s.name} value={s.name}>{s.name || 'No secret'}</option>)}
+              </Select>
+            )}
+          </Field>
+          <Field
+            label={<>Timeout per message <span className="muted setup-unit">(ms)</span></>}
+            error={timeoutOk ? undefined : 'Enter a number of milliseconds greater than 0.'}
+            help={timeoutOk ? 'Per agent message, not per conversation. LLM agents can take several seconds to answer.' : undefined}
+            className="setup-timeout"
+          >
+            {(c) => <Input {...c} required mono inputMode="numeric" value={timeout} onChange={(e) => setTimeoutText(e.target.value)} />}
+          </Field>
+          <fieldset className="setup-compare">
+            <legend>Compare agent text loosely</legend>
+            <p>LLM agents rephrase their answers from one call to the next, so Microcks never checks agent text for strict equality. Choose how the expected text of each conversation is matched.</p>
+            <div className="setup-modes">
+              {[
+                { value: 'contains' as const, label: 'Contains', example: '"Millefeuille" in the answer' },
+                { value: 'regex' as const, label: 'Regex', example: '/mille-?feuille/i' },
+              ].map((m) => (
+                <Radio
+                  key={m.value}
+                  variant="card"
+                  name="text-mode"
+                  value={m.value}
+                  label={m.label}
+                  description={<span className="mono">{m.example}</span>}
+                  checked={setup.textMode === m.value}
+                  onChange={() => setSetup({ ...setup, textMode: m.value })}
+                />
+              ))}
+            </div>
+            <Checkbox
+              variant="card"
+              label={<>Validate <span className="mono">data</span> parts with JSON Schema</>}
+              description={<>Structured answers such as <span className="mono">{'{name, price, reason}'}</span> are checked for shape, not for exact values.</>}
+              checked={setup.dataSchema}
+              onChange={(e) => setSetup({ ...setup, dataSchema: e.target.checked })}
+            />
+          </fieldset>
+          <div className="setup-run">
+            <Button type="submit" variant="primary" icon="play" disabled={Boolean(problem)} aria-describedby="setup-run-help">Run test</Button>
+            <span id="setup-run-help" className="setup-run-help" data-problem={problem ? '' : undefined}>{problem ?? setupSummary(merged)}</span>
+          </div>
+        </div>
+      </form>
+    </section>
   );
 }
 
@@ -120,178 +192,325 @@ function resultAt(checks: AgentCheck[], tick: number, running: boolean, i: numbe
   return running && i === tick ? 'running' : 'queued';
 }
 
-function Detail({ detail }: { detail: AgentCheckDetail }) {
+function VerdictBox({ verdict }: { verdict: DetailVerdict }) {
   return (
-    <section className="ex-stack" aria-label={`Detail of ${detail.title}`}>
-      <h2 style={{ margin: 0, fontSize: "var(--text-lg, 1.125rem)" }}>{detail.title}</h2>
-      <p className="ex-small ex-mono ex-secondary" style={{ margin: 0 }}>{detail.sub}</p>
+    <div className="verdict-box">
+      <Icon name="cross" size={15} />
+      <span>
+        <span className="verdict-box-title"><Coded text={verdict.title} /></span>
+        <span className="verdict-box-body"><Coded text={verdict.body} /></span>
+      </span>
+    </div>
+  );
+}
+
+function Detail({ detail, check, onClose }: { detail: AgentCheckDetail; check: AgentCheck; onClose: () => void }) {
+  const card = CARD_ROWS.some((r) => r.id === check.row);
+  const result = check.result;
+  return (
+    <section className="cell-detail" data-result={result} aria-label={`Detail of ${detail.title}`}>
+      <div className="cell-detail-head">
+        <div className="cell-detail-title">
+          <h3>{detail.title}</h3>
+          <span className="cell-detail-sub">{detail.sub}</span>
+        </div>
+        <div className="cell-detail-actions">
+          <ApiBadge label={card ? 'agent card' : 'conversation'} value={RESULT_WORD[result]} status={result === 'pass' ? 'success' : result === 'fail' ? 'danger' : 'warning'} />
+          <Button size="sm" iconOnly icon="close" aria-label="Close cell detail" className="cell-detail-close" onClick={onClose} />
+        </div>
+      </div>
       {detail.kind === 'summary' ? (
         <>
-          <dl className="dl">
+          <dl className="cell-facts">
             {detail.rows.map((r) => (
-              <div key={r.label}><dt>{r.label}</dt><dd>{r.value}{TONE_WORD[r.tone] ? <span className="sr-only"> ({TONE_WORD[r.tone]})</span> : null}</dd></div>
+              <div key={r.label}>
+                <dt>{r.label}</dt>
+                <dd data-tone={r.tone}>{r.value}{TONE_WORD[r.tone] ? <span className="sr-only"> ({TONE_WORD[r.tone]})</span> : null}</dd>
+              </div>
             ))}
           </dl>
-          <p className="ex-small ex-secondary" style={{ margin: 0 }}>{detail.note}</p>
+          {detail.note ? <p className="cell-detail-note">{detail.note}</p> : null}
         </>
       ) : null}
       {detail.kind === 'lanes' ? (
         <>
-          <TaskLanes lanes={detail.lanes} />
-          {detail.exchanges.map((x, i) => (
-            <div key={i} className="ag-exchange" data-highlight={x.highlight ? '' : undefined}>
-              <p className="ex-row-between" style={{ margin: 0 }}>
-                <span className="ex-mono ex-small">{x.head}</span>
-                <span className="ex-small">{x.status}</span>
-              </p>
-              <div className="ag-exchange-cols">
-                <div><strong className="ex-small">Request</strong>{x.request.map((l, j) => <div key={j} className="ag-ln" data-kind={l.kind}>{l.kind === 'ok' ? '✓ ' : ''}{l.text}</div>)}</div>
-                <div><strong className="ex-small">Response</strong>{x.response.map((l, j) => <div key={j} className="ag-ln" data-kind={l.kind}>{l.kind === 'bad' ? '✕ ' : ''}{l.text}</div>)}</div>
-              </div>
+          <div className="detail-block">
+            <h4 className="detail-block-title">Task lifecycle · expected versus actual</h4>
+            <div className="lifecycle-box">
+              <TaskLanes lanes={detail.lanes} />
+              {detail.note ? (
+                <p className="lifecycle-note"><Icon name="arrow-up" size={13} />{detail.note}</p>
+              ) : null}
             </div>
-          ))}
+          </div>
+          {detail.verdict ? <VerdictBox verdict={detail.verdict} /> : null}
+          <div className="detail-block">
+            <h4 className="detail-block-title">Raw HTTP exchange · {detail.exchanges.length} calls</h4>
+            {detail.exchanges.map((x, i) => (
+              <div key={i} className="exchange" data-highlight={x.highlight ? '' : undefined}>
+                <div className="exchange-head">
+                  <span className="exchange-call">{x.head}</span>
+                  <span className="exchange-status" data-tone={x.statusTone}>{x.status}</span>
+                </div>
+                <div className="exchange-cols">
+                  {[{ label: 'Request', lines: x.request }, { label: 'Response', lines: x.response }].map((side) => (
+                    <div key={side.label} className="exchange-side" tabIndex={0} role="group" aria-label={`${side.label} of ${x.head}`}>
+                      <div className="exchange-side-inner">
+                        <span className="exchange-label">{side.label}</span>
+                        {side.lines.map((l, j) => (
+                          <div key={j} className="exchange-line" data-kind={l.kind}>
+                            <span className="exchange-mark" aria-hidden="true">{l.kind === 'ok' ? '✓' : l.kind === 'bad' ? '✕' : ''}</span>
+                            <span>{l.text}</span>
+                            {l.kind === 'ok' || l.kind === 'bad' ? <span className="sr-only"> ({l.kind === 'ok' ? 'expected' : 'wrong'})</span> : null}
+                          </div>
+                        ))}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            ))}
+          </div>
         </>
       ) : null}
       {detail.kind === 'stream' ? (
-        <ol className="ag-events" aria-label="Events of the stream">
-          {detail.events.map((e, i) => (
-            <li key={i} data-expected={e.expected ? '' : undefined} data-bad={e.mark === 'x' ? '' : undefined}>
-              <span className="ex-mono ex-small">{e.at}</span>
-              <span className="ex-stack" style={{ gap: 2 }}>
-                <span><strong className="ex-mono">{e.mark === 'x' ? '✕ ' : e.mark === '+' ? '+ expected: ' : ''}{e.kind}</strong> <span className="ex-small ex-secondary">{e.detail}</span></span>
-                <span className="ex-row">{e.flags.map((f) => <span key={f.text} className="ex-small ex-mono">{f.tone === 'bad' ? '✕ ' : f.tone === 'ok' ? '✓ ' : ''}{f.text}</span>)}</span>
-              </span>
-            </li>
-          ))}
-        </ol>
+        <>
+          <div className="detail-block">
+            <h4 className="detail-block-title">Received stream · a2a.v1.A2AService/SendStreamingMessage</h4>
+            <ol className="stream-events">
+              {detail.events.map((e, i) => (
+                <li key={i} data-expected={e.expected ? '' : undefined} data-bad={e.mark === 'x' ? '' : undefined} data-kind={e.kind === 'request' ? 'request' : e.kind === 'stream closed' ? 'closed' : undefined}>
+                  <span className="stream-at">{e.at}</span>
+                  <span className="stream-mark" aria-hidden="true">{e.mark === 'x' ? '✕' : e.mark === '+' ? '+' : ''}</span>
+                  {e.mark ? <span className="sr-only">{e.mark === 'x' ? 'Wrong: ' : 'Missing: '}</span> : null}
+                  <span className="stream-kind">{e.kind}</span>
+                  <span className="stream-detail">{e.detail}</span>
+                  <span className="stream-flags">
+                    {e.flags.map((f) => <span key={f.text} className="stream-flag" data-tone={f.tone}>{f.text}</span>)}
+                  </span>
+                </li>
+              ))}
+            </ol>
+          </div>
+          {detail.verdict ? <VerdictBox verdict={detail.verdict} /> : null}
+        </>
       ) : null}
     </section>
   );
 }
 
-function Results({ run, phase, tick, onSkip, onEdit, onReplay }: { run: AgentTestRunWithDetails; phase: 'running' | 'done'; tick: number; onSkip: () => void; onEdit: () => void; onReplay: () => void }) {
+interface ResultsProps {
+  run: AgentTestRunWithDetails;
+  phase: 'running' | 'done';
+  tick: number;
+  /** "skill recommend-pastry · 1 turn · expects completed", by conversation id. */
+  conversationSubs: Record<string, string>;
+  onStep: () => void;
+  onReplay: () => void;
+  onEdit: () => void;
+}
+
+function Results({ run, phase, tick, conversationSubs, onStep, onReplay, onEdit }: ResultsProps) {
   const announce = useAnnounce();
   const running = phase === 'running';
   const n = run.checks.length;
   const shown = running ? tick : n;
   const [chosen, setChosen] = useState<string | null>(null);
+  const [ciOpen, setCiOpen] = useState(false);
+  const areaRef = useRef<HTMLDivElement>(null);
   const revealed = run.checks.slice(0, shown);
   const firstFail = run.failures[0];
-  const autoKey = !running && firstFail ? cellKey(firstFail.row, firstFail.transport) : revealed.length > 0 ? cellKey(revealed[revealed.length - 1]?.row ?? '', revealed[revealed.length - 1]?.transport ?? '*') : '';
+  const last = revealed[revealed.length - 1];
+  const autoKey = !running && firstFail ? cellKey(firstFail.row, firstFail.transport) : last ? cellKey(last.row, last.transport) : '';
   const selectedKey = chosen === null ? autoKey : chosen;
-  const detail = selectedKey && run.checks.findIndex((c) => cellKey(c.row, c.transport) === selectedKey) < shown ? run.details[selectedKey] : undefined;
+  const selectedIndex = selectedKey ? run.checks.findIndex((c) => cellKey(c.row, c.transport) === selectedKey) : -1;
+  const selectedCheck = selectedIndex >= 0 && selectedIndex < shown ? run.checks[selectedIndex] : undefined;
+  const detail = selectedCheck ? run.details[selectedKey] : undefined;
   const indexOf = (row: string, transport: string) => run.checks.findIndex((c) => c.row === row && c.transport === transport);
-  const transports = run.setup.transports;
-  const columns = transports.map((t) => ({ id: t, label: TRANSPORT_LABEL[t].label, sub: TRANSPORT_LABEL[t].sub }));
+  const { transports, conversations } = run.setup;
+  const columns = transports.map((t) => ({ id: t, label: AGENT_TRANSPORT_NAMES[t], sub: TRANSPORT_SUB[t] }));
 
   const cellsFor = (row: string, perTransport: boolean): MatrixRow['cells'] => {
     const cell = (transport: string) => {
       const i = indexOf(row, transport);
       const result = resultAt(run.checks, shown, running, i);
       const done = result === 'pass' || result === 'fail' || result === 'warn';
-      return { columnId: transport === '*' ? undefined : transport, result, duration: done ? fmtMs(run.checks[i]?.ms ?? 0) : undefined };
+      return { columnId: transport === '*' ? undefined : transport, result, label: result === 'warn' ? 'Absent' : undefined, duration: done ? fmtMs(run.checks[i]?.ms ?? 0) : undefined };
     };
     return perTransport ? transports.map((t) => cell(t)) : [cell('*')];
   };
   const groups: MatrixGroup[] = [
     { id: 'card', label: 'Agent Card', sub: '/.well-known/agent-card.json · checked once, then per interface', rows: CARD_ROWS.map((r) => ({ id: r.id, label: r.label, sub: r.sub, cells: cellsFor(r.id, r.perTransport) })) },
     {
-      id: 'conversations', label: 'Behaviour · conversations', sub: `${run.setup.conversations.length} replayed · task states, artifacts, streaming, loose text match`,
-      rows: run.setup.conversations.map((c) => ({ id: c, label: c, mono: true, cells: cellsFor(c, true) })),
+      id: 'conversations', label: 'Behaviour · conversations', sub: `${conversations.length} replayed · task states, artifacts, streaming, loose text match`,
+      rows: conversations.map((c) => ({ id: c, label: c, sub: conversationSubs[c], mono: true, cells: cellsFor(c, true) })),
     },
   ];
   const footer = {
     label: 'Conversations passed',
     cells: transports.map((t) => {
-      const rows = run.setup.conversations;
-      const fin = rows.filter((c) => indexOf(c, t) < shown);
+      const fin = conversations.filter((c) => indexOf(c, t) < shown);
       const ok = fin.filter((c) => run.checks[indexOf(c, t)]?.result === 'pass').length;
-      return { text: fin.length ? `${ok}/${rows.length}` : `—/${rows.length}`, tone: fin.length && ok < fin.length ? ('danger' as const) : fin.length === rows.length ? ('success' as const) : undefined };
+      return { text: fin.length ? `${ok}/${conversations.length}` : `—/${conversations.length}`, tone: fin.length && ok < fin.length ? ('danger' as const) : fin.length === conversations.length ? ('success' as const) : undefined };
     }),
   };
-  const totals = totalsOf(revealed);
+  const states = run.checks.map((_c, i) => resultAt(run.checks, shown, running, i));
+  const count = (r: CheckResult) => states.filter((s) => s === r).length;
   const all = totalsOf(run.checks);
-  const passed = agentRunPassed(run.checks);
-  const progressText = `${totals.pass} passed, ${totals.fail} failed, ${totals.warn} warning, ${n - shown} remaining of ${n} checks`;
-  const cli = `microcks test 'Pastry concierge:1.0' https://concierge.staging.acme.io A2A_CONFORMANCE --microcksURL=http://microcks.local:8080/api/ --waitFor=30sec`;
-  const elapsed = 120 + revealed.reduce((a, c) => a + c.ms + 40, 0);
+  const cardRows = CARD_ROWS.map((r) => run.checks.filter((c) => c.row === r.id));
+  const cardPassed = cardRows.filter((cs) => cs.length > 0 && cs.every((c) => c.result === 'pass')).length;
+  const ratio = all.conversationPassed / Math.max(1, all.conversationTotal);
+  const scoreLevel = all.conversationFailed === 0 ? 'high' : ratio >= 0.8 ? 'mid' : 'low';
+  const current = running ? run.checks[tick] : undefined;
+  const log = agentRunnerLog(run, shown, running);
 
   useEffect(() => {
     if (!running) announce(`Test finished. ${all.conversationPassed} of ${all.conversationTotal} conversation checks passed.`);
   }, [running, announce, all.conversationPassed, all.conversationTotal]);
 
+  /** Closing the detail returns the focus to the selected cell, so it never drops to the page body. */
+  const closeDetail = () => {
+    const cell = areaRef.current?.querySelector<HTMLButtonElement>('button.matrix-cell[aria-pressed="true"]');
+    setChosen('');
+    cell?.focus();
+  };
+
   return (
-    <div className="ex-stack">
-      <div className="ex-row-between">
-        <div className="ex-stack" style={{ gap: 4 }}>
-          {running ? <StatusBadge status="running" label={`Running · check ${Math.min(tick + 1, n)} of ${n}`} /> : <StatusBadge status={passed ? 'conformant' : 'failed'} label={passed ? 'Passed' : 'Failed'} />}
-          <p className="ex-small ex-secondary" style={{ margin: 0 }}>
-            <span className="ex-mono">{run.setup.cardUrl}</span> · {transports.map((t) => TRANSPORT_LABEL[t].label).join(' · ')} · {run.setup.conversations.length} conversations · secret {run.setup.secret || 'none'} · {run.setup.timeoutMs} ms ·{' '}
-            {run.setup.textMode}{run.setup.dataSchema ? ' + JSON Schema' : ''} · {running ? 'Elapsed' : 'Duration'} {fmtMs(elapsed)}
-          </p>
+    <>
+      <div className="setup-strip">
+        <span className="setup-strip-label">Setup</span>
+        <span className="setup-strip-text">{transports.map((t) => AGENT_TRANSPORT_NAMES[t]).join(' · ')}</span>
+        <span className="setup-strip-text">{conversations.length} {conversations.length === 1 ? 'conversation' : 'conversations'}</span>
+        <span><span className="muted">secret</span> <span className="mono">{run.setup.secret || 'none'}</span></span>
+        <span><span className="muted">timeout</span> <span className="mono">{run.setup.timeoutMs} ms</span></span>
+        <span><span className="muted">text</span> <span className="mono">{run.setup.textMode}{run.setup.dataSchema ? ' + JSON Schema' : ''}</span></span>
+        {!running ? <Button size="sm" icon="pencil" className="edit-setup" onClick={onEdit}>Edit setup</Button> : null}
+      </div>
+      <div className="run-top">
+        {running ? (
+          <RunProgress
+            className="run-top-main"
+            done={tick}
+            total={n}
+            caption="matrix cells filled"
+            nowLabel="Now checking"
+            now={current ? agentCellName(current.row, current.transport) : 'Computing the conformance score…'}
+            segments={states.map((s) => SEGMENT[s])}
+            gap={3}
+            counts={[
+              { kind: 'pass', text: `${count('pass')} passed` },
+              { kind: 'fail', text: `${count('fail')} failed` },
+              { kind: 'warn', text: `${count('warn')} warning` },
+              { kind: 'pending', text: `${count('queued') + count('running')} queued` },
+            ]}
+            action={<Button size="sm" icon="chevron" className="step-forward" onClick={onStep}>Step forward</Button>}
+            note={<>Agent Card checks run first. Each conversation then runs once per transport, with a fresh <span className="mono">contextId</span> per run and the OAuth2 token from the secret.</>}
+          />
+        ) : (
+          <section aria-label="Summary" className="run-summary run-top-main">
+            <div className="run-summary-head">
+              <div className="run-score">
+                <span className="run-score-value" data-level={scoreLevel}>
+                  {all.conversationPassed}<span className="run-score-total">/{all.conversationTotal}</span>
+                </span>
+                <span className="run-score-caption">conversation checks passed · {conversations.length} conversations × {transports.length} transports</span>
+              </div>
+              <div className="run-summary-text">
+                <span className="run-summary-line">
+                  {all.conversationPassed} of {all.conversationTotal} checks passed
+                  {all.conversationFailed ? ` · ${all.conversationFailed} failed on the task contract, each on a single transport` : ' on every transport'}
+                </span>
+                <span className="run-summary-card">
+                  <span className="muted">Agent Card</span>
+                  <span data-tone="success"><Icon name="check" size={12} />{cardPassed} passed</span>
+                  {all.warn ? <span data-tone="warning"><Icon name="warning" size={12} />{all.warn} warning · signature absent</span> : null}
+                </span>
+                {run.failures.map((f) => (
+                  <button key={`${f.row}|${f.transport}`} type="button" className="failure-link" onClick={() => setChosen(cellKey(f.row, f.transport))}>
+                    <Icon name="cross" size={13} />
+                    <span><span className="failure-link-cell">{AGENT_TRANSPORT_NAMES[f.transport]} × {f.row}</span> · {f.cause}</span>
+                  </button>
+                ))}
+              </div>
+            </div>
+            <div className="transport-scores">
+              <span className="transport-scores-caption">Score per transport · one segment per conversation</span>
+              <div className="transport-scores-row">
+                {transports.map((t) => {
+                  const results = conversations.map((c) => run.checks[indexOf(c, t)]?.result ?? 'pass');
+                  const ok = results.filter((r) => r === 'pass').length;
+                  return (
+                    <div key={t} className="transport-score">
+                      <div className="transport-score-head">
+                        <span className="transport-score-name">{AGENT_TRANSPORT_NAMES[t]}</span>
+                        <span className="transport-score-value" data-tone={ok === conversations.length ? 'success' : 'danger'}>{ok}/{conversations.length}</span>
+                      </div>
+                      <div className="transport-score-segs" aria-hidden="true">
+                        {results.map((r, i) => <span key={i} data-result={r} />)}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+            <div className="run-actions">
+              <Button asChild variant="primary"><RouterLink to={`/services/${run.setup.serviceId}`}>Open agent</RouterLink></Button>
+              <Button icon="play" onClick={onReplay}>Run again</Button>
+              <Button asChild><RouterLink to={`/tests/service/${run.setup.serviceId}`}>All runs</RouterLink></Button>
+              <Button icon="code" className="ci-toggle" aria-expanded={ciOpen} aria-controls="ci-panel" onClick={() => setCiOpen(!ciOpen)}>Run it from CI</Button>
+            </div>
+            {ciOpen ? (
+              <div id="ci-panel" role="region" aria-label="Run it from CI" className="ci-panel">
+                <div className="ci-panel-head">
+                  <span className="ci-panel-title">
+                    <span className="ci-panel-name">
+                      Run this test in your pipeline
+                      <ApiBadge label="cli" value="proposed" status="warning" size="sm" />
+                    </span>
+                    <span className="ci-panel-hint">
+                      Proposed, not available today: the existing <span className="mono">microcks test</span> command, unchanged, with the new runner name{' '}
+                      <span className="mono">A2A_CONFORMANCE</span> that the A2A module would register. It exits non-zero when a check fails.
+                    </span>
+                  </span>
+                  <CopyButton value={CLI} label="Copy command" />
+                </div>
+                <pre className="ci-panel-code" tabIndex={0} aria-label="Proposed microcks CLI command"><code>{CLI}</code></pre>
+                <span className="ci-panel-hint">
+                  Add <span className="mono">--keycloakClientId</span> and <span className="mono">--keycloakClientSecret</span> when your Microcks instance has authentication on.
+                  The agent's OAuth2 token comes from the secret bound to the test, as in this run.
+                </span>
+              </div>
+            ) : null}
+          </section>
+        )}
+        <RunnerLog
+          className="run-top-log"
+          status={running ? <LiveIndicator variant="inline" label="live · streaming" /> : `${log.length} lines · completed`}
+          // The registry log has no WARN level yet (asked to R4): the line keeps its text and level word.
+          lines={log.map((l) => ({ time: l.time, level: l.level as RunnerLevel, text: l.text, emphasis: l.tone === 'emphasis', error: l.tone === 'error' }))}
+        />
+      </div>
+      <section aria-labelledby="matrix-title" className="matrix-section" ref={areaRef}>
+        <div className="matrix-section-head">
+          <h2 id="matrix-title">Conformance matrix</h2>
+          <span className="matrix-section-hint">checks × transports · select a finished cell to see the exchange</span>
+          {running ? <LiveIndicator variant="inline" label="live · filling" /> : null}
         </div>
-        <span className="ex-row">
-          {running ? <Button variant="secondary" onClick={onSkip}>Skip to the result</Button> : <Button variant="secondary" onClick={onReplay}>Replay</Button>}
-          <Button variant="ghost" onClick={onEdit}>Edit the setup</Button>
-        </span>
-      </div>
-      <div role="img" aria-label={`Progress: ${progressText}`} className="ag-segs">
-        {run.checks.map((_c, i) => {
-          const r = resultAt(run.checks, shown, running, i);
-          return <span key={i} data-state={r === 'running' ? 'run' : r === 'queued' ? '' : r} />;
-        })}
-      </div>
-      <p className="ex-small ex-secondary" style={{ margin: 0 }}>{progressText}</p>
-      {!running ? (
-        <Callout tone={passed ? 'success' : 'danger'} title={`${all.conversationPassed} of ${all.conversationTotal} conversation checks passed`}>
-          <p>
-            {passed ? 'on every transport' : `${all.conversationFailed} failed on the task contract, each on a single transport`} · {run.setup.conversations.length} conversations × {transports.length} transports · Agent Card: {all.pass - all.conversationPassed} passed, {all.warn} warning
-          </p>
-          {run.failures.length > 0 ? (
-            <ul>
-              {run.failures.map((f) => (
-                <li key={`${f.row}|${f.transport}`}>
-                  <button type="button" className="ag-pickbtn" onClick={() => setChosen(cellKey(f.row, f.transport))}>{TRANSPORT_LABEL[f.transport].label} × {f.row}</button> · {f.cause}
-                </li>
-              ))}
-            </ul>
-          ) : null}
-        </Callout>
-      ) : null}
-      <ul className="ex-plain-list" aria-label="Score by transport">
-        {transports.map((t) => {
-          const s = transportScore(revealed, t);
-          return <li key={t} className="ex-row"><strong>{TRANSPORT_LABEL[t].label}</strong> <span>{s.passed}/{run.setup.conversations.length} conversations passed</span></li>;
-        })}
-      </ul>
-      <ConformanceMatrix
-        caption={`Checks of test #${run.id}: Agent Card, then conversations, by transport`}
-        columns={columns}
-        groups={groups}
-        footer={footer}
-        selectedKey={selectedKey || undefined}
-        onSelectCell={(k) => setChosen(k ?? '')}
-      />
-      {detail ? <Detail detail={detail} /> : <p className="ex-small ex-secondary">{running ? 'Select a finished check to read its detail.' : 'Select a cell of the matrix to read its detail.'}</p>}
-      <Disclosure summary="Runner log" defaultOpen={running}>
-        <ol className="ag-log" aria-label="Runner log">
-          <li><span className="ex-muted">08:10:04.214</span><span>INFO</span><span>Test #{run.id} started · runner A2A_CONFORMANCE · {transports.length} transports · {run.setup.conversations.length} conversations</span></li>
-          {revealed.map((c, i) => (
-            <li key={i}>
-              <span className="ex-muted">+{fmtMs(c.ms)}</span>
-              <span>{c.result === 'pass' ? 'PASS' : c.result === 'fail' ? 'FAIL' : 'WARN'}</span>
-              <span>{c.transport === '*' ? '' : `${TRANSPORT_LABEL[c.transport].label} × `}{c.row}</span>
-            </li>
-          ))}
-          {!running ? <li><span className="ex-muted">end</span><span>INFO</span><span>Test #{run.id} completed in {fmtMs(elapsed)} · {all.conversationPassed}/{all.conversationTotal} conversation checks passed</span></li> : null}
-        </ol>
-      </Disclosure>
-      {!running ? (
-        <Disclosure summary="Run it in CI">
-          <CodeBlock code={cli} language="bash" caption="Microcks CLI" />
-        </Disclosure>
-      ) : null}
-    </div>
+        <ConformanceMatrix
+          caption={`Checks of run #${run.id}: Agent Card, then conversations, by transport`}
+          columns={columns}
+          groups={groups}
+          footer={footer}
+          selectedKey={detail ? selectedKey : undefined}
+          onSelectCell={(k) => setChosen(k ?? '')}
+        />
+        {detail && selectedCheck ? (
+          <Detail detail={detail} check={selectedCheck} onClose={closeDetail} />
+        ) : (
+          <p className="cell-detail-empty">Cells fill as checks finish. Select a finished cell to see what Microcks sent, what the agent answered, and why the check passed or failed.</p>
+        )}
+      </section>
+    </>
   );
 }
 
@@ -301,29 +520,39 @@ export default function AgentTestRunPage() {
   const [search] = useSearchParams();
   const serviceId = search.get('service') ?? 'concierge';
   const uc = useUseCases();
+  const relative = useRelativeTime();
   const defaults = useQuery(() => uc.agents.testDefaults(serviceId), [uc, serviceId]);
   const stored = useQuery(() => (runId ? uc.agents.getTestRun(runId) : Promise.resolve(undefined)), [uc, runId]);
   const [phase, setPhase] = useState<'setup' | 'running' | 'done'>(runId ? 'done' : 'setup');
   const [run, setRun] = useState<AgentTestRunWithDetails | undefined>();
   const [tick, setTick] = useState(0);
+  /** Bumped by a replay, so the results start again from a fresh selection. */
+  const [replays, setReplays] = useState(0);
   const [error, setError] = useState('');
   const current = run ?? stored.data;
-  usePageTitle(phase === 'setup' ? 'Test the agent · Microcks' : `Agent test #${current?.id ?? ''} · Microcks`);
+  const id = phase === 'setup' && !current ? (defaults.data?.nextRunId ?? '') : (current?.id ?? '');
+  usePageTitle(`Agent test #${id} · Microcks`);
+
+  /** After a phase change the old controls are gone: move the focus to the title, never to the page body. */
+  const focusTitle = useCallback(() => {
+    requestAnimationFrame(() => document.getElementById(PAGE_TITLE_ID)?.focus());
+  }, []);
 
   const n = current?.checks.length ?? 0;
+  const step = useCallback(() => {
+    setTick((t) => {
+      if (t + 1 >= n) {
+        setPhase('done');
+        return n;
+      }
+      return t + 1;
+    });
+  }, [n]);
   useEffect(() => {
     if (phase !== 'running') return undefined;
-    const timer = setInterval(() => {
-      setTick((t) => {
-        if (t + 1 >= n) {
-          setPhase('done');
-          return n;
-        }
-        return t + 1;
-      });
-    }, 700);
+    const timer = setInterval(step, CHECK_MS);
     return () => clearInterval(timer);
-  }, [phase, n]);
+  }, [phase, step]);
 
   const start = useMemo(
     () => async (setup: AgentTestSetup) => {
@@ -333,47 +562,99 @@ export default function AgentTestRunPage() {
         setTick(0);
         setError('');
         setPhase('running');
+        focusTitle();
       } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
       }
     },
-    [uc],
+    [uc, focusTitle],
   );
 
-  const title = phase === 'setup' ? 'Test the agent' : `Agent test #${current?.id ?? ''}`;
+  const hasRun = phase !== 'setup' && Boolean(current);
+  const running = phase === 'running';
+  const elapsed = current ? agentElapsedMs(current.checks, running ? tick : current.checks.length) : 0;
+  const passed = current ? agentRunPassed(current.checks) : true;
+  const replay = () => { setTick(0); setReplays((r) => r + 1); setPhase('running'); };
+  const skip = () => { setPhase('done'); focusTitle(); };
+  const cardUrl = hasRun && current ? current.setup.cardUrl : (current?.setup.cardUrl ?? defaults.data?.setup.cardUrl ?? '');
+
+  const badges = (
+    <span className="run-badges">
+      <RouterLink to={`/services/${serviceId}`} className="run-badge-link" aria-label="Agent Pastry concierge 1.0">
+        <ApiBadge protocol="A2A" name="Pastry concierge 1.0" size="lg" />
+      </RouterLink>
+      <span className="projection-pill" title="A2A does not exist in Microcks today: this screen projects a protocol module for v2">Projection · v2 module</span>
+      {!hasRun ? (
+        <span role="status"><ApiBadge label="status" value="not started" /></span>
+      ) : running ? (
+        <>
+          <LiveIndicator />
+          <span role="status" className="run-running">
+            <Icon name="running" size={15} className="run-spin" />
+            Running · check {Math.min(tick + 1, n)} of {n}
+          </span>
+        </>
+      ) : (
+        <span role="status"><ApiBadge label="result" value={passed ? 'passed' : 'failed'} status={passed ? 'success' : 'danger'} /></span>
+      )}
+    </span>
+  );
+  const meta: ReactNode = (
+    <span className="run-meta">
+      <span><span className="run-meta-key">Endpoint</span><span className="run-meta-endpoint">{cardUrl}</span></span>
+      <span><span className="run-meta-key">Runner</span><span className="run-meta-runner">A2A_CONFORMANCE</span></span>
+      {hasRun && current ? (
+        <>
+          <span>
+            <span className="run-meta-key">Started</span>
+            <span>{relative(current.startedAt)}</span>
+            <span className="run-meta-date">{formatClock(current.startedAt)}</span>
+          </span>
+          <span><span className="run-meta-key">{running ? 'Elapsed' : 'Duration'}</span><span className="run-meta-mono">{fmtMs(elapsed)}</span></span>
+        </>
+      ) : null}
+      <span><span className="run-meta-key">Launched by</span><span>{current?.launchedBy ?? 'MA'}</span></span>
+    </span>
+  );
   const header = (
     <PageHeader
-      title={title}
-      breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: 'Pastry concierge 1.0', to: `/services/${serviceId}/skills` }, { label: 'Agent test' }]}
-      badge={<ApiBadge protocol="A2A" name="Pastry concierge" version="1.0" />}
-      actions={<Button asChild variant="secondary"><RouterLink to={`/tests/service/${serviceId}`}>Test history</RouterLink></Button>}
+      title={`Run #${id}`}
+      breadcrumb={[{ label: 'Tests', to: `/tests/service/${serviceId}` }, { label: 'Pastry concierge 1.0', to: `/services/${serviceId}` }, { label: `Run #${id}` }]}
+      badge={badges}
+      align="start"
+      description={meta}
+      actions={
+        hasRun ? (
+          <>
+            <Button icon="reset" onClick={replay}>Replay run</Button>
+            {running ? <Button variant="primary" icon="skip" onClick={skip}>Skip to result</Button> : null}
+          </>
+        ) : undefined
+      }
     />
   );
 
-  if (defaults.status === 'error' && !defaults.data) return <>{header}<ErrorBlock error={defaults.error} what="The agent" onRetry={defaults.reload} /></>;
-  if (!defaults.data) return <>{header}<LoadingBlock label="the test form" /></>;
-  if (runId && stored.status === 'error' && !stored.data) return <>{header}<ErrorBlock error={stored.error} what="The test run" onRetry={stored.reload} /></>;
-  if (phase !== 'setup' && !current) return <>{header}<LoadingBlock label="the test run" /></>;
+  if (defaults.status === 'error' && !defaults.data) return <div className="agent-test">{header}<ErrorBlock error={defaults.error} what="The agent" onRetry={defaults.reload} /></div>;
+  if (!defaults.data) return <div className="agent-test">{header}<LoadingBlock label="the test form" /></div>;
+  if (runId && stored.status === 'error' && !stored.data) return <div className="agent-test">{header}<ErrorBlock error={stored.error} what="The test run" onRetry={stored.reload} /></div>;
+  if (phase !== 'setup' && !current) return <div className="agent-test">{header}<LoadingBlock label="the test run" /></div>;
 
   return (
-    <div className="ex-stack">
+    <div className="agent-test">
       {header}
       {error ? <Callout tone="danger" title="The test could not start" live="assertive"><p>{error}</p></Callout> : null}
       {phase === 'setup' || !current ? (
-        <>
-          <p className="ex-secondary" style={{ margin: 0 }}>
-            <Icon name="info" size={14} /> Runner <span className="ex-mono">A2A_CONFORMANCE</span> · proposed, not available in Microcks today. It checks the Agent Card, then replays each conversation on every transport.
-          </p>
-          <Setup defaults={defaults.data} onRun={start} />
-        </>
+        <Setup defaults={defaults.data} initial={current?.setup ?? defaults.data.setup} onRun={start} />
       ) : (
         <Results
+          key={`${current.id}-${replays}`}
           run={current}
           phase={phase}
           tick={tick}
-          onSkip={() => setPhase('done')}
-          onEdit={() => setPhase('setup')}
-          onReplay={() => { setTick(0); setPhase('running'); }}
+          conversationSubs={Object.fromEntries(defaults.data.conversations.map((c) => [c.id, `skill ${c.skillId} · ${c.turns} · expects ${c.expect}`]))}
+          onStep={() => { if (tick + 1 >= n) focusTitle(); step(); }}
+          onReplay={() => { replay(); focusTitle(); }}
+          onEdit={() => { setPhase('setup'); focusTitle(); }}
         />
       )}
     </div>
