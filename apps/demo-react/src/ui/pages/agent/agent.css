@@ -1,4 +1,6 @@
 /* Agent screens (18, 19). Layout only: the look comes from the copied components and the tokens. */
+/* Text-only copy buttons (screen 18), as in the prototype: the URL keeps the room. CopyButton still announces the result. */
+.agent-copy-plain > .icon { display: none; }
 .ag-pickbtn { all: unset; cursor: pointer; font-family: var(--font-mono); text-decoration: underline; }
 .ag-pickbtn:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
 .ag-setup { display: grid; gap: 16px; max-width: 880px; }
