@@ -24,12 +24,6 @@
 
 .ad-pills { display: flex; flex-wrap: wrap; gap: 6px; min-width: 0; }
 /* Role pill: user (neutral), manager (link), admin (selected + action border). */
-.ad-role {
-  padding: 1px 8px; border: 1px solid var(--border); border-radius: var(--radius-pill); background: var(--surface);
-  font: 600 11px/13px var(--font-mono); color: var(--text-secondary);
-}
-.ad-role[data-role="manager"] { color: var(--link); border-color: var(--link); }
-.ad-role[data-role="admin"] { color: var(--text); background: var(--selected); border-color: var(--action); }
 
 .ad-role-cell { display: flex; flex-direction: column; gap: 3px; }
 .ad-role-cell > .select { width: 100%; min-height: 34px; font-size: 13px; }

@@ -62,7 +62,7 @@ export function UsersTab({ users, groups, notify, onChanged }: { users: QueryRes
       render: (u) => (
         <span className="ad-pills">
           {ROLE_CHIPS[u.role].map((r) => (
-            <span key={r} className="ad-role" data-role={r}>{r}</span>
+            <Chip key={r} size="sm" tone={r === 'user' ? 'neutral' : 'info'} variant={r === 'manager' ? 'outline' : 'solid'}>{r}</Chip>
           ))}
         </span>
       ),

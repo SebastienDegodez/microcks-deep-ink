@@ -526,10 +526,9 @@ function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: st
           <h2 id={`${uid}-ci-title`} className="tc-ci-title">
             Run it from CI
           </h2>
-          <span className="tc-synced">
-            <Icon name="refresh-arrows" size={12} />
-            synced with the form
-          </span>
+          <Chip size="sm" variant="outline">
+            <Icon name="refresh-arrows" size={12} /> synced with the form
+          </Chip>
         </div>
         <p className="tc-ci-intro">The same test, as code. Once it passes here, paste it in your pipeline so every build proves the contract.</p>
         <CodeBlock

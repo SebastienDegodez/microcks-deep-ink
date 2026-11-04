@@ -5,13 +5,6 @@
 .wf-runs-left { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .wf-runs-count { color: var(--text-muted); }
 .wf-runs-filters { display: flex; flex-wrap: wrap; gap: 6px; }
-.wf-runs-filter {
-  display: inline-flex; align-items: center; gap: 6px; height: 30px; padding: 0 12px; border: 1px solid var(--border); border-radius: 999px;
-  background: transparent; color: var(--text-secondary); font: 400 13px/1 var(--font-ui); cursor: pointer;
-}
-.wf-runs-filter:hover { background: var(--raised); }
-.wf-runs-filter[aria-pressed='true'] { border-color: var(--action); background: var(--selected); color: var(--text); font-weight: 600; }
-.wf-runs-filter-n { font: 400 11px/1 var(--font-mono); color: var(--text-muted); font-variant-numeric: tabular-nums; }
 .wf-runs-scroll { overflow-x: auto; border: 1px solid var(--border); border-radius: 6px; }
 .wf-runs-list { list-style: none; margin: 0; padding: 0; min-width: 1080px; }
 .wf-runs-row { display: flex; align-items: center; gap: 16px; padding: 11px 14px; }
@@ -34,7 +27,6 @@
 .wf-runs-result[data-tone='fail'] { color: var(--danger); }
 .wf-runs-result[data-tone='off'] { color: var(--text-muted); }
 .wf-runs-origin { display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
-.wf-runs-pill { padding: 1px 8px; border: 1px solid var(--border); border-radius: 999px; background: var(--surface); font-size: 12px; font-weight: 600; color: var(--text); }
 .wf-runs-sub { font: 400 11px/1.4 var(--font-mono); color: var(--text-muted); overflow-wrap: anywhere; }
 .wf-runs-inputs { font: 400 12px/1.4 var(--font-mono); color: var(--text-secondary); }
 .wf-runs-band { display: flex; gap: 4px; }
