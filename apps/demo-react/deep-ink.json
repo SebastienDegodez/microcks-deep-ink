@@ -469,9 +469,17 @@
         "src/ui/styles/result-box.css": "814250668bd0637e38bcf40e6cee84b559b33546ea6c9fcf087de9c503639369"
       },
       "hash": "f1124ffd828eafd8"
+    },
+    "split-pane": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/split-pane.tsx": "c58dcf1a0d445fcbce25cfccf3b586fd17a6c3f2c86bb5bfd7e14b22dda77fd7",
+        "src/ui/styles/split-pane.css": "3932a121239887c52cd7954c35d55ad0335ae81e4a7a75e30b58fa642cdd29f0"
+      },
+      "hash": "7d7c09386333e0a6"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "b8e1bbc19fc08904165967fa10d6da6003e3b3844d45ca9568d55ace9bc08d55"
+    "src/ui/styles/index.css": "fd802597f19bd875988b88d32214852d8d494a20ccc92c134bf97a15458cd9ee"
   }
 }
