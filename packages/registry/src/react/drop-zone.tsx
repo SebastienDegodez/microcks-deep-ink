@@ -7,6 +7,8 @@ export interface DropZoneProps extends Omit<HTMLAttributes<HTMLDivElement>, 'onD
   /** Passed to the native input as a picker hint. Validate files in your application. */
   accept?: string;
   multiple?: boolean;
+  /** Visible label of the file picker button ("Browse"). */
+  chooseLabel?: string;
   onFiles: (files: File[]) => void;
 }
 
@@ -18,7 +20,7 @@ export function filesReadyMessage(count: number): string {
  * A real file input (visually hidden, still focusable) named by a visible "Choose files" label.
  * Drag and drop is an enhancement: every function works with the keyboard.
  */
-export function DropZone({ heading, hint, accept, multiple = true, onFiles, className, ...rest }: DropZoneProps) {
+export function DropZone({ heading, hint, accept, multiple = true, chooseLabel = 'Choose files', onFiles, className, ...rest }: DropZoneProps) {
   const id = useId();
   const [dragging, setDragging] = useState(false);
   const [message, setMessage] = useState('');
@@ -75,7 +77,9 @@ export function DropZone({ heading, hint, accept, multiple = true, onFiles, clas
       data-dragging={dragging ? '' : undefined}
       ref={zoneRef}
     >
-      <Icon name="upload" size={28} />
+      <span className="drop-zone-icon" aria-hidden="true">
+        <Icon name="upload" size={24} />
+      </span>
       <p className="drop-zone-heading" id={`${id}-heading`}>
         {heading}
       </p>
@@ -92,7 +96,7 @@ export function DropZone({ heading, hint, accept, multiple = true, onFiles, clas
         onChange={onChange}
       />
       <label htmlFor={id} className="button drop-zone-choose" data-variant="primary">
-        Choose files
+        {chooseLabel}
       </label>
       <p className="drop-zone-status" role="status">
         {message}
