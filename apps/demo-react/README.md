@@ -115,7 +115,7 @@ pnpm deep-ink add --all --cwd apps/demo-react
 ```
 
 `src/main.tsx` imports `src/ui/styles/index.css` (written by `deep-ink init`). `AppLayout` is built from the copied `app-shell`, `theme-toggle`
-and `command-bar` (Ctrl/Cmd+K) items; the pages use the other copied items. After a change in the registry, re-copy with
+and `command-bar` (Ctrl/Cmd+K, a native React component) items; the pages use the other copied items. After a change in the registry, re-copy with
 `pnpm deep-ink add --all --cwd apps/demo-react --overwrite` (never hand-edit the copies).
 
 ## Data
