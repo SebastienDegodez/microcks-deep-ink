@@ -142,9 +142,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/drop-zone.tsx": "aa3a7475887fdb4b6a712d8f4eeaf86341ac492c21fa24bec7098892686a2569",
-        "src/ui/styles/drop-zone.css": "f5e1faddff225974a22b69c31ea1c85f74acfcf81a542c45b0644e105e2d6856"
+        "src/ui/styles/drop-zone.css": "ed9af01d794688c1cc793b5fdc83cf7fd474da5b4a2abdca3f7fbd2f33e4de37"
       },
-      "hash": "08682580ede9fdbf"
+      "hash": "1eb4a1dec22b5b74"
     },
     "empty-state": {
       "version": "0.2.0",
