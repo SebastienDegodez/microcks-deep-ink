@@ -537,7 +537,7 @@ function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: st
           tabs={CI_FORMATS.map((f) => ({ id: f.id, label: f.label }))}
           tab={ciTab}
           onTabChange={(id) => setCiTab(id as CiFormat)}
-          lines={lines.map((l) => ({ text: l.text || ' ', selected: l.changed }))}
+          lines={lines.map((l) => ({ text: l.text || ' ', changed: l.changed }))}
         />
         <p className="tc-ci-legend" role="status">
           <span className="tc-ci-swatch" aria-hidden="true" />
