@@ -11,7 +11,7 @@ import { Icon } from '@/ui/components/ui/icon';
 import { Textarea } from '@/ui/components/ui/input';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { OpPickList } from '@/ui/components/ui/op-pick';
-import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { fresh, ProposalRow, type Item, type MockTarget } from './ProposalRow';
 
 interface OpState { phase: 'idle' | 'review'; items: Item[] }

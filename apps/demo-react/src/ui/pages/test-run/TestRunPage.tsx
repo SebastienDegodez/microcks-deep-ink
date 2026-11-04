@@ -21,7 +21,7 @@ import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
 import { RunnerLog } from '@/ui/components/ui/runner-log';
-import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { useThrottledAnnounce } from '../tests/useThrottledAnnounce';
 import './test-run.css';
 

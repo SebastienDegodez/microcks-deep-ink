@@ -25,7 +25,7 @@ import { Icon } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { Select } from '@/ui/components/ui/select';
 import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
-import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { useThrottledAnnounce } from '../tests/useThrottledAnnounce';
 import { CallGraph } from './CallGraph';
 import './traces.css';

@@ -14,7 +14,8 @@ import { Icon } from '@/ui/components/ui/icon';
 import { Segmented, type SegmentedOption } from '@/ui/components/ui/segmented';
 import { LinkSourceDialog } from './LinkSourceDialog';
 import { LoomThumb, sourceColor } from './LoomThumb';
-import { ButtonRouterLink, ErrorBlock, runPath, runSetupPath, workflowPath } from './shared';
+import { ErrorBlock } from '@/ui/app/states';
+import { ButtonRouterLink, runPath, runSetupPath, workflowPath } from './shared';
 
 type Result = 'all' | 'passed' | 'failed' | 'never';
 

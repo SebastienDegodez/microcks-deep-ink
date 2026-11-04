@@ -40,7 +40,7 @@ import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
 import { RunnerLog } from '@/ui/components/ui/runner-log';
 import { Select } from '@/ui/components/ui/select';
 import { TaskLanes } from '@/ui/components/ui/task-timeline';
-import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 
 /** The runner fills one matrix cell every 800 ms, as in the prototype. */
 const CHECK_MS = 800;

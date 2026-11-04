@@ -1,3 +1,4 @@
+import '../tests/page-kit.css';
 import type { FlowCounts, TopologyEdge, TraceCall, TraceTopology } from '@/domain/observe';
 import { Icon } from '@/ui/components/ui/icon';
 

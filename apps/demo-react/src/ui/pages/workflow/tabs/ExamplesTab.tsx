@@ -5,7 +5,8 @@ import type { WorkflowDetail } from '@/application/arazzo';
 import { useQuery, useRelativeTime, useUseCases } from '@/ui/app';
 import { Button } from '@/ui/components/ui/button';
 import { Icon } from '@/ui/components/ui/icon';
-import { ErrorBlock, LoadingBlock, runPath, runSetupPath } from '../../workflows/shared';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
+import { runPath, runSetupPath } from '../../workflows/shared';
 import { originWord } from '../run-facts';
 import './examples.css';
 
@@ -69,7 +70,7 @@ export function ExamplesTab({ detail, runs, examples, serviceLabel }: ExamplesTa
               {overlay.data.replace(/\n$/, '')}
             </pre>
           ) : (
-            <LoadingBlock label="Loading the overlay" rows={1} />
+            <LoadingBlock label="the overlay" rows={1} />
           )
         ) : null}
       </div>

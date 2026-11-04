@@ -9,7 +9,7 @@ import { Button } from '@/ui/components/ui/button';
 import { EmptyState } from '@/ui/components/ui/empty-state';
 import { Select } from '@/ui/components/ui/select';
 import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
-import { ErrorBlock, LoadingBlock } from './PageStates';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { testRunHref } from '../explore-kit/format';
 import { fmtDuration, shortDate, TestTimeline, timelineRuns } from './TestTimeline';
 import './tests.css';

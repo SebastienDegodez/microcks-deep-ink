@@ -8,7 +8,8 @@ import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
 import { Icon } from '@/ui/components/ui/icon';
 import { MethodTag } from '@/ui/components/ui/method-tag';
-import { ErrorBlock, LoadingBlock, workflowPath } from '../../workflows/shared';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
+import { workflowPath } from '../../workflows/shared';
 import './mock-url.css';
 
 const RUN_ID = '6543f0c2a9e1b7d4c3f20a11';
@@ -64,7 +65,7 @@ export function MockUrlTab({ detail, runs, onShowRuns }: { detail: WorkflowDetai
       </Callout>
     );
   }
-  if (info.status === 'loading' && !info.data) return <LoadingBlock label="Loading the Mock URL" rows={2} />;
+  if (info.status === 'loading' && !info.data) return <LoadingBlock label="the Mock URL" rows={2} />;
   if (info.status === 'error') return <ErrorBlock error={info.error} onRetry={info.reload} />;
   const data = info.data;
   if (!data) return null;

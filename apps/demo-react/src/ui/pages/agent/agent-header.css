@@ -5,4 +5,4 @@
 .agent-badge-link { display: inline-flex; text-decoration: none; border-radius: 6px; }
 .agent-badge-link:hover .api-badge { filter: brightness(1.08); }
 .agent-badge-link:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
-.agent-page { gap: 22px; }
+.ex-stack.agent-page { gap: 22px; }
