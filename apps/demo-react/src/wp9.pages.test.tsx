@@ -106,9 +106,26 @@ describe('Test history (/tests/service/:id)', () => {
     expect(within(table).getByText('#119')).toBeTruthy();
     expect(within(table).getByText('#118')).toBeTruthy();
     expect(table.querySelector('tr[data-selected]')?.textContent).toContain('#117');
-    expect(screen.getByRole('img', { name: /Conformance of each test run/ })).toBeTruthy();
+    expect(screen.getByRole('table', { name: /Conformance timeline, last 20 runs/ })).toBeTruthy();
     fireEvent.change(screen.getByLabelText('Result'), { target: { value: 'failed' } });
     expect(within(await screen.findByRole('table', { name: 'Test runs' })).queryByText('#118')).toBeNull();
+  });
+
+  it('shows one pressed bar per run and inspects the run of the clicked bar', async () => {
+    renderAt('/tests/service/pastry2');
+    const nav = await screen.findByRole('navigation', { name: 'Breadcrumb' });
+    expect(within(nav).getByRole('link', { name: 'APIs & Services' })).toBeTruthy();
+    const group = await screen.findByRole('group', { name: /Runs, oldest to newest/ });
+    const bars = within(group).getAllByRole('button');
+    expect(bars).toHaveLength(20);
+    expect(bars.filter((b) => b.getAttribute('aria-pressed') === 'true').map((b) => b.getAttribute('aria-label'))).toEqual([
+      expect.stringMatching(/^Run #117, failed, 2\.11 s, 6\/7 samples passed/),
+    ]);
+    const timeout = within(group).getByRole('button', { name: /^Run #113, timed out, 10\.00 s/ });
+    fireEvent.click(timeout);
+    expect(timeout.getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('link', { name: 'Open run #113' }).getAttribute('href')).toContain('/tests/runner/113');
+    expect(screen.getByRole('img', { name: /^GET \/pastries: 19 passed, 1 failed/ })).toBeTruthy();
   });
 
   it('keeps #118 (passed) in the history next to the failing #119', async () => {
@@ -121,6 +138,17 @@ describe('Test history (/tests/service/:id)', () => {
 });
 
 describe('Usage (/metrics/:serviceId?)', () => {
+  it('shows the four key figures', async () => {
+    renderAt('/metrics/pastry2');
+    await screen.findByRole('heading', { level: 1 });
+    const figures = await screen.findByRole('region', { name: 'Key figures' }, { timeout: 3000 });
+    const cards = within(figures).getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
+    expect(cards).toEqual(['Mock invocations · today', 'Peak hour', 'Last request', 'Conformance']);
+    expect(within(figures).getByRole('region', { name: 'Last request' }).textContent).toContain('12 s ago');
+    expect(within(figures).getByRole('link', { name: 'GET /rest/API+Pastry/2.0/pastries/Millefeuille' }).getAttribute('href')).toContain('/traces?service=pastry2');
+    expect(within(figures).getByRole('region', { name: 'Conformance' }).textContent).toContain('92%');
+  });
+
   it('selects a bar with the keyboard and offers the data table', async () => {
     renderAt('/metrics/pastry2');
     await screen.findByRole('heading', { level: 1, name: 'Usage & conformance' });
@@ -130,15 +158,24 @@ describe('Usage (/metrics/:serviceId?)', () => {
     expect(current).toBeTruthy();
     fireEvent.keyDown(current, { key: 'ArrowLeft' });
     await waitFor(() => expect(bars.filter((b) => b.getAttribute('aria-pressed') === 'true')).toHaveLength(1));
-    expect(screen.getAllByText('Show data table').length).toBeGreaterThanOrEqual(3);
+    expect(screen.getAllByText('Show data table').length).toBeGreaterThanOrEqual(2);
   });
 
-  it('switches period and shows a conformance meter', async () => {
+  it('switches period and shows the conformance treemap and index card', async () => {
     renderAt('/metrics/pastry2');
     await screen.findByRole('heading', { level: 1 });
     fireEvent.click(await screen.findByRole('button', { name: '7 days' }));
     await screen.findByRole('group', { name: /one bar per day/ });
-    expect(screen.getByRole('meter')).toBeTruthy();
+    const treemap = await screen.findByRole('region', { name: 'Conformance risk by domain' });
+    const pastry = within(treemap).getByRole('region', { name: 'domain=pastry' });
+    expect(within(pastry).getAllByRole('link').map((l) => l.textContent)).toEqual([
+      expect.stringContaining('API Pastry 2.0'), expect.stringContaining('API Pastry 1.0'), expect.stringContaining('Pastry orders API 0.1.0'),
+    ]);
+    expect(within(treemap).getByRole('link', { name: /API Pastry 2\.0.*conformance\s*92%, conformant/ }).getAttribute('aria-current')).toBe('true');
+    expect(within(treemap).getByRole('region', { name: 'no domain label' })).toBeTruthy();
+    const index = screen.getByRole('region', { name: 'Conformance index vs current score' });
+    expect(within(index).getByRole('img', { name: 'Current score 92 percent, conformance index 92 percent' })).toBeTruthy();
+    expect(within(index).getAllByRole('link')).toHaveLength(10);
   });
 });
 
@@ -212,5 +249,17 @@ describe('Administration (/admin/:tab?)', () => {
     fireEvent.change(screen.getByLabelText(/Password/), { target: { value: 'hunter2hunter2' } });
     fireEvent.click(screen.getAllByRole('button', { name: 'Create secret' }).pop() as HTMLElement);
     await waitFor(() => expect(screen.getByText('staging-token')).toBeTruthy());
+  });
+});
+
+describe('Usage heatmap (/metrics/pastry2)', () => {
+  it('names each day with its count and selects the latest day', async () => {
+    renderAt('/metrics/pastry2');
+    await screen.findByRole('heading', { level: 1 });
+    const heat = await screen.findByRole('group', { name: /Calendar heatmap/ }, { timeout: 3000 });
+    expect(screen.getByRole('heading', { level: 2, name: 'Daily invocations · last 12 weeks' })).toBeTruthy();
+    const days = within(heat).getAllByRole('button');
+    expect(days).toHaveLength(79);
+    expect(days.find((d) => d.getAttribute('aria-pressed') === 'true')?.getAttribute('aria-label')).toBe('Tue, Nov 3: 296 invocations');
   });
 });

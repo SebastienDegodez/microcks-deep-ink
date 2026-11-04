@@ -180,11 +180,11 @@ const JOBS: Job[] = [
     ],
   },  {
     id: 'upload-agent-card', name: 'Pastry concierge · Agent Card', url: 'agent-card.json · uploaded file · 3.2 KB', main: true, kind: 'a2a', origin: 'upload',
-    label: 'A2A_AGENT_CARD', ssl: true, labels: 'domain=pastry · status=beta', created: at(NOV, 2, 10, 12), active: true, health: 'imported',
+    label: 'A2A_AGENT_CARD', ssl: true, labels: 'domain=pastry · status=beta', created: at(NOV, 3, 8, 10), active: true, health: 'imported',
     produces: [svc('A2A', 'Pastry concierge', '1.0', 'concierge')],
     artifactNote: 'A2A Agent Card · spec 1.0 · 3 skills become operations · Projection, v2 module',
     timeline: [
-      run('e1', at(NOV, 2, 10, 12), 'Uploaded by MA', 'imported', { note: 'one-off upload · 3 skills, 3 interfaces (JSONRPC, HTTP+JSON, GRPC)' }),
+      run('e1', at(NOV, 3, 8, 10), 'Uploaded by MA', 'imported', { note: 'one-off upload · 3 skills, 3 interfaces (JSONRPC, HTTP+JSON, GRPC)' }),
     ],
   },
   {

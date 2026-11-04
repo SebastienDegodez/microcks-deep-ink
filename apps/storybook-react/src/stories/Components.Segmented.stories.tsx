@@ -75,3 +75,11 @@ export const Joined: StoryObj = {
     );
   },
 };
+
+export const JoinedPrimary: StoryObj = {
+  name: 'Joined, primary tone',
+  render: () => {
+    const [v, setV] = useState('primary');
+    return <Segmented label="Artifact role" variant="joined" tone="primary" value={v} onChange={setV} options={[{ id: 'primary', label: 'Primary' }, { id: 'secondary', label: 'Secondary' }]} />;
+  },
+};

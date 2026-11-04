@@ -13,9 +13,12 @@ permissions:
   pages: write
   id-token: write
 
+# Pull requests: a new push cancels the previous run of the same PR.
+# main: never cancel a running deploy. GitHub keeps at most one pending run per group, so after a
+# burst of merges the running build finishes and only the latest pending one runs next.
 concurrency:
   group: pages-${{ github.ref }}
-  cancel-in-progress: true
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   build:

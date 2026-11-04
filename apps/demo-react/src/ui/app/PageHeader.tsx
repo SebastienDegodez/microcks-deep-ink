@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router';
+import { Icon } from '@/ui/components/ui/icon';
 import { PAGE_TITLE_ID } from './usePageTitle';
 
 export interface Crumb {
@@ -13,10 +14,14 @@ export interface PageHeaderProps {
   title: string;
   /** Trail of parent pages, rendered as `<nav aria-label="Breadcrumb">` above the title row. */
   breadcrumb?: Crumb[];
+  /** Breadcrumb separator: `›` (default, most screens), `/` (Service) or `chevron` (a 12px icon, Workflow). */
+  breadcrumbSeparator?: '›' | '/' | 'chevron';
   /** Mono pill beside the title ("11 services · 29 operations"). */
   meta?: ReactNode;
   /** Badge next to the title (an ApiBadge, a StatusBadge...). */
   badge?: ReactNode;
+  /** Node before the title in the title row (a service badge on Tests, a method tag on Behavior). */
+  leading?: ReactNode;
   /** Lead paragraph under the title row (14px, max 720px). */
   description?: ReactNode;
   /** `muted` (default) or `secondary` text colour for the description. */
@@ -25,8 +30,12 @@ export interface PageHeaderProps {
   actions?: ReactNode;
   /** `md` = 32px title (default), `lg` = 34px. Applies to the `brand` variant. */
   size?: 'md' | 'lg';
-  /** Title font: `brand` (Alegreya Sans SC 800, default) or `plain` (IBM Plex Sans 600 28px, as on Import). */
-  variant?: 'brand' | 'plain';
+  /**
+   * Title font: `brand` (Alegreya Sans SC 800, default), `plain` (IBM Plex Sans 600 28px, as on Import) or
+   * `subtitle` (Alegreya Sans SC 700 26px, secondary text, after a leading badge, as on Tests) or
+   * `mono` (JetBrains Mono 600 24px, an operation path, as on Behavior).
+   */
+  variant?: 'brand' | 'plain' | 'subtitle' | 'mono';
   /** Vertical alignment of the actions: `end` (default, bottom-aligned with the description) or `start`. */
   align?: 'end' | 'start';
 }
@@ -36,7 +45,7 @@ export interface PageHeaderProps {
  * focus to it when the route changes. Section headings below it are `<h2>`.
  * The wrapper is a `div`, not a `header`, so the page has exactly one banner landmark (the top bar).
  */
-export function PageHeader({ title, breadcrumb, meta, badge, description, descriptionTone = 'muted', actions, size = 'md', variant = 'brand', align = 'end' }: PageHeaderProps) {
+export function PageHeader({ title, breadcrumb, breadcrumbSeparator = '›', meta, badge, leading, description, descriptionTone = 'muted', actions, size = 'md', variant = 'brand', align = 'end' }: PageHeaderProps) {
   return (
     <div className="demo-page-header" data-align={align}>
       {breadcrumb && breadcrumb.length > 0 ? (
@@ -48,7 +57,7 @@ export function PageHeader({ title, breadcrumb, meta, badge, description, descri
                 <li key={i}>
                   {i > 0 ? (
                     <span aria-hidden="true" className="demo-breadcrumb-sep">
-                      ›
+                      {breadcrumbSeparator === 'chevron' ? <Icon name="chevron" size={12} /> : breadcrumbSeparator}
                     </span>
                   ) : null}
                   {c.to && !last ? <Link to={c.to}>{c.label}</Link> : <span aria-current={last ? 'page' : undefined}>{c.label}</span>}
@@ -60,7 +69,8 @@ export function PageHeader({ title, breadcrumb, meta, badge, description, descri
       ) : null}
       <div className="demo-page-header-row">
         <div className="demo-page-header-text">
-          <div className="demo-page-title-row">
+          <div className="demo-page-title-row" data-leading={leading ? '' : undefined}>
+            {leading}
             <h1 id={PAGE_TITLE_ID} tabIndex={-1} className="demo-page-title" data-size={size} data-variant={variant}>
               {title}
             </h1>

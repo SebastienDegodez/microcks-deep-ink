@@ -21,7 +21,7 @@
 
   .api-badge > span { display: inline-flex; align-items: center; padding: 4px 9px; }
   .api-badge[data-size="md"] > .api-badge-type { padding-inline: 8px; }
-  .api-badge[data-size="sm"] > span { padding: 2px 6px; font-size: 11px; }
+  .api-badge[data-size="sm"] > span { padding: 2px 6px; font-size: 11px; line-height: 13px; }
   /* Card (badge wall): 13px, roomier segments, the version in the text colour, a long name ellipsed. */
   .api-badge[data-size="card"] > span { padding: 6px 10px; font-size: 13px; }
   .api-badge[data-size="card"] > .api-badge-version { color: var(--text); }

@@ -1,0 +1,21 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "run-progress",
+  "title": "RunProgress",
+  "tier": "microcks",
+  "description": "Progress card of a running test (TestRun, AgentTestRun): the big count done, what runs now, one segment per step, the counts by result and a step control.",
+  "registryDependencies": ["base", "icon"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "<section aria-label=\"Progress\"> with the count as text, a role=\"img\" bar named by the count and a polite live region for the current step",
+    "keyboard": [["Tab", "Reaches the step control"]],
+    "aria": [
+      "The segment bar is role=\"img\" named \"5 of 7 test steps done\"",
+      "\"Now calling\" is aria-live=\"polite\": the current step is announced when it changes",
+      "Each count writes its word next to a decorative icon; the current segment's pulse stops under reduced motion"
+    ],
+    "rgaa": ["1.1", "3.1", "7.5", "13.8"],
+    "wcag": ["1.1.1", "1.4.1", "2.2.2", "4.1.3"]
+  },
+  "stories": ["Microcks/RunProgress"]
+}

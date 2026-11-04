@@ -27,9 +27,13 @@ export interface CockpitView {
     /** Average conformance of the tested services, null when none is tested. */
     conformance: number | null;
     failingServices: number;
+    /** Runs with a verdict (passed or failed) over the 7 days before `asOf`; timeouts are left out. */
+    tests7d: { passed: number; failed: number };
   };
   services: ServiceSummary[];
   recentTests: TestRunSummary[];
+  /** The 5 latest mock calls, newest first, so Live traces is not empty before the stream ticks. */
+  recentCalls: TraceCall[];
 }
 
 export interface ObserveUseCases {
@@ -51,10 +55,22 @@ export interface ObserveUseCases {
 export function createObserveUseCases(ports: ObservePorts): ObserveUseCases {
   return {
     getCockpit: async () => {
-      const [services, recentTests] = await Promise.all([ports.catalog.list(), ports.testRuns.recent(5)]);
+      const [services, latest, recentCalls] = await Promise.all([ports.catalog.list(), ports.testRuns.recent(500), ports.traffic.recent(5)]);
+      const now = ports.clock.now();
+      const weekAgo = new Date(now.getTime() - 7 * 24 * 3600 * 1000).toISOString();
+      const week = latest.filter((r) => r.startedAt >= weekAgo);
+      // The 6 latest runs, at most 2 per service, so one busy service does not fill the list.
+      const perService = new Map<string, number>();
+      const recentTests = latest
+        .filter((r) => {
+          const n = perService.get(r.serviceId) ?? 0;
+          perService.set(r.serviceId, n + 1);
+          return n < 2;
+        })
+        .slice(0, 6);
       const scored = services.filter((s) => s.conformance !== null);
       return {
-        asOf: ports.clock.now().toISOString(),
+        asOf: now.toISOString(),
         kpis: {
           services: services.length,
           operations: services.reduce((n, s) => n + s.operationCount, 0),
@@ -64,9 +80,11 @@ export function createObserveUseCases(ports: ObservePorts): ObserveUseCases {
               ? null
               : Math.round(scored.reduce((n, s) => n + (s.conformance ?? 0), 0) / scored.length),
           failingServices: services.filter((s) => s.testStatus === 'failed').length,
+          tests7d: { passed: week.filter((r) => r.result === 'passed').length, failed: week.filter((r) => r.result === 'failed').length },
         },
         services,
         recentTests,
+        recentCalls,
       };
     },
     subscribeTraffic: (listener) => ports.traffic.subscribe(listener),

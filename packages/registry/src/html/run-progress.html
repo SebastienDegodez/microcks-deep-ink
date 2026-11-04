@@ -1,0 +1,22 @@
+<!--
+  RunProgress. The count done is text; the bar is role="img" named by "5 of 7 test steps done";
+  "Now calling" is a polite live region. The current segment pulses (not under reduced motion).
+-->
+<section class="run-progress" aria-label="Progress">
+  <div class="run-progress-top">
+    <p class="run-progress-count"><span class="run-progress-done">5<span class="run-progress-total">/7</span></span> <span class="run-progress-caption">test steps done</span></p>
+    <div class="run-progress-now" aria-live="polite"><span class="run-progress-now-label">Now calling</span><span class="run-progress-now-value">PATCH /pastries/{name}</span></div>
+  </div>
+  <div class="run-progress-bar" role="img" aria-label="5 of 7 test steps done">
+    <span data-seg="done"></span><span data-seg="done"></span><span data-seg="done"></span><span data-seg="failed"></span><span data-seg="done"></span><span data-seg="current"></span><span data-seg="queued"></span>
+  </div>
+  <div class="run-progress-foot">
+    <ul class="run-progress-counts">
+      <li data-kind="pass"><svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l5 5 9-11"/></svg>4 passed</li>
+      <li data-kind="fail"><svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>1 failed</li>
+      <li data-kind="pending"><svg class="icon" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 12a8 8 0 1 1-16 0a8 8 0 1 1 16 0"/></svg>2 to go</li>
+    </ul>
+    <span class="run-progress-action"><button type="button" class="button" data-variant="secondary" data-size="sm">Step forward</button></span>
+  </div>
+  <p class="run-progress-note">The run plays one step at a time; the log on the right follows it.</p>
+</section>
