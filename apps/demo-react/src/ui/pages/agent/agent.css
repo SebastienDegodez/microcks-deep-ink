@@ -3,11 +3,6 @@
 @media (max-width: 960px) { .ag-layout { grid-template-columns: minmax(0, 1fr); } }
 .ag-part { margin: 0; padding: 6px 8px; border-left: 2px solid var(--border-strong); overflow-wrap: anywhere; }
 .ag-part pre { margin: 0; white-space: pre-wrap; font-family: var(--font-mono); font-size: var(--type-small); }
-.ag-table-wrap { overflow-x: auto; }
-.ag-table { width: 100%; border-collapse: collapse; }
-.ag-table th, .ag-table td { text-align: start; padding: 8px 12px; border-top: 1px solid var(--border); vertical-align: middle; }
-.ag-table thead th { border-top: 0; color: var(--text-secondary); font-weight: 600; font-size: var(--type-small); }
-.ag-table tr[data-selected] { background: var(--selected); }
 .ag-pickbtn { all: unset; cursor: pointer; font-family: var(--font-mono); text-decoration: underline; }
 .ag-pickbtn:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
 .ag-transport { display: grid; gap: 8px; padding: 16px; border: 1px solid var(--border); border-radius: var(--radius-md, 6px); background: var(--surface); min-width: 0; }
