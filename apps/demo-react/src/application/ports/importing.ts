@@ -28,8 +28,19 @@ export interface ImporterRepository {
   diff(id: string, fromVersion: string, toVersion: string): Promise<ImporterDiff>;
 }
 
+export interface SecretInput {
+  name: string;
+  kind: SecretSummary['kind'];
+  description?: string;
+  value: string;
+  /** Credential summary without the value ("header PRIVATE-TOKEN · token ••••••••"). */
+  detail?: string;
+}
+
 export interface SecretRepository {
   list(): Promise<SecretSummary[]>;
-  create(input: { name: string; kind: SecretSummary['kind']; description?: string; value: string }): Promise<SecretSummary>;
+  create(input: SecretInput): Promise<SecretSummary>;
+  /** Changes the type, description or credentials; the name never changes. An empty `value` keeps the stored one. */
+  update(id: string, input: Omit<SecretInput, 'name'>): Promise<SecretSummary>;
   remove(id: string): Promise<void>;
 }
