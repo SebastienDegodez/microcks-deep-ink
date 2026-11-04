@@ -98,13 +98,15 @@ function useReplay(frames: readonly WorkflowRun[]) {
   const [behind, setBehind] = useState(false);
   const last = frames.length - 1;
   useEffect(() => {
-    if (paused) return undefined;
-    if (index >= last) {
-      if (behind) setBehind(false);
-      return undefined;
-    }
+    if (paused || index >= last) return undefined;
     // Caught up: show a new frame as soon as it arrives. Behind (after a pause): one frame per tick.
-    const timer = setTimeout(() => setIndex((i) => Math.min(i + 1, last)), behind || last - index > 1 ? REPLAY_TICK_MS : 0);
+    const timer = setTimeout(
+      () => {
+        setIndex((i) => Math.min(i + 1, last));
+        if (index + 1 >= last) setBehind(false);
+      },
+      behind || last - index > 1 ? REPLAY_TICK_MS : 0,
+    );
     return () => clearTimeout(timer);
   }, [paused, behind, index, last]);
   const frame = frames[Math.min(index, Math.max(last, 0))];
