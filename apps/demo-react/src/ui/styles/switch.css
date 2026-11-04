@@ -6,23 +6,23 @@
     flex: none;
     position: relative;
     box-sizing: border-box;
-    width: 44px;
-    height: 24px;
+    width: 36px;
+    height: 20px;
     margin: 0;
-    background: var(--surface);
-    border: 1px solid var(--border-control);
+    background: var(--raised);
+    border: 1px solid var(--border-strong);
     border-radius: var(--radius-pill);
     cursor: inherit;
   }
   .switch::before {
     content: "";
     position: absolute;
-    inset-block-start: 3px;
-    inset-inline-start: 3px;
-    width: 16px;
-    height: 16px;
+    inset-block-start: 2px;
+    inset-inline-start: 2px;
+    width: 14px;
+    height: 14px;
     border-radius: 50%;
-    background: var(--text-secondary);
+    background: var(--text-muted);
     transition: transform 0.12s ease;
   }
   .switch:checked {
@@ -31,7 +31,7 @@
   }
   .switch:checked::before {
     background: var(--on-action);
-    transform: translateX(20px);
+    transform: translateX(16px);
   }
   .switch:disabled {
     border-color: var(--border);

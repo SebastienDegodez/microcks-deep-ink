@@ -52,7 +52,7 @@ export function Field({ label, help, error, required, children, className }: Fie
       ) : null}
       {error ? (
         <p className="error" id={errorId}>
-          <Icon name="warning" size={16} />
+          <Icon name="cross" size={13} />
           <span>
             <span className="sr-only">Error: </span>
             {error}

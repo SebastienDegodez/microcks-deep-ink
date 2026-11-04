@@ -69,10 +69,10 @@
     "field": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/field.tsx": "c34039d9714405d16e39097874793a7cbf57e0ec0076b0025231fc1fa59d4cca",
-        "src/ui/styles/field.css": "286111acb85ecb38d4428cfbc9da05a7c706f6bab46711262aab1acd2db2378c"
+        "src/ui/components/ui/field.tsx": "b068fc2d3887fa4e0f65dccd79650dba2831f977746e5aa7b232f027d2c04629",
+        "src/ui/styles/field.css": "9dff6a533c78f77316227dbbf489ad4fc1aefb147c53869d70df21a222318cf3"
       },
-      "hash": "970e8b15627af9d7"
+      "hash": "88d1f64fda9fee8b"
     },
     "checkbox": {
       "version": "0.2.0",
@@ -294,9 +294,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/switch.tsx": "ed7d12e04b2cb80cba1edace11a1c7756696412b9389407e7a6b2aa665f331fd",
-        "src/ui/styles/switch.css": "ca583d64bca6c2def1b57d4a98ce9fe536b0a13816ec846c61a994407464d281"
+        "src/ui/styles/switch.css": "5c66b3f02568f97d612adf3040befcdd5075d1ed88588c88254afb761cd92c12"
       },
-      "hash": "c362af592e0a0fa8"
+      "hash": "b9076a0b34e90880"
     },
     "table": {
       "version": "0.2.0",
