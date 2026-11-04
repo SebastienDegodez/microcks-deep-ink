@@ -47,8 +47,8 @@ rules require one; the reasoning is in the Angular Storybook introduction and at
  packages/cli               apps/shared/copy-panel              react/apps/storybook · apps/storybook-angular
  deep-ink init|add|...      "Copy" panel in both Storybooks     stories import the registry source directly
         │
-        ▼ copies files (the demo never imports a package)
- apps/demo-react/src/ui/components/ui + src/ui/styles + deep-ink.json
+        ▼ Angular, HTML and CSS apps copy files      React apps (and the demo) import @microcks/deep-ink (react/)
+ apps/demo-react: `link:` to react/packages/deep-ink, `@/ui/components/ui/<item>` aliased to the package
    domain ◄── application (ports, use cases) ◄── ui (pages)      infrastructure/in-memory ──implements──► ports
                               ▲                                             ▲
                               └────── composition-root.ts (the only wiring) ┘
@@ -88,8 +88,8 @@ copies the files with a header, and records a hash of each file in `deep-ink.jso
 silently. Details and exit codes: [packages/cli/README.md](packages/cli/README.md).
 
 **From Storybook:** every story has a **Copy** panel (selected by default) listing the exact files the CLI would copy,
-the registry dependencies, a Copy button per file and the matching `pnpm deep-ink add ...` command. The demo is the
-proof: `apps/demo-react/src/ui/components/ui` is CLI output.
+the registry dependencies, a Copy button per file and the matching `pnpm deep-ink add ...` command. The demo uses the
+React package, `@microcks/deep-ink`; its `@/ui/components/ui/<item>` imports resolve to it (Vite alias and tsconfig paths).
 
 ```tsx
 import { Button } from '@/ui/components/ui/button';

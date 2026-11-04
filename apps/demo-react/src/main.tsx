@@ -5,11 +5,9 @@ import { createComposition } from '@/composition-root';
 import { UseCasesProvider } from '@/ui/app';
 import { createAppRouter } from '@/ui/app/router';
 import { restoreTheme } from '@/ui/components/ui/theme-toggle.theme';
+// Design-system styles first (tokens, base and every component, layered), then the demo shell's own CSS.
+import '@microcks/deep-ink/styles.css';
 import '@/ui/app/app.css';
-
-// Design-system styles copied by the CLI (`deep-ink init` writes src/ui/styles/index.css).
-// The glob keeps the build working before the copy; once the file exists it is bundled.
-import.meta.glob('./ui/styles/index.css', { eager: true });
 
 restoreTheme();
 

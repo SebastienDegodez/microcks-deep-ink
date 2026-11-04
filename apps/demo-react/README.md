@@ -46,7 +46,7 @@ simulated latency (120 to 350 ms, deterministic). The Playwright smoke run uses 
 | `src/infrastructure/in-memory/shared` | `FixedClock` (2026-11-03T09:10:04Z), `latency()`, `createStream`/`createTickingStream`/`createSequenceStream`, **seeds** (services, Arazzo documents, workflows, runs, sessions), `seed-ids.ts` | domain, application |
 | `src/ui/app` | Providers and hooks (`useUseCases`, `useQuery`, `useSubscription`, `usePageTitle`, `useAnnounce`), `PageHeader`, `DemoBanner`, `AppLayout`, `routes.ts`, `router.tsx` | application (types), domain, ui, `react`, `react-router` |
 | `src/ui/pages/<screen>/<Name>Page.tsx` | One lazy page per route | same as `ui` |
-| `src/ui/components/ui`, `src/ui/styles` | **CLI output**: do not edit by hand (see below) | |
+| `@/ui/components/ui/<item>` | The design system: an alias of the `@microcks/deep-ink` package (see below) | |
 
 ### The dependency rule
 
@@ -103,20 +103,21 @@ changes (not on a tab, filter or param change; routes use optional segments such
 `<main id="main" tabindex="-1">`. Because the router is a hash router, the skip link's click is intercepted (a plain `#main` href would
 navigate).
 
-## The copied components
+## The design system
 
-`src/ui/components/ui` (components) and `src/ui/styles` (tokens, base and component CSS) are produced by the Deep Ink CLI from
-`packages/registry`. They are yours once copied, but in this repo they are regenerated, so fix them in the registry:
+The components and styles come from `@microcks/deep-ink`, the React package of the repo (`react/packages/deep-ink`), linked with
+`"@microcks/deep-ink": "link:../../react/packages/deep-ink"`. Build it before the demo:
 
 ```bash
-pnpm build
-pnpm deep-ink init --cwd apps/demo-react --framework react --out src/ui/components/ui --css-out src/ui/styles --yes
-pnpm deep-ink add --all --cwd apps/demo-react
+pnpm install && pnpm build                                  # root: tokens, elements, registry CSS
+pnpm -C react install --frozen-lockfile && pnpm -C react build
+pnpm --filter demo-react dev
 ```
 
-`src/main.tsx` imports `src/ui/styles/index.css` (written by `deep-ink init`). `AppLayout` is built from the copied `app-shell`, `theme-toggle`
-and `command-bar` (Ctrl/Cmd+K, a native React component) items; the pages use the other copied items. After a change in the registry, re-copy with
-`pnpm deep-ink add --all --cwd apps/demo-react --overwrite` (never hand-edit the copies).
+`src/main.tsx` imports `@microcks/deep-ink/styles.css` once. Pages import `@/ui/components/ui/<item>` (or `@microcks/deep-ink`):
+`vite.config.ts` aliases every `@/ui/components/ui/...` import to the package, and `tsconfig.json` maps it to the package types.
+The one file left in `src/ui/components/ui` (`workflow-loom.tsx`) re-exports the Loom for `LoomHost`'s lazy `import.meta.glob`.
+Fix components in the package (`react/packages/deep-ink/src`), never in the demo.
 
 ## Data
 

@@ -10,7 +10,10 @@
  * (`src/infrastructure/in-memory/<feature>/*.test.ts`) or in `src/composition-root.test.ts`.
  */
 
-const UI_PACKAGES = '(^|/)node_modules/(react|react-dom|react-router|scheduler)(/|$)';
+// tsconfig maps react and react-dom to their @types packages, hence the optional `@types/`.
+const UI_PACKAGES = '(^|/)node_modules/(@types/)?(react|react-dom|react-router|scheduler)(/|$)';
+// The design system: the @microcks/deep-ink package, a `link:` to the React workspace (resolved to its dist).
+const DESIGN_SYSTEM = '(^|/)(node_modules/@microcks/deep-ink|react/packages/deep-ink)/';
 // The test runner and Testing Library are allowed anywhere; `test-runner-only-in-tests` keeps it out of production code.
 const TEST_RUNNER = '(^|/)node_modules/(vitest|@testing-library/[^/]+)(/|$)';
 
@@ -48,10 +51,10 @@ module.exports = {
     },
     {
       name: 'ui-allowed-imports',
-      comment: 'src/ui may only import src/ui, src/application, src/domain and the React packages.',
+      comment: 'src/ui may only import src/ui, src/application, src/domain, the React packages and @microcks/deep-ink.',
       severity: 'error',
       from: { path: '^src/ui/' },
-      to: { pathNot: ['^src/(ui|application|domain)/', UI_PACKAGES, TEST_RUNNER] },
+      to: { pathNot: ['^src/(ui|application|domain)/', UI_PACKAGES, DESIGN_SYSTEM, TEST_RUNNER] },
     },
     {
       name: 'only-composition-root-imports-infrastructure',
@@ -70,7 +73,7 @@ module.exports = {
     {
       name: 'no-design-system-packages',
       comment:
-        'No module imports @microcks-deep-ink/*: components are COPIED into src/ui/components/ui by the CLI (shadcn-style), never imported from a package.',
+        'No module imports the @microcks-deep-ink/* workspace packages. The design system is @microcks/deep-ink (imported as @/ui/components/ui/<item> or directly).',
       severity: 'error',
       from: {},
       to: { path: '@microcks-deep-ink' },
@@ -109,7 +112,7 @@ module.exports = {
     },
   ],
   options: {
-    doNotFollow: { path: 'node_modules' },
+    doNotFollow: { path: ['node_modules', DESIGN_SYSTEM] },
     tsPreCompilationDeps: true,
     tsConfig: { fileName: 'tsconfig.json' },
     enhancedResolveOptions: {

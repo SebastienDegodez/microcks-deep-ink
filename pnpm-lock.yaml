@@ -10,6 +10,9 @@ importers:
 
   apps/demo-react:
     dependencies:
+      '@microcks/deep-ink':
+        specifier: link:../../react/packages/deep-ink
+        version: link:../../react/packages/deep-ink
       react:
         specifier: ^19.2.7
         version: 19.3.1

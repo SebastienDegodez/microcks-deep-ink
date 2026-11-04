@@ -4,9 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 
 export default tseslint.config(
   {
-    // `src/ui/components/ui` and `src/ui/styles` are CLI output (copied from packages/registry, where the
-    // same source is linted with the same a11y rules). Edit them in the registry, never here.
-    ignores: ['dist/**', 'node_modules/**', 'src/ui/components/ui/**', 'src/ui/styles/**'],
+    ignores: ['dist/**', 'node_modules/**'],
   },
   ...tseslint.configs.recommended,
   {
@@ -19,7 +17,7 @@ export default tseslint.config(
       // Architecture rule, second line of defence next to `pnpm lint:arch`.
       'no-restricted-imports': [
         'error',
-        { patterns: [{ group: ['@microcks-deep-ink/*'], message: 'Copy components with the CLI into src/ui/components/ui; never import the packages.' }] },
+        { patterns: [{ group: ['@microcks-deep-ink/*'], message: 'Import the design system from @microcks/deep-ink (or @/ui/components/ui/<item>), never the workspace packages.' }] },
       ],
     },
   },
