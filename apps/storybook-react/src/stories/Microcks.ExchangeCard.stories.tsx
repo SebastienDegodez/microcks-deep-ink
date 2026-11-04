@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/ExchangeCard',
+  component: ExchangeCard,
   parameters: itemParams(['exchange-card'], 'A request and its response: named cards with a small head (example name or status) over focusable mono blocks. The status is written; its fill only speeds up scanning.'),
-} satisfies Meta;
+} satisfies Meta<typeof ExchangeCard>;
 
 const BODY = `{
   "name": "Eclair Cafe",
@@ -50,4 +51,17 @@ export const Compact: StoryObj = {
       <ExchangeCard size="sm" title="Response" label="Response of Millefeuille" status="200 · application/json" blocks={[{ label: 'Response body', text: BODY, grow: true }]} />
     </Exchange>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof ExchangeCard> = {
+  args: {
+    title: 'GET /pastries/Millefeuille', label: 'Exchange 1', meta: '42 ms', status: '200 OK', statusTone: 'success', size: 'md', headingLevel: 4,
+    blocks: [{ label: 'Headers', text: 'Accept: application/json', tone: 'headers' }, { label: 'Body', text: '{ "name": "Millefeuille", "price": 3.9 }', tone: 'body' }],
+  },
+  argTypes: {
+    statusTone: { control: 'inline-radio', options: ['success', 'warning', 'danger'] },
+    size: { control: 'inline-radio', options: ['md', 'sm'] },
+    headingLevel: { control: 'inline-radio', options: [3, 4, 5, 6, 'none'] },
+  },
 };

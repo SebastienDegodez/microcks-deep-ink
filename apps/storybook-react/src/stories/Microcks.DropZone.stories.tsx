@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/DropZone',
+  component: DropZone,
   parameters: itemParams(['drop-zone', 'button', 'icon'], 'Drag and drop is an enhancement. The zone holds a real `<input type="file">` and a visible "Choose files" button, so keyboard and screen reader users upload the same way. A live region announces "2 files ready".'),
-} satisfies Meta;
+} satisfies Meta<typeof DropZone>;
 
 export const Default: StoryObj = {
   render: () => {
@@ -46,4 +47,10 @@ export const Small: StoryObj = {
       </DropZone>
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof DropZone> = {
+  args: { heading: 'Drop a contract here', hint: 'OpenAPI, AsyncAPI, gRPC or GraphQL.', accept: '.yaml,.yml,.json', multiple: true, chooseLabel: 'Choose files', size: 'md' },
+  argTypes: { size: { control: 'inline-radio', options: ['md', 'sm'] }, onFiles: { table: { disable: true } } },
 };

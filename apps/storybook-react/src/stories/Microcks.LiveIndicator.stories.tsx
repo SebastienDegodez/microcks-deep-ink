@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/LiveIndicator',
+  component: LiveIndicator,
   parameters: itemParams(['live-indicator'], 'Marks a real-time stream only. It is not a status and not a live region: pair it with a Pause control (RGAA 13.8) and announce stream changes elsewhere. The dot is static under reduced motion.'),
-} satisfies Meta;
+} satisfies Meta<typeof LiveIndicator>;
 
 export const Default: StoryObj = {
   render: () => <LiveIndicator />,
@@ -40,4 +41,10 @@ export const Box: StoryObj = {
       <LiveIndicator variant="box" size="lg" label="live · fetching and importing artifacts" />
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof LiveIndicator> = {
+  args: { label: 'live', paused: false, pausedLabel: 'paused', size: 'md', variant: 'pill' },
+  argTypes: { size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] }, variant: { control: 'inline-radio', options: ['pill', 'inline', 'box'] } },
 };
