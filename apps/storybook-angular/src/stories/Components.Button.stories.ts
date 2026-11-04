@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Button',
+  argTypes: argTypesFor('button', ['ButtonDirective']),
   decorators: [moduleMetadata({ imports: [ButtonDirective] })],
   parameters: itemParams(['button'], "A sturdy, near-square native `<button>`. One primary per task region. The medium size is 40px high, large 44px (form footers); small (32px) and compact (34px) are never used for the primary action of a page."),
 };

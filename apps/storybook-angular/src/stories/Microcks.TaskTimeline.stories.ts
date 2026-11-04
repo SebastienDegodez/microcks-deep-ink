@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { TASK_STATES, TaskLanesComponent, TaskStateTagComponent, TaskTimelineComponent } from '@microcks-deep-ink/registry/angular/task-timeline';
 import { AGENT_LANES, AGENT_LIFECYCLE } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/TaskTimeline',
+  argTypes: argTypesFor('task-timeline', ['TaskLanesComponent', 'TaskStateTagComponent', 'TaskTimelineComponent']),
   decorators: [moduleMetadata({ imports: [TaskStateTagComponent, TaskTimelineComponent, TaskLanesComponent] })],
   parameters: itemParams(['task-timeline', 'icon'], 'The lifecycle of an A2A task. `mkTaskStateTag` writes one state (glyph + word), `mkTaskTimeline` chains them and can select the steps of a script, and `mkTaskLanes` lays the expected and the actual lifecycle side by side. Color never carries the state alone: the word and the glyph shape do.'),
 };

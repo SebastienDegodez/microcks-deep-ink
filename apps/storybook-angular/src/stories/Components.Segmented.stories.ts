@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { SegmentedComponent } from '@microcks-deep-ink/registry/angular/segmented';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Segmented',
+  argTypes: argTypesFor('segmented', ['SegmentedComponent']),
   decorators: [moduleMetadata({ imports: [SegmentedComponent] })],
   parameters: itemParams(['segmented'], "A group of toggle buttons with `aria-pressed`, for filters such as All, Passed and Failed. Announce the result count elsewhere with a live region."),
 };

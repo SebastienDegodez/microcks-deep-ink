@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { EXCHANGE_CARD } from '@microcks-deep-ink/registry/angular/exchange-card';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/ExchangeCard',
+  argTypes: argTypesFor('exchange-card'),
   decorators: [moduleMetadata({ imports: [...EXCHANGE_CARD] })],
   parameters: itemParams(['exchange-card'], 'A request and its response: named cards with a small head (example name or status) over focusable mono blocks. The status is written; its fill only speeds up scanning.'),
 };

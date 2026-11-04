@@ -2,10 +2,11 @@ import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ApiBadgeComponent } from '@microcks-deep-ink/registry/angular/api-badge';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
 import { TILE } from '@microcks-deep-ink/registry/angular/tile';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/Tile',
+  argTypes: argTypesFor('tile'),
   decorators: [moduleMetadata({ imports: [...TILE, ApiBadgeComponent, ButtonDirective] })],
   parameters: itemParams(['tile', 'api-badge', 'button'], "A card in a wrapping grid. The title is the one link (or toggle button) of the tile, stretched over it, so the whole card is clickable without nesting controls. Footer controls stay separate."),
 };

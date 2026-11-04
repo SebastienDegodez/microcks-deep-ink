@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { LiveIndicatorComponent } from '@microcks-deep-ink/registry/angular/live-indicator';
 import { STAT_CARD } from '@microcks-deep-ink/registry/angular/stat-card';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/StatCard',
+  argTypes: argTypesFor('stat-card'),
   decorators: [moduleMetadata({ imports: [...STAT_CARD, LiveIndicatorComponent] })],
   parameters: itemParams(['stat-card', 'live-indicator'], "A key figure: a small heading (a real heading), the figure as text with its unit, and optional detail. The tone colours the figure only; the words carry the meaning."),
 };

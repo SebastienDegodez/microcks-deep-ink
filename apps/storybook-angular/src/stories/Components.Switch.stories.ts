@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { SwitchComponent } from '@microcks-deep-ink/registry/angular/switch';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Switch',
+  argTypes: argTypesFor('switch', ['SwitchComponent']),
   decorators: [moduleMetadata({ imports: [SwitchComponent] })],
   parameters: itemParams(['switch'], "A native checkbox with `role=\"switch\"`. The state is the checked state: the track also shows a mark, so it is not color only."),
 };

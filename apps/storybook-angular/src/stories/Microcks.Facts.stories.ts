@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { FACTS } from '@microcks-deep-ink/registry/angular/facts';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/Facts',
+  argTypes: argTypesFor('facts'),
   decorators: [moduleMetadata({ imports: [...FACTS] })],
   parameters: itemParams(['facts'], 'Key/value facts in a native dl. Rows (term column and separators), inline (two-column grid) or columns (term over value). Tones colour a value; the words carry the meaning.'),
 };

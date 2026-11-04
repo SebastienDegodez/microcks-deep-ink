@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { StepperComponent } from '@microcks-deep-ink/registry/angular/stepper';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/Stepper',
+  argTypes: argTypesFor('stepper', ['StepperComponent']),
   decorators: [moduleMetadata({ imports: [StepperComponent] })],
   parameters: itemParams(['stepper'], 'Numbered steps in an ordered list. Progress marks the current step with aria-current="step" and writes "done" for done steps; list shows numbered instructions.'),
 };

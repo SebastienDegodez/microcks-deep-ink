@@ -3,13 +3,14 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { PluginSlotDirective } from '@microcks-deep-ink/registry/angular/plugin-slot';
 import { PanelComponent, PanelActionsDirective } from '@microcks-deep-ink/registry/angular/panel';
 import { registerDemoPlugin } from '@microcks-deep-ink/storybook-shared/demo-plugin';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const EVENT_SERVICE = { theme: 'dark' as const, service: { id: 'orders', name: 'Pastry orders API', version: '0.1.0', protocol: 'EVENT' as const } };
 const REST_SERVICE = { theme: 'dark' as const, service: { id: 'pastry', name: 'API Pastry', version: '2.0', protocol: 'REST' as const } };
 
 const meta: Meta = {
   title: 'Plugins/Slots',
+  argTypes: argTypesFor('plugin-slot', ['PluginSlotDirective']),
   decorators: [moduleMetadata({ imports: [PluginSlotDirective, PanelComponent, PanelActionsDirective], schemas: [CUSTOM_ELEMENTS_SCHEMA] })],
   loaders: [async () => ({ ready: await registerDemoPlugin() })],
   parameters: itemParams(['plugin-slot', 'panel', 'api-badge', 'live-indicator'], "The demo plugin is a plain Web Component registered into the shared plugin host. `plugin-slot` renders it in light DOM, so it looks like the app through the HTML recipes (`live-indicator`, `api-badge`). The same plugin renders in the React Storybook."),

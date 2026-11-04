@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { TabsComponent, TabPanelComponent } from '@microcks-deep-ink/registry/angular/tabs';
 import { SERVICE_TABS } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Tabs',
+  argTypes: argTypesFor('tabs', ['TabsComponent', 'TabPanelComponent']),
   decorators: [moduleMetadata({ imports: [TabsComponent, TabPanelComponent] })],
   parameters: itemParams(['tabs'], "WAI-ARIA tabs. Use them to switch views of one page, not to navigate between pages. The count is read with the label (\"Operations, 4\")."),
 };
