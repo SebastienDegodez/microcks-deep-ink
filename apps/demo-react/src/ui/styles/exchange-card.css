@@ -1,0 +1,57 @@
+/* Deep Ink · exchange-card@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  /* A request and its response side by side, a ⇄ between them; wraps under 540px. */
+  .exchange { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
+  .exchange-sep { flex: 0 0 auto; align-self: center; font-size: 18px; color: var(--text-muted); }
+
+  .exchange-card {
+    flex: 1 1 260px;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  /* md (default, Service): head 12px, padding 8px 12px. sm (Copilot): 11px, padding 7px 12px. */
+  .exchange-card-head {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    font: 400 12px/1.4 var(--font-ui);
+  }
+  .exchange-card[data-size="sm"] .exchange-card-head { padding: 7px 12px; font-size: 11px; }
+  .exchange-card-title { margin: 0; font: inherit; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
+  .exchange-card-meta { font-family: var(--font-mono); color: var(--text-secondary); overflow-wrap: anywhere; }
+  .exchange-card-status {
+    padding: 1px 7px;
+    border-radius: 4px;
+    background: var(--success);
+    color: var(--on-status);
+    font-family: var(--font-mono);
+    font-weight: 600;
+  }
+  .exchange-card-status[data-tone="warning"] { background: var(--warning); }
+  .exchange-card-status[data-tone="danger"] { background: var(--danger); }
+
+  /* Blocks: mono 12px/1.6 on --bg, separated by a rule. */
+  .exchange-card > pre {
+    margin: 0;
+    padding: 10px 12px;
+    background: var(--bg);
+    color: var(--text);
+    font: 400 12px/1.6 var(--font-mono);
+    white-space: pre;
+    overflow-x: auto;
+  }
+  .exchange-card > pre + pre { border-top: 1px solid var(--border); }
+  .exchange-card > pre[data-tone="secondary"] { color: var(--text-secondary); }
+  .exchange-card > pre[data-tone="params"] { color: var(--warning); }
+  .exchange-card > pre[data-tone="headers"] { color: var(--text-muted); }
+  .exchange-card > pre[data-grow] { flex: 1; }
+  .exchange-card > pre:focus-visible { outline-offset: -2px; }
+}

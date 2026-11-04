@@ -19,7 +19,7 @@
     "keyboard": [
       [
         "Tab",
-        "Moves to the Show as table button (unless tableToggle is false), the diagram region, the inputs, the loom (one tab stop for all steps), the outputs, then the thread labels"
+        "Moves to the Show as table button (unless tableToggle is false), the diagram region, the inputs, the loom (one tab stop for all steps), the outputs, then the thread labels: the DOM follows the reading order, the grid places the columns"
       ],
       [
         "Arrow Left / Right",
@@ -66,7 +66,7 @@
       "2.4.7",
       "4.1.2"
     ],
-    "notes": "Copy the element bundle with the wrapper (elements/workflow-loom.js is self-contained). Angular: add schemas: [CUSTOM_ELEMENTS_SCHEMA] to the host component. No goto: Arazzo actions are limited to end and retry in the Microcks POC. The loom reads the tokens (proto-*, on-proto, link, border, border-strong, canvas, selected, success, danger), so load tokens.css. Legacy data still works: inputs/outputs as strings and threads as { from, to, expression } are woven into one row per expression."
+    "notes": "Copy the element bundle with the wrapper (elements/workflow-loom.js is self-contained). Angular: add schemas: [CUSTOM_ELEMENTS_SCHEMA] to the host component. No goto: Arazzo actions are limited to end and retry in the Microcks POC. The loom reads the tokens (proto-*, on-proto, link, border, border-strong, canvas, selected, success, danger), so load tokens.css. Legacy data still works: inputs/outputs as strings and threads as { from, to, expression } are woven into one row per expression. Checks: pass a generic list `checks: [{ label, state: 'pass' | 'fail' | 'skip' | 'idle' }]` (session runs: Call #N, Data passing, Contract) or the legacy { successCriteria, schemaValidation } pair. Pages that return focus to a step call `element.focusStep(stepId)`: focus targets inside the shadow root are not reachable from the page."
   },
   "stories": [
     "Elements/WorkflowLoom"

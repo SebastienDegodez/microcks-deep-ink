@@ -12,7 +12,7 @@ import type { LoomProps } from './loom-model';
  * Plan 3.4 API: props `sources, steps, threads, inputs, outputs, validatesSchemas, selectedStep, label` and the
  * event `onStepSelect`. The handler is tolerant to receive `{ stepId }`, a bare id or a CustomEvent.
  */
-type WrapperProps = LoomProps & { onStepSelect?: (event: unknown) => void };
+type WrapperProps = LoomProps & { onStepSelect?: (event: unknown) => void; onLensSelect?: (event: unknown) => void };
 
 const loaders = import.meta.glob('../../components/ui/workflow-loom.tsx') as Record<string, () => Promise<{ WorkflowLoom: ComponentType<WrapperProps> }>>;
 const loader = Object.values(loaders)[0];
@@ -20,7 +20,8 @@ const RemoteLoom = loader ? lazy(() => loader().then((m) => ({ default: m.Workfl
 
 export const LOOM_AVAILABLE = RemoteLoom !== undefined;
 
-function stepIdOf(event: unknown): string | undefined {
+/** The stepId of a select event; `{ stepId: undefined }` (the selected step pressed again) gives undefined. */
+export function stepIdOf(event: unknown): string | undefined {
   if (typeof event === 'string') return event;
   const direct = (event as { stepId?: unknown } | null)?.stepId;
   if (typeof direct === 'string') return direct;
@@ -41,23 +42,30 @@ class LoomBoundary extends Component<{ fallback: ReactNode; children: ReactNode 
   }
 }
 
+function lensIdOf(event: unknown): string | undefined {
+  const direct = event as { id?: unknown; detail?: { id?: unknown } } | null;
+  const id = direct?.id ?? direct?.detail?.id;
+  return typeof id === 'string' ? id : undefined;
+}
+
 export interface LoomHostProps extends LoomProps {
-  onSelectStep: (stepId: string) => void;
+  /** Called with the selected stepId, or undefined when the selected step is pressed again. */
+  onSelectStep: (stepId: string | undefined) => void;
+  /** Called with the traced thread id (its expression), or undefined when the lens is cleared. */
+  onSelectLens?: (id: string | undefined) => void;
   /** Accessible equivalent shown when the Loom is not available. */
   fallback: ReactNode;
 }
 
-export function LoomHost({ onSelectStep, fallback, ...props }: LoomHostProps) {
+export function LoomHost({ onSelectStep, onSelectLens, fallback, ...props }: LoomHostProps) {
   if (!RemoteLoom) return <>{fallback}</>;
   return (
     <LoomBoundary fallback={fallback}>
       <Suspense fallback={<LoadingBlock label="Loading the loom" rows={1} />}>
         <RemoteLoom
           {...props}
-          onStepSelect={(event) => {
-            const id = stepIdOf(event);
-            if (id) onSelectStep(id);
-          }}
+          onStepSelect={(event) => onSelectStep(stepIdOf(event))}
+          onLensSelect={(event) => onSelectLens?.(lensIdOf(event))}
         />
       </Suspense>
     </LoomBoundary>

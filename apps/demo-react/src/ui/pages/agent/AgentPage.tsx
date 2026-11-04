@@ -10,6 +10,7 @@ import { Button } from '@/ui/components/ui/button';
 import { Chip } from '@/ui/components/ui/chip';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { Menu } from '@/ui/components/ui/menu';
+import { ProjectionPill } from '@/ui/components/ui/projection-pill';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
 import { AgentCardTab } from './AgentCardTab';
@@ -72,7 +73,7 @@ export default function AgentPage() {
         breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${a.name} ${a.version}` }]}
         badge={
           <>
-            <span className="agent-projection" title="A2A support is a proposed protocol module for Microcks v2">Projection · v2 module</span>
+            <ProjectionPill title="A2A support is a proposed protocol module for Microcks v2" />
             <LiveIndicator label={`mock live · ${openTasks} open ${openTasks === 1 ? 'task' : 'tasks'} · last message ${lastMessage}`} />
           </>
         }
@@ -105,13 +106,13 @@ export default function AgentPage() {
           </span>
         </div>
         <div className="agent-head-row" data-gap="badges">
-          <ApiBadge label="skills" value={String(a.skills.length)} status="info" />
+          <ApiBadge label="skills" value={String(a.skills.length)} status="protocol" protocol="A2A" />
           <ApiBadge label="conversations" value={String(conversations)} status="action" />
           <RouterLink className="agent-badge-link" to={`/tests/agent/${a.lastTest.runId}`} title={runTitle}>
-            <ApiBadge label="last test" value={score} status={a.lastTest.result === 'failed' ? 'danger' : 'success'} />
+            <ApiBadge label="last test" value={score} status={a.lastTest.result === 'failed' ? 'danger' : 'success'} icon={a.lastTest.result === 'failed' ? 'close-sm' : 'check'} />
           </RouterLink>
-          <ApiBadge label="streaming" value={streams ? 'yes' : 'no'} status={streams ? 'success' : 'neutral'} />
-          <ApiBadge label="push" value={push ? 'yes' : 'no'} status={push ? 'success' : 'neutral'} />
+          {streams ? <ApiBadge label="streaming" status="success" icon="check" iconLabel="supported" /> : <ApiBadge label="streaming" value="no" />}
+          {push ? <ApiBadge label="push" status="success" icon="check" iconLabel="supported" /> : <ApiBadge label="push" value="no" />}
         </div>
       </PageHeader>
       <Tabs

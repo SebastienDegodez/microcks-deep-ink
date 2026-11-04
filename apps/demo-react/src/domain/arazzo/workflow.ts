@@ -51,6 +51,8 @@ export interface Workflow {
   workflowId: string;
   documentId: string;
   summary: string;
+  /** Longer description of the workflow (the Workflow page lead). */
+  description?: string;
   inputs: WorkflowInput[];
   steps: Step[];
   outputs: NamedExpression[];
@@ -69,4 +71,6 @@ export interface WorkflowExample {
   /** Step at which the example stops, when it ends early. */
   stopsAt?: string;
   outputs: Record<string, string | number>;
+  /** Last judgement of a run that played the example, when that run is no longer in the run list. */
+  lastJudged?: { runNumber: number; at: string; matched: boolean };
 }

@@ -398,10 +398,9 @@ function ApiServicePage() {
                     {selected && spec ? (
                       <div className="example-detail">
                         {selected.reviewState === 'pending' ? (
-                          <div role="note" className="example-detail-note">
-                            <Icon name="spark" size={14} />
-                            <span>Proposed by AI from the contract's <span className="ex-mono">{schemaName}</span> schema. The mock only serves it once accepted.</span>
-                          </div>
+                          <Callout tone="ai" variant="outline" title="">
+                            Proposed by AI from the contract's <span className="ex-mono">{schemaName}</span> schema. The mock only serves it once accepted.
+                          </Callout>
                         ) : null}
                         <div className="exchange">
                           <section className="exchange-card" aria-label={`Request of ${selected.name}`}>
@@ -436,7 +435,7 @@ function ApiServicePage() {
           <div className="service-props">
             <section aria-labelledby="props-title" className="service-card props-card">
               <h2 id="props-title">Properties</h2>
-              <Facts termWidth="150px" className="service-facts">
+              <Facts size="lg" termWidth="150px">
                 <FactRow term="Version" mono>{svc.version}</FactRow>
                 <FactRow term="Type"><span className="facts-inline"><MethodTag method={svc.protocol} protocol={svc.protocol} className="facts-proto" /><span className="ex-secondary">{svc.format}</span></span></FactRow>
                 {det.artifacts.map((a) => (

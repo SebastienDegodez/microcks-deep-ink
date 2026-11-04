@@ -32,6 +32,8 @@ export interface StepAttempt {
   httpStatus: number;
   ms: number;
   when: string;
+  /** Time waited before this attempt (the `retryAfter` of an onFailure retry), in ms. */
+  waitMs?: number;
 }
 
 export interface StepResult {

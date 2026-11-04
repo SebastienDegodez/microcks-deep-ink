@@ -18,6 +18,8 @@ export interface Session {
   workflowId: string;
   state: 'open' | 'closed';
   openedAt: string;
+  /** When the test closed the session (closed sessions). */
+  closedAt?: string;
   inputs: Record<string, unknown>;
   /** Step to fail and the example that answers it, when failure injection is on. */
   failureInjection?: { stepId: string; example: string };

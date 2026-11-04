@@ -1,0 +1,21 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "exchange-card",
+  "title": "ExchangeCard",
+  "tier": "microcks",
+  "description": "Request / response card: a small uppercase head (\"Request\" with the example name, \"Response\" with a filled status like \"200 OK\") over stacked mono blocks (request line, parameters in warning, headers muted, body). Exchange lays a pair side by side with a ⇄ between them. Used on Service (example detail) and Copilot (generated examples).",
+  "registryDependencies": ["base"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "<section aria-label> per card; each block is a <pre role=\"region\" aria-label tabindex=\"0\"> so a wide block can scroll with the keyboard",
+    "keyboard": [["Tab", "Focuses each block"], ["Arrow keys", "Scroll a focused block that overflows"]],
+    "aria": [
+      "The card is named (\"Request of Eclair Cafe\")",
+      "The status is written text (\"200 OK\"); its fill only speeds up scanning",
+      "The ⇄ between the cards is decorative (aria-hidden)"
+    ],
+    "rgaa": ["1.3", "3.1", "12.8"],
+    "wcag": ["1.3.1", "1.4.1", "2.1.1"]
+  },
+  "stories": ["Microcks/ExchangeCard"]
+}
