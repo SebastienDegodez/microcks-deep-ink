@@ -219,8 +219,8 @@ function History({
           <Button asChild size="sm" variant="secondary">
             <RouterLink to={testRunHref(r)} aria-label={`Open run #${r.id}`}>Open</RouterLink>
           </Button>
-          <Button asChild size="sm" variant="ghost" icon="reset" iconOnly>
-            <RouterLink to={`/tests/create?service=${r.serviceId}&from=${r.id}`} aria-label={`Relaunch run #${r.id}`} title="Relaunch with the same configuration" />
+          <Button asChild size="sm" variant="ghost" icon="reset" iconOnly aria-label={`Relaunch run #${r.id}`} title="Relaunch with the same configuration">
+            <RouterLink to={`/tests/create?service=${r.serviceId}&from=${r.id}`} />
           </Button>
         </span>
       ),
