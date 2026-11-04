@@ -1,0 +1,21 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "runner-log",
+  "title": "RunnerLog",
+  "tier": "microcks",
+  "description": "The runner's log of a test run: a small heading with a live or completed status, and a scrolling role=\"log\" of time, level and message lines.",
+  "registryDependencies": ["base"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "<section> named by its heading; the body is role=\"log\" (implicit polite live region), focusable so keyboard users can scroll it",
+    "keyboard": [["Tab", "Focuses the log"], ["Arrow keys", "Scroll the log when it has focus"]],
+    "aria": [
+      "role=\"log\" announces new lines politely without moving focus",
+      "Every level is written (INFO, SEND, PASS, FAIL, WAIT); colour only speeds up scanning",
+      "The status (live · streaming, N lines · completed) is written text"
+    ],
+    "rgaa": ["3.1", "7.5", "12.8"],
+    "wcag": ["1.4.1", "2.1.1", "4.1.3"]
+  },
+  "stories": ["Microcks/RunnerLog"]
+}

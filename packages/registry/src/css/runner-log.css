@@ -1,0 +1,45 @@
+@layer deep-ink.components {
+  .runner-log {
+    box-sizing: border-box;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    overflow: hidden;
+    background: var(--canvas);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-panel);
+  }
+  .runner-log-head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 10px 14px;
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+  }
+  .runner-log-title { margin: 0; font: 600 12px/16px var(--font-ui); letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
+  .runner-log-status { font: 400 11px/16px var(--font-mono); color: var(--text-muted); }
+  /* Newest line at the bottom, kept in view: the list is reversed in the DOM order of display. */
+  .runner-log-body {
+    display: flex;
+    flex-direction: column-reverse;
+    min-height: 220px;
+    max-height: 300px;
+    margin: 0;
+    padding: 8px 0;
+    overflow: auto;
+    background: var(--bg);
+  }
+  .runner-log-lines { margin: 0; padding: 0; list-style: none; }
+  .runner-log-line { display: flex; gap: 10px; padding: 1px 14px; font: 400 12px/1.6 var(--font-mono); color: var(--text-secondary); white-space: pre; }
+  .runner-log-time { color: var(--text-muted); }
+  .runner-log-level { flex: none; width: 34px; font-weight: 600; color: var(--text-secondary); }
+  .runner-log-line[data-level="SEND"] .runner-log-level { color: var(--link); }
+  .runner-log-line[data-level="PASS"] .runner-log-level { color: var(--success); }
+  .runner-log-line[data-level="FAIL"] .runner-log-level { color: var(--danger); }
+  .runner-log-line[data-level="WAIT"] .runner-log-level { color: var(--text-muted); }
+  .runner-log-line[data-emphasis] .runner-log-text { color: var(--text); }
+  .runner-log-line[data-error] .runner-log-text { color: var(--danger); }
+}

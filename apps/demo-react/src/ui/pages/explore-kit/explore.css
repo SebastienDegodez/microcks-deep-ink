@@ -6,7 +6,6 @@
 @media (min-width: 1000px) {
   .ex-grid-2 { grid-template-columns: minmax(0, 1fr) minmax(320px, 420px); }
   .ex-grid-2-even { grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
-  .ex-grid-sources { grid-template-columns: minmax(300px, 400px) minmax(0, 1fr); }
 }
 .ex-muted { color: var(--text-muted); }
 .ex-secondary { color: var(--text-secondary); }

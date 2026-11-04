@@ -37,9 +37,22 @@ export interface UsageData {
   /** Totals of the comparison period, by period. */
   previous: Record<UsagePeriod, number>;
   lastCall: string;
+  /** How long ago the last call came in, relative to the clock: "12 s ago". */
+  lastCallAgo?: string;
   rows: UsageRowData[];
   tableNote: string;
-  conformance: { title: string; score: number | null; index?: number; subtitle: string; trend?: string; advice?: string };
+  conformance: {
+    title: string;
+    score: number | null;
+    index?: number;
+    subtitle: string;
+    /** What the index card compares: "API Pastry 2.0 · latest test #119 · OPEN_API_SCHEMA · just now". */
+    subject: string;
+    trend?: string;
+    /** Direction of the trend; `mixed` when services go both ways. */
+    direction?: 'up' | 'down' | 'stable' | 'mixed';
+    advice?: string;
+  };
 }
 
 export interface UsagePoint {
@@ -86,7 +99,7 @@ export interface UsageView {
   period: UsagePeriod;
   periodLabel: string;
   chart: { title: string; subtitle: string; unit: 'hour' | 'day'; points: UsagePoint[]; max: number; defaultSelected: number; summary: string };
-  kpis: { total: number; growth: number; trendText: string; peakTitle: string; peak: number; peakWhen: string; lastCall: string };
+  kpis: { total: number; growth: number; trendText: string; peakTitle: string; peak: number; peakWhen: string; lastCall: string; lastCallAgo: string };
   heatmap: { cells: HeatCell[]; months: string[]; subtitle: string; total: number; weekdayAverage: number; busiest: string; defaultSelected: number };
   table: { title: string; subtitle: string; firstColumn: string; secondColumn: string; rows: UsageTableRow[]; total: number; trend: number; note: string };
   conformance: UsageData['conformance'];
@@ -242,6 +255,7 @@ export function buildUsageView(data: UsageData, period: UsagePeriod): UsageView 
       peak: peakValue,
       peakWhen: `${peakPoint?.name ?? ''}${period === 'today' ? '' : ` · daily average ${formatCount(Math.round(total / Math.max(1, real.length)))}`}`,
       lastCall: data.lastCall,
+      lastCallAgo: data.lastCallAgo ?? '',
     },
     heatmap: {
       cells,

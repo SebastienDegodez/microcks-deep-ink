@@ -78,7 +78,8 @@ export function createCatalogUseCases({ catalog }: CatalogPorts): CatalogUseCase
       const usages = await Promise.all(all.map((s) => catalog.workflowUsages(s.id)));
       const workflows = new Set(usages.flat().map((u) => `${u.documentId}/${u.workflowId}`));
       return {
-        services: filterServices(all, filter),
+        // "sort: recently updated": newest first.
+        services: filterServices(all, filter).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
         total: all.length,
         operationsTotal: all.reduce((n, s) => n + s.operationCount, 0),
         workflowsUsing: workflows.size,

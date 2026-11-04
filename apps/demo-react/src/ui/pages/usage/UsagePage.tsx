@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Link as RouterLink, useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams } from 'react-router';
 import {
   USAGE_PERIODS,
   WEEKDAY_HEADERS,
@@ -12,13 +12,13 @@ import {
 import { PageHeader, usePageTitle, useQuery, useUseCases } from '@/ui/app';
 import { Disclosure } from '@/ui/components/ui/disclosure';
 import { Field } from '@/ui/components/ui/field';
-import { Icon } from '@/ui/components/ui/icon';
-import { Meter } from '@/ui/components/ui/progress';
 import { Panel } from '@/ui/components/ui/panel';
 import { Segmented } from '@/ui/components/ui/segmented';
+import { UsageKpis } from './UsageKpis';
 import { Select } from '@/ui/components/ui/select';
 import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
 import { useRovingSelection } from '../tests/roving';
+import { ConformanceSection } from './ConformanceSection';
 import './usage.css';
 
 export default function UsagePage() {
@@ -35,7 +35,7 @@ export default function UsagePage() {
 
   return (
     <>
-      <PageHeader title="Usage & conformance" />
+      <PageHeader title="Usage & conformance" description={view?.scopeLine} />
       <div className="stack">
         <div className="demo-actions-row" role="group" aria-label="View options">
           <Field label="Service">
@@ -56,90 +56,15 @@ export default function UsagePage() {
         {usage.status === 'error' ? <ErrorBlock error={usage.error} what="Usage" onRetry={usage.reload} /> : null}
         {view ? (
           <div className="stack" aria-busy={usage.status === 'loading'}>
-            <Kpis view={view} />
+            <UsageKpis view={view} />
             <Bars key={`${view.scope}-${view.period}`} view={view} />
             <Heatmap key={`h-${view.scope}`} view={view} />
             <Table view={view} />
-            <Conformance view={view} />
           </div>
         ) : null}
-        {domains.data ? (
-          <Panel title="Conformance by domain">
-            <div className="stack">
-              {domains.data.map((d) => (
-                <section key={d.domain} aria-label={d.domain}>
-                  <h3 style={{ margin: '0 0 6px', fontSize: '0.9375rem' }}>
-                    {d.domain} · {d.score === null ? 'not tested' : `${d.score}%`} · {d.services} {d.services === 1 ? 'service' : 'services'}
-                  </h3>
-                  <ul className="us-tree">
-                    {(d.items ?? []).map((it) => (
-                      <li
-                        key={it.serviceId}
-                        className="us-tile"
-                        data-low={it.score !== null && it.score < 80 ? '' : undefined}
-                        style={{ flexGrow: Math.max(it.operations, 1), flexBasis: `${Math.max(it.operations, 1) * 40}px` }}
-                      >
-                        <RouterLink className="us-tile-name" to={`/tests/service/${it.serviceId}`}>
-                          {it.name}
-                        </RouterLink>
-                        <span>{it.score === null ? 'Never tested' : `Score ${it.score}%`}</span>
-                        {it.score !== null && it.score < 80 ? <span><Icon name="warning" size={14} /> Needs attention</span> : null}
-                        <span className="demo-muted">{it.operations} operations</span>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-              ))}
-              <Disclosure summary="Show data table">
-                <div className="demo-scroll">
-                  <table className="us-table">
-                    <caption className="sr-only">Conformance by service</caption>
-                    <thead>
-                      <tr><th scope="col">Domain</th><th scope="col">Service</th><th scope="col" data-num="">Operations</th><th scope="col" data-num="">Score</th><th scope="col" data-num="">Index</th></tr>
-                    </thead>
-                    <tbody>
-                      {domains.data.flatMap((d) =>
-                        (d.items ?? []).map((it) => (
-                          <tr key={`${d.domain}-${it.serviceId}`}>
-                            <td>{d.domain}</td>
-                            <th scope="row">{it.name}</th>
-                            <td data-num="">{it.operations}</td>
-                            <td data-num="">{it.score === null ? 'Never tested' : `${it.score}%`}</td>
-                            <td data-num="">{it.index}%</td>
-                          </tr>
-                        )),
-                      )}
-                    </tbody>
-                  </table>
-                </div>
-              </Disclosure>
-            </div>
-          </Panel>
-        ) : null}
+        {domains.data ? <ConformanceSection domains={domains.data} view={view} selected={scope} /> : null}
       </div>
     </>
-  );
-}
-
-function Kpis({ view }: { view: UsageView }) {
-  return (
-    <Panel title={`${view.label} · ${view.periodLabel}`}>
-      <p className="demo-muted">{view.scopeLine}</p>
-      <ul className="us-kpis">
-        <li>
-          <div className="us-kpi-value">{formatCount(view.kpis.total)}</div>
-          <div>Invocations, {formatTrend(view.kpis.growth)} vs previous period</div>
-        </li>
-        <li>
-          <div className="us-kpi-value">{formatCount(view.kpis.peak)}</div>
-          <div>{view.kpis.peakTitle}: {view.kpis.peakWhen}</div>
-        </li>
-        <li>
-          <div className="us-kpi-value demo-mono" style={{ fontSize: '0.9375rem' }}>{view.kpis.lastCall}</div>
-          <div>Last call</div>
-        </li>
-      </ul>
-    </Panel>
   );
 }
 
@@ -197,6 +122,9 @@ function Bars({ view }: { view: UsageView }) {
   );
 }
 
+/** Weekday labels of the heatmap rows, every other day as in the prototype. */
+const HEAT_ROW_LABELS = ['Mon', '', 'Wed', '', 'Fri', '', 'Sun'] as const;
+
 function Heatmap({ view }: { view: UsageView }) {
   const { heatmap } = view;
   const [sel, setSel] = useState(heatmap.defaultSelected);
@@ -211,12 +139,27 @@ function Heatmap({ view }: { view: UsageView }) {
   const cell = heatmap.cells.find((c) => c.index === sel);
   const weeks = heatmapWeeks(heatmap.cells);
   return (
-    <Panel title="Daily calendar">
+    <Panel title="Daily invocations · last 12 weeks">
       <p className="demo-muted">{heatmap.subtitle}</p>
       <p>
         {formatCount(heatmap.total)} invocations over the period, {formatCount(heatmap.weekdayAverage)} per weekday on average. Busiest day: {heatmap.busiest}.
       </p>
-      <div className="us-heat" role="group" aria-label="Calendar heatmap, one button per day. Use the arrow keys to move between days.">
+      <div
+        className="us-heat"
+        role="group"
+        aria-label="Calendar heatmap, one button per day. Use the arrow keys to move between days."
+        style={{ ['--heat-weeks' as string]: heatmap.months.length }}
+      >
+        {heatmap.months.map((m, w) => (
+          <span key={`m-${w}`} className="us-heat-month" aria-hidden="true" style={{ gridColumn: w + 2, gridRow: 1 }}>
+            {m}
+          </span>
+        ))}
+        {HEAT_ROW_LABELS.map((d, r) => (
+          <span key={`d-${r}`} className="us-heat-weekday" aria-hidden="true" style={{ gridColumn: 1, gridRow: r + 2 }}>
+            {d}
+          </span>
+        ))}
         {heatmap.cells.map((c) => (
           <button
             key={c.index}
@@ -224,17 +167,21 @@ function Heatmap({ view }: { view: UsageView }) {
             type="button"
             className="us-day"
             data-level={c.level}
-            style={{ gridColumn: c.week + 1, gridRow: c.weekday + 1 }}
+            style={{ gridColumn: c.week + 2, gridRow: c.weekday + 2 }}
             aria-pressed={c.index === sel}
             tabIndex={c.index === sel ? 0 : -1}
-            aria-label={`${c.name}: ${formatCount(c.value)} invocations, level ${c.level} of 3`}
+            aria-label={`${c.name}: ${formatCount(c.value)} invocations`}
             onClick={() => setSel(c.index)}
             onKeyDown={roving.onKeyDown(c.index)}
           />
         ))}
+        {Array.from({ length: heatmap.months.length * 7 - heatmap.cells.length }, (_, i) => {
+          const day = heatmap.cells.length + i;
+          return <span key={`f-${day}`} className="us-day-future" aria-hidden="true" style={{ gridColumn: Math.floor(day / 7) + 2, gridRow: (day % 7) + 2 }} />;
+        })}
       </div>
       <p role="status" style={{ margin: '8px 0' }}>
-        {cell ? `${cell.name}: ${formatCount(cell.value)} invocations, level ${cell.level} of 3` : ''}
+        {cell ? `${cell.name}: ${formatCount(cell.value)} invocations` : ''}
       </p>
       <Disclosure summary="Show data table">
         <div className="demo-scroll">
@@ -297,21 +244,6 @@ function Table({ view }: { view: UsageView }) {
         </table>
       </div>
       {table.note ? <p className="demo-muted">{table.note}</p> : null}
-    </Panel>
-  );
-}
-
-function Conformance({ view }: { view: UsageView }) {
-  const c = view.conformance;
-  return (
-    <Panel title={c.title}>
-      {c.score === null ? (
-        <p>Never tested.</p>
-      ) : (
-        <Meter label={`${c.title}: ${c.score}%`} value={c.score} max={100} low={60} high={85} optimum={100} valueText={`${c.score}%`} />
-      )}
-      <p>{c.subtitle}{c.trend ? ` · ${c.trend}` : ''}</p>
-      {c.advice ? <p className="demo-muted">{c.advice}</p> : null}
     </Panel>
   );
 }

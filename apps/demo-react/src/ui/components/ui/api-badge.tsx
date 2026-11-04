@@ -3,7 +3,7 @@ import { Fragment, type HTMLAttributes } from 'react';
 import { Icon } from './icon';
 
 export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
-export type ProofStatus = 'success' | 'danger' | 'warning' | 'info' | 'neutral';
+export type ProofStatus = 'success' | 'danger' | 'warning' | 'info' | 'action' | 'neutral';
 
 export interface ApiBadgeProps extends HTMLAttributes<HTMLSpanElement> {
   /** Left segment for an API badge. Ignored when `label` or `arazzo` is set. */
@@ -19,8 +19,8 @@ export interface ApiBadgeProps extends HTMLAttributes<HTMLSpanElement> {
   status?: ProofStatus;
   /** More proof values after `value`, each its own filled segment ("samples │ 7 │ +1 AI"). */
   values?: ReadonlyArray<{ value: string; status?: ProofStatus }>;
-  /** `lg` sets the name in the brand font at 17px (beside a page title); `xl` at 30px (the badge is the page title). */
-  size?: 'sm' | 'md' | 'lg' | 'xl';
+  /** `card`: 13px, for badge walls. `lg` sets the name in the brand font at 17px (beside a page title); `xl` at 30px (the badge is the page title). */
+  size?: 'sm' | 'md' | 'card' | 'lg' | 'xl';
 }
 
 const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };

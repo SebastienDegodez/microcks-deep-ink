@@ -12,7 +12,7 @@
   .table {
     width: 100%;
     border-collapse: collapse;
-    font: 400 13px/18px var(--font-ui);
+    font: 400 13px/normal var(--font-ui);
     color: var(--text);
   }
 
@@ -32,7 +32,7 @@
   /* Column headers only: row headers (th scope=row) read like body cells. */
   .table thead th {
     white-space: nowrap;
-    font: 600 11px/16px var(--font-ui);
+    font: 600 11px/normal var(--font-ui);
     letter-spacing: 0.06em;
     text-transform: uppercase;
     color: var(--text-muted);
@@ -56,7 +56,7 @@
     text-align: end;
   }
   .table td[data-mono] {
-    font: 400 13px/18px var(--font-mono);
+    font: 400 13px/normal var(--font-mono);
   }
 
   /* Rows with a link: the link of the first cell is stretched over the whole row. */

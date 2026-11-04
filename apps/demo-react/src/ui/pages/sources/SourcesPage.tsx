@@ -1,5 +1,6 @@
 import '../explore-kit/explore.css';
-import { useEffect, useState } from 'react';
+import './sources.css';
+import { useCallback, useEffect, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import {
   defaultDiffEntry, diffStats, filterImporters, formatHourMinute, formatShortClock, importerStatus, originCounts, splitRevision, statusCounts, SOURCE_ORIGINS,
@@ -12,24 +13,21 @@ import { Callout } from '@/ui/components/ui/callout';
 import { Chip } from '@/ui/components/ui/chip';
 import { CodeBlock, type CodeLine } from '@/ui/components/ui/code-block';
 import { CopyButton } from '@/ui/components/ui/copy-button';
-import { Dialog } from '@/ui/components/ui/dialog';
-import { EmptyState } from '@/ui/components/ui/empty-state';
 import { Icon } from '@/ui/components/ui/icon';
 import { Input } from '@/ui/components/ui/input';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { Panel } from '@/ui/components/ui/panel';
-import { Progress } from '@/ui/components/ui/progress';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { Switch } from '@/ui/components/ui/switch';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
 
-const STATUS_WORD: Record<SourceStatus, string> = { imported: 'Imported', warning: 'Warning', failed: 'Failed', inactive: 'Inactive', running: 'Importing' };
-const STATUS_ICON: Record<SourceStatus, 'check' | 'warning' | 'cross' | 'dash' | 'running'> = { imported: 'check', warning: 'warning', failed: 'cross', inactive: 'dash', running: 'running' };
+const STATUS_WORD: Record<SourceStatus, string> = { imported: 'Imported', warning: 'Imported · 1 warning', failed: 'Failed', inactive: 'Inactive', running: 'Importing' };
+const STATUS_ICON: Record<SourceStatus, 'check' | 'warning' | 'cross' | 'pause' | 'running'> = { imported: 'check', warning: 'warning', failed: 'cross', inactive: 'pause', running: 'running' };
 const RESULT_WORD = { imported: 'Imported', warning: 'Warning', failed: 'Failed', paused: 'Paused' } as const;
 
-function ServiceLinks({ importer }: { importer: Importer }) {
+function ServiceLinks({ importer, className = 'ex-row' }: { importer: Importer; className?: string }) {
   return (
-    <span className="ex-row">
+    <span className={className}>
       {importer.produces.map((p) => (
         p.id ? (
           <RouterLink key={`${p.name}${p.version}`} to={`/services/${p.id}`}>
@@ -57,9 +55,11 @@ export default function SourcesPage() {
   const [origin, setOrigin] = useState<SourceOrigin | 'all'>('all');
   const [query, setQuery] = useState('');
   const [progress, setProgress] = useState<Record<string, number>>({});
-  const [confirm, setConfirm] = useState<Importer | undefined>();
+  const [confirm, setConfirm] = useState<string | undefined>();
   const [undoing, setUndoing] = useState<Importer | undefined>();
   const [entryId, setEntryId] = useState<string | undefined>();
+  // The inline confirmation takes focus once, when it opens.
+  const focusOnOpen = useCallback((el: HTMLButtonElement | null) => el?.focus(), []);
 
   // Importers that are mid-import when the page opens finish on their own.
   useEffect(() => {
@@ -87,7 +87,7 @@ export default function SourcesPage() {
   const counts = statusCounts(importers);
   const originTotals = originCounts(importers);
   const shown = filterImporters(importers, { status, origin, query });
-  const selected = importers.find((i) => i.id === importerId) ?? shown[0] ?? importers[0];
+  const selected = shown.find((i) => i.id === importerId) ?? shown[0];
   const defaultEntry = selected ? defaultDiffEntry(selected.timeline) : undefined;
   const activeEntry = (selected?.timeline.find((e) => e.kind === 'run' && e.id === entryId && e.revision) ?? selected?.timeline.find((e) => e.id === defaultEntry)) as Extract<SyncEntry, { kind: 'run' }> | undefined;
   const revisions = activeEntry?.revision ? splitRevision(activeEntry.revision) : undefined;
@@ -106,9 +106,7 @@ export default function SourcesPage() {
     list.reload();
     announce(`${i.name} ${active ? 'will be scanned on schedule' : 'is paused'}.`);
   };
-  const doDelete = async () => {
-    if (!confirm) return;
-    const gone = confirm;
+  const doDelete = async (gone: Importer) => {
     await uc.importing.deleteImporter(gone.id);
     setConfirm(undefined);
     setUndoing(gone);
@@ -135,19 +133,31 @@ export default function SourcesPage() {
   const failing = counts.failed;
 
   return (
-    <div className="ex-stack">
-      <PageHeader
-        title="Sources"
-        actions={<Button asChild icon="plus"><RouterLink to="/sources/new">Add source</RouterLink></Button>}
-      />
-      <p className="ex-secondary" style={{ margin: 0 }}>Everything Microcks imports is a source: files you upload once and URLs or repositories it keeps in sync.</p>
+    <div className="sources-page">
+      <div className="sources-head">
+        <PageHeader
+          title="Sources"
+          description="Everything Microcks imports is a source: files you upload once and URLs or repositories it keeps in sync."
+          descriptionTone="secondary"
+          actions={<Button asChild variant="primary" icon="plus"><RouterLink to="/sources/new">Add source</RouterLink></Button>}
+        />
 
-      <div className="ex-row" role="group" aria-label="Scan schedule">
-        <strong>Scan schedule</strong> <code>{schedule.cron}</code> <span className="ex-secondary">{schedule.description}</span> <code>{schedule.envVar}</code>
-        <span>Last scan <strong>{formatHourMinute(schedule.lastScanAt)}</strong> <span className="ex-secondary">{schedule.minutesSinceLast} min ago</span></span>
-        <span>Next scan <strong>{formatHourMinute(schedule.nextScanAt)}</strong> <span className="ex-secondary">in {schedule.minutesUntilNext} min</span></span>
-        <span>sources <strong>{counts.all}</strong></span>
-        {failing ? <span><Icon name="cross" size={14} /> failing <strong>{failing}</strong></span> : null}
+        <div className="scan-strip" role="group" aria-label="Scan schedule">
+          <span className="scan-strip-group">
+            <Icon name="clock" size={15} />
+            <span className="muted">Scan schedule</span>
+            <span className="scan-strip-cron">{schedule.cron}</span>
+            <span className="secondary">{schedule.description}</span>
+            <span className="scan-strip-env">{schedule.envVar}</span>
+          </span>
+          <span className="scan-strip-sep" aria-hidden="true" />
+          <span className="scan-strip-pair"><span className="muted">Last scan</span><span className="mono">{formatHourMinute(schedule.lastScanAt)}</span><span className="muted">{schedule.minutesSinceLast} min ago</span></span>
+          <span className="scan-strip-pair"><span className="muted">Next scan</span><span className="mono">{formatHourMinute(schedule.nextScanAt)}</span><span className="muted">in {schedule.minutesUntilNext} min</span></span>
+          <span className="scan-strip-counts">
+            <ApiBadge label="sources" value={String(counts.all)} />
+            {failing ? <ApiBadge label="failing" value={String(failing)} status="danger" /> : null}
+          </span>
+        </div>
       </div>
 
       <section aria-label="Filter sources" className="ex-row">
@@ -173,57 +183,81 @@ export default function SourcesPage() {
         <span role="status" className="ex-small ex-secondary">{shown.length} of {counts.all} sources</span>
       </section>
 
-      <div className="ex-grid ex-grid-sources">
-        <section aria-label="Sources" className="ex-stack">
+      <div className="sources-split">
+        <section aria-label="Sources" className="sources-list">
           {undoing ? (
-            <Callout tone="info" live="polite" actions={<Button size="sm" variant="secondary" icon="undo" onClick={() => void undo()}>Undo</Button>}>
-              <strong>{undoing.name}</strong> deleted. Services already discovered remain but are no longer updated.
-            </Callout>
+            <div role="status" className="undo-banner">
+              <span className="undo-banner-text"><strong>{undoing.name}</strong> deleted. Services already discovered remain but are no longer updated.</span>
+              <button type="button" className="undo-banner-action" onClick={() => void undo()}>Undo</button>
+            </div>
           ) : null}
           {shown.map((j) => {
             const st = importerStatus(j);
             const running = st === 'running';
-            const pct = progress[j.id];
+            const upload = j.origin === 'upload';
+            const isSel = selected?.id === j.id;
+            const last = running ? 'started just now'
+              : j.lastSyncAt ? `${upload ? 'uploaded' : 'last import'} ${st === 'inactive' ? formatShortClock(j.lastSyncAt).split(' · ')[0] : relative(j.lastSyncAt)}` : '';
             return (
-              <article key={j.id} aria-label={j.name} className="ex-source-row" aria-current={selected?.id === j.id ? 'true' : undefined}>
-                <div className="ex-row-between">
-                  {j.origin === 'upload' ? null : <Switch label={<span className="sr-only">{`Scan ${j.name} on schedule`}</span>} checked={j.active} onChange={(v) => void toggleActive(j, v)} />}
-                  <RouterLink to={`/sources/${j.id}`} aria-current={selected?.id === j.id ? 'true' : undefined} className="ex-tile-title">{j.name}</RouterLink>
-                  {running ? <LiveIndicator label="live · importing" /> : <span className="ex-row ex-small"><Icon name={STATUS_ICON[st]} size={14} />{STATUS_WORD[st]} <span className="ex-muted">{j.lastSyncAt ? relative(j.lastSyncAt) : ''}</span></span>}
+              <article key={j.id} aria-label={j.name} className="source-card" data-selected={isSel ? '' : undefined}>
+                <div className="source-card-head">
+                  {upload ? (
+                    <span className="source-card-upload" aria-hidden="true" title="Uploaded file, no schedule"><Icon name="upload" size={16} /></span>
+                  ) : <Switch label={<span className="sr-only">{`Scan ${j.name} on schedule`}</span>} checked={j.active} onChange={(v) => void toggleActive(j, v)} />}
+                  <button type="button" className="source-card-name" aria-pressed={isSel} onClick={() => navigate(`/sources/${j.id}`)}>{j.name}</button>
+                  {running ? <LiveIndicator label="live · importing" variant="inline" /> : (
+                    <span className="source-status" data-status={st}><Icon name={STATUS_ICON[st]} size={14} />{STATUS_WORD[st]}</span>
+                  )}
+                  <span className="source-card-last">{last}</span>
                 </div>
-                <div className="ex-small ex-secondary ex-url-line">{j.url}</div>
-                <div className="ex-row ex-small">
-                  <Chip tone="info">{originLabel(j.origin)}</Chip><Chip>{j.role}</Chip><Chip variant="outline">{j.artifactLabel}</Chip>
-                  {j.secretName ? <Chip variant="outline"><span className="sr-only">Secret </span><Icon name="link" size={12} /> {j.secretName}</Chip> : null}
-                  <span className="ex-muted">{j.origin === 'upload' ? 'no schedule · one-off' : j.active ? `next scan ${formatHourMinute(schedule.nextScanAt)}` : 'scans paused'}</span>
+                <div className="source-card-url">{j.url}</div>
+                <div className="source-card-meta">
+                  <span className="source-role" data-role={j.role}>{j.role.toUpperCase()}</span>
+                  <span className="source-origin">{originLabel(j.origin)}</span>
+                  <span className="mono source-kind">{j.artifactLabel}</span>
+                  {j.secretName ? <span className="source-secret"><Icon name="lock" size={13} /><span className="sr-only">Secret </span><span className="mono">{j.secretName}</span></span> : null}
+                  <span>{upload ? 'no schedule · one-off' : j.active ? `next scan ${formatHourMinute(schedule.nextScanAt)}` : 'scans paused'}</span>
+                  <ServiceLinks importer={j} className="source-card-services" />
                 </div>
-                <ServiceLinks importer={j} />
-                {j.error ? <div role="alert" className="ex-small"><Icon name="cross" size={12} /> {j.error.message} <span className="ex-muted">{j.error.since}</span></div> : null}
-                {j.warning ? <div className="ex-small"><Icon name="warning" size={12} /> {j.warning}</div> : null}
-                {pct !== undefined ? <Progress label={`Importing ${j.name}`} value={pct} max={100} /> : null}
-                <div className="ex-row">
-                  {j.origin === 'upload' ? (
+                {j.error ? (
+                  <div role="alert" className="source-notice" data-tone="danger">
+                    <Icon name="cross" size={14} /><span className="mono source-notice-strong">{j.error.message}</span><span className="secondary">{j.error.since}</span>
+                  </div>
+                ) : null}
+                {j.warning ? (
+                  <div className="source-notice" data-tone="warning"><Icon name="warning" size={14} /><span>{j.warning}</span></div>
+                ) : null}
+                {confirm === j.id ? (
+                  <div role="alertdialog" aria-label={`Confirm deletion of ${j.name}`} className="delete-confirm">
+                    <span className="delete-confirm-text">Delete this source? Services already discovered remain but will no longer be updated.</span>
+                    <Button size="sm" variant="danger" confirm ref={focusOnOpen} onClick={() => void doDelete(j)}>Delete source</Button>
+                    <Button size="sm" variant="secondary" className="delete-confirm-cancel" onClick={() => setConfirm(undefined)}>Cancel</Button>
+                  </div>
+                ) : null}
+                <div className="source-card-actions">
+                  {upload ? (
                     <Button asChild size="sm" variant="secondary" icon="upload"><RouterLink to="/sources/new" aria-label={`Re-upload ${j.name}`}>Re-upload</RouterLink></Button>
                   ) : (
                     <>
-                      <Button size="sm" variant="secondary" icon="retry" disabled={running || !j.active} title={!j.active ? 'Activate scans to run this source' : undefined} onClick={() => run(j.id)}>{running ? 'Importing…' : 'Run now'}</Button>
-                      <Button asChild size="sm" variant="ghost"><RouterLink to="/sources/new" aria-label={`Edit ${j.name}`}>Edit</RouterLink></Button>
+                      <Button size="sm" variant="secondary" icon="refresh" className="source-import" disabled={running || !j.active} title={!j.active ? 'Activate the source to import it' : undefined} onClick={() => run(j.id)}>{running ? 'Importing…' : 'Import now'}</Button>
+                      <Button asChild size="sm" variant="ghost" icon="edit" className="source-edit"><RouterLink to="/sources/new" aria-label={`Edit ${j.name}`}>Edit</RouterLink></Button>
                     </>
                   )}
-                  <Button size="sm" variant="ghost" icon="trash" aria-label={`Delete ${j.name}`} onClick={() => setConfirm(j)}>Delete</Button>
+                  <Button size="sm" variant="ghost" icon="trash" className="source-delete" aria-label={`Delete ${j.name}`} onClick={() => setConfirm(j.id)}>Delete</Button>
                 </div>
               </article>
             );
           })}
           {shown.length === 0 ? (
-            <EmptyState title="No source matches these filters" headingLevel={2} actions={<Button onClick={() => { setStatus('all'); setOrigin('all'); setQuery(''); }}>Clear filters</Button>}>
-              <p>Change the status or the search to see your sources again.</p>
-            </EmptyState>
+            <div className="sources-empty">
+              No source matches these filters.
+              <button type="button" className="sources-empty-action" onClick={() => { setStatus('all'); setOrigin('all'); setQuery(''); }}>Clear filters</button>
+            </div>
           ) : null}
         </section>
 
         {selected ? (
-          <section aria-label="Source detail" className="ex-stack">
+          <section aria-label="Source detail" className="sources-detail ex-stack">
             <Panel
               title={selected.name}
               actions={importerStatus(selected) === 'running' ? <LiveIndicator label="live · importing" /> : <span className="ex-row"><span className="ex-small ex-secondary">last import</span><Chip tone={selected.health === 'failed' ? 'danger' : selected.health === 'warning' ? 'warning' : 'success'}>{STATUS_WORD[importerStatus(selected)]}</Chip></span>}
@@ -282,15 +316,6 @@ export default function SourcesPage() {
         ) : null}
       </div>
 
-      <Dialog
-        open={Boolean(confirm)}
-        onClose={() => setConfirm(undefined)}
-        title={`Delete ${confirm?.name ?? 'source'}?`}
-        description="Services already discovered remain but will no longer be updated."
-        footer={<><Button variant="secondary" onClick={() => setConfirm(undefined)}>Cancel</Button><Button variant="danger" confirm data-autofocus onClick={() => void doDelete()}>Delete source</Button></>}
-      >
-        <p style={{ margin: 0 }}>You can undo the deletion right after.</p>
-      </Dialog>
     </div>
   );
 }

@@ -12,6 +12,8 @@ export interface SortState {
 export interface DataTableColumn<T> {
   key: string;
   header: string;
+  /** Keeps the header for assistive technology only (an icon-only "Open" column). */
+  headerHidden?: boolean;
   align?: 'start' | 'end';
   mono?: boolean;
   /** Keeps the cells of this column on one line. Cells wrap by default. */
@@ -89,6 +91,8 @@ export class TableDirective {
                     {{ c.header }}
                     <svg mkIcon [name]="sortIcon(c.key)" [size]="12"></svg>
                   </button>
+                } @else if (c.headerHidden) {
+                  <span class="sr-only">{{ c.header }}</span>
                 } @else {
                   {{ c.header }}
                 }

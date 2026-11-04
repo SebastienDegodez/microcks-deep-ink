@@ -65,3 +65,11 @@ export const Empty: StoryObj = {
     `,
   }),
 };
+
+export const HiddenHeader: StoryObj = {
+  name: "Hidden column header",
+  render: () => ({
+    props: { columns: [...CATALOGUE_COLUMNS, { key: 'id', header: 'Identifier', headerHidden: true, mono: true }], rows: CATALOGUE_ROWS },
+    template: `<mk-data-table caption="Services" [columns]="columns" [rows]="rows" rowKey="id" />`,
+  }),
+};

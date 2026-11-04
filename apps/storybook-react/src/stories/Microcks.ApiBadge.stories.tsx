@@ -62,3 +62,14 @@ export const ProofValues: StoryObj = {
   name: 'Proof with several values',
   render: () => <ApiBadge label="samples" value="7" values={[{ value: '+1 AI', status: 'warning' }]} />,
 };
+
+export const Card: StoryObj = {
+  name: 'Card (badge wall)',
+  render: () => (
+    <div className="stack" style={{ maxWidth: 260 }}>
+      <ApiBadge size="card" protocol="REST" name="API Pastry" version="2.0" />
+      <ApiBadge size="card" protocol="EVENT" name="Pastry orders API with a long name" version="0.1.0" />
+      <ApiBadge label="conformance" value="untested" status="neutral" />
+    </div>
+  ),
+};

@@ -6,25 +6,38 @@
 <script type="module">
   const loom = document.getElementById('run14');
   loom.validatesSchemas = true; // shows "Success criteria" and "Schema validation" on every step
-  loom.sources = [{ name: 'apiPastry', type: 'openapi', protocol: 'REST', linked: true }];
+  // loom.tableToggle = false;  // hide "Show as table" when the page already has a Steps table
+  loom.sources = [{ name: 'apiPastry', type: 'openapi', protocol: 'REST', linked: true, serviceLabel: 'API Pastry 2.0' }];
+  loom.inputs = [{ name: 'size', value: '"M"' }, { name: 'newPrice', value: '3.9' }];
+  loom.outputs = [{ name: 'pastryName' }, { name: 'oldPrice' }, { name: 'newPrice' }];
+  loom.outputNote = 'No outputs: #14 failed.';
   loom.steps = [
-    { stepId: 'listPastries', source: 'apiPastry', operation: 'GET /pastries', status: 'passed',
+    { stepId: 'listPastries', source: 'apiPastry', operation: 'GET /pastries', status: 'passed', result: '200 · 212 ms',
       checks: { successCriteria: 'passed', schemaValidation: 'passed' } },
-    { stepId: 'getPastry', source: 'apiPastry', operation: 'GET /pastries/{name}', status: 'passed',
+    { stepId: 'getPastry', source: 'apiPastry', operation: 'GET /pastries/{name}', status: 'passed', result: '200 · 188 ms',
       checks: { successCriteria: 'passed', schemaValidation: 'passed' },
-      actions: [{ type: 'end', name: 'alreadyAvailable', on: 'success',
-                  criteria: "$response.body#/status == 'available'", taken: false }] },
+      actions: [{ type: 'end', name: 'alreadyAvailable', on: 'success', criteria: "$response.body#/status == 'available'",
+                  label: "status == 'available'", runLabel: '#14', taken: false }] },
     { stepId: 'patchPastry', source: 'apiPastry', operation: 'PATCH /pastries/{name}', status: 'failed', attempts: 3,
-      checks: { successCriteria: 'passed', schemaValidation: 'failed' },
-      actions: [{ type: 'retry', name: 'retryPatch', on: 'failure', retryAfter: 1, retryLimit: 2, applied: true }] },
-    { stepId: 'verifyPastry', source: 'apiPastry', operation: 'GET /pastries/{name}', status: 'not-run',
+      result: '200 · 3 attempts · 5.4 s', checks: { successCriteria: 'passed', schemaValidation: 'failed' },
+      actions: [{ type: 'retry', name: 'retryPatch', on: 'failure', retryAfter: 1, retryLimit: 2, applied: true, runLabel: '#14' }] },
+    { stepId: 'verifyPastry', source: 'apiPastry', operation: 'GET /pastries/{name}', status: 'not-run', result: 'Not run',
       checks: { successCriteria: 'not-evaluated', schemaValidation: 'not-evaluated' } },
   ];
+  // One thread per expression; each drop is a place that consumes it.
   loom.threads = [
-    { from: 'listPastries', to: 'getPastry', expression: '$steps.listPastries.outputs.firstName → name' },
-    { from: 'getPastry', to: 'patchPastry', expression: '$steps.getPastry.outputs.price → price' },
+    { id: 'size', from: '$inputs', expression: '$inputs.size', value: '"M"', drops: [{ to: 'listPastries', label: 'size · query' }] },
+    { id: 'firstName', from: 'listPastries', expression: '$steps.listPastries.outputs.firstName', value: '"Eclair Cafe"',
+      drops: [{ to: 'getPastry', label: 'name · path' }, { to: 'patchPastry', label: 'name · path' },
+              { to: 'verifyPastry', label: 'name · path', idle: true }, { to: '$outputs', label: 'pastryName', idle: true }] },
+    { id: 'newPriceIn', from: '$inputs', expression: '$inputs.newPrice', value: '3.9', drops: [{ to: 'patchPastry', label: '/price · body' }] },
+    { id: 'oldPrice', from: 'getPastry', expression: '$steps.getPastry.outputs.oldPrice', value: '2.4',
+      drops: [{ to: '$outputs', label: 'oldPrice', idle: true }] },
+    { id: 'newPrice', from: 'patchPastry', expression: '$steps.patchPastry.outputs.newPrice', missing: true,
+      drops: [{ to: '$outputs', label: 'newPrice', idle: true }] },
   ];
-  loom.addEventListener('mkStepSelect', (e) => console.log('selected', e.detail.stepId));
+  loom.addEventListener('mkStepSelect', (e) => console.log('selected', e.detail.stepId)); // undefined: cleared
+  loom.addEventListener('mkLensSelect', (e) => console.log('lens', e.detail.id, e.detail.expression)); // undefined: cleared
 </script>
 
 <!-- Parallel branches (Arazzo 1.1 step-level dependsOn): steps without dependsOn run in parallel and join. -->

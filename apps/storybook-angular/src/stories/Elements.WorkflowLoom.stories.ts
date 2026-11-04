@@ -11,28 +11,34 @@ const meta: Meta = {
 };
 export default meta;
 
+const TEMPLATE = `
+      <div style="max-width:1100px">
+        <workflow-loom [label]="s.label" [sources]="s.sources" [steps]="s.steps" [threads]="s.threads" [inputs]="s.inputs ?? []" [outputs]="s.outputs ?? []" [outputNote]="s.outputNote" [validatesSchemas]="!!s.validatesSchemas" [selectedStep]="sel" [lens]="lens" [tableToggle]="toggle" (stepSelect)="sel = $event.stepId" (lensSelect)="lens = $event.id"></workflow-loom>
+        <p role="status" class="sb-note">Selected step: {{ sel ?? 'none' }}. Lens: {{ lens ?? 'none' }}.</p>
+      </div>
+    `;
+
 export const Run14: StoryObj = {
   name: "Run #14 (retry and failed step)",
   render: () => ({
-    props: { s: LOOM_RESTOCK_RUN14, sel: 'patchPastry' },
-    template: `
-      <div style="max-width:1100px">
-        <workflow-loom [label]="s.label" [sources]="s.sources" [steps]="s.steps" [threads]="s.threads" [inputs]="s.inputs ?? []" [outputs]="s.outputs ?? []" [validatesSchemas]="!!s.validatesSchemas" [selectedStep]="sel" (stepSelect)="sel = $event.stepId"></workflow-loom>
-        <p role="status" class="sb-note">Selected step: {{ sel }}</p>
-      </div>
-    `,
+    props: { s: LOOM_RESTOCK_RUN14, sel: 'patchPastry' as string | undefined, lens: undefined as string | undefined, toggle: true },
+    template: TEMPLATE,
   }),
 };
 
 export const CheckMenu: StoryObj = {
   name: "Parallel branches (check-menu)",
   render: () => ({
-    props: { s: LOOM_CHECK_MENU, sel: undefined as string | undefined },
-    template: `
-      <div style="max-width:1100px">
-        <workflow-loom [label]="s.label" [sources]="s.sources" [steps]="s.steps" [threads]="s.threads" [inputs]="s.inputs ?? []" [outputs]="s.outputs ?? []" [validatesSchemas]="!!s.validatesSchemas" [selectedStep]="sel" (stepSelect)="sel = $event.stepId"></workflow-loom>
-        <p role="status" class="sb-note">Selected step: {{ sel }}</p>
-      </div>
-    `,
+    props: { s: LOOM_CHECK_MENU, sel: undefined as string | undefined, lens: undefined as string | undefined, toggle: true },
+    template: TEMPLATE,
+  }),
+};
+
+/** On a page that already has a Steps tab, `[tableToggle]="false"` hides the built-in "Show as table" button. */
+export const WithoutTableToggle: StoryObj = {
+  name: 'Without the table toggle',
+  render: () => ({
+    props: { s: LOOM_RESTOCK_RUN14, sel: 'patchPastry' as string | undefined, lens: undefined as string | undefined, toggle: false },
+    template: TEMPLATE,
   }),
 };

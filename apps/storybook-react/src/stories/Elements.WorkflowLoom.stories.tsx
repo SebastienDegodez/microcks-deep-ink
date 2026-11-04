@@ -9,13 +9,22 @@ export default {
   parameters: itemParams(['workflow-loom', 'step-status'], 'Draws an Arazzo workflow: one lane per source, steps placed by `dependsOn` depth, threads for data, and only two action kinds, **retry** and **end** (no goto). Steps are buttons you move between with the arrow keys; **Show as table** swaps the drawing for an equivalent table. `<workflow-loom>` is a Web Component: the item copies a self-contained bundle plus a thin wrapper.', { layout: 'padded' }),
 } satisfies Meta;
 
-function Loom({ scenario, selected }: { scenario: LoomScenario; selected?: string }) {
+function Loom({ scenario, selected, tableToggle }: { scenario: LoomScenario; selected?: string; tableToggle?: boolean }) {
   const [step, setStep] = useState<string | undefined>(selected);
+  const [lens, setLens] = useState<string | undefined>();
   return (
     <div className="sb-col">
-      <WorkflowLoom {...scenario} selectedStep={step} onStepSelect={(e: unknown) => setStep(detailOf<{ stepId: string }>(e).stepId)} />
+      <WorkflowLoom
+        {...scenario}
+        tableToggle={tableToggle}
+        selectedStep={step}
+        lens={lens}
+        onStepSelect={(e: unknown) => setStep(detailOf<{ stepId?: string }>(e).stepId)}
+        onLensSelect={(e: unknown) => setLens(detailOf<{ id?: string }>(e).id)}
+      />
       <p className="sb-note" role="status">
         {step ? `Selected step: ${step}` : 'No step selected. Focus a step and press Enter or Space.'}
+        {lens ? ` Lens: ${lens}.` : ' Press an input, an output or a thread label to trace it.'}
       </p>
     </div>
   );
@@ -25,6 +34,12 @@ function Loom({ scenario, selected }: { scenario: LoomScenario; selected?: strin
 export const Default: StoryObj = {
   name: 'Run #14 (restock-pastry)',
   render: () => <Loom scenario={LOOM_RESTOCK_RUN14} selected="patchPastry" />,
+};
+
+/** On a page that already has a Steps tab, `tableToggle={false}` hides the built-in "Show as table" button. */
+export const WithoutTableToggle: StoryObj = {
+  name: 'Without the table toggle',
+  render: () => <Loom scenario={LOOM_RESTOCK_RUN14} selected="patchPastry" tableToggle={false} />,
 };
 
 /** Three independent reads run in parallel (dependsOn) and join at compareSizes. */
@@ -42,7 +57,10 @@ export const DesignTime: StoryObj = {
         ...LOOM_RESTOCK_RUN14,
         label: 'restock-pastry, definition',
         validatesSchemas: false,
-        steps: LOOM_RESTOCK_RUN14.steps.map(({ status: _s, attempts: _a, checks: _c, actions, ...step }) => ({
+        outputNote: undefined,
+        inputs: LOOM_RESTOCK_RUN14.inputs?.map((i) => (typeof i === 'string' ? i : { name: i.name })),
+        threads: LOOM_RESTOCK_RUN14.threads.map(({ value: _v, missing: _m, drops, ...t }) => ({ ...t, drops: drops?.map(({ idle: _i, ...d }) => d) })),
+        steps: LOOM_RESTOCK_RUN14.steps.map(({ status: _s, attempts: _a, checks: _c, result: _r, actions, ...step }) => ({
           ...step,
           actions: actions?.map((a: NonNullable<LoomScenario['steps'][number]['actions']>[number]) => (a.type === 'retry' ? { ...a, applied: undefined } : { ...a, taken: undefined })),
         })),

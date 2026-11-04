@@ -37,3 +37,15 @@ export const Compact: StoryObj = {
 export const Empty: StoryObj = {
   render: () => <DataTable<CatalogueRow> caption="Services" columns={CATALOGUE_COLUMNS} rows={[]} rowKey="id" emptyText="No service matches this filter." />,
 };
+
+export const HiddenHeader: StoryObj = {
+  name: 'Hidden column header',
+  render: () => (
+    <DataTable<CatalogueRow>
+      caption="Services"
+      columns={[...CATALOGUE_COLUMNS, { key: 'id', header: 'Identifier', headerHidden: true, mono: true }]}
+      rows={CATALOGUE_ROWS}
+      rowKey="id"
+    />
+  ),
+};
