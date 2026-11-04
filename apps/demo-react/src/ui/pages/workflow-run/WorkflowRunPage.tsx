@@ -219,7 +219,7 @@ function RunView({
       </span>
     </span>
   ) : (
-    <ApiBadge label="result" value={passed ? 'passed' : 'failed'} status={passed ? 'success' : 'danger'} />
+    <ApiBadge label="result" value={passed ? 'passed' : 'failed'} status={passed ? 'success' : 'danger'} icon={passed ? 'check' : 'close-sm'} />
   );
 
   return (

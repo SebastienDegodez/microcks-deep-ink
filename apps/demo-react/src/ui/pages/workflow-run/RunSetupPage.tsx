@@ -158,7 +158,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
       <PageHeader
         title="Run workflow"
         breadcrumb={runBreadcrumb(`${document.title} - ${document.version}`, workflowTo, workflowPath(document.id, workflow.workflowId, 'runs'), 'Run workflow')}
-        badge={<RunBadges workflowId={workflow.workflowId} documentLabel={documentLabel} to={workflowTo} chip={<ApiBadge label="status" value="not started" />} />}
+        badge={<RunBadges workflowId={workflow.workflowId} documentLabel={documentLabel} to={workflowTo} chip={<ApiBadge label="status" value="not started" icon="circle" />} />}
         descriptionTone="secondary"
         descriptionWidth={900}
         align="start"
