@@ -36,15 +36,16 @@ export interface OpPickListProps {
 function Card({ o }: { o: OpPickOption }) {
   return (
     <>
-      <MethodTag method={o.method} protocol={o.protocol} />
+      {/* The spaces between the parts keep the button's accessible name readable ("GET /pastries List…"). */}
+      <MethodTag method={o.method} protocol={o.protocol} />{' '}
       <span className="op-pick-main">
         <span className="op-pick-path">{o.path}</span>
-        {o.summary ? <span className="op-pick-summary">{o.summary}</span> : null}
-        {o.meta ? <span className="op-pick-meta">{o.meta}</span> : null}
-      </span>
+        {o.summary ? <> <span className="op-pick-summary">{o.summary}</span></> : null}
+        {o.meta ? <> <span className="op-pick-meta">{o.meta}</span></> : null}
+      </span>{' '}
       {o.end !== undefined && o.end !== null ? (
         <span className="op-pick-end" data-tone={o.endTone}>
-          {o.endLabel ? <span className="sr-only">{o.endLabel}</span> : null}
+          {o.endLabel ? <><span className="sr-only">{o.endLabel}</span> </> : null}
           {o.end}
         </span>
       ) : null}
