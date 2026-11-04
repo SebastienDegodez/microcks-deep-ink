@@ -62,9 +62,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/callout.tsx": "a2011d7b48278608e226b8a0032e321e2f2f4a805ddc5eef4c058a8f59ee8c89",
-        "src/ui/styles/callout.css": "9b74106e80c31e35f46aa26c6397b35cabfdb42c9018b6239b220601a2b61ff3"
+        "src/ui/styles/callout.css": "a973a967183b255cfdbcb3c6b6a40ac2b848aff77cb41b4f4cf63a155d1a626a"
       },
-      "hash": "342cdfee2638c613"
+      "hash": "450c740dc7846e77"
     },
     "field": {
       "version": "0.2.0",
