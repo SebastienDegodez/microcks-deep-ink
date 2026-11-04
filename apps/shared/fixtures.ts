@@ -1,5 +1,5 @@
 // Realistic Microcks data shared by the React and Angular Storybooks.
-// Types come from the React package sources (@microcks/deep-ink), never from a published package.
+// Types come from the React package (@microcks/deep-ink; the Angular Storybook reads its built dist types), never from a published package.
 import type {
   OperationResult,
   TabItem,
