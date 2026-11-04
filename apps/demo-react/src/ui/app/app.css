@@ -127,12 +127,11 @@
   color: var(--text-secondary);
   font: 400 13px/18px var(--font-mono);
 }
+/* Inside the meta text, a link is underlined so it is not told apart by colour alone (RGAA 10.6). */
 .demo-page-meta a {
   color: var(--link);
-  text-decoration: none;
-}
-.demo-page-meta a:hover {
   text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 .demo-page-description {
