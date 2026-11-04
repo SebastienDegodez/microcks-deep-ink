@@ -36,15 +36,17 @@ export function FilterRow({ title, className, children, ...rest }: FilterRowProp
   );
 }
 
-export interface FilterSearchProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> {
+export interface FilterSearchProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type' | 'size'> {
   /** Accessible name of the field, also its placeholder unless you set one. */
   label: string;
+  /** `md` is 38px high, up to 420px; `lg` is 40px, up to 480px (a page-level search, Hub). */
+  size?: 'md' | 'lg';
 }
 
 /** Search field with a leading icon. The label is visually hidden; the placeholder repeats it. */
-export function FilterSearch({ label, placeholder, className, ...rest }: FilterSearchProps) {
+export function FilterSearch({ label, placeholder, size = 'md', className, ...rest }: FilterSearchProps) {
   return (
-    <label className={['filter-bar-search', className].filter(Boolean).join(' ')}>
+    <label className={['filter-bar-search', className].filter(Boolean).join(' ')} data-size={size}>
       <Icon name="search" size={16} />
       <span className="sr-only">{label}</span>
       <input type="search" placeholder={placeholder ?? label} {...rest} />

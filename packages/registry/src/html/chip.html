@@ -2,7 +2,7 @@
   Chip recipe.
   Static label: a span. Filter toggle: a button with aria-pressed. Removable: a real button with a name.
   Tone: data-tone="neutral | info | success | warning | danger". Variant: data-variant="solid | outline | dashed".
-  Size: data-size="md | sm". Protocol filter: data-protocol="rest | soap | event | grpc | graphql | direct | a2a".
+  Size: data-size="md | sm | lg" (lg: 30px category pill in the UI font). Protocol filter: data-protocol="rest | soap | event | grpc | graphql | direct | a2a".
   Content: <span class="chip-label">[<span class="chip-key">k</span><span class="chip-eq">=</span>]<span class="chip-value">v</span></span>
   then an optional <span class="chip-count">; data-empty dims a zero count.
 -->
@@ -16,6 +16,10 @@
 <!-- Protocol filter: square, with a swatch; pressed fills with the protocol colour. -->
 <button type="button" class="chip" data-tone="neutral" data-variant="solid" data-protocol="rest" aria-pressed="false"><span class="chip-label"><span class="chip-value">REST</span></span> <span class="chip-count">4</span></button>
 <button type="button" class="chip" data-tone="neutral" data-variant="solid" data-protocol="event" aria-pressed="true"><span class="chip-label"><span class="chip-value">EVENT</span></span> <span class="chip-count">2</span></button>
+
+<!-- Category pill (lg): UI font, mono count, 600 when pressed. -->
+<button type="button" class="chip" data-tone="neutral" data-variant="solid" data-size="lg" aria-pressed="true"><span class="chip-label"><span class="chip-value">All</span></span> <span class="chip-count">8</span></button>
+<button type="button" class="chip" data-tone="neutral" data-variant="solid" data-size="lg" aria-pressed="false"><span class="chip-label"><span class="chip-value">Samples</span></span> <span class="chip-count">3</span></button>
 
 <!-- Removable -->
 <span class="chip" data-tone="info" data-variant="solid">

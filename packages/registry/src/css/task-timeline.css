@@ -51,7 +51,7 @@
   }
   .task-timeline-node > .task-state { grid-column: -2; grid-row: 1; min-height: 30px; padding: 0 10px; border-radius: var(--radius-node); }
   .task-timeline-node > .task-state > .icon { width: 14px; height: 14px; }
-  .task-timeline-at { grid-column: -2; grid-row: 2; padding-inline-start: 2px; font: 400 11px/16px var(--font-mono); color: var(--text-muted); }
+  .task-timeline-at { grid-column: -2; grid-row: 2; justify-self: center; font: 400 11px/16px var(--font-mono); color: var(--text-muted); }
 
   /* The link between two nodes: a 28px rule with an arrow head; text on it (a reply) is written under it. */
   .task-timeline-link {
