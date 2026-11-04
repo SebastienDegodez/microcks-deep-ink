@@ -25,6 +25,15 @@ export const Default: StoryObj = {
   }),
 };
 
+/** `align="end"` opens the list towards the start of the page, for a menu at the right edge. */
+export const AlignEnd: StoryObj = {
+  name: 'Aligned to the end',
+  render: () => ({
+    props: { items: [{ id: 'edit', label: 'Edit' }, { id: 'delete', label: 'Delete', danger: true, separatorBefore: true }] },
+    template: `<div style="display:flex;justify-content:flex-end;min-height:180px"><mk-menu label="Actions" align="end" [items]="items" /></div>`,
+  }),
+};
+
 export const IconOnly: StoryObj = {
   name: "Icon only",
   render: () => ({

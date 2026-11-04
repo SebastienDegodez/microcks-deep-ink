@@ -29,3 +29,15 @@ export const KeyFigures: StoryObj = {
     `,
   }),
 };
+
+/** `tone` colours the value; `headingLevel` keeps the page outline right inside a section. */
+export const Tones: StoryObj = {
+  render: () => ({
+    template: `
+      <section mkStatGrid label="Last 24 hours">
+        <section mkStatCard title="Passed" [headingLevel]="3" value="9" tone="success"><p>Runs without a failure.</p></section>
+        <section mkStatCard title="Failed" [headingLevel]="3" value="3" tone="danger"><p>Runs with a failing step.</p></section>
+      </section>
+    `,
+  }),
+};

@@ -20,6 +20,14 @@ export const Progress: StoryObj = {
   }),
 };
 
+/** `direction="vertical"` for a narrow column; `doneLabel` changes the word read for finished steps. */
+export const Vertical: StoryObj = {
+  render: () => ({
+    props: { steps: [{ label: 'Upload the contract', state: 'done' }, { label: 'Review the operations', state: 'current' }, { label: 'Publish', state: 'upcoming' }] },
+    template: `<ol mkStepper label="Import steps" direction="vertical" doneLabel="completed" [steps]="steps"></ol>`,
+  }),
+};
+
 export const Instructions: StoryObj = {
   render: () => ({
     props: {

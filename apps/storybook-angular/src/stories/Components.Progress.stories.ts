@@ -20,6 +20,19 @@ export const Default: StoryObj = {
   }),
 };
 
+/** `max` for a count, and `Meter.min` for a range that does not start at zero. */
+export const CustomRange: StoryObj = {
+  name: 'Custom range',
+  render: () => ({
+    template: `
+      <div class="stack" style="max-width:420px">
+        <mk-progress label="Operations tested" [value]="8" [max]="12" />
+        <mk-meter label="Latency" [value]="140" [min]="50" [max]="500" [low]="200" [high]="350" [optimum]="80" valueText="140 ms" />
+      </div>
+    `,
+  }),
+};
+
 export const MeterStory: StoryObj = {
   name: "Meter",
   render: () => ({

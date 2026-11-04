@@ -26,6 +26,27 @@ export const Default: StoryObj = {
   }),
 };
 
+/** `size="sm"` for confirmations, `size="lg"` for wide content. `closeOnBackdrop` also closes on a click outside. */
+export const Sizes: StoryObj = {
+  render: () => ({
+    props: { small: false, large: false },
+    template: `
+      <div class="inline">
+        <button mkButton (click)="small = true">Open the small dialog</button>
+        <button mkButton (click)="large = true">Open the large dialog</button>
+      </div>
+      <dialog mkDialog [(open)]="small" size="sm" [closeOnBackdrop]="true" title="Discard changes?" description="A click on the backdrop closes this dialog.">
+        <p style="margin:0">Your edits are not saved.</p>
+        <div mkDialogFooter><button mkButton variant="ghost" (click)="small = false">Close</button></div>
+      </dialog>
+      <dialog mkDialog [(open)]="large" size="lg" title="Operation details">
+        <p style="margin:0">A wide dialog for forms and tables.</p>
+        <div mkDialogFooter><button mkButton variant="ghost" (click)="large = false">Close</button></div>
+      </dialog>
+    `,
+  }),
+};
+
 export const Destructive: StoryObj = {
   render: () => ({
     props: { open: false },

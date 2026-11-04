@@ -23,6 +23,19 @@ export const Default: StoryObj = {
   }),
 };
 
+/** `removeLabel` names the remove button: it reads "Remove REST filter". */
+export const RemoveLabel: StoryObj = {
+  name: 'Remove button label',
+  render: () => ({
+    template: `
+      <div class="inline">
+        <span mkChip tone="info" [removable]="true" removeLabel="Remove REST filter">REST</span>
+        <span mkChip variant="outline" size="sm" [removable]="true" removeLabel="Remove team filter">Team: Bakery</span>
+      </div>
+    `,
+  }),
+};
+
 export const Variants: StoryObj = {
   render: () => ({
     template: `

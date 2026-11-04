@@ -18,6 +18,14 @@ export const ListAndDetail: StoryObj = {
   }),
 };
 
+/** `align="stretch"` makes both panes as tall as the taller one; `balanced` shares the width; `gap` sets the spacing. */
+export const StretchAndBalanced: StoryObj = {
+  name: 'Stretch, balanced and gap',
+  render: () => ({
+    template: `<div mkSplitPane align="stretch" [balanced]="true" gap="32px"><nav mkSplitPaneSide aria-label="Operations" style="${box}">Short list</nav><section mkSplitPaneMain aria-label="Detail" style="${box}"><p style="margin:0">The detail pane is longer.</p><p>Both panes end on the same line.</p></section></div>`,
+  }),
+};
+
 export const DetailFirst: StoryObj = {
   name: 'Wide list, detail on the right (Traces, Hub)',
   render: () => ({

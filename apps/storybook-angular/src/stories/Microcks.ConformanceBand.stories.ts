@@ -19,6 +19,15 @@ export const Default: StoryObj = {
   }),
 };
 
+/** `unit` changes the noun in the accessible summary ("3 of 4 conversations passed"). */
+export const CustomUnit: StoryObj = {
+  name: 'Custom unit',
+  render: () => ({
+    props: { outcomes: ['pass', 'pass', 'pass', 'fail'] },
+    template: `<mk-conformance-band [outcomes]="outcomes" unit="conversation" [showSummary]="true" />`,
+  }),
+};
+
 export const Mini: StoryObj = {
   render: () => ({
     props: { outcomes: CONFORMANCE, partial: ['pass', 'pass', 'untested', 'untested'] },

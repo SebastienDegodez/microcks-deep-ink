@@ -20,6 +20,19 @@ export const Default: StoryObj = {
   }),
 };
 
+/** `size="sm"` for dense toolbars; `surface="bg"` on a field that sits on a panel. */
+export const Small: StoryObj = {
+  render: () => ({
+    template: `
+      <div class="stack" style="max-width:360px">
+        <input mkInput size="sm" aria-label="Filter, small" placeholder="Small input" />
+        <input mkInput surface="bg" aria-label="Filter, page background" placeholder="Background surface" />
+        <textarea mkInput size="sm" surface="bg" aria-label="Notes, small" placeholder="Small textarea" rows="3"></textarea>
+      </div>
+    `,
+  }),
+};
+
 export const Mono: StoryObj = {
   render: () => ({
     props: { path: '/pastries/{name}' },
