@@ -11,9 +11,10 @@ import { Checkbox, Radio } from '@/ui/components/ui/checkbox';
 import { Facts } from '@/ui/components/ui/facts';
 import { Field } from '@/ui/components/ui/field';
 import { Input } from '@/ui/components/ui/input';
+import { RunMeta } from '@/ui/components/ui/run-meta';
 import { Select } from '@/ui/components/ui/select';
 import { ButtonRouterLink, ErrorBlock, LoadingBlock, workflowPath, runPath, runSetupPath } from '../workflows/shared';
-import { MetaItem, RunApiPanel, RunBadges, runBreadcrumb } from './run-parts';
+import { RunApiPanel, RunBadges, runBreadcrumb } from './run-parts';
 import '../workflows/workflows.css';
 import './workflow-run.css';
 
@@ -158,32 +159,28 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
       <PageHeader
         title="Run workflow"
         breadcrumb={runBreadcrumb(`${document.title} - ${document.version}`, workflowTo, workflowPath(document.id, workflow.workflowId, 'runs'), 'Run workflow')}
-        badge={<RunBadges workflowId={workflow.workflowId} documentLabel={documentLabel} to={workflowTo} chip={<ApiBadge label="status" value="not started" />} />}
-        descriptionTone="secondary"
-        descriptionWidth={900}
+        badge={<RunBadges workflowId={workflow.workflowId} documentLabel={documentLabel} to={workflowTo} chip={<ApiBadge label="status" value="not started" icon="circle" />} />}
         align="start"
-        description={
-          <span className="wfr-meta">
-            <MetaItem label="Document">
-              <RouterLink to={workflowPath(document.id, workflow.workflowId, 'source')} className="wfr-meta-file">
-                {document.file}
-              </RouterLink>
-            </MetaItem>
-            <MetaItem label="Run against">
-              <span className="wfr-meta-value">{targetLabel}</span>
-            </MetaItem>
-            <MetaItem label="Started">
-              <span className="wfr-meta-value">not yet</span>
-            </MetaItem>
-            <MetaItem label="Elapsed">
-              <span className="wfr-meta-value">—</span>
-            </MetaItem>
-            <MetaItem label="Launched by">
-              <span className="wfr-meta-value">MA</span>
-            </MetaItem>
-          </span>
-        }
-      />
+      >
+        <RunMeta
+          className="wfr-run-meta"
+          items={[
+            {
+              term: 'Document',
+              kind: 'url',
+              value: (
+                <RouterLink to={workflowPath(document.id, workflow.workflowId, 'source')} className="wfr-meta-file">
+                  {document.file}
+                </RouterLink>
+              ),
+            },
+            { term: 'Run against', value: targetLabel },
+            { term: 'Started', value: 'not yet' },
+            { term: 'Elapsed', value: '—' },
+            { term: 'Launched by', value: 'MA' },
+          ]}
+        />
+      </PageHeader>
       <div className="wfr-layout">
         <div className="wfr-main">
           <form
