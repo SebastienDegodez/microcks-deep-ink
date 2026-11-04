@@ -21,10 +21,10 @@
     "icon": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/icon.tsx": "bc02e15990bda85fc8939ebd13693e892cb85dbed3c1aafbe48cb08e4a0af37f",
+        "src/ui/components/ui/icon.tsx": "647c82fa6f91ea4acb64f9545da268e6f30f34bb138ba12796b85ba4be2b524d",
         "src/ui/styles/icon.css": "81d763ab1f1ad70eaf528ddbb31b0848567b4afa708ac887b7bb8aebbcf84d2c"
       },
-      "hash": "920a88d74bc2cb0b"
+      "hash": "eb4e829e661bcd11"
     },
     "button": {
       "version": "0.2.0",
