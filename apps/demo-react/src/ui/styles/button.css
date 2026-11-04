@@ -39,6 +39,19 @@
     font-size: 13px;
     line-height: 18px;
   }
+  /* Tile: 36px, for the actions in a card footer (Hub package cards). A secondary is 13px 600 with tighter padding. */
+  .button[data-size="tile"] {
+    min-height: 36px;
+    padding: 0 14px;
+    gap: 7px;
+  }
+  .button[data-size="tile"]:not([data-variant="primary"]) {
+    padding: 0 10px;
+    gap: 6px;
+    font-size: 13px;
+    font-weight: 600;
+    line-height: 18px;
+  }
   /* Large: 44px (form footers: TestCreate Cancel / Launch). */
   .button[data-size="lg"] {
     min-height: 44px;
@@ -165,6 +178,9 @@
   }
   .button[data-icon-only][data-size="compact"] {
     min-width: 34px;
+  }
+  .button[data-icon-only][data-size="tile"] {
+    min-width: 36px;
   }
   .button[data-icon-only][data-size="lg"] {
     min-width: 44px;
