@@ -319,21 +319,21 @@ function mocksSuccess(number: number, id: string, startedAt: string, origin: Run
   });
 }
 
-function run15(): WorkflowRun {
+function run15(startedAt = '2026-11-03T09:14:37Z'): WorkflowRun {
   const id = RUN_IDS[15];
   const get: StepResult = {
     ...passedStep(id, 'restock-pastry', GET, MOCK_BASE, 5, { oldPrice: 4.4, status: 'available' }),
     flow: { kind: 'end', title: 'onSuccess end applies: the run ends here', text: "Its criterion $response.body#/status == 'available' holds: nothing to restock. The run ends with SUCCESS; patchPastry and verifyPastry are not run." },
   };
   return restockRun({
-    number: 15, id, startedAt: '2026-11-03T09:14:37Z', origin: { kind: 'ui' }, target: { kind: 'mocks' },
+    number: 15, id, startedAt, origin: { kind: 'ui' }, target: { kind: 'mocks' },
     options: MOCK_OPTS('already-available', { size: 'L' }), status: 'SUCCESS',
     steps: [passedStep(id, 'restock-pastry', LIST, MOCK_BASE, 6, { firstName: 'Millefeuille' }), get, notRun(id, 'restock-pastry', PATCH), notRun(id, 'restock-pastry', VERIFY)],
     outputs: { pastryName: 'Millefeuille' },
   });
 }
 
-function run16(): WorkflowRun {
+function run16(startedAt = '2026-11-03T09:16:52Z'): WorkflowRun {
   const id = RUN_IDS[16];
   const get: StepResult = {
     stepId: 'getPastry', status: 'failed', attempts: [attempt(1, 4, 'first call', 400)],
@@ -345,7 +345,7 @@ function run16(): WorkflowRun {
     baggage: baggage(id, 'restock-pastry', 'getPastry', 1),
   };
   return restockRun({
-    number: 16, id, startedAt: '2026-11-03T09:16:52Z', origin: { kind: 'ui' }, target: { kind: 'mocks' },
+    number: 16, id, startedAt, origin: { kind: 'ui' }, target: { kind: 'mocks' },
     options: { inputs: { size: 'S', newPrice: 4.2 }, timeoutMs: 10_000, validateSchemas: false }, status: 'FAILURE',
     steps: [passedStep(id, 'restock-pastry', LIST, MOCK_BASE, 6, { firstName: 'Tarte Tatin' }), get, notRun(id, 'restock-pastry', PATCH), notRun(id, 'restock-pastry', VERIFY)],
     coherence: [{
@@ -365,17 +365,29 @@ function checkMenuRun(): WorkflowRun {
   };
 }
 
+/** The runs that exist when the demo opens: #14 (latest), #13, #12, #11 of restock-pastry and #3 of check-menu. */
 export function seedRuns(): WorkflowRun[] {
   return [
     run14(),
     sessionRun13(),
     mocksSuccess(12, RUN_IDS[12], '2026-11-02T16:42:04Z', { kind: 'ui' }, 'restock-eclair'),
-    mocksSuccess(11, RUN_IDS[11], '2026-11-01T10:15:04Z', { kind: 'mock-url' }, 'restock-eclair'),
-    run15(),
-    run16(),
+    mocksSuccess(11, RUN_IDS[11], '2026-11-01T08:42:04Z', { kind: 'mock-url' }, 'restock-eclair'),
     checkMenuRun(),
   ];
 }
+
+/**
+ * Runs #15 and #16 only exist once the run setup launches the scenario `mocksEnd` (#15, ends early at getPastry)
+ * or `mocksMissing` (#16, missing example for Tarte Tatin). Their ids stay stable for the links of the story.
+ */
+export function scenarioRun(id: string, startedAt?: string): WorkflowRun | undefined {
+  if (id === RUN_IDS[15]) return run15(startedAt);
+  if (id === RUN_IDS[16]) return run16(startedAt);
+  return undefined;
+}
+
+/** Both scenario runs, for the features that read their facts (Copilot reads the coherence issue of #16). */
+export const scenarioRuns = (): WorkflowRun[] => [run15(), run16()];
 
 /* ---------------------------------------------------------------------------------------- sessions */
 
