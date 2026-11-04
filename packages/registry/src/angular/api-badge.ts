@@ -22,7 +22,7 @@ const STATUS_WORD = { success: 'success', danger: 'error', warning: 'warning' } 
     '[attr.data-status]': 'isProof() ? status() : null',
     '[attr.data-size]': 'size()',
   },
-  template: `<span class="api-badge-type">{{ type() }}</span>&ngsp;@if (main()) {<span class="api-badge-name">@if (proofIcon(); as p) {<svg mkIcon [name]="iconFor(p)" [size]="12"></svg>}{{ main() }}@if (proofIcon(); as p) {&ngsp;<span class="sr-only">({{ wordFor(p) }})</span>}</span>}&ngsp;@if (!isProof() && version()) {<span class="api-badge-version">{{ version() }}</span>}`,
+  template: `<span class="api-badge-type">{{ type() }}</span>&ngsp;@if (main()) {<span class="api-badge-name">@if (proofIcon(); as p) {<svg mkIcon [name]="iconFor(p)" [size]="12"></svg>}{{ main() }}@if (proofIcon(); as p) {&ngsp;<span class="sr-only">({{ wordFor(p) }})</span>}</span>}&ngsp;@if (!isProof() && version()) {<span class="api-badge-version">{{ version() }}</span>}@if (isProof()) {@for (v of values(); track $index) {&ngsp;<span class="api-badge-value" [attr.data-status]="v.status ?? 'neutral'">@if (filledFor(v.status); as p) {<svg mkIcon [name]="iconFor(p)" [size]="12"></svg>}{{ v.value }}@if (filledFor(v.status); as p) {&ngsp;<span class="sr-only">({{ wordFor(p) }})</span>}</span>}}`,
 })
 export class ApiBadgeComponent {
   /** Left segment for an API badge. Ignored when `label` or `arazzo` is set. */
@@ -36,7 +36,10 @@ export class ApiBadgeComponent {
   readonly value = input<string>();
   /** Fill of the proof segment. */
   readonly status = input<ProofStatus>('neutral');
-  readonly size = input<'md' | 'sm'>('md');
+  /** More proof values after `value`, each its own filled segment ("samples │ 7 │ +1 AI"). */
+  readonly values = input<ReadonlyArray<{ value: string; status?: ProofStatus }>>([]);
+  /** `lg` sets the name in the brand font at 17px (beside a page title); `xl` at 30px (the badge is the page title). */
+  readonly size = input<'sm' | 'md' | 'lg' | 'xl'>('md');
 
   protected isProof(): boolean {
     return !this.arazzo() && this.label() !== undefined;
@@ -53,6 +56,9 @@ export class ApiBadgeComponent {
   protected proofIcon(): 'success' | 'danger' | 'warning' | undefined {
     const s = this.status();
     return this.isProof() && (s === 'success' || s === 'danger' || s === 'warning') ? s : undefined;
+  }
+  protected filledFor(s: ProofStatus | undefined): 'success' | 'danger' | 'warning' | undefined {
+    return s === 'success' || s === 'danger' || s === 'warning' ? s : undefined;
   }
   protected iconFor(s: 'success' | 'danger' | 'warning') {
     return STATUS_ICON[s];

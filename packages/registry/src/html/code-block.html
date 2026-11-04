@@ -1,9 +1,23 @@
 <!-- CodeBlock. The <pre> scrolls, so it is focusable and named (role="region" + aria-label).
+     Framed: a header with optional format tabs (toggle buttons, aria-pressed) and a link-style Copy.
      A bad line shows a visible ✕ marker AND a visible note. Copy button: see copy-button. -->
-<figure class="code" data-language="json">
+<figure class="code" data-language="shell" data-variant="framed">
   <figcaption>
-    <span class="code-caption">Response body</span>
-    <button type="button" class="button copy-button" data-size="sm" data-copy="#code-1">Copy</button>
+    <span class="code-tabs" role="group" aria-label="Format">
+      <button type="button" aria-pressed="true">curl</button>
+      <button type="button" aria-pressed="false">HTTPie</button>
+    </span>
+    <button type="button" class="button copy-button code-copy" data-size="sm" data-copy="#code-1">Copy</button>
   </figcaption>
-  <pre tabindex="0" role="region" aria-label="Response body"><code id="code-1" class="language-json"><span class="code-line">{</span><span class="code-line">  "name": "Millefeuille",</span><span class="code-line" data-bad><span class="code-mark" aria-hidden="true">✕</span><span class="sr-only">Problem:</span>   "price": "3.20"<span class="code-note">Schema expects a number, found a string.</span></span><span class="code-line">}</span></code></pre>
+  <pre tabindex="0" role="region" aria-label="curl code"><code id="code-1" class="language-shell">curl -X GET 'http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille'</code></pre>
+</figure>
+
+<!-- Plain: just the bordered code, no header. -->
+<figure class="code" data-variant="plain">
+  <pre tabindex="0" role="region" aria-label="Stored as"><code>{"dispatcher": "URI_PARTS", "dispatcherRules": "name"}</code></pre>
+</figure>
+
+<!-- Numbered, with a bad line and its note inline. -->
+<figure class="code" data-language="json" data-variant="plain" data-numbered>
+  <pre tabindex="0" role="region" aria-label="Response body"><code class="language-json"><span class="code-line"><span class="code-ln" aria-hidden="true">1</span><span class="code-text">{</span></span><span class="code-line"><span class="code-ln" aria-hidden="true">2</span><span class="code-text">  "name": "Eclair Cafe",</span></span><span class="code-line" data-bad><span class="code-ln" aria-hidden="true">3</span><span class="code-mark" aria-hidden="true">✕</span><span class="sr-only">Problem: </span><span class="code-text">  "price": "2.5"</span><span class="code-note">schema: number</span></span><span class="code-line"><span class="code-ln" aria-hidden="true">4</span><span class="code-text">}</span></span></code></pre>
 </figure>

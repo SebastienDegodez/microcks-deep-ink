@@ -25,3 +25,15 @@ export const Mini: StoryObj = {
 export const Failing: StoryObj = {
   render: () => <ConformanceBand outcomes={['pass', 'fail', 'fail', 'pass', 'untested', 'fail']} />,
 };
+
+export const Labelled: StoryObj = {
+  name: 'Labels under each cell',
+  render: () => (
+    <ConformanceBand outcomes={['pass', 'pass', 'fail']} labels={['GET /pastries · passed', 'GET /pastries/{name} · passed', 'PATCH /pastries/{name} · failed']} />
+  ),
+};
+
+export const WithSummary: StoryObj = {
+  name: 'With summary',
+  render: () => <ConformanceBand outcomes={CONFORMANCE} showSummary />,
+};

@@ -6,6 +6,15 @@
   <span class="api-badge-version">2.0</span>
 </span>
 
+<!-- Page header sizes: lg (brand name 17px, beside an h1) and xl (brand name 30px, inside the h1). -->
+<h1>
+  <span class="api-badge" data-protocol="rest" data-size="xl">
+    <span class="api-badge-type">REST</span>
+    <span class="api-badge-name">API Pastry</span>
+    <span class="api-badge-version">2.0</span>
+  </span>
+</h1>
+
 <!-- Workflow: inverted left segment, never a protocol color. -->
 <span class="api-badge" data-protocol="arazzo">
   <span class="api-badge-type">ARAZZO</span>
@@ -15,5 +24,12 @@
 <!-- Proof: status fill with an icon and a hidden status word. -->
 <span class="api-badge" data-status="success">
   <span class="api-badge-type">conformance</span>
-  <span class="api-badge-name"><svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l5 5 9-10"/></svg>92 % <span class="sr-only">(success)</span></span>
+  <span class="api-badge-name"><svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l5 5 9-11"/></svg>92 % <span class="sr-only">(success)</span></span>
+</span>
+
+<!-- Proof with several values: each value is its own filled segment. -->
+<span class="api-badge" data-status="neutral">
+  <span class="api-badge-type">samples</span>
+  <span class="api-badge-name">7</span>
+  <span class="api-badge-value" data-status="warning"><svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4l9 16H3z"/><path d="M12 10v4"/><path d="M12 17v.5"/></svg>+1 AI <span class="sr-only">(warning)</span></span>
 </span>

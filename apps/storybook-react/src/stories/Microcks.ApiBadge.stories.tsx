@@ -45,3 +45,20 @@ export const Proof: StoryObj = {
     </div>
   ),
 };
+
+export const PageHeader: StoryObj = {
+  name: 'Page header sizes',
+  render: () => (
+    <div className="stack">
+      <h1 style={{ margin: 0 }}>
+        <ApiBadge size="xl" protocol="REST" name="API Pastry" version="2.0" />
+      </h1>
+      <ApiBadge size="lg" protocol="REST" name="API Pastry" version="2.0" />
+    </div>
+  ),
+};
+
+export const ProofValues: StoryObj = {
+  name: 'Proof with several values',
+  render: () => <ApiBadge label="samples" value="7" values={[{ value: '+1 AI', status: 'warning' }]} />,
+};

@@ -62,3 +62,23 @@ export const Proof: StoryObj = {
     `,
   }),
 };
+
+export const PageHeader: StoryObj = {
+  name: "Page header sizes",
+  render: () => ({
+    template: `
+      <div class="stack">
+        <h1 style="margin: 0"><span mkApiBadge size="xl" protocol="REST" name="API Pastry" version="2.0"></span></h1>
+        <span mkApiBadge size="lg" protocol="REST" name="API Pastry" version="2.0"></span>
+      </div>
+    `,
+  }),
+};
+
+export const ProofValues: StoryObj = {
+  name: "Proof with several values",
+  render: () => ({
+    props: { values: [{ value: '+1 AI', status: 'warning' }] },
+    template: `<span mkApiBadge label="samples" value="7" [values]="values"></span>`,
+  }),
+};

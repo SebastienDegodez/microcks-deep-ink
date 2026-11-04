@@ -4,23 +4,30 @@
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    padding: 4px 12px;
-    border: 1px solid var(--live);
+    padding: 4px 10px;
+    border: 1px solid var(--live-text);
     border-radius: var(--radius-pill);
     color: var(--live-text);
     font: 400 12px/16px var(--font-mono);
+    white-space: nowrap;
   }
+  .live[data-size="sm"] { gap: 6px; padding: 2px 8px; font-size: 11px; }
+  /* Inline: no pill, just the dot and the word (KPI cards). */
+  .live[data-variant="inline"] { gap: 6px; padding: 0; border: 0; font-size: 11px; }
   .live-dot {
+    flex: none;
     width: 8px;
     height: 8px;
     border-radius: var(--radius-pill);
     background: var(--live);
-    animation: live-pulse 1.6s ease-in-out infinite;
+    animation: live-pulse 1.4s ease-in-out infinite;
   }
+  .live[data-size="sm"] .live-dot,
+  .live[data-variant="inline"] .live-dot { width: 7px; height: 7px; }
   @keyframes live-pulse { 50% { opacity: 0.35; } }
-  /* Paused: hollow, static dot and neutral colors; the word "paused" is also written. */
-  .live[data-paused] { border-color: var(--border-control); color: var(--text-secondary); }
-  .live[data-paused] .live-dot { background: transparent; border: 2px solid var(--text-secondary); box-sizing: border-box; animation: none; }
+  /* Paused: neutral colours and a pause glyph instead of the dot; the word "paused" is also written. */
+  .live[data-paused] { border-color: var(--border-strong); color: var(--text-secondary); }
+  .live[data-paused] > .icon { flex: none; stroke-width: 3; }
   @media (prefers-reduced-motion: reduce) {
     .live-dot { animation: none; }
   }
