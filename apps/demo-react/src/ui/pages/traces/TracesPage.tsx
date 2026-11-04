@@ -15,6 +15,7 @@ import {
   type TraceKind,
   type TraceTopology,
 } from '@/domain/observe';
+import { fmt, plural } from '@/ui/app/format';
 import { PageHeader, usePageTitle, useQuery, useSubscription, useUseCases } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
@@ -55,8 +56,6 @@ const EMPTY: TraceTopology = {
   history: [],
 };
 
-const fmt = (n: number) => n.toLocaleString('en-US');
-const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
 
 /** Background of the method chip: events and writes in the event colour, MCP in the link colour. */
 function methodTone(c: Pick<TraceCall, 'kind' | 'method'>): 'event' | 'mcp' | 'rest' {

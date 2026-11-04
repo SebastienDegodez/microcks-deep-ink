@@ -15,7 +15,7 @@ import { Icon } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { StatCard, StatGrid } from '@/ui/components/ui/stat-card';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
-import { PROTOCOL_ORDER, fmt, operationUnit, pluralize, testRunHref } from '../explore-kit/format';
+import { PROTOCOL_ORDER, fmt, operationUnit, pluralize, testRunHref } from '@/ui/app/format';
 import { buildAttention } from './attention';
 
 const HOURS = [5, 1, 2, 1, 1, 6, 15, 40, 92, 121, 165, 125];

@@ -3,20 +3,19 @@ import { Link as RouterLink, useParams } from 'react-router';
 import { filterRuns, type TestRunSummary } from '@/domain/testing';
 import { PageHeader, useQuery, useRelativeTime, usePageTitle, useUseCases } from '@/ui/app';
 import { ApiBadge, type ProofStatus } from '@/ui/components/ui/api-badge';
-import { Icon, type IconName } from '@/ui/components/ui/icon';
+import { TEST_RESULT_ICON, TEST_RESULT_WORD } from '@/ui/app/outcomes';
+import { Icon } from '@/ui/components/ui/icon';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { Button } from '@/ui/components/ui/button';
 import { EmptyState } from '@/ui/components/ui/empty-state';
 import { Select } from '@/ui/components/ui/select';
 import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
-import { testRunHref } from '../explore-kit/format';
+import { testRunHref } from '@/ui/app/format';
 import { fmtDuration, shortDate, TestTimeline, timelineRuns } from './TestTimeline';
 import './tests.css';
 
 const LIMIT = 12;
-const WORD: Record<TestRunSummary['result'], string> = { passed: 'Passed', failed: 'Failed', timeout: 'Timed out', running: 'Running' };
-const RESULT_ICON: Record<TestRunSummary['result'], IconName> = { passed: 'check', failed: 'cross', timeout: 'clock', running: 'running' };
 const OP_WORD = { pass: 'passed', fail: 'failed', none: 'no result' } as const;
 
 export default function TestsPage() {
@@ -74,7 +73,7 @@ export default function TestsPage() {
               <li><ApiBadge label="conformance" value={`${service.conformance}%`} status={tone(service.conformance)} /></li>
             ) : null}
             {latest ? (
-              <li><ApiBadge label="last test" value={LAST_WORD[latest.result]} status={LAST_TONE[latest.result]} /></li>
+              <li><ApiBadge label="last test" value={TEST_RESULT_WORD[latest.result].toLowerCase()} status={LAST_TONE[latest.result]} /></li>
             ) : null}
             {passRate !== null ? (
               <li><ApiBadge label={`pass rate · ${recent.length} runs`} value={`${passRate}%`} status={tone(passRate)} /></li>
@@ -90,7 +89,6 @@ export default function TestsPage() {
   );
 }
 
-const LAST_WORD: Record<TestRunSummary['result'], string> = { passed: 'passed', failed: 'failed', timeout: 'timed out', running: 'running' };
 const LAST_TONE: Record<TestRunSummary['result'], ProofStatus> = { passed: 'success', failed: 'danger', timeout: 'warning', running: 'info' };
 const tone = (pct: number): ProofStatus => (pct >= 80 ? 'success' : pct >= 50 ? 'warning' : 'danger');
 
@@ -188,8 +186,8 @@ function History({
       render: (r) => (
         <span className="tests-result" data-result={r.result}>
           <span className="tests-result-word">
-            <Icon name={RESULT_ICON[r.result]} size={14} strokeWidth={r.result === 'timeout' ? 2.2 : 2.6} />
-            {WORD[r.result]}
+            <Icon name={TEST_RESULT_ICON[r.result]} size={14} strokeWidth={r.result === 'timeout' ? 2.2 : 2.6} />
+            {TEST_RESULT_WORD[r.result]}
           </span>
           {r.reason ? <span className="tests-result-reason">{r.reason}</span> : null}
         </span>

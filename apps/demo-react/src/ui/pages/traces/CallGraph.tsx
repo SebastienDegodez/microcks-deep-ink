@@ -1,5 +1,6 @@
 import '../tests/page-kit.css';
 import type { FlowCounts, TopologyEdge, TraceCall, TraceTopology } from '@/domain/observe';
+import { fmt } from '@/ui/app/format';
 import { Icon } from '@/ui/components/ui/icon';
 
 /** Graph geometry of the prototype: 56px nodes on a 72px slot, six slots per 416px column. */
@@ -7,7 +8,6 @@ const SLOT = 72;
 const NODE = 56;
 const HEIGHT = 416;
 const yOf = (len: number, idx: number) => ((6 - len) * SLOT) / 2 + idx * SLOT + NODE / 2;
-const fmt = (n: number) => n.toLocaleString('en-US');
 
 export interface GraphFilter {
   serviceId: string;
