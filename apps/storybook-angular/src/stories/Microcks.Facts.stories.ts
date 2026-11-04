@@ -23,6 +23,19 @@ export const Rows: StoryObj = {
   }),
 };
 
+/** Row options: `sub` text, `mono` value and a `tone` on `mkFactRow`. */
+export const RowOptions: StoryObj = {
+  name: 'Row options (sub, mono, tone)',
+  render: () => ({
+    template: `
+      <dl mkFacts style="max-width:520px">
+        <div mkFactRow term="Endpoint" sub="Mock URL" [mono]="true" tone="success">/rest/API+Pastry/2.0.0</div>
+        <div mkFactRow term="Last sync" tone="muted">Never</div>
+      </dl>
+    `,
+  }),
+};
+
 export const Inline: StoryObj = {
   render: () => ({
     props: {

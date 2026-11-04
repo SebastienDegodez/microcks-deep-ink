@@ -44,6 +44,32 @@ export const ConformanceTimeline: StoryObj = {
 
 const HOURS = [12, 8, 4, 3, 2, 5, 18, 40, 85, 72, 64, 66];
 
+/** `grid` lines, `ticksEnd` on the right, a `minHeight` for zero values and an `overlay`. */
+export const GridAndOverlay: StoryObj = {
+  name: 'Grid, end ticks and overlay',
+  render: () => {
+    const [id, setId] = useState('104');
+    const bars: BarChartBar[] = RUNS.slice(0, 8).map((r) => ({ id: r.id, value: r.ms, tone: r.failed ? 'danger' : 'success', label: r.id, description: `Run #${r.id}, ${r.ms} ms` }));
+    return (
+      <div style={{ maxWidth: 700 }}>
+        <BarChart
+          label="Last 8 runs"
+          bars={bars}
+          max={3000}
+          selectedId={id}
+          onSelect={setId}
+          grid={[0.5, 1]}
+          ticks={['3 s', '0']}
+          ticksEnd={['SLA', '']}
+          minHeight={4}
+          overlay={<span className="sb-note">Budget 2 s</span>}
+          table={{ caption: 'Last 8 runs', columns: ['Run', 'Duration'], rows: RUNS.slice(0, 8).map((r) => [`#${r.id}`, `${r.ms} ms`]) }}
+        />
+      </div>
+    );
+  },
+};
+
 export const PerHour: StoryObj = {
   name: 'Per hour, future slots (Usage)',
   render: () => {

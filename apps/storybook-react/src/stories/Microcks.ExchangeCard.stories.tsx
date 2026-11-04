@@ -42,6 +42,17 @@ export const ServiceExample: StoryObj = {
   ),
 };
 
+/** `statusTone` colours the status; `headingLevel` fits the card in the page outline (`none` for no heading). */
+export const StatusTones: StoryObj = {
+  name: 'Status tones and heading level',
+  render: () => (
+    <div className="sb-col" style={{ maxWidth: 560 }}>
+      <ExchangeCard title="Response" label="Response, warning" headingLevel={3} status="200 · slow" statusTone="warning" blocks={[{ label: 'Slow response body', text: '{ "name": "Millefeuille" }' }]} />
+      <ExchangeCard title="Response" label="Response, failure" headingLevel="none" status="500" statusTone="danger" blocks={[{ label: 'Error body', text: '{ "error": "boom" }' }]} />
+    </div>
+  ),
+};
+
 export const Compact: StoryObj = {
   name: 'Compact head (Copilot)',
   render: () => (

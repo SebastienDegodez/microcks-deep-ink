@@ -23,6 +23,20 @@ export const Default: StoryObj = {
   }),
 };
 
+/** `idPrefix` keeps tab and panel ids unique when two tab lists share a page. */
+export const IdPrefix: StoryObj = {
+  name: 'Two lists on a page (idPrefix)',
+  render: () => ({
+    props: { items: SERVICE_TABS, a: 'operations', b: 'operations' },
+    template: `
+      <div class="stack">
+        <mk-tabs label="Service A" idPrefix="a" [items]="items" [(value)]="a">@for (t of items; track t.id) { <div mkTabPanel [tab]="t.id" idPrefix="a"><p style="margin:0">Service A, {{ t.label }}.</p></div> }</mk-tabs>
+        <mk-tabs label="Service B" idPrefix="b" variant="card" [items]="items" [(value)]="b">@for (t of items; track t.id) { <div mkTabPanel [tab]="t.id" idPrefix="b"><p style="margin:0">Service B, {{ t.label }}.</p></div> }</mk-tabs>
+      </div>
+    `,
+  }),
+};
+
 export const ManualActivation: StoryObj = {
   name: "Manual activation",
   parameters: { docs: { description: { story: "Arrow keys only move focus; Enter or Space selects. Use it when a panel is expensive to load." } } },

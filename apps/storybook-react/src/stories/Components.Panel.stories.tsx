@@ -19,6 +19,16 @@ export const Default: StoryObj = {
   ),
 };
 
+/** `as` picks the landmark element: here an `aside`. */
+export const AsAside: StoryObj = {
+  name: 'As an aside',
+  render: () => (
+    <div style={{ maxWidth: 360 }}>
+      <Panel as="aside" title="Related" headingLevel={3}><p style={{ margin: 0 }}>Links to other services.</p></Panel>
+    </div>
+  ),
+};
+
 export const Flush: StoryObj = {
   render: () => (
     <div style={{ maxWidth: 560 }}>

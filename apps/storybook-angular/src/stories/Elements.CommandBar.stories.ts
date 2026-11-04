@@ -24,6 +24,15 @@ export const Inline: StoryObj = {
   }),
 };
 
+/** `[globalShortcut]="false"` turns Ctrl/\u2318K off; `label` names the field. */
+export const NoShortcut: StoryObj = {
+  name: 'Without the global shortcut',
+  render: () => ({
+    props: { commands: COMMANDS },
+    template: `<command-bar inline [items]="commands" [globalShortcut]="false" label="Local commands" placeholder="Type a command"></command-bar>`,
+  }),
+};
+
 export const Modal: StoryObj = {
   render: () => ({
     props: { commands: COMMANDS, open: false },

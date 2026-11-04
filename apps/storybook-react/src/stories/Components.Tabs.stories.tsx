@@ -24,6 +24,25 @@ function Demo({ activation }: { activation: 'automatic' | 'manual' }) {
 
 export const Default: StoryObj = { render: () => <Demo activation="automatic" /> };
 
+/** `idPrefix` keeps tab and panel ids unique when two tab lists share a page. */
+export const IdPrefix: StoryObj = {
+  name: 'Two lists on a page (idPrefix)',
+  render: () => {
+    const [a, setA] = useState('operations');
+    const [b, setB] = useState('operations');
+    return (
+      <div className="sb-col">
+        <Tabs label="Service A" idPrefix="a" items={SERVICE_TABS} value={a} onChange={setA}>
+          <TabPanel id={a} value={a} idPrefix="a"><p style={{ margin: 0 }}>Service A, {a}.</p></TabPanel>
+        </Tabs>
+        <Tabs label="Service B" idPrefix="b" variant="card" items={SERVICE_TABS} value={b} onChange={setB}>
+          <TabPanel id={b} value={b} idPrefix="b"><p style={{ margin: 0 }}>Service B, {b}.</p></TabPanel>
+        </Tabs>
+      </div>
+    );
+  },
+};
+
 export const ManualActivation: StoryObj = {
   name: 'Manual activation',
   parameters: { docs: { description: { story: 'Arrow keys only move focus; Enter or Space selects. Use it when a panel is expensive to load.' } } },
