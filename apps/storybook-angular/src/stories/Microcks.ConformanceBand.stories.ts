@@ -39,3 +39,19 @@ export const Failing: StoryObj = {
     `,
   }),
 };
+
+export const Labelled: StoryObj = {
+  name: "Labels under each cell",
+  render: () => ({
+    props: { outcomes: ['pass', 'pass', 'fail'], labels: ['GET /pastries · passed', 'GET /pastries/{name} · passed', 'PATCH /pastries/{name} · failed'] },
+    template: `<mk-conformance-band [outcomes]="outcomes" [labels]="labels" />`,
+  }),
+};
+
+export const WithSummary: StoryObj = {
+  name: "With summary",
+  render: () => ({
+    props: { outcomes: CONFORMANCE },
+    template: `<mk-conformance-band [outcomes]="outcomes" [showSummary]="true" />`,
+  }),
+};

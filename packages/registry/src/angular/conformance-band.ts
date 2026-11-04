@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
+import { IconComponent } from './icon';
 
 export type OperationResult = 'pass' | 'fail' | 'untested';
 
@@ -16,16 +17,14 @@ export function conformanceLabel(outcomes: OperationResult[], unit = 'operation'
   return parts.join(', ');
 }
 
-/** One segment per operation. `full` adds the visible score and counts; `mini` is the catalogue-row version. */
+/** One segment per operation. `full` (12px cells, optional labels and summary) or `mini` (catalogue rows). */
 @Component({
   selector: 'mk-conformance-band',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [NgTemplateOutlet],
+  imports: [NgTemplateOutlet, IconComponent],
   styles: [':host { display: contents; }'],
   template: `
-    @if (size() === 'mini') {
-      <ng-container [ngTemplateOutlet]="band" />
-    } @else {
+    @if (size() !== 'mini' && showSummary()) {
       <div class="conformance-wrap">
         <ng-container [ngTemplateOutlet]="band" />
         <p class="conformance-summary">
@@ -33,20 +32,38 @@ export function conformanceLabel(outcomes: OperationResult[], unit = 'operation'
           <span>{{ text() }}</span>
         </p>
       </div>
+    } @else {
+      <ng-container [ngTemplateOutlet]="band" />
     }
     <ng-template #band>
-      <div class="conformance" [attr.data-size]="size()" role="img" [attr.aria-label]="text()">
-        @for (result of outcomes(); track $index) {
-          <span [attr.data-result]="result"></span>
-        }
-      </div>
+      @if (size() !== 'mini' && labels(); as ls) {
+        <ul class="conformance" [attr.data-size]="size()" data-labelled="" [attr.aria-label]="text()">
+          @for (result of outcomes(); track $index) {
+            <li [attr.data-result]="result">
+              <span class="conformance-bar" aria-hidden="true"></span>
+              <span class="conformance-label"><svg mkIcon [name]="iconFor(result)" [size]="12"></svg>{{ ls[$index] }}</span>
+            </li>
+          }
+        </ul>
+      } @else {
+        <div class="conformance" [attr.data-size]="size()" role="img" [attr.aria-label]="text()">
+          @for (result of outcomes(); track $index) {
+            <span [attr.data-result]="result"></span>
+          }
+        </div>
+      }
     </ng-template>
   `,
 })
 export class ConformanceBandComponent {
   /** One entry per operation. */
   readonly outcomes = input.required<OperationResult[]>();
+  /** `full`: 12px cells; `mini`: the 96 x 14 catalogue-row band. */
   readonly size = input<'full' | 'mini'>('full');
+  /** One visible label per cell, written under it ("GET /pastries · passed"). Full size only. */
+  readonly labels = input<string[]>();
+  /** Adds the 40px score and the counts as text under the band. Full size only. */
+  readonly showSummary = input(false);
   /** What a segment counts, singular: `operation` (default) or `skill` for an A2A agent. */
   readonly unit = input('operation');
 
@@ -55,5 +72,8 @@ export class ConformanceBandComponent {
     const o = this.outcomes();
     return o.length ? Math.round((o.filter((r) => r === 'pass').length / o.length) * 100) : 0;
   });
+  protected iconFor(r: OperationResult) {
+    return ({ pass: 'check', fail: 'cross', untested: 'circle' } as const)[r];
+  }
   protected readonly level = computed(() => (this.score() >= 80 ? 'high' : this.score() >= 50 ? 'mid' : 'low'));
 }

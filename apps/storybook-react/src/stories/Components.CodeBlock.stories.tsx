@@ -1,5 +1,5 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
-import React from 'react';
+import React, { useState } from 'react';
 import { CodeBlock } from '@microcks-deep-ink/registry/react/code-block';
 import { RUN14_FAILURE } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { itemParams } from './_meta';
@@ -31,5 +31,41 @@ export const Scrolling: StoryObj = {
     <div style={{ maxWidth: 360 }}>
       <CodeBlock caption="Long line" copy={false} maxHeight={120} code={'curl -X PATCH http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille -H "Content-Type: application/json" -d \'{"price": 3.9}\''} />
     </div>
+  ),
+};
+
+export const FormatTabs: StoryObj = {
+  name: 'Format tabs',
+  render: function Render() {
+    const SNIPPETS: Record<string, string> = {
+      curl: "curl -X GET 'http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille'",
+      httpie: 'http GET http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille',
+    };
+    const [tab, setTab] = useState('curl');
+    return (
+      <CodeBlock
+        code={SNIPPETS[tab]}
+        language="shell"
+        tabs={[{ id: 'curl', label: 'curl' }, { id: 'httpie', label: 'HTTPie' }]}
+        tab={tab}
+        onTabChange={setTab}
+      />
+    );
+  },
+};
+
+export const Plain: StoryObj = {
+  render: () => <CodeBlock variant="plain" caption="Stored as" code={'{"dispatcher": "URI_PARTS", "dispatcherRules": "name"}'} />,
+};
+
+export const Numbered: StoryObj = {
+  name: 'Line numbers and inline note',
+  render: () => (
+    <CodeBlock
+      variant="plain"
+      caption="Response body"
+      lineNumbers
+      lines={[{ text: '{' }, { text: '  "name": "Eclair Cafe",' }, { text: '  "price": "2.5"', bad: true, note: 'schema: number' }, { text: '}' }]}
+    />
   ),
 };

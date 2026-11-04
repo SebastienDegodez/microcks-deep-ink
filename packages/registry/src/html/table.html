@@ -3,6 +3,7 @@
   - The scroll wrapper is a focusable region named by the caption, so keyboard users can scroll it.
   - th scope="col" on headers; aria-sort only on the sorted column, with a button inside the th.
   - A row link is the first cell's <a class="table-rowlink">, stretched over the row. No clickable <tr>.
+  Cells wrap; add data-nowrap on a cell (or column) to keep it on one line. Only thead th is uppercase.
 -->
 <div class="table-wrap" role="region" aria-labelledby="svc-caption" tabindex="0">
   <table class="table" data-density="comfortable">

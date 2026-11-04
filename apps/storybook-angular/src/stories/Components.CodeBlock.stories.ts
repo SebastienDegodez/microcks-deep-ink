@@ -43,3 +43,33 @@ export const Scrolling: StoryObj = {
     `,
   }),
 };
+
+export const FormatTabs: StoryObj = {
+  name: "Format tabs",
+  render: () => ({
+    props: {
+      tab: 'curl',
+      tabs: [{ id: 'curl', label: 'curl' }, { id: 'httpie', label: 'HTTPie' }],
+      snippets: {
+        curl: "curl -X GET 'http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille'",
+        httpie: 'http GET http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille',
+      },
+    },
+    template: `<figure mkCodeBlock language="shell" [tabs]="tabs" [(tab)]="tab" [code]="snippets[tab]"></figure>`,
+  }),
+};
+
+export const Plain: StoryObj = {
+  render: () => ({
+    props: { code: '{"dispatcher": "URI_PARTS", "dispatcherRules": "name"}' },
+    template: `<figure mkCodeBlock variant="plain" caption="Stored as" [code]="code"></figure>`,
+  }),
+};
+
+export const Numbered: StoryObj = {
+  name: "Line numbers and inline note",
+  render: () => ({
+    props: { lines: [{ text: '{' }, { text: '  "name": "Eclair Cafe",' }, { text: '  "price": "2.5"', bad: true, note: 'schema: number' }, { text: '}' }] },
+    template: `<figure mkCodeBlock variant="plain" caption="Response body" lineNumbers [lines]="lines"></figure>`,
+  }),
+};
