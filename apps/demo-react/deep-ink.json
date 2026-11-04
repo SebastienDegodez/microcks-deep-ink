@@ -429,9 +429,17 @@
         "src/ui/styles/bar-chart.css": "d75c62f8012a737ee75ad7fec196d2b6da817a8f941bf3aa3fff73bf2b014d3d"
       },
       "hash": "0d9d7f0453cbad22"
+    },
+    "split-pane": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/split-pane.tsx": "c58dcf1a0d445fcbce25cfccf3b586fd17a6c3f2c86bb5bfd7e14b22dda77fd7",
+        "src/ui/styles/split-pane.css": "3932a121239887c52cd7954c35d55ad0335ae81e4a7a75e30b58fa642cdd29f0"
+      },
+      "hash": "7d7c09386333e0a6"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "cd84cf578f3c1f040b30cfcbd4a1502e4b8ab70b7e9ef32e83bafd42366b148e"
+    "src/ui/styles/index.css": "f97ee8ea62ca071f544a281ef2aa93320ddf6622b6b1968fb01c7985bfd00f08"
   }
 }
