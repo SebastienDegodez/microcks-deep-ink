@@ -470,6 +470,8 @@ export const EXAMPLES: WorkflowExample[] = [
       { stepId: 'getPastry', status: 200, outputs: { status: 'available' } },
     ],
     stopsAt: 'getPastry',
-    outputs: { pastryName: 'Millefeuille' },
+    // The overlay expects no outputs for this example (the run ends early).
+    outputs: {},
+    lastJudged: { runNumber: 9, at: '2026-10-29T08:40:04Z', matched: true },
   },
 ];

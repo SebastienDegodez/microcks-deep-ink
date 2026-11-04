@@ -138,7 +138,7 @@ export default function WorkflowPage() {
           {examples.status === 'error' ? (
             <ErrorBlock error={examples.error} onRetry={examples.reload} />
           ) : examples.data ? (
-            <ExamplesTab detail={detail.data} runs={runList} examples={examples.data} />
+            <ExamplesTab detail={detail.data} runs={runList} examples={examples.data} serviceLabel={serviceLabel} />
           ) : (
             <LoadingBlock label="Loading the examples" />
           )}
