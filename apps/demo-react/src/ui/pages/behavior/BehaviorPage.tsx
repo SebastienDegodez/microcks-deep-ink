@@ -134,7 +134,7 @@ export default function BehaviorPage() {
             </div>
             <div className="delay-strategy">
               <span className="field-inline-label" aria-hidden="true">Strategy</span>
-              <Segmented variant="joined" label="Strategy" value={draft.delayStrategy ?? 'fixed'} onChange={(id) => edit({ delayStrategy: id as 'fixed' | 'random' })} options={[{ id: 'fixed', label: 'fixed' }, { id: 'random', label: 'random' }]} />
+              <Segmented variant="joined" size="sm" label="Strategy" value={draft.delayStrategy ?? 'fixed'} onChange={(id) => edit({ delayStrategy: id as 'fixed' | 'random' })} options={[{ id: 'fixed', label: 'fixed' }, { id: 'random', label: 'random' }]} />
               <span className="delay-help">
                 {draft.delayMs === 0 ? 'No delay: responses return immediately.' : (draft.delayStrategy ?? 'fixed') === 'fixed' ? `Every response waits exactly ${draft.delayMs} ms.` : `The wait varies on every call, based on ${draft.delayMs} ms. Use random-N in the raw value to bound the range.`}
               </span>

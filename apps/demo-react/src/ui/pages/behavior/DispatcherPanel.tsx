@@ -168,7 +168,7 @@ export function DispatcherPanel({ draft, examples, pathParams, pathPrefix, edit 
           <div className="rules-block">
             <div className="rules-script-bar">
               <Segmented
-                variant="joined"
+                variant="joined" size="sm"
                 label="Script language"
                 value={draft.scriptLanguage ?? 'GROOVY'}
                 onChange={(id) => edit({ scriptLanguage: id as 'GROOVY' | 'JS', script: scriptSample(id as 'GROOVY' | 'JS', draft.stateful) })}
