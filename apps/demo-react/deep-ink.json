@@ -433,10 +433,10 @@
     "facts": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/facts.tsx": "4af3abd2c6e660382f578ddb4eee8a7684629a9c8fcc9f19b939f090eba3f7ae",
-        "src/ui/styles/facts.css": "f7d2dba9484899925448067060762495e8716fb2960990880c2160ba55cb4f89"
+        "src/ui/components/ui/facts.tsx": "d02ec87e0490c92a08602563ba02d2a41c08676fbff89a205380f03a5d937c67",
+        "src/ui/styles/facts.css": "690d766410791ca28f6a686b185c325cb70120e5a3dae492b400d3b82a861368"
       },
-      "hash": "5fc2017c9fc38091"
+      "hash": "7ac97e276ef8d3b8"
     }
   },
   "generated": {
