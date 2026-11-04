@@ -435,7 +435,7 @@ function ApiServicePage() {
           <div className="service-props">
             <section aria-labelledby="props-title" className="service-card props-card">
               <h2 id="props-title">Properties</h2>
-              <Facts termWidth="150px" className="service-facts">
+              <Facts size="lg" termWidth="150px">
                 <FactRow term="Version" mono>{svc.version}</FactRow>
                 <FactRow term="Type"><span className="facts-inline"><MethodTag method={svc.protocol} protocol={svc.protocol} className="facts-proto" /><span className="ex-secondary">{svc.format}</span></span></FactRow>
                 {det.artifacts.map((a) => (
