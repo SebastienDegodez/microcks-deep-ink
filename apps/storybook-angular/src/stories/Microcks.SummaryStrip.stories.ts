@@ -39,3 +39,11 @@ export const FromContent: StoryObj = {
     template: `<div mkSummaryStrip style="max-width: 900px"><span class="summary-strip-label">Saved</span><span class="summary-strip-value">URI_PARTS · rule: name</span><span mkSummaryStripSep></span><span class="summary-strip-value">delay 0 ms fixed</span><span mkSummaryStripSep></span><a href="#/behavior">Edit the behaviour</a></div>`,
   }),
 };
+
+export const Canvas: StoryObj = {
+  name: 'Canvas (Agent test setup)',
+  render: () => ({
+    props: { parts: [{ text: 'Setup', kind: 'label' }, { text: 'https://agents.acme.io/concierge' }, { text: 'JSON-RPC 2.0', sep: true }] },
+    template: `<div mkSummaryStrip role="note" aria-label="Test setup" variant="canvas" style="max-width: 900px" [parts]="parts"></div>`,
+  }),
+};

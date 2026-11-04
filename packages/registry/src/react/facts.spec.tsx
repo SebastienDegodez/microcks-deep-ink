@@ -53,6 +53,23 @@ describe('Facts', () => {
   });
 });
 
+describe('Facts values and line height', () => {
+  it('exposes secondary values and a relaxed line height only when asked', async () => {
+    const { container } = render(
+      <div>
+        <Facts layout="inline" boxed values="secondary" lineHeight="relaxed" termWidth="120px" items={[{ term: 'Method', value: 'tasks/cancel', mono: true }, { term: 'Retries', value: 'none', mono: true, tone: 'muted' }]} />
+        <Facts items={[{ term: 'Version', value: '2.0' }]} />
+      </div>,
+    );
+    const [custom, plain] = Array.from(container.querySelectorAll('dl'));
+    expect(custom!.getAttribute('data-values')).toBe('secondary');
+    expect(custom!.getAttribute('data-line-height')).toBe('relaxed');
+    expect(plain!.hasAttribute('data-values')).toBe(false);
+    expect(plain!.hasAttribute('data-line-height')).toBe(false);
+    expect(await axeViolations(container)).toEqual([]);
+  });
+});
+
 describe('Facts size', () => {
   it('has a large rows size', () => {
     const { container } = render(<Facts size="lg" termWidth="150px" items={[{ term: 'Version', value: '2.0', mono: true }]} />);

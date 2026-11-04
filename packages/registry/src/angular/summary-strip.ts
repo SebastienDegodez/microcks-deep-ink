@@ -19,6 +19,7 @@ export interface SummaryStripPart {
     class: 'summary-strip',
     '[attr.data-gap]': "gap() === 'roomy' ? 'roomy' : null",
     '[attr.data-values]': "values() === 'text' ? 'text' : null",
+    '[attr.data-variant]': "variant() === 'default' ? null : variant()",
   },
   template: `@for (p of parts(); track $index) {@if (p.sep) {<span class="summary-strip-sep" aria-hidden="true"></span>}<span [class]="p.kind === 'label' ? 'summary-strip-label' : 'summary-strip-value'">{{ p.text }}</span>}<ng-content />`,
 })
@@ -28,6 +29,8 @@ export class SummaryStripComponent {
   readonly gap = input<'normal' | 'roomy'>('normal');
   /** `text`: values in --text instead of --text-secondary (Service). */
   readonly values = input<'secondary' | 'text'>('secondary');
+  /** `canvas`: the --canvas fill, radius 8, padding 10px 14px, 6px between wrapped rows and the font's own line height (Agent test setup strip). Default `default`. */
+  readonly variant = input<'default' | 'canvas'>('default');
 }
 
 /** A decorative 1 x 16px separator, for strips built from projected content: `<span mkSummaryStripSep></span>`. */

@@ -270,6 +270,8 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"columns","type":"number | undefined","control":"number","required":false,"model":false,"description":"`columns` only: a fixed number of equal columns."},
       {"name":"size","type":"\"sm\" | \"md\" | \"lg\"","control":"select","options":["sm","md","lg"],"required":false,"default":"'md'","model":false,"description":"`sm`: 11px terms with a normal line height (Traces, Usage). `md` (default). `lg`: 14px text, 8px rows, 14px mono values (Service)."},
       {"name":"gap","type":"string | undefined","control":"text","required":false,"model":false,"description":"`inline` and `columns`: the grid gap, row then column (default `8px 16px`; WorkflowRun `9px 12px`)."},
+      {"name":"values","type":"\"secondary\" | \"text\"","control":"select","options":["secondary","text"],"required":false,"default":"'text'","model":false,"description":"`secondary`: values in --text-secondary, and the `muted` tone drops to --text-muted (Agent test cell facts). Default `text`."},
+      {"name":"lineHeight","type":"\"inherit\" | \"relaxed\"","control":"select","options":["inherit","relaxed"],"required":false,"default":"'inherit'","model":false,"description":"`relaxed`: values at line height 1.6 (Agent test cell facts). Default `inherit`."},
     ] },
     { className: "FactRowComponent", selector: "div[mkFactRow]", inputs: [
       {"name":"term","type":"string","control":"text","required":true,"model":false,"description":""},
@@ -532,11 +534,12 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
   ],
   "stepper": [
     { className: "StepperComponent", selector: "ol[mkStepper]", inputs: [
-      {"name":"label","type":"string","control":"text","required":true,"model":false,"description":"Accessible name of the list (\"Progress\", \"Before you paste\")."},
+      {"name":"label","type":"string | undefined","control":"text","required":false,"model":false,"description":"Accessible name of the list (\"Progress\", \"Before you paste\"). Optional: leave it out when the heading above names the list."},
       {"name":"steps","type":"StepperStep[]","control":"object","required":true,"model":false,"description":""},
       {"name":"variant","type":"\"list\" | \"progress\"","control":"select","options":["list","progress"],"required":false,"default":"'progress'","model":false,"description":"`progress` (default): numbered dots. `list`: numbered instructions."},
       {"name":"direction","type":"\"horizontal\" | \"vertical\"","control":"select","options":["horizontal","vertical"],"required":false,"default":"'horizontal'","model":false,"description":"`progress` only: stack the steps."},
       {"name":"doneLabel","type":"string","control":"text","required":false,"default":"'done'","model":false,"description":"Hidden word read after a done step."},
+      {"name":"marker","type":"\"number\" | \"circle\"","control":"select","options":["number","circle"],"required":false,"default":"'number'","model":false,"description":"`list` only. `number` (default): a mono \"1.\". `circle`: the number in a 22px ring (--stepper-marker, default --proto-rest), 10px gap, 6px rows, the text stacked in a column in the inherited font (WorkflowRun plan)."},
     ] },
   ],
   "summary-strip": [
@@ -544,6 +547,7 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"parts","type":"SummaryStripPart[]","control":"object","required":false,"default":"[]","model":false,"description":""},
       {"name":"gap","type":"\"normal\" | \"roomy\"","control":"select","options":["normal","roomy"],"required":false,"default":"'normal'","model":false,"description":"`roomy`: 10px between wrapped rows (Service, Agent)."},
       {"name":"values","type":"\"secondary\" | \"text\"","control":"select","options":["secondary","text"],"required":false,"default":"'secondary'","model":false,"description":"`text`: values in --text instead of --text-secondary (Service)."},
+      {"name":"variant","type":"\"default\" | \"canvas\"","control":"select","options":["default","canvas"],"required":false,"default":"'default'","model":false,"description":"`canvas`: the --canvas fill, radius 8, padding 10px 14px, 6px between wrapped rows and the font's own line height (Agent test setup strip). Default `default`."},
     ] },
   ],
   "switch": [

@@ -91,3 +91,18 @@ export const LargeRows: StoryObj = {
     template: `<dl mkFacts size="lg" termWidth="150px" [items]="items" style="max-width: 560px"></dl>`,
   }),
 };
+
+export const SecondaryRelaxed: StoryObj = {
+  name: 'Secondary values, relaxed (Agent test)',
+  render: () => ({
+    props: {
+      items: [
+        { term: 'Method', value: 'tasks/cancel', mono: true },
+        { term: 'Expected', value: 'state = canceled', mono: true, tone: 'success' },
+        { term: 'Received', value: 'state = working', mono: true, tone: 'danger' },
+        { term: 'Retries', value: 'none', mono: true, tone: 'muted' },
+      ],
+    },
+    template: `<dl mkFacts layout="inline" [boxed]="true" values="secondary" lineHeight="relaxed" termWidth="120px" [items]="items" style="max-width: 560px"></dl>`,
+  }),
+};

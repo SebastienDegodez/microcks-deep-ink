@@ -17,21 +17,22 @@ export interface StepperStep {
   changeDetection: ChangeDetectionStrategy.OnPush,
   host: {
     class: 'stepper',
-    '[attr.aria-label]': 'label()',
+    '[attr.aria-label]': 'label() ?? null',
     '[attr.data-variant]': 'variant()',
     '[attr.data-direction]': "direction() === 'vertical' ? 'vertical' : null",
+    '[attr.data-marker]': "variant() === 'list' && marker() === 'circle' ? 'circle' : null",
   },
   template: `@for (s of steps(); track $index; let i = $index) {
     @if (variant() === 'list') {
-      <li><span class="stepper-n" aria-hidden="true">{{ s.n ?? i + 1 }}.</span><span>{{ s.label }}</span></li>
+      <li><span class="stepper-n" aria-hidden="true">{{ s.n ?? i + 1 }}{{ marker() === 'circle' ? '' : '.' }}</span><span>{{ s.label }}</span></li>
     } @else {
       <li [attr.data-state]="s.state === 'done' ? 'done' : null" [attr.aria-current]="s.state === 'current' ? 'step' : null"><span class="stepper-dot">{{ s.n ?? i + 1 }}</span>{{ s.label }}@if (s.state === 'done') {<span class="sr-only">, {{ doneLabel() }}</span>}</li>
     }
   }`,
 })
 export class StepperComponent {
-  /** Accessible name of the list ("Progress", "Before you paste"). */
-  readonly label = input.required<string>();
+  /** Accessible name of the list ("Progress", "Before you paste"). Optional: leave it out when the heading above names the list. */
+  readonly label = input<string>();
   readonly steps = input.required<StepperStep[]>();
   /** `progress` (default): numbered dots. `list`: numbered instructions. */
   readonly variant = input<'progress' | 'list'>('progress');
@@ -39,4 +40,6 @@ export class StepperComponent {
   readonly direction = input<'horizontal' | 'vertical'>('horizontal');
   /** Hidden word read after a done step. */
   readonly doneLabel = input('done');
+  /** `list` only. `number` (default): a mono "1.". `circle`: the number in a 22px ring (--stepper-marker, default --proto-rest), 10px gap, 6px rows, the text stacked in a column in the inherited font (WorkflowRun plan). */
+  readonly marker = input<'number' | 'circle'>('number');
 }

@@ -31,6 +31,10 @@ export interface FactsProps extends Omit<HTMLAttributes<HTMLDListElement>, 'chil
   size?: 'sm' | 'md' | 'lg';
   /** `inline` and `columns`: the grid gap, row then column (default `8px 16px`; WorkflowRun `9px 12px`). */
   gap?: string;
+  /** `secondary`: values in --text-secondary, and the `muted` tone drops to --text-muted (Agent test cell facts). Default `text`. */
+  values?: 'text' | 'secondary';
+  /** `relaxed`: values at line height 1.6 (Agent test cell facts). Default `inherit`. */
+  lineHeight?: 'inherit' | 'relaxed';
   /** Extra `FactRow`s after the items. */
   children?: ReactNode;
 }
@@ -63,7 +67,7 @@ export function FactRow({ term, sub, mono, tone, className, children, ...rest }:
 }
 
 /** Key/value facts of an object in a native `<dl>`. */
-export function Facts({ items = [], layout = 'rows', boxed, strong, termWidth, columns, gap, size = 'md', className, style, children, ...rest }: FactsProps) {
+export function Facts({ items = [], layout = 'rows', boxed, strong, termWidth, columns, gap, size = 'md', values = 'text', lineHeight = 'inherit', className, style, children, ...rest }: FactsProps) {
   const vars: Record<string, string> = {};
   if (termWidth) vars['--facts-term'] = termWidth;
   if (gap) vars['--facts-gap'] = gap;
@@ -76,6 +80,8 @@ export function Facts({ items = [], layout = 'rows', boxed, strong, termWidth, c
       data-boxed={boxed === 'surface' ? 'surface' : boxed ? '' : undefined}
       data-strong={strong ? '' : undefined}
       data-size={size === 'md' ? undefined : size}
+      data-values={values === 'text' ? undefined : values}
+      data-line-height={lineHeight === 'inherit' ? undefined : lineHeight}
       style={{ ...(vars as CSSProperties), ...style }}
     >
       {items.map((f, i) => (

@@ -56,6 +56,34 @@
     color: var(--text-muted);
   }
 
+  /* Circled markers (WorkflowRun plan): a 22px ring, 10px gap, 6px rows, the text stacked in the inherited font. */
+  .stepper[data-variant="list"][data-marker="circle"] { gap: 2px; }
+  .stepper[data-variant="list"][data-marker="circle"] > li {
+    align-items: flex-start;
+    gap: 10px;
+    padding: 6px 0;
+    font: inherit;
+    color: inherit;
+  }
+  .stepper[data-variant="list"][data-marker="circle"] .stepper-n {
+    box-sizing: border-box;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border: 2px solid var(--stepper-marker, var(--proto-rest));
+    border-radius: var(--radius-pill);
+    font: 600 11px/1 var(--font-mono);
+    color: var(--text);
+  }
+  .stepper[data-variant="list"][data-marker="circle"] > li > span:last-child {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+  }
+
   @media (forced-colors: active) {
     li[aria-current="step"] > .stepper-dot { outline: 2px solid Highlight; }
   }

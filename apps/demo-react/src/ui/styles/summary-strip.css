@@ -15,6 +15,14 @@
     font: 400 13px/1.4 var(--font-ui);
   }
   .summary-strip[data-gap="roomy"] { row-gap: 10px; }
+  /* Canvas (Agent test setup strip): canvas fill, radius 8, padding 10px 14px, 6px rows, normal line height. */
+  .summary-strip[data-variant="canvas"] {
+    row-gap: 6px;
+    padding: 10px 14px;
+    border-radius: 8px;
+    background: var(--canvas);
+    line-height: normal;
+  }
   .summary-strip-label { color: var(--text-muted); }
   .summary-strip-value { font-family: var(--font-mono); color: var(--text-secondary); overflow-wrap: anywhere; }
   .summary-strip[data-values="text"] .summary-strip-value { color: var(--text); }
