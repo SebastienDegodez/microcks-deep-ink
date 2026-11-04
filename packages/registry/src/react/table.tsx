@@ -16,6 +16,8 @@ export interface DataTableColumn<T> {
   mono?: boolean;
   /** Keeps the cells of this column on one line. Cells wrap by default. */
   nowrap?: boolean;
+  /** The cells of this column are row headers (`<th scope="row">`) that name their row. */
+  rowHeader?: boolean;
   /** Custom cell content. Defaults to `String(row[key])`. */
   render?: (row: T) => ReactNode;
   /** Renders the header as a sort button. */
@@ -48,6 +50,10 @@ export interface DataTableProps<T> {
   onSortChange?: (sort: SortState) => void;
   emptyText?: string;
   density?: 'comfortable' | 'compact';
+  /** `upper` (default): uppercase 11px headers. `sentence`: sentence-case 12px headers, top-aligned cells, tabular figures. */
+  headerCase?: 'upper' | 'sentence';
+  /** Tone of a row: `failed` sits on the surface fill, `danger` on the danger tint (an unmet row), `idle` is dimmed with the muted text colour. Write the state in a cell too. */
+  rowTone?: (row: T) => 'failed' | 'danger' | 'idle' | undefined;
   className?: string;
 }
 
@@ -81,6 +87,8 @@ export function DataTable<T>({
   onSortChange,
   emptyText = 'Nothing here yet.',
   density = 'comfortable',
+  headerCase = 'upper',
+  rowTone,
   className,
 }: DataTableProps<T>) {
   const captionId = useId();
@@ -101,7 +109,7 @@ export function DataTable<T>({
 
   return (
     <div className={['table-wrap', className].filter(Boolean).join(' ')} role="region" aria-labelledby={captionId} tabIndex={0}>
-      <table className="table" data-density={density}>
+      <table className="table" data-density={density} data-header={headerCase === 'sentence' ? 'sentence' : undefined}>
         <caption id={captionId} className={captionHidden ? 'sr-only' : undefined}>
           {caption}
         </caption>
@@ -139,7 +147,7 @@ export function DataTable<T>({
               const selected = selectedKey !== undefined && key === selectedKey;
               const href = rowHref?.(row);
               return (
-                <tr key={key} data-selected={selected ? '' : undefined}>
+                <tr key={key} data-selected={selected ? '' : undefined} data-tone={rowTone?.(row)}>
                   {columns.map((c, i) => {
                     const content = cellValue(row, c);
                     let inner: ReactNode = content;
@@ -166,9 +174,15 @@ export function DataTable<T>({
                       );
                     }
                     return (
-                      <td key={c.key} data-align={c.align === 'end' ? 'end' : undefined} data-mono={c.mono ? '' : undefined} data-nowrap={c.nowrap ? '' : undefined}>
-                        {inner}
-                      </td>
+                      c.rowHeader ? (
+                        <th key={c.key} scope="row" data-align={c.align === 'end' ? 'end' : undefined} data-mono={c.mono ? '' : undefined} data-nowrap={c.nowrap ? '' : undefined}>
+                          {inner}
+                        </th>
+                      ) : (
+                        <td key={c.key} data-align={c.align === 'end' ? 'end' : undefined} data-mono={c.mono ? '' : undefined} data-nowrap={c.nowrap ? '' : undefined}>
+                          {inner}
+                        </td>
+                      )
                     );
                   })}
                 </tr>

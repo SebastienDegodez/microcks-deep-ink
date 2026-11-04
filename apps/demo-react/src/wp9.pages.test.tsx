@@ -120,8 +120,11 @@ describe('Test history (/tests/service/:id)', () => {
     expect(within(table).getByText('#118')).toBeTruthy();
     expect(table.querySelector('tr[data-selected]')?.textContent).toContain('#117');
     expect(screen.getByRole('table', { name: /Conformance timeline, last 20 runs/ })).toBeTruthy();
-    fireEvent.change(screen.getByLabelText('Result'), { target: { value: 'failed' } });
+    fireEvent.click(within(screen.getByRole('group', { name: 'Result' })).getByRole('button', { name: /^Failed/ }));
     expect(within(await screen.findByRole('table', { name: 'Test runs' })).queryByText('#118')).toBeNull();
+    expect(screen.getByText(/match the filters/)).toBeTruthy();
+    fireEvent.click(screen.getAllByRole('button', { name: 'Reset filters' })[0]!);
+    expect(within(screen.getByRole('table', { name: 'Test runs' })).getByText('#118')).toBeTruthy();
   });
 
   it('shows one pressed bar per run and inspects the run of the clicked bar', async () => {
@@ -137,7 +140,9 @@ describe('Test history (/tests/service/:id)', () => {
     const timeout = within(group).getByRole('button', { name: /^Run #113, timed out, 10\.00 s/ });
     fireEvent.click(timeout);
     expect(timeout.getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByRole('link', { name: 'Open run #113' }).getAttribute('href')).toContain('/tests/runner/113');
+    expect(screen.getAllByRole('link', { name: 'Open run #113' })[0]?.getAttribute('href')).toContain('/tests/runner/113');
+    fireEvent.click(screen.getByRole('button', { name: 'Show run #118 in the timeline' }));
+    expect(within(group).getByRole('button', { name: /^Run #118,/ }).getAttribute('aria-pressed')).toBe('true');
     expect(screen.getByRole('img', { name: /^GET \/pastries: 19 passed, 1 failed/ })).toBeTruthy();
   });
 
@@ -192,44 +197,93 @@ describe('Usage (/metrics/:serviceId?)', () => {
     const index = screen.getByRole('region', { name: 'Conformance index vs current score' });
     expect(within(index).getByRole('img', { name: 'Current score 92 percent, conformance index 92 percent' })).toBeTruthy();
     expect(within(index).getAllByRole('link')).toHaveLength(10);
+    expect(within(screen.getByRole('combobox', { name: 'Service' })).getAllByRole('option').map((o) => o.textContent)).toEqual(['API Pastry 2.0', 'All services']);
+    expect(screen.getAllByRole('region', { name: 'Conformance' })).toHaveLength(1);
   });
 });
 
 describe('Live traces (/traces)', () => {
-  it('lists the calls, pauses and clears', async () => {
+  it('lists the calls, opens call #4, pauses and clears', async () => {
     renderAt('/traces');
     await screen.findByRole('heading', { level: 1, name: 'Live traces' });
-    const table = await screen.findByRole('table', { name: /Calls received/ });
-    expect(within(table).getAllByRole('row').length).toBeGreaterThan(1);
+    const list = (await screen.findByRole('heading', { level: 2, name: 'Latest calls' })).closest('section') as HTMLElement;
+    const rows = within(list).getAllByRole('button', { name: /^\d\d:\d\d:\d\d/ });
+    expect(rows).toHaveLength(10);
+    const detail = screen.getByRole('heading', { level: 2, name: '/pastries/Eclair%20Cafe' }).closest('section') as HTMLElement;
+    expect(within(detail).getByRole('note', { name: 'Arazzo run of this call' })).toBeTruthy();
+    expect(within(detail).getByRole('link', { name: 'Restock a pastry' }).getAttribute('href')).toContain('/workflows/pastry/restock-pastry/loom');
     fireEvent.click(screen.getByRole('button', { name: 'Pause' }));
-    expect(screen.getByRole('button', { name: 'Resume' })).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Clear' }));
-    await screen.findByText('No call yet');
-  });
+    expect(screen.getByRole('button', { name: 'Resume' }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(screen.getByRole('button', { name: 'Clear list' }));
+    await screen.findByText('List cleared. Waiting for the next call…');
+    expect(screen.getByRole('complementary', { name: 'Call detail' })).toBeTruthy();
+  }, 15000);
 
-  it('prefills the Arazzo only switch from ?run= and narrows the list to that run', async () => {
+  it('focuses the list on a graph node and filters MCP tool calls by protocol', async () => {
+    renderAt('/traces');
+    await screen.findByRole('heading', { level: 1, name: 'Live traces' });
+    const graph = (await screen.findByRole('heading', { level: 2, name: 'Call graph' })).closest('section') as HTMLElement;
+    const node = within(graph).getByRole('button', { name: /^Client copilot-agent \(MCP\) 10\.0\.9\.3 · MCP client 50 calls/ });
+    fireEvent.click(node);
+    expect(node.getAttribute('aria-pressed')).toBe('true');
+    const list = screen.getByRole('heading', { level: 2, name: 'Latest calls' }).closest('section') as HTMLElement;
+    expect(within(list).getAllByRole('button', { name: /^\d\d:/ })).toHaveLength(1);
+    fireEvent.click(screen.getByRole('button', { name: 'Remove node focus' }));
+    fireEvent.change(screen.getByRole('combobox', { name: 'Protocol' }), { target: { value: 'MCP' } });
+    expect(within(list).getAllByRole('button', { name: /^\d\d:/ }).every((b) => /tools\/call/.test(b.textContent ?? ''))).toBe(true);
+  }, 15000);
+
+  it('prefills the Arazzo filter from ?run= and narrows the list to that run', async () => {
     renderAt('/traces?run=6729a1d27e4c0b5f93a8c214');
     await screen.findByRole('heading', { level: 1 });
-    const toggle = (await screen.findByRole('switch', { name: /Arazzo only/ })) as HTMLInputElement;
-    expect(toggle.checked).toBe(true);
+    const toggle = await screen.findByRole('button', { name: /From Arazzo runs/ });
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    await screen.findByText('No call matches the current filters.');
   });
 });
 
 describe('Hub (/hub/:packageId?)', () => {
+  const detail = async () => within(await screen.findByRole('region', { name: 'Package detail' }));
+
   it('opens banking and walks install to installed', async () => {
     renderAt('/hub/banking');
     await screen.findByRole('heading', { level: 1, name: 'Hub' });
-    const install = await screen.findByRole('button', { name: /Install/ });
-    fireEvent.click(install);
-    await screen.findByText('Installed', { selector: '.callout *, .callout' }).catch(() => undefined);
-    await waitFor(() => expect(screen.queryByRole('button', { name: /Install/ })).toBeNull());
+    const panel = await detail();
+    expect(panel.getByRole('heading', { level: 2, name: 'Banking APIs (sample)' })).toBeTruthy();
+    fireEvent.click(panel.getByRole('button', { name: 'Install and keep in sync' }));
+    const view = await panel.findByRole('link', { name: /View in catalogue/ });
+    await waitFor(() => expect(document.activeElement).toBe(view));
+    expect(panel.getByRole('link', { name: 'See importers in Sources' })).toBeTruthy();
+    expect(panel.queryByRole('button', { name: /^Install/ })).toBeNull();
+  });
+
+  it('keeps focus on the card while it installs from the grid', async () => {
+    renderAt('/hub/banking');
+    const grid = within(await screen.findByRole('region', { name: 'Packages' }));
+    const card = within(await grid.findByRole('article', { name: 'Telco open APIs' }));
+    fireEvent.click(card.getByRole('button', { name: 'Install' }));
+    const view = await card.findByRole('link', { name: /View in catalogue/ });
+    await waitFor(() => expect(document.activeElement).toBe(view));
   });
 
   it('shows API Pastry as already installed', async () => {
     renderAt('/hub/pastry');
     await screen.findByRole('heading', { level: 1 });
-    await waitFor(() => expect(screen.getAllByText('Installed').length).toBeGreaterThan(0));
-    expect(screen.queryByRole('button', { name: /^Install/ })).toBeNull();
+    const panel = await detail();
+    await waitFor(() => expect(panel.getAllByText('Installed').length).toBeGreaterThan(0));
+    expect(panel.queryByRole('button', { name: /^Install/ })).toBeNull();
+    expect(panel.getAllByText('IN CATALOGUE').length).toBe(2);
+  });
+
+  it('picks a version per API and blocks a secondary install with nothing to merge', async () => {
+    renderAt('/hub/banking');
+    const panel = await detail();
+    const versions = within(panel.getByRole('group', { name: 'Version of Accounts API' }));
+    fireEvent.click(versions.getByRole('button', { name: '1.1.0' }));
+    expect(versions.getByRole('button', { name: '1.1.0' }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(panel.getByRole('radio', { name: /Secondary artifact/ }));
+    expect(panel.getByRole('note').textContent).toMatch(/Choose Main artifact/);
+    expect((panel.getByRole('button', { name: 'Merge examples' }) as HTMLButtonElement).disabled).toBe(true);
   });
 });
 
@@ -237,34 +291,90 @@ describe('Administration (/admin/:tab?)', () => {
   it('changes a role and tells it in a status message', async () => {
     renderAt('/admin/users');
     await screen.findByRole('heading', { level: 1, name: 'Administration' });
-    const selects = (await screen.findAllByRole('combobox')) as HTMLSelectElement[];
-    const editable = selects.find((s) => !s.disabled && s.value === 'user') as HTMLSelectElement;
-    fireEvent.change(editable, { target: { value: 'manager' } });
-    await waitFor(() => expect(document.querySelector('.ad-toast')?.textContent).toMatch(/manager/i));
+    expect(await screen.findByRole('tab', { name: /^Users\W+7$/ })).toBeTruthy();
+    const select = (await screen.findByRole('combobox', { name: 'Role of Léa Martin' })) as HTMLSelectElement;
+    expect([...select.options].map((o) => o.textContent)).toEqual(['User', 'Manager', 'Admin']);
+    expect((screen.getByRole('combobox', { name: 'Role of Microcks Admin' }) as HTMLSelectElement).disabled).toBe(true);
+    fireEvent.change(select, { target: { value: 'manager' } });
+    expect(await screen.findByText('Léa Martin is now a manager in realm microcks.', {}, { timeout: 3000 })).toBeTruthy();
+    const dismiss = screen.getByRole('button', { name: 'Dismiss message' });
+    dismiss.focus();
+    fireEvent.click(dismiss);
+    expect(document.activeElement).toBe(screen.getByRole('tab', { name: /^Users/ }));
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Filter users' }), { target: { value: 'nobody' } });
+    expect(screen.getByText('No user matches “nobody”.')).toBeTruthy();
   });
 
-  it('flags the pending requests on Groups and saves a membership draft', async () => {
+  it('drafts memberships in the groups × managers matrix and applies them', async () => {
     renderAt('/admin/groups');
     await screen.findByRole('heading', { level: 1 });
-    expect(await screen.findByRole('tab', { name: /pending/ })).toBeTruthy();
-    expect(await screen.findByText(/pending requests/)).toBeTruthy();
-    const save = screen.getByRole('button', { name: 'Save changes' }) as HTMLButtonElement;
-    expect(save.disabled).toBe(true);
-    const box = screen.getAllByRole('checkbox')[0] as HTMLInputElement;
-    fireEvent.click(box);
-    expect(save.disabled).toBe(false);
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-    expect((screen.getAllByRole('checkbox')[0] as HTMLInputElement).checked).toBe(!box.checked ? false : box.checked);
+    const cell = await screen.findByRole('button', { name: 'Clara Nguyen in /microcks/manager/beer, not a member' }, { timeout: 3000 });
+    expect(screen.queryByRole('button', { name: 'Apply to Keycloak' })).toBeNull();
+    fireEvent.click(cell);
+    expect(screen.getByRole('button', { name: 'Clara Nguyen in /microcks/manager/beer, member, to be added' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('tab', { name: /Groups/ }).textContent).toBe('Groups, 6, 1 pending change');
+    fireEvent.click(screen.getByRole('button', { name: 'Discard' }));
+    expect(screen.queryByRole('button', { name: 'Apply to Keycloak' })).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 2, name: 'Manager groups' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Tom Keller in /microcks/manager/pets, member' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Apply to Keycloak' }));
+    expect(await screen.findByText('1 membership change applied in Keycloak realm microcks.', {}, { timeout: 3000 })).toBeTruthy();
+    await waitFor(() => expect(screen.getAllByText('no manager')).toHaveLength(2), { timeout: 3000 });
   });
 
-  it('creates a secret through the dialog and toggles a feature flag', async () => {
+  it('exports the preselected services and previews then imports the sample snapshot', async () => {
+    renderAt('/admin/snapshots');
+    expect(await screen.findByText('2 of 10 selected', {}, { timeout: 3000 })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Export snapshot' }));
+    expect(await screen.findByText('downloaded · 2 services, 4 operations · 28 KB')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Use a sample snapshot' }));
+    expect(await screen.findByRole('heading', { level: 3, name: 'Preview · 3 services detected' })).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: /^Change file/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Import snapshot' }));
+    expect(await screen.findByText('Imported · 1 created, 2 replaced')).toBeTruthy();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('link', { name: 'Open APIs & Services' })));
+    fireEvent.click(screen.getByRole('button', { name: 'Import another' }));
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText('Choose a file')));
+  });
+
+  it('shows the configuration read-only', async () => {
+    renderAt('/admin/configuration');
+    await screen.findByText('Async API mocking');
+    expect(screen.queryByRole('switch')).toBeNull();
+    expect(screen.queryByRole('checkbox')).toBeNull();
+  });
+
+  it('creates, edits and deletes a secret in the inline form', async () => {
     renderAt('/admin/secrets');
     await screen.findByRole('heading', { level: 1 });
-    fireEvent.click(await screen.findByRole('button', { name: 'Create secret' }));
-    fireEvent.change(await screen.findByLabelText(/^Name/), { target: { value: 'staging-token' } });
-    fireEvent.change(screen.getByLabelText(/Password/), { target: { value: 'hunter2hunter2' } });
-    fireEvent.click(screen.getAllByRole('button', { name: 'Create secret' }).pop() as HTMLElement);
-    await waitFor(() => expect(screen.getByText('staging-token')).toBeTruthy());
+    fireEvent.click(await screen.findByRole('button', { name: 'New secret' }, { timeout: 3000 }));
+    expect((screen.getByRole('button', { name: 'Create secret' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByText('Name required')).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByLabelText('Name'));
+    fireEvent.keyDown(screen.getByLabelText('Name'), { key: 'Escape' });
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'New secret' })));
+    fireEvent.click(screen.getByRole('button', { name: 'New secret' }));
+    const create = screen.getByRole('button', { name: 'Create secret' }) as HTMLButtonElement;
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'staging-token' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Token' }));
+    fireEvent.change(screen.getByLabelText('Token'), { target: { value: 'hunter2hunter2' } });
+    expect(create.disabled).toBe(false);
+    fireEvent.click(create);
+    expect(await screen.findByText('Secret staging-token created. Reference it from an importer or a test.')).toBeTruthy();
+    expect(await screen.findByText('staging-token')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit secret postman-api' }));
+    expect(screen.getByRole('heading', { level: 2, name: 'Edit secret postman-api' })).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByLabelText(/^Description/));
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    expect(await screen.findByText('Secret postman-api updated.')).toBeTruthy();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Edit secret postman-api' })));
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete secret gitlab-bakery' }));
+    expect(screen.getByRole('alert').textContent).toContain('Delete gitlab-bakery? 1 importer still reference it and will fail on next run.');
+    fireEvent.click(screen.getByRole('button', { name: 'Delete secret' }));
+    await waitFor(() => expect(screen.queryByText('gitlab-bakery')).toBeNull());
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Delete secret github-contracts' })));
   });
 });
 

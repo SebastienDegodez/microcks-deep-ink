@@ -5,7 +5,22 @@
   <p class="drop-zone-heading" id="dz-heading">Drop a contract anywhere</p>
   <p class="drop-zone-hint" id="dz-hint">OpenAPI, AsyncAPI, gRPC, GraphQL, Postman, SoapUI, HAR, Arazzo</p>
   <input id="dz-input" type="file" multiple class="drop-zone-input sr-only" aria-describedby="dz-heading dz-hint">
-  <label for="dz-input" class="button drop-zone-choose" data-variant="primary">Choose files</label>
+  <div class="drop-zone-actions">
+    <label for="dz-input" class="button drop-zone-choose" data-variant="primary">Choose files</label>
+  </div>
+  <p class="drop-zone-status" role="status"></p>
+</div>
+
+<!-- Small (data-size="sm"): a compact zone in a panel, a bare 28px icon, a secondary Choose and extra actions. -->
+<div class="drop-zone" id="dz-sm" data-size="sm">
+  <span class="drop-zone-icon" aria-hidden="true"><svg class="icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 16V4"/><path d="M6 10l6-6 6 6"/><path d="M4 20h16"/></svg></span>
+  <p class="drop-zone-heading" id="dz-sm-heading">Drop a snapshot here</p>
+  <p class="drop-zone-hint" id="dz-sm-hint">A <code>microcks-repository.json</code> exported from any Microcks instance</p>
+  <input id="dz-sm-input" type="file" accept="application/json,.json" class="drop-zone-input sr-only" aria-describedby="dz-sm-heading dz-sm-hint">
+  <div class="drop-zone-actions">
+    <label for="dz-sm-input" class="button drop-zone-choose" data-variant="secondary">Choose a file</label>
+    <button type="button" class="button" data-variant="link">Use a sample snapshot</button>
+  </div>
   <p class="drop-zone-status" role="status"></p>
 </div>
 

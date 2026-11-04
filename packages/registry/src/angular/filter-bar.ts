@@ -41,7 +41,7 @@ export class FilterRowComponent {
   imports: [IconComponent],
   styles: [':host { display: contents; }'],
   template: `
-    <label class="filter-bar-search">
+    <label class="filter-bar-search" [attr.data-size]="size()">
       <svg mkIcon name="search" [size]="16"></svg>
       <span class="sr-only">{{ label() }}</span>
       <input type="search" [value]="value()" [attr.placeholder]="placeholder() ?? label()" (input)="value.set($any($event.target).value)" />
@@ -52,6 +52,8 @@ export class FilterSearchComponent {
   /** Accessible name of the field, also its placeholder unless you set one. */
   readonly label = input.required<string>();
   readonly placeholder = input<string>();
+  /** `md` is 38px high, up to 420px; `lg` is 40px, up to 480px (a page-level search, Hub). */
+  readonly size = input<'md' | 'lg'>('md');
   readonly value = model('');
 }
 

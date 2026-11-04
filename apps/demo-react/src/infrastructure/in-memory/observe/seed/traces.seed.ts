@@ -8,10 +8,10 @@ const TOPIC = 'PastryordersAPI-0.1.0-pastry-orders';
 const NOW_MS = Date.parse('2026-11-03T09:10:04.208Z');
 
 export const TOPOLOGY_CLIENTS: TopologyClient[] = [
-  { id: 'c1', label: 'checkout-web', detail: '10.0.4.21 · HTTP', kind: 'REST' },
-  { id: 'c3', label: 'copilot-agent (MCP)', detail: '10.0.9.3 · MCP client', kind: 'MCP' },
-  { id: 'c2', label: 'order-service', detail: '10.0.7.12 · HTTP + Kafka', kind: 'MIXED' },
-  { id: 'c4', label: 'microcks-arazzo', detail: '10.0.2.8 · Arazzo runs · HTTP', kind: 'ARAZZO' },
+  { id: 'c1', label: 'checkout-web', ip: '10.0.4.21', detail: '10.0.4.21 · HTTP', kind: 'REST' },
+  { id: 'c3', label: 'copilot-agent (MCP)', ip: '10.0.9.3', detail: '10.0.9.3 · MCP client', kind: 'MCP' },
+  { id: 'c2', label: 'order-service', ip: '10.0.7.12', detail: '10.0.7.12 · HTTP + Kafka', kind: 'MIXED' },
+  { id: 'c4', label: 'microcks-arazzo', ip: '10.0.2.8', detail: 'Arazzo runs · HTTP', kind: 'ARAZZO' },
 ];
 
 export const TOPOLOGY_ENDPOINTS: TopologyEndpoint[] = [
@@ -159,9 +159,17 @@ export const HISTORY_LENGTH = HISTORY_TEMPLATES.length;
 const CLIENT_BY_ID = new Map(TOPOLOGY_CLIENTS.map((c) => [c.id, c]));
 const ENDPOINT_BY_ID = new Map(TOPOLOGY_ENDPOINTS.map((e) => [e.id, e]));
 
+/** Live traces receives a call every 3.2 s (Traces.dc.html `setInterval(..., 3200)`). */
+export const TRACE_TICK_MS = 3200;
+
 export function atOf(seq: number): string {
-  const offset = seq <= HISTORY_LENGTH ? -(HISTORY_LENGTH - seq) * 3200 : (seq - HISTORY_LENGTH) * 1200;
+  const offset = (seq - HISTORY_LENGTH) * TRACE_TICK_MS;
   return new Date(NOW_MS + offset + ((seq * 137) % 600)).toISOString();
+}
+
+/** Times of the Cockpit ticker, which streams the same calls every 1.2 s (its pace before Live traces slowed down). */
+export function trafficAt(seq: number): string {
+  return new Date(NOW_MS + (seq - HISTORY_LENGTH) * 1200 + ((seq * 137) % 600)).toISOString();
 }
 
 /** Builds call number `seq`. History calls (1..10) follow `HISTORY_TEMPLATES`, later ones `STREAM_CYCLE`. */
@@ -172,7 +180,8 @@ export function makeCall(seq: number): TraceCall {
   const endpoint = ENDPOINT_BY_ID.get(tpl.endpointId);
   const isEvent = tpl.kind === 'EVENT';
   // Arazzo calls of the history belong to run #12 (mocks); streamed ones to run #14.
-  const runId = seq <= HISTORY_LENGTH ? RUN_IDS[12] : RUN_IDS[14];
+  const runNumber = seq <= HISTORY_LENGTH ? 12 : 14;
+  const runId = RUN_IDS[runNumber];
   const attempt = 1;
   const bag = tpl.arazzo ? baggage(runId, tpl.arazzo.workflow, tpl.arazzo.step, attempt) : undefined;
   return {
@@ -189,12 +198,14 @@ export function makeCall(seq: number): TraceCall {
     exampleName: tpl.exampleName,
     operationId: tpl.operationId,
     baggage: bag,
+    arazzoRun: bag ? runNumber : undefined,
+    workflowName: bag ? 'Restock a pastry' : undefined,
     request: { headers: { accept: 'application/json' } },
     response: { headers: { 'content-type': 'application/json' } },
     kind: tpl.kind,
     clientId: tpl.clientId,
     clientName: client?.label,
-    clientIp: client?.detail.split(' · ')[0],
+    clientIp: client?.ip,
     endpointId: tpl.endpointId,
     endpointLabel: endpoint?.label,
     dispatcher: endpoint?.dispatcher,

@@ -11,11 +11,11 @@ const ops = (n: number) => `${n} ${n === 1 ? 'op' : 'ops'}`;
 
 /** "Conformance" section: risk treemap by domain and index vs current score. Always over all services. */
 export function ConformanceSection({ domains, view, selected }: { domains: DomainConformance[]; view: UsageView | undefined; selected: string }) {
-  const headingId = useId();
   return (
-    <section className="conf-section" aria-labelledby={headingId}>
+    // A plain div: the "Conformance" key figure is already a region with that name (RGAA 9.2, unique landmarks).
+    <div className="conf-section">
       <div className="conf-section-head">
-        <h2 id={headingId}>Conformance</h2>
+        <h2>Conformance</h2>
         <p>
           How far your implementations follow their contracts, from the latest test of each service. Always computed over all services, whatever the
           selection above.
@@ -25,7 +25,7 @@ export function ConformanceSection({ domains, view, selected }: { domains: Domai
         <Treemap domains={domains} selected={selected} />
         {view ? <IndexCard view={view} domains={domains} selected={selected} /> : null}
       </div>
-    </section>
+    </div>
   );
 }
 
@@ -84,7 +84,7 @@ function ServiceRect({ item, selected }: { item: ConformanceItem; selected: bool
   const icon = BAND_ICON[band];
   const size = item.score === null ? 'untested' : item.operations >= 3 ? 'lg' : 'md';
   return (
-    <RouterLink className="treemap-rect" data-band={band} aria-current={selected ? 'true' : undefined} to={`/services/${item.serviceId}`}>
+    <RouterLink className="treemap-rect" data-band={band} data-narrow={item.operations === 1 ? '' : undefined} aria-current={selected ? 'true' : undefined} to={`/services/${item.serviceId}`}>
       <span className="treemap-rect-text">
         <span className="treemap-rect-name">{item.name}</span>
         <span className="sr-only">, </span>

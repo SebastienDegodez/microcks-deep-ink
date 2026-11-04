@@ -33,6 +33,11 @@
     background: var(--on-action);
     transform: translateX(16px);
   }
+  /* lg: 42 x 24 track, 18px knob (Behavior "Stateful"). The default 36 x 20 is the Sources and TestCreate size. */
+  .switch[data-size="lg"] { width: 42px; height: 24px; }
+  .switch[data-size="lg"]::before { width: 18px; height: 18px; }
+  .switch[data-size="lg"]:checked::before { transform: translateX(18px); }
+
   .switch:disabled {
     border-color: var(--border);
   }

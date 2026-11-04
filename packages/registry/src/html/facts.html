@@ -1,0 +1,26 @@
+<!--
+  Facts. A native <dl>; wrap each pair in <div class="facts-row"> (valid <dl> content).
+  data-layout: rows (default, 130px term column, separators) | inline (two-column grid) | columns (term over value).
+  data-size="lg": 14px rows, padding 8px 0, mono 14px (Service).
+  data-boxed frames the list on --bg (data-boxed="surface": on --surface, padding 12px).
+  style="--facts-gap: 9px 12px" changes the grid gap of the inline and columns layouts. data-strong makes the values 14px 600 (figures).
+  Override the term width with --facts-term, the column minimum with --facts-min, or fix the columns with
+  style="--facts-cols: repeat(3, minmax(0, 1fr))".
+  dd[data-mono] for code values, dd[data-tone="success|warning|danger|muted"], <span class="facts-sub"> for a muted line.
+-->
+<dl class="facts">
+  <div class="facts-row"><dt>Origin</dt><dd>GitLab repository</dd></div>
+  <div class="facts-row"><dt>Artifact</dt><dd data-mono><span>Primary · OPEN_API_SPEC</span><span class="facts-sub">Creates or updates Services from this contract</span></dd></div>
+  <div class="facts-row"><dt>TLS validation</dt><dd>Enabled</dd></div>
+</dl>
+
+<dl class="facts" data-layout="inline" data-boxed>
+  <div class="facts-row"><dt>Endpoint</dt><dd data-mono>https://concierge.acme.io/a2a</dd></div>
+  <div class="facts-row"><dt>Result</dt><dd data-mono data-tone="danger">13/15 checks passed</dd></div>
+</dl>
+
+<dl class="facts" data-layout="columns" data-strong style="--facts-cols: repeat(3, minmax(0, 1fr))">
+  <div class="facts-row"><dt>Duration</dt><dd data-mono>1.84 s</dd></div>
+  <div class="facts-row"><dt>Calls</dt><dd data-mono>6</dd></div>
+  <div class="facts-row"><dt>Steps</dt><dd>4 passed</dd></div>
+</dl>

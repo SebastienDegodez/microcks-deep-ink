@@ -35,6 +35,24 @@
     border-color: var(--action);
   }
   .choice[data-variant="card"] .choice-label { font: 600 13px/18px var(--font-ui); }
+  /* Compact card: dense list rows, about 33px with a 13px box (TestCreate operations list). */
+  .choice[data-variant="compact"] {
+    gap: 8px;
+    align-items: center;
+    padding: 7px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-badge);
+  }
+  .choice[data-variant="compact"]:hover { border-color: var(--border-strong); }
+  .choice[data-variant="compact"]:has(input:checked) { background: var(--selected); border-color: var(--action); }
+  .choice[data-variant="compact"] .choice-label { font: 500 13px/17px var(--font-ui); }
+  .choice[data-variant="compact"] .choice-description { font: 400 12px/1.4 var(--font-ui); }
+  .choice[data-variant="compact"] > :is(.checkbox, .radio) { width: 13px; height: 13px; border-radius: 3px; }
+  .choice[data-variant="compact"] > .radio { border-radius: 50%; }
+  .choice[data-variant="compact"] > .radio::before { width: 5px; height: 5px; }
+  .choice[data-variant="compact"] > .checkbox::before { width: 8px; height: 8px; }
+  .fieldset[data-variant="compact"] { gap: 6px; }
   .choice[data-variant="card"] .choice-description { font: 400 12px/1.45 var(--font-ui); }
   .choice[data-variant="card"] > .checkbox,
   .choice[data-variant="card"] > .radio { width: 18px; height: 18px; }

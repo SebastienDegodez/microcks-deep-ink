@@ -2,7 +2,7 @@ import type { WorkflowContext } from '@/domain/copilot';
 import type { Example } from '@/domain/shared';
 import type { CopilotExtensions } from '@/application/copilot';
 import type { CopilotGateway } from '@/application/ports/copilot';
-import { OPERATIONS, WORKFLOWS, after, seedRuns, type InMemoryDeps } from '../shared';
+import { OPERATIONS, WORKFLOWS, after, scenarioRuns, seedRuns, type InMemoryDeps } from '../shared';
 import { pastryProposals } from './seed/pastry-pool';
 
 export interface CopilotAdapters {
@@ -34,7 +34,7 @@ export function createInMemoryCopilotAdapters(_deps: InMemoryDeps = {}): Copilot
       after<WorkflowContext | undefined>(() => {
         const wanted = hint?.trim().toLowerCase();
         if (serviceId !== 'pastry2' || !wanted) return undefined;
-        for (const run of seedRuns()) {
+        for (const run of [...seedRuns(), ...scenarioRuns()]) {
           const issue = run.coherence.find((c) => c.copilotHint.toLowerCase() === wanted);
           if (!issue) continue;
           const workflow = WORKFLOWS.find((w) => w.documentId === run.documentId && w.workflowId === run.workflowId);

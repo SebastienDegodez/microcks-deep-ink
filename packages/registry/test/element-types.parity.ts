@@ -6,6 +6,7 @@ import type { CommandItem, CommandProtocol } from '../src/react/command-bar';
 import type { ExtensionPointId, SlotContext } from '../src/react/plugin-slot';
 import type {
   LoomAction,
+  LoomCheck,
   LoomCheckState,
   LoomDrop,
   LoomInput,
@@ -32,6 +33,7 @@ assertEqual<Equal<LoomStep, Core.LoomStep>>();
 assertEqual<Equal<LoomThread, Core.LoomThread>>();
 assertEqual<Equal<LoomInput, Core.LoomInput>>();
 assertEqual<Equal<LoomDrop, Core.LoomDrop>>();
+assertEqual<Equal<LoomCheck, Core.LoomCheck>>();
 assertEqual<Equal<LoomOutput, Core.LoomOutput>>();
 assertEqual<Equal<CommandItem, Core.CommandItem>>();
 assertEqual<Equal<ExtensionPointId, keyof typeof EXTENSION_POINTS>>();

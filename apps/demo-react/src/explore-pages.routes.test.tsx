@@ -71,7 +71,9 @@ describe('WP7 pages', () => {
 
   it('Service: operations tab with the AI proposal, then properties and tests tabs', async () => {
     renderAt('/services/pastry2/operations');
-    await h1('API Pastry 2.0');
+    // The h1 is the api-badge: "REST API Pastry 2.0".
+    await h1(/^REST\s+API Pastry 2\.0$/);
+    expect(screen.getByRole('heading', { level: 3, name: 'Used in 4 workflows' })).toBeTruthy();
     await screen.findByRole('button', { name: /Accept Tartelette Framboise/ });
     expect(screen.getByRole('button', { name: /Accept Tartelette Framboise/ })).toBeTruthy();
     fireEvent.click(screen.getByRole('tab', { name: /Tests/ }));
@@ -90,6 +92,18 @@ describe('WP7 pages', () => {
     fireEvent.click(screen.getByRole('radio', { name: /^FALLBACK/ }));
     expect(await screen.findByText(/Unsaved changes/)).toBeTruthy();
     expect(screen.getByRole('button', { name: 'Save behavior' }).hasAttribute('disabled')).toBe(false);
+  });
+
+  it('Behavior: the Saved strip follows a save, in the Stored as short form', async () => {
+    renderAt('/services/pastry2/operations/get-name');
+    await h1('/pastries/{name}');
+    const strip = await screen.findByRole('note', { name: 'Saved behavior' });
+    expect(strip.textContent).toContain('URI_PARTS · rule: name');
+    expect(strip.textContent).toContain('dispatcher inferred from the OpenAPI path parameter');
+    fireEvent.click(screen.getByRole('radio', { name: /^SCRIPT/ }));
+    fireEvent.click(screen.getByRole('button', { name: 'Save behavior' }));
+    await waitFor(() => expect(strip.textContent).toContain('GROOVY · <script, 10 lines>'));
+    expect(strip.textContent).not.toContain('inferred');
   });
 
   it('Copilot: shows the workflow context, generates proposals and accepts one', async () => {

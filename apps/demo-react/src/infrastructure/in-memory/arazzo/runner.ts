@@ -7,7 +7,7 @@ import {
 import type { StartRunRequest, WorkflowRunner } from '@/application/ports/arazzo';
 import { NotFoundError } from '@/application/shared';
 import type { Clock } from '@/application/ports/shared';
-import { RUN_IDS, TEST_RUN_IDS, TICK_MS, after, createSequenceStream, isFastMode } from '../shared';
+import { RUN_IDS, TEST_RUN_IDS, TICK_MS, after, createSequenceStream, isFastMode, scenarioRun } from '../shared';
 import type { ArazzoState } from './run-store';
 import { baseUrlFor, createResponder } from './world';
 
@@ -39,6 +39,11 @@ export function createRunner(state: ArazzoState, clock: Clock): WorkflowRunner {
     start: (request) =>
       after(() => {
         const known = canonicalRunId(request);
+        if (known && !state.runs.some((r) => r.id === known)) {
+          // Runs #15 and #16 are created by their scenario, at the time it is launched.
+          const scenario = scenarioRun(known, clock.now().toISOString());
+          if (scenario) state.runs.push(scenario);
+        }
         if (known && state.runs.some((r) => r.id === known)) return known;
         const workflow = state.workflows.find((w) => w.documentId === request.documentId && w.workflowId === request.workflowId);
         if (!workflow) throw new NotFoundError('Workflow', request.workflowId);
@@ -60,7 +65,7 @@ export function createRunner(state: ArazzoState, clock: Clock): WorkflowRunner {
         return runId;
       }),
     watch: (runId) => {
-      const run = state.runs.find((r) => r.id === runId);
+      const run = state.runs.find((r) => r.id === runId) ?? scenarioRun(runId);
       const frames: WorkflowRun[] = run ? runFrames(run) : [];
       return (listener) =>
         createSequenceStream(frames, { immediate: true, intervalMs: isFastMode() ? 1 : TICK_MS })(listener);

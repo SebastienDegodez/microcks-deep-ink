@@ -34,3 +34,12 @@ export const Disabled: StoryObj = {
     `,
   }),
 };
+
+export const Large: StoryObj = {
+  render: () => ({
+    props: { on: true },
+    template: `
+<mk-switch label="Stateful" size="lg" [(checked)]="on" />
+    `,
+  }),
+};

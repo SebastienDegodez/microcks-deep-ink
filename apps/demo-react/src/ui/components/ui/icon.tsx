@@ -90,6 +90,8 @@ const PATHS = {
   swap: ['M4 8h13M13 4l4 4-4 4M20 16H7M11 12l-4 4 4 4'],
   'close-sm': ['M7 7l10 10M17 7L7 17'],
   reset: ['M3 12a9 9 0 1 0 3-6.7', 'M3 4v5h5'],
+  /** Replay a call (Traces "Replay this call"): open arc, arrow at the top left. */
+  replay: ['M4 12a8 8 0 1 0 2.3-5.7', 'M4 4v4h4'],
   refresh: ['M21 12a9 9 0 1 1-3-6.7', 'M21 4v5h-5'],
   'refresh-arrows': ['M4 12a8 8 0 0 1 14-5.3M20 12a8 8 0 0 1-14 5.3', 'M18 3v4h-4M6 21v-4h4'],
   sync: ['M20 11a8 8 0 0 0-14.3-4.9L4 8M4 4v4h4M4 13a8 8 0 0 0 14.3 4.9L20 16M20 20v-4h-4'],

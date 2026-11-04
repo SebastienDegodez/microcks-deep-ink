@@ -140,6 +140,8 @@ describe('conformance treemap', () => {
 
   it('sorts the gap list by gap, never tested last, and bands the scores', () => {
     expect(gapList(domains).map((i) => i.serviceId)).toEqual(['b1', 's', 'b2', 'm']);
+    const tie = (serviceId: string, protocol: ConformanceItem['protocol']) => ({ ...item(serviceId, 1, 100, 100), protocol });
+    expect(gapList([domain('t', [tie('grpc', 'gRPC'), tie('soap', 'SOAP'), tie('orders', 'EVENT')])]).map((i) => i.serviceId)).toEqual(['orders', 'soap', 'grpc']);
     expect([92, 67, 33, null].map(conformanceBand)).toEqual(['ok', 'partial', 'risk', 'untested']);
   });
 });
