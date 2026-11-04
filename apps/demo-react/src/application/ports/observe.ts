@@ -21,4 +21,6 @@ export interface TraceStream {
 /** Traffic ticker of the Cockpit. */
 export interface TrafficStream {
   subscribe: Subscribe<TraceCall>;
+  /** The latest calls across protocols, newest first, that the ticker opens with. */
+  recent(limit: number): Promise<TraceCall[]>;
 }
