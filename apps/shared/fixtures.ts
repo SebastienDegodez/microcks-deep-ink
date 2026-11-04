@@ -1,12 +1,20 @@
 // Realistic Microcks data shared by the React and Angular Storybooks.
-// Types come from the registry sources (the code users copy), never from a published package.
-import type { OperationResult } from '@microcks-deep-ink/registry/react/conformance-band';
-import type { TabItem } from '@microcks-deep-ink/registry/react/tabs';
-import type { CommandItem } from '@microcks-deep-ink/registry/react/command-bar';
-import type { LoomInput, LoomOutput, LoomSource, LoomStep, LoomThread } from '@microcks-deep-ink/registry/react/workflow-loom';
-import type { MatrixColumn, MatrixGroup } from '@microcks-deep-ink/registry/react/conformance-matrix';
-import type { SkillItem } from '@microcks-deep-ink/registry/react/skill-list';
-import type { TaskLane, TaskTimelineNode } from '@microcks-deep-ink/registry/react/task-timeline';
+// Types come from the React package sources (@microcks/deep-ink), never from a published package.
+import type {
+  OperationResult,
+  TabItem,
+  CommandItem,
+  LoomInput,
+  LoomOutput,
+  LoomSource,
+  LoomStep,
+  LoomThread,
+  MatrixColumn,
+  MatrixGroup,
+  SkillItem,
+  TaskLane,
+  TaskTimelineNode,
+} from '@microcks/deep-ink';
 
 /** Props of the <WorkflowLoom> element wrapper, minus the callbacks. */
 export interface LoomScenario {

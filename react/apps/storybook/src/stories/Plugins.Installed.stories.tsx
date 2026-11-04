@@ -1,9 +1,9 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useEffect, useState } from 'react';
-import { getPluginHost } from '@microcks-deep-ink/registry/react/plugin-slot';
-import { ApiBadge } from '@microcks-deep-ink/registry/react/api-badge';
-import { CodeBlock } from '@microcks-deep-ink/registry/react/code-block';
-import { Panel } from '@microcks-deep-ink/registry/react/panel';
+import { getPluginHost } from '@microcks/deep-ink';
+import { ApiBadge } from '@microcks/deep-ink';
+import { CodeBlock } from '@microcks/deep-ink';
+import { Panel } from '@microcks/deep-ink';
 import type { MicrocksPluginManifest } from '@microcks-deep-ink/plugin-sdk';
 import { registerDemoPlugin } from '@microcks-deep-ink/storybook-shared/demo-plugin';
 import { SAMPLE_MANIFEST } from '@microcks-deep-ink/storybook-shared/fixtures';

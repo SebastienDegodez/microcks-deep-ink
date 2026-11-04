@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { AiGhostRow } from '@microcks-deep-ink/registry/react/ai-ghost-row';
-import { MethodTag } from '@microcks-deep-ink/registry/react/method-tag';
+import { AiGhostRow } from '@microcks/deep-ink';
+import { MethodTag } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

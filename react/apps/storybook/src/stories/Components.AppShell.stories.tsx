@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { AppShell } from '@microcks-deep-ink/registry/react/app-shell';
-import { Callout } from '@microcks-deep-ink/registry/react/callout';
-import { ThemeToggle } from '@microcks-deep-ink/registry/react/theme-toggle';
+import { AppShell } from '@microcks/deep-ink';
+import { Callout } from '@microcks/deep-ink';
+import { ThemeToggle } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

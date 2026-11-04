@@ -39,6 +39,10 @@ jobs:
       - run: pnpm test
       - run: pnpm lint
 
+      # The React workspace: the @microcks/deep-ink package, documented by the React Storybook.
+      - run: pnpm -C react install --frozen-lockfile
+      - run: pnpm -C react build
+
       # Storybooks + demo, then the site that Pages serves.
       - run: pnpm build:storybooks
       - run: pnpm build:demo

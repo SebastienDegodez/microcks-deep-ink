@@ -4,16 +4,18 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "storybook": "storybook dev -p 6006",
-    "build-storybook": "storybook build -o storybook-static"
+    "gen:exports": "node scripts/gen-exports.mjs",
+    "storybook": "node scripts/gen-exports.mjs && storybook dev -p 6006",
+    "build-storybook": "node scripts/gen-exports.mjs && storybook build -o storybook-static",
+    "typecheck": "node scripts/gen-exports.mjs && tsc --noEmit"
   },
   "dependencies": {
-    "@microcks-deep-ink/plugin-sdk": "workspace:*",
-    "@microcks-deep-ink/storybook-shared": "workspace:*",
-    "@microcks-deep-ink/tokens": "workspace:*",
+    "@microcks/deep-ink": "workspace:*",
+    "@microcks-deep-ink/plugin-sdk": "link:../../../packages/plugin-sdk",
+    "@microcks-deep-ink/registry": "link:../../../packages/registry",
+    "@microcks-deep-ink/storybook-shared": "link:../../../apps/shared",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0",
-    "@microcks-deep-ink/registry": "workspace:*"
+    "react-dom": "^19.2.0"
   },
   "devDependencies": {
     "@storybook/addon-a11y": "^10.6.5",

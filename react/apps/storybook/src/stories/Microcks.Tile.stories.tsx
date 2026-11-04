@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { ApiBadge, type Protocol } from '@microcks-deep-ink/registry/react/api-badge';
-import { Button } from '@microcks-deep-ink/registry/react/button';
-import { Tile, TileGrid } from '@microcks-deep-ink/registry/react/tile';
+import { ApiBadge, type Protocol } from '@microcks/deep-ink';
+import { Button } from '@microcks/deep-ink';
+import { Tile, TileGrid } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

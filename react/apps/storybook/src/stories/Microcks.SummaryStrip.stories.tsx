@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { SummaryStrip, SummaryStripSep } from '@microcks-deep-ink/registry/react/summary-strip';
+import { SummaryStrip, SummaryStripSep } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

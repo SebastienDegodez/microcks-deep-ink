@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { CodeBlock } from '@microcks-deep-ink/registry/react/code-block';
+import { CodeBlock } from '@microcks/deep-ink';
 import { RUN14_FAILURE } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { itemParams } from './_meta';
 

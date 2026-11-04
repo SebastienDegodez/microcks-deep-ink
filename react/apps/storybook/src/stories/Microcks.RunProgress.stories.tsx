@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { Button } from '@microcks-deep-ink/registry/react/button';
-import { RunProgress } from '@microcks-deep-ink/registry/react/run-progress';
+import { Button } from '@microcks/deep-ink';
+import { RunProgress } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

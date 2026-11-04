@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { Button } from '@microcks-deep-ink/registry/react/button';
-import { ResultBox } from '@microcks-deep-ink/registry/react/result-box';
+import { Button } from '@microcks/deep-ink';
+import { ResultBox } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

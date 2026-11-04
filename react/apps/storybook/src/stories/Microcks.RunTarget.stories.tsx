@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { RunTarget } from '@microcks-deep-ink/registry/react/run-target';
+import { RunTarget } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

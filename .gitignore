@@ -15,3 +15,4 @@ a11y-report/
 .ngc/
 tools/a11y/dist/
 *.tsbuildinfo
+react/apps/storybook/.storybook/copy-panel/exports.generated.json

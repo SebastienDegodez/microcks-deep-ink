@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useMemo, useState } from 'react';
-import { DataTable, sortRows, type SortState } from '@microcks-deep-ink/registry/react/table';
+import { DataTable, sortRows, type SortState } from '@microcks/deep-ink';
 import { CATALOGUE_COLUMNS, CATALOGUE_ROWS, type CatalogueRow } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { itemParams } from './_meta';
 

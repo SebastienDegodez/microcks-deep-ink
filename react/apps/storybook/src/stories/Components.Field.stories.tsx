@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { Field } from '@microcks-deep-ink/registry/react/field';
-import { Input } from '@microcks-deep-ink/registry/react/input';
+import { Field } from '@microcks/deep-ink';
+import { Input } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

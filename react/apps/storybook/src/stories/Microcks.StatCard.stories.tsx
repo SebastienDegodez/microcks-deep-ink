@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { LiveIndicator } from '@microcks-deep-ink/registry/react/live-indicator';
-import { StatCard, StatGrid } from '@microcks-deep-ink/registry/react/stat-card';
+import { LiveIndicator } from '@microcks/deep-ink';
+import { StatCard, StatGrid } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

@@ -15,8 +15,14 @@
     "allowImportingTsExtensions": true,
     "resolveJsonModule": true,
     "paths": {
-      "@microcks-deep-ink/registry/react/*": [
-        "../../react/packages/deep-ink/src/*"
+      "@microcks/deep-ink": [
+        "./node_modules/@microcks/deep-ink/dist/index.d.ts"
+      ],
+      "@microcks-deep-ink/plugin-sdk": [
+        "./node_modules/@microcks-deep-ink/plugin-sdk"
+      ],
+      "@microcks-deep-ink/registry/*": [
+        "./node_modules/@microcks-deep-ink/registry/*"
       ],
       "react": [
         "./node_modules/@types/react"
@@ -34,6 +40,10 @@
   },
   "include": [
     "src",
-    ".storybook"
+    ".storybook/css.d.ts",
+    ".storybook/preview.tsx",
+    ".storybook/manager.ts",
+    ".storybook/theme.ts",
+    ".storybook/copy-panel/*.tsx"
   ]
 }

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { PluginSlot } from '@microcks-deep-ink/registry/react/plugin-slot';
-import { Panel } from '@microcks-deep-ink/registry/react/panel';
+import { PluginSlot } from '@microcks/deep-ink';
+import { Panel } from '@microcks/deep-ink';
 import { registerDemoPlugin } from '@microcks-deep-ink/storybook-shared/demo-plugin';
 import { itemParams } from './_meta';
 

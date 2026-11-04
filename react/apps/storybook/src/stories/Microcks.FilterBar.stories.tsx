@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { Chip, type Protocol } from '@microcks-deep-ink/registry/react/chip';
-import { FilterBar, FilterReset, FilterRow, FilterSearch } from '@microcks-deep-ink/registry/react/filter-bar';
-import { Segmented } from '@microcks-deep-ink/registry/react/segmented';
+import { Chip, type Protocol } from '@microcks/deep-ink';
+import { FilterBar, FilterReset, FilterRow, FilterSearch } from '@microcks/deep-ink';
+import { Segmented } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

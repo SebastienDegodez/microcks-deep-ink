@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { Button } from '@microcks-deep-ink/registry/react/button';
-import { CommandBar } from '@microcks-deep-ink/registry/react/command-bar';
+import { Button } from '@microcks/deep-ink';
+import { CommandBar } from '@microcks/deep-ink';
 import { COMMANDS } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { itemParams } from './_meta';
 

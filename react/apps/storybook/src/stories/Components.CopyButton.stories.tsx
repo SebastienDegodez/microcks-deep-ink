@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { CopyButton } from '@microcks-deep-ink/registry/react/copy-button';
+import { CopyButton } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

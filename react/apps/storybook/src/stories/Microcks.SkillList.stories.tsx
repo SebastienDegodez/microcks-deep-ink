@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { SkillList } from '@microcks-deep-ink/registry/react/skill-list';
+import { SkillList } from '@microcks/deep-ink';
 import { AGENT_SKILLS } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { itemParams } from './_meta';
 

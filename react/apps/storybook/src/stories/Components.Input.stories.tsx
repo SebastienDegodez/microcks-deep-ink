@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { Input, Textarea } from '@microcks-deep-ink/registry/react/input';
+import { Input, Textarea } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

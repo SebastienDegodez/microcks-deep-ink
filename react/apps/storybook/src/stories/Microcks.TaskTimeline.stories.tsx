@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { TASK_STATES, TaskLanes, TaskStateTag, TaskTimeline } from '@microcks-deep-ink/registry/react/task-timeline';
+import { TASK_STATES, TaskLanes, TaskStateTag, TaskTimeline } from '@microcks/deep-ink';
 import { AGENT_LANES, AGENT_LIFECYCLE } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { itemParams } from './_meta';
 

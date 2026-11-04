@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { Meter, Progress } from '@microcks-deep-ink/registry/react/progress';
+import { Meter, Progress } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

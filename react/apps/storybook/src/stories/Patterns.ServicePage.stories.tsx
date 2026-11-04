@@ -1,13 +1,13 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { ApiBadge } from '@microcks-deep-ink/registry/react/api-badge';
-import { Button } from '@microcks-deep-ink/registry/react/button';
-import { ConformanceBand } from '@microcks-deep-ink/registry/react/conformance-band';
-import { DescriptionList } from '@microcks-deep-ink/registry/react/description-list';
-import { OperationList, OperationRow } from '@microcks-deep-ink/registry/react/operation-row';
-import { Panel } from '@microcks-deep-ink/registry/react/panel';
-import { StatusBadge } from '@microcks-deep-ink/registry/react/status-badge';
-import { TabPanel, Tabs } from '@microcks-deep-ink/registry/react/tabs';
+import { ApiBadge } from '@microcks/deep-ink';
+import { Button } from '@microcks/deep-ink';
+import { ConformanceBand } from '@microcks/deep-ink';
+import { DescriptionList } from '@microcks/deep-ink';
+import { OperationList, OperationRow } from '@microcks/deep-ink';
+import { Panel } from '@microcks/deep-ink';
+import { StatusBadge } from '@microcks/deep-ink';
+import { TabPanel, Tabs } from '@microcks/deep-ink';
 import { CONFORMANCE, MOCK_BASE, OPERATIONS, SERVICE_TABS } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { itemParams } from './_meta';
 

@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { OperationList, OperationRow } from '@microcks-deep-ink/registry/react/operation-row';
+import { OperationList, OperationRow } from '@microcks/deep-ink';
 import { OPERATIONS } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { itemParams } from './_meta';
 

@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { Button } from '@microcks-deep-ink/registry/react/button';
-import { Panel } from '@microcks-deep-ink/registry/react/panel';
+import { Button } from '@microcks/deep-ink';
+import { Panel } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

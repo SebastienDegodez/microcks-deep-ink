@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { Button } from '@microcks-deep-ink/registry/react/button';
-import { CiPanel } from '@microcks-deep-ink/registry/react/ci-panel';
-import { ProjectionPill } from '@microcks-deep-ink/registry/react/projection-pill';
+import { Button } from '@microcks/deep-ink';
+import { CiPanel } from '@microcks/deep-ink';
+import { ProjectionPill } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

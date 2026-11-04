@@ -1,8 +1,8 @@
 import type { Decorator, Preview } from '@storybook/react-vite';
 import React, { useEffect } from 'react';
-import { setTheme } from '@microcks-deep-ink/registry/react/theme-toggle';
-import '@microcks-deep-ink/tokens/deep-ink.css';
-import '@microcks-deep-ink/registry/dist/deep-ink-components.css';
+import { setTheme } from '@microcks/deep-ink';
+// The package stylesheet: tokens, base and every component, layered (the same file the demo loads).
+import '@microcks/deep-ink/styles.css';
 import '@microcks-deep-ink/storybook-shared/foundations.css';
 import { theme } from './theme';
 

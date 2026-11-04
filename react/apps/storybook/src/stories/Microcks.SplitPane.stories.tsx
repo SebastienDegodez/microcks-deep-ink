@@ -1,8 +1,8 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks-deep-ink/registry/react/split-pane';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
-import { Panel } from '@microcks-deep-ink/registry/react/panel';
+import { Panel } from '@microcks/deep-ink';
 
 export default {
   title: 'Microcks/SplitPane',

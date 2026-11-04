@@ -1,15 +1,15 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { ApiBadge } from '@microcks-deep-ink/registry/react/api-badge';
-import { Callout } from '@microcks-deep-ink/registry/react/callout';
-import { CodeBlock } from '@microcks-deep-ink/registry/react/code-block';
-import { DescriptionList } from '@microcks-deep-ink/registry/react/description-list';
-import { Panel } from '@microcks-deep-ink/registry/react/panel';
-import { RunOrigin } from '@microcks-deep-ink/registry/react/run-origin';
-import { RunTarget } from '@microcks-deep-ink/registry/react/run-target';
-import { StatusBadge } from '@microcks-deep-ink/registry/react/status-badge';
-import { StepChecks, StepStatus } from '@microcks-deep-ink/registry/react/step-status';
-import { WorkflowLoom } from '@microcks-deep-ink/registry/react/workflow-loom';
+import { ApiBadge } from '@microcks/deep-ink';
+import { Callout } from '@microcks/deep-ink';
+import { CodeBlock } from '@microcks/deep-ink';
+import { DescriptionList } from '@microcks/deep-ink';
+import { Panel } from '@microcks/deep-ink';
+import { RunOrigin } from '@microcks/deep-ink';
+import { RunTarget } from '@microcks/deep-ink';
+import { StatusBadge } from '@microcks/deep-ink';
+import { StepChecks, StepStatus } from '@microcks/deep-ink';
+import { WorkflowLoom } from '@microcks/deep-ink';
 import { LOOM_RESTOCK_RUN14, RUN14_FAILURE } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { detailOf, itemParams } from './_meta';
 

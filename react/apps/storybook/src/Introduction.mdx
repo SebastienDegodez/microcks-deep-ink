@@ -9,31 +9,29 @@ import { Meta } from '@storybook/addon-docs/blocks';
 The Microcks UI v2 design system, a proposal for the maintainers.
 **The contract is the source of truth; the interface makes it alive.**
 
-Deep Ink is a **copy-paste registry**, in the spirit of shadcn: you copy the source into your project and own it.
-This Storybook shows the **React** versions. The Angular Storybook shows the same 46 items, with the same stories.
+This Storybook documents **`@microcks/deep-ink`**, the React package (private for now: built from a clone, not on npm).
+The Angular Storybook shows the same items; Angular, plain HTML and CSS are still copied with the `deep-ink` CLI, in the spirit of shadcn.
 
 - **Natural components** are native HTML (`<button>`, `<table>`, `<dialog>`) styled by a CSS class API with plain class names (`.button`, `.table`, `.dialog`).
-- **Microcks components** (API badge, status, operation row...) are native React or Angular code over the same CSS, plus an HTML recipe for plugins.
+- **Microcks components** (API badge, status, operation row...) are native React code over the same CSS, plus an HTML recipe for plugins.
 - **Two Web Components remain**, where the logic is heavy: the Workflow Loom and the Plugin Slot. They ship as self-contained bundles with a thin wrapper.
 
 ```
-packages/tokens     CSS variables, dark (Deep Ink) and light (Paper)
-packages/registry   the single source of truth: React, Angular, CSS, HTML recipes
-packages/cli        deep-ink init | add | list | diff | view
-packages/core       the two Web Components, compiled to element bundles
+packages/tokens          CSS variables, dark (Deep Ink) and light (Paper)
+packages/registry        CSS, HTML recipes and Angular sources; builds the one layered stylesheet
+packages/core            the two Web Components, compiled to element bundles
+react/packages/deep-ink  @microcks/deep-ink: the React components, styles.css, the element bundles
 ```
 
-## Copy a component
+## Use a component
 
-Every story has a **Copy** panel (open by default, next to Controls and Accessibility). It shows the exact files the CLI copies for the selected
-framework, with a Copy button per file, the dependencies, and the matching command:
-
-```bash
-# Not on npm (demo): run it from a clone of the repository, after `pnpm build`
-pnpm deep-ink add button --framework react
+```tsx
+import '@microcks/deep-ink/styles.css'; // once, in your entry file
+import { Button } from '@microcks/deep-ink';
 ```
 
-The files land in your project (`src/components/ui`, `src/styles/deep-ink`), with a `deep-ink.json` lockfile so `deep-ink diff` can compare them with the registry later.
+Every story has a **Copy** panel (open by default, next to Controls and Accessibility). For React it shows the import to write;
+for HTML it shows the recipe and the CSS the `deep-ink` CLI copies (`pnpm deep-ink add button --framework html`).
 
 ## Accessibility
 

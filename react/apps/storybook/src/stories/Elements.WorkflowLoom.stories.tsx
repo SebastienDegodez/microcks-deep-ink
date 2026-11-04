@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { WorkflowLoom } from '@microcks-deep-ink/registry/react/workflow-loom';
+import { WorkflowLoom } from '@microcks/deep-ink';
 import { LOOM_CHECK_MENU, LOOM_RESTOCK_RUN14, LOOM_SESSION_RUN13, type LoomScenario } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { detailOf, itemParams } from './_meta';
 

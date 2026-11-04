@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { ConformanceBand } from '@microcks-deep-ink/registry/react/conformance-band';
+import { ConformanceBand } from '@microcks/deep-ink';
 import { CONFORMANCE } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { itemParams } from './_meta';
 

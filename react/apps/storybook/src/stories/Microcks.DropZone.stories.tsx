@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { DropZone } from '@microcks-deep-ink/registry/react/drop-zone';
+import { DropZone } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {

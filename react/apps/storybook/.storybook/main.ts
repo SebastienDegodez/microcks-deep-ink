@@ -1,10 +1,4 @@
-import { fileURLToPath } from 'node:url';
 import type { StorybookConfig } from '@storybook/react-vite';
-
-// TEMPORARY (until the Storybook moves into react/): the React sources left packages/registry for
-// react/packages/deep-ink/src. Stories keep their `@microcks-deep-ink/registry/react/<item>` imports through this
-// alias (and the matching tsconfig paths); react and react-dom are deduped so the moved sources use this app's copy.
-const REACT_SRC = fileURLToPath(new URL('../../../react/packages/deep-ink/src', import.meta.url));
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(ts|tsx)'],
@@ -17,13 +11,9 @@ const config: StorybookConfig = {
     base: process.env.SB_BASE ?? cfg.base,
     resolve: {
       ...cfg.resolve,
-      alias: [
-        { find: /^@microcks-deep-ink\/registry\/react\/(.*)$/, replacement: `${REACT_SRC}/$1` },
-        ...(Array.isArray(cfg.resolve?.alias)
-          ? cfg.resolve.alias
-          : Object.entries(cfg.resolve?.alias ?? {}).map(([find, replacement]) => ({ find, replacement: replacement as string }))),
-      ],
-      dedupe: [...(cfg.resolve?.dedupe ?? []), 'react', 'react-dom'],
+      // One copy of each: the package is a workspace link, and apps/shared (fixtures, demo plugin, a11y docs)
+      // lives in the root workspace, whose node_modules may not be installed. Resolve them all from this app.
+      dedupe: [...(cfg.resolve?.dedupe ?? []), 'react', 'react-dom', '@microcks/deep-ink', '@microcks-deep-ink/plugin-sdk', '@microcks-deep-ink/registry'],
     },
   }),
 };

@@ -1,6 +1,6 @@
 // Shared helper for the story metas. Every meta declares what the Copy panel shows
 // (`parameters.deepInk.items`) and documents keyboard + ARIA from the registry (`a11yDoc`).
-import { a11yDoc } from '../../../shared/copy-panel/a11y-doc';
+import { a11yDoc } from '../../../../../apps/shared/copy-panel/a11y-doc';
 
 /**
  * Parameters shared by every story file: what the Copy panel shows (`deepInk.items`) and the keyboard + ARIA

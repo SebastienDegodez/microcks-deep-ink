@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { ThemeToggle } from '@microcks-deep-ink/registry/react/theme-toggle';
+import { ThemeToggle } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
 export default {
