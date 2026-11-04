@@ -1,0 +1,41 @@
+<!--
+  Tile. A card for a package, a service, a workflow or an agent, in a wrapping grid.
+  The title is the ONE link (or toggle button) of the tile; its ::after is stretched over the card, so the
+  whole card is clickable without nesting controls. Other controls (footer buttons, links) sit above it.
+  Selected: data-selected on the tile, plus aria-current="true" on the link (or aria-pressed="true" on a button).
+-->
+<section class="tile-grid" aria-label="Packages">
+  <article class="tile" aria-labelledby="tile-banking" data-interactive data-selected>
+    <div class="tile-head">
+      <div class="tile-heading">
+        <h3 class="tile-title"><a class="tile-action" id="tile-banking" href="#/hub/open-banking" aria-current="true">Open Banking</a></h3>
+        <span class="tile-meta">maintained by <strong>community</strong> · 3 APIs · updated Oct 21, 2026</span>
+      </div>
+      <span class="tile-aside"><span class="tile-tag">Banking</span></span>
+    </div>
+    <div class="tile-body">
+      <p>Accounts, payments and consents, with examples for every operation.</p>
+      <div class="tile-badges">
+        <span class="api-badge" data-protocol="rest" data-size="sm"><span class="api-badge-type">REST</span> <span class="api-badge-name">Accounts API</span> <span class="api-badge-version">1.2.0</span></span>
+      </div>
+    </div>
+    <div class="tile-footer">
+      <button class="button" type="button" data-variant="primary" data-size="sm">
+        <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 4v12M6 10l6 6 6-6M4 20h16"/></svg>
+        Install <span class="sr-only">Open Banking</span>
+      </button>
+      <span class="tile-footer-end">9 ops · 19 examples</span>
+    </div>
+  </article>
+
+  <article class="tile" aria-labelledby="tile-pastry" data-interactive>
+    <div class="tile-head">
+      <div class="tile-heading">
+        <h3 class="tile-title"><a class="tile-action" id="tile-pastry" href="#/hub/pastry">Pastry samples</a></h3>
+        <span class="tile-meta">maintained by <strong>Microcks</strong> · 2 APIs</span>
+      </div>
+      <span class="tile-aside"><span class="tile-tag">Samples</span></span>
+    </div>
+    <div class="tile-body"><p>The bakery demo used across the Microcks docs.</p></div>
+  </article>
+</section>
