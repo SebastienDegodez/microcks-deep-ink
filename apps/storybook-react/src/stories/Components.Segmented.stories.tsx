@@ -83,3 +83,40 @@ export const JoinedPrimary: StoryObj = {
     return <Segmented label="Artifact role" variant="joined" tone="primary" value={v} onChange={setV} options={[{ id: 'primary', label: 'Primary' }, { id: 'secondary', label: 'Secondary' }]} />;
   },
 };
+
+export const StatusIcons: StoryObj = {
+  name: 'Toned icons, selected fill (Sources)',
+  render: () => {
+    const [v, setV] = useState('all');
+    return (
+      <Segmented
+        label="Status"
+        value={v}
+        onChange={setV}
+        pressedFill="selected"
+        iconSize={13}
+        options={[
+          { id: 'all', label: 'All' },
+          { id: 'imported', label: 'Imported', icon: 'check', iconTone: 'success' },
+          { id: 'warnings', label: 'Warnings', icon: 'warning', iconTone: 'warning' },
+          { id: 'failing', label: 'Failing', icon: 'cross', iconTone: 'danger' },
+          { id: 'inactive', label: 'Inactive', icon: 'pause', iconTone: 'muted' },
+        ]}
+      />
+    );
+  },
+};
+
+export const Compact: StoryObj = {
+  name: 'Joined sm and wide track (Behavior, Usage)',
+  render: () => {
+    const [lang, setLang] = useState('groovy');
+    const [period, setPeriod] = useState('today');
+    return (
+      <div style={{ display: 'flex', flexDirection: 'column', gap: 16, alignItems: 'flex-start' }}>
+        <Segmented label="Script language" variant="joined" size="sm" value={lang} onChange={setLang} options={[{ id: 'groovy', label: 'Groovy' }, { id: 'js', label: 'JavaScript' }]} />
+        <Segmented label="Period" spacing="wide" value={period} onChange={setPeriod} options={[{ id: 'today', label: 'Today' }, { id: '7d', label: '7 days' }, { id: '30d', label: '30 days' }]} />
+      </div>
+    );
+  },
+};

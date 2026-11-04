@@ -205,10 +205,10 @@
     "segmented": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/segmented.tsx": "48f6cc9ca88578f5e1f0a3e7200b91b66a1344a92bac3973216eec34ca92c8b4",
-        "src/ui/styles/segmented.css": "10e7dd6bcd2d54b425775996466564957826f0f2c8de5880d55b2054f0df4738"
+        "src/ui/components/ui/segmented.tsx": "2a883a48c757e185b31289e2f1a9fe0fe7e7d872a4f3c2218957d376eb08f97c",
+        "src/ui/styles/segmented.css": "eec45574adcb82b1cb76bdf9dd5b8ecf7c4bb96539b103f5033d054506affeb1"
       },
-      "hash": "3710e536fb5f2207"
+      "hash": "f1a72446682d0d9d"
     },
     "mock-url": {
       "version": "0.2.0",
