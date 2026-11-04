@@ -45,10 +45,10 @@
     "api-badge": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/api-badge.tsx": "0e521b3fadbbd7c8ebd94dfbaca9f51e6b303e9302be70dfd73648e66e562bc7",
-        "src/ui/styles/api-badge.css": "a006c7b7a128e0b1b682c2b87bf1999b4618ce21497232e7517444f8ada6d890"
+        "src/ui/components/ui/api-badge.tsx": "0211713fad1488667ba29a32376affedd1fa04c5d02bb1f5df76f9d31c508361",
+        "src/ui/styles/api-badge.css": "bc65bf808130135176e55ee040d4cc09e0e24486231943704317a71999704d1b"
       },
-      "hash": "979711b10bd98d92"
+      "hash": "7ea6fcaac59d1f64"
     },
     "app-shell": {
       "version": "0.2.0",
@@ -198,9 +198,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/method-tag.tsx": "8c7dfaceeba8c91d848560b76bbaafbcc63a288473a8c37874dbbedb727e98f3",
-        "src/ui/styles/method-tag.css": "e56f1d24e44c8aaae40ddbd9f1b6a4d08a939fcef2a713ae8cbf70d38f665271"
+        "src/ui/styles/method-tag.css": "5414b5250427dfed46c2ddbfefd13aff43ee91d2ead6b7db107f24388742542b"
       },
-      "hash": "9e5eb35346f8205e"
+      "hash": "187a57f6387d9641"
     },
     "segmented": {
       "version": "0.2.0",
@@ -277,10 +277,10 @@
     "status-badge": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/status-badge.tsx": "0ca69dd0e264cb56687942765638ac1546ebe5c62ce5ea35a7bfc5c5add503b9",
-        "src/ui/styles/status-badge.css": "0a608f07c22acbe553875d448250030a2fab961ad42a00082f7eb9570784f850"
+        "src/ui/components/ui/status-badge.tsx": "6a3a70f2ffc9f5b3fe16b57166586a408f6d3fc90748bc1dbb9719f86c0d0752",
+        "src/ui/styles/status-badge.css": "808cd402dd8aadb5dbc56cf8eb551bb1e8da260b17cb6c6a506e198586ccaaf8"
       },
-      "hash": "9cc42bd84d8d0861"
+      "hash": "53477c5d7720016b"
     },
     "step-status": {
       "version": "0.2.0",
