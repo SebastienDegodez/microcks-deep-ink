@@ -470,6 +470,7 @@ function Results({ run, phase, tick, conversationSubs, onStep, onReplay, onEdit 
               <CiPanel
                 id="ci-panel"
                 dashed
+                copyLabel="Copy command"
                 title="Run this test in your pipeline"
                 pill={<ApiBadge label="cli" value="proposed" status="warning" size="sm" />}
                 hint={

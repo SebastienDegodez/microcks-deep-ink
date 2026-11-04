@@ -30,6 +30,7 @@ export const Default: StoryObj = {
             pill={<ProjectionPill>Projection · proposed CLI</ProjectionPill>}
             hint="Proposed, not available today: the existing microcks test command with the new runner name. It exits non-zero when a check fails."
             command={CMD}
+            copyLabel="Copy command"
             footnote="Add --keycloakClientId and --keycloakClientSecret when your Microcks instance has authentication on."
           />
         ) : null}

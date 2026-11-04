@@ -25,7 +25,7 @@ let nextId = 0;
         <p class="ci-panel-title"><span [id]="titleId">{{ title() }}</span><ng-content select="[mkCiPanelPill]" /></p>
         <ng-content select="[mkCiPanelHint]" />
       </div>
-      <mk-copy-button variant="outline" size="sm" [value]="command()" />
+      <mk-copy-button variant="outline" size="sm" [value]="command()" [label]="copyLabel()" />
     </div>
     <pre class="ci-panel-code"><code>{{ command() }}</code></pre>
     <ng-content select="[mkCiPanelFoot]" />
@@ -37,5 +37,7 @@ export class CiPanelComponent {
   readonly command = input.required<string>();
   /** Dashed frame (a projected, not-yet-available command). */
   readonly dashed = input(false, { transform: booleanAttribute });
+  /** Label of the copy button (default "Copy"; "Copy command" on AgentTestRun). */
+  readonly copyLabel = input('Copy');
   protected readonly titleId = `mk-ci-panel-${++nextId}`;
 }

@@ -23,7 +23,7 @@ export const Default: StoryObj = {
           <button mkButton class="ci-panel-toggle" icon="code" [attr.aria-expanded]="open" aria-controls="sb-ci-ng" (click)="open = !open">Run it from CI</button>
         </div>
         @if (open) {
-          <section mkCiPanel id="sb-ci-ng" dashed title="Run this test in your pipeline" [command]="cmd">
+          <section mkCiPanel id="sb-ci-ng" dashed title="Run this test in your pipeline" [command]="cmd" copyLabel="Copy command">
             <span mkCiPanelPill mkProjectionPill>Projection · proposed CLI</span>
             <p mkCiPanelHint class="ci-panel-hint">Proposed, not available today: the existing microcks test command with the new runner name. It exits non-zero when a check fails.</p>
             <p mkCiPanelFoot class="ci-panel-foot">Add --keycloakClientId and --keycloakClientSecret when your Microcks instance has authentication on.</p>
