@@ -9,7 +9,7 @@ import type {
   Snapshot,
   SnapshotImportPreviewItem,
 } from '@/domain/govern';
-import type { SecretSummary } from '@/domain/shared';
+import type { SecretSummary, ServiceSummary } from '@/domain/shared';
 import { validateSecretForm } from '@/domain/govern';
 import { NotFoundError, ValidationError } from '@/application/shared';
 import type { AdminRepository, HubRepository } from '@/application/ports/govern';
@@ -35,6 +35,8 @@ export interface GovernUseCases {
   listSecrets(): Promise<SecretSummary[]>;
   createSecret(input: { name: string; kind: SecretSummary['kind']; description?: string; value: string }): Promise<SecretSummary>;
   deleteSecret(id: string): Promise<void>;
+  /** Services a snapshot can hold, in the order of the export list. */
+  listSnapshotServices(): Promise<ServiceSummary[]>;
   exportSnapshot(serviceIds: string[]): Promise<Snapshot>;
   previewSnapshotImport(fileName: string): Promise<SnapshotImportPreviewItem[]>;
   importSnapshot(fileName: string): Promise<{ created: number; replaced: number }>;
@@ -75,6 +77,7 @@ export function createGovernUseCases({ hub, admin, secrets }: GovernPorts): Gove
       return secrets.create(input);
     },
     deleteSecret: (id) => secrets.remove(id),
+    listSnapshotServices: () => admin.snapshotServices(),
     exportSnapshot: (ids) => admin.snapshot(ids),
     previewSnapshotImport: (name) => admin.snapshotImportPreview(name),
     importSnapshot: (name) => admin.importSnapshot(name),

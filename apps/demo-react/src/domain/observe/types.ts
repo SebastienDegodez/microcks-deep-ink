@@ -61,6 +61,9 @@ export interface TraceCall {
   operationId?: string;
   /** W3C baggage when the call belongs to an Arazzo run (see `baggage()`). */
   baggage?: string;
+  /** Run number and workflow name of the Arazzo run the baggage points to ("12", "Restock a pastry"). */
+  arazzoRun?: number;
+  workflowName?: string;
   request?: { headers: Record<string, string>; body?: string };
   response?: { headers: Record<string, string>; body?: string };
   kind?: TraceKind;
@@ -94,6 +97,9 @@ export interface TraceFilter {
 export interface TopologyClient {
   id: string;
   label: string;
+  /** IP address of the client. */
+  ip: string;
+  /** Second line of the graph node ("10.0.4.21 · HTTP", "Arazzo runs · HTTP"). */
   detail: string;
   kind: 'REST' | 'MCP' | 'MIXED' | 'ARAZZO';
 }

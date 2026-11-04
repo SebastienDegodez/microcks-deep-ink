@@ -2,7 +2,7 @@ import type { AdminGroup, AdminUser, FeatureFlag, HubPackage, MembershipRequest 
 import { NotFoundError } from '@/application/shared';
 import type { AdminRepository, HubRepository } from '@/application/ports/govern';
 import { SERVICES, after, isFastMode, type InMemoryDeps } from '../shared';
-import { FLAGS, GROUPS, REQUESTS, SNAPSHOT_IMPORT_PREVIEW, USERS } from './seed/admin.seed';
+import { FLAGS, GROUPS, REQUESTS, SNAPSHOT_IMPORT_PREVIEW, SNAPSHOT_SERVICE_ORDER, USERS } from './seed/admin.seed';
 import { CATEGORY_ORDER, seedPackages } from './seed/hub.seed';
 
 export interface GovernAdapters {
@@ -84,6 +84,10 @@ export function createInMemoryGovernAdapters(_deps: InMemoryDeps = {}): GovernAd
         const group = groups.find((g) => g.id === req.groupId);
         if (group && !group.members.includes(req.userId)) group.members = [...group.members, req.userId];
       }),
+    snapshotServices: () =>
+      after(() =>
+        SNAPSHOT_SERVICE_ORDER.map((id) => SERVICES.find((s) => s.id === id)).filter((s): s is NonNullable<typeof s> => s !== undefined).map((s) => ({ ...s })),
+      ),
     snapshot: (serviceIds) =>
       after(() => {
         const selected = SERVICES.filter((s) => serviceIds.includes(s.id));
@@ -92,6 +96,8 @@ export function createInMemoryGovernAdapters(_deps: InMemoryDeps = {}): GovernAd
           fileName: 'microcks-repository.json',
           serviceIds,
           operations,
+          // The prototype's estimate: 4 KB of envelope and about 6 KB per operation.
+          sizeKb: 4 + operations * 6,
           json: JSON.stringify(
             { exportedAt: '2026-11-03T09:10:04Z', services: selected.map((s) => ({ id: s.id, name: s.name, version: s.version, operations: s.operationCount })) },
             null,

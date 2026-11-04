@@ -108,19 +108,20 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .node { position: relative; width: 100%; max-width: 190px; display: flex; flex-direction: column; align-items: stretch; gap: 6px; padding: 8px; text-align: left; color: var(--text); background: var(--surface); border: 1px solid var(--border-strong); border-radius: 12px; cursor: pointer; font: inherit; }
     .node[data-status="failed"] { border-color: var(--danger); }
     .node[data-status="not-run"] { background: var(--canvas); border-style: dashed; }
+    .node[data-status="not-run"] .id, .node[data-status="not-run"] .num { color: var(--text-secondary); }
     .node[aria-pressed="true"] { padding: 7px; background: var(--selected); border: 2px solid var(--action); }
     .hd { display: flex; align-items: center; gap: 6px; min-width: 0; }
     .num { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 999px; background: var(--raised); color: var(--text); font: 600 11px/1 var(--font-ui); }
     .node[data-status="failed"] .num { background: var(--danger); color: var(--on-status); }
-    .id { min-width: 0; font: 600 12px/16px var(--font-mono); overflow-wrap: anywhere; }
-    .op { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; font: 400 11px/16px var(--font-mono); }
-    .mt { --method-bg: var(--lane, var(--proto-rest)); flex: none; padding: 1px 4px; font: 600 10px/14px var(--font-mono); color: var(--on-proto); background: var(--method-bg); border-radius: 3px; }
+    .id { min-width: 0; font: 600 12px/normal var(--font-mono); overflow-wrap: anywhere; }
+    .op { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; font: 400 11px/normal var(--font-mono); }
+    .mt { --method-bg: var(--lane, var(--proto-rest)); flex: none; padding: 1px 4px; font: 600 10px/normal var(--font-mono); color: var(--on-proto); background: var(--method-bg); border-radius: 3px; }
     .mt[data-protocol="rest"][data-method="POST" i], .mt[data-protocol="rest"][data-method="PATCH" i], .mt[data-protocol="rest"][data-method="PUT" i] { --method-bg: var(--proto-event); }
     .mt[data-protocol="rest"][data-method="DELETE" i] { --method-bg: var(--danger); color: var(--on-status); }
     .pa { color: var(--text-secondary); overflow-wrap: anywhere; }
     .rule { height: 1px; background: var(--border); }
     .ring { flex: none; }
-    .st { display: inline-flex; align-items: center; gap: 5px; font: 600 12px/16px var(--font-ui); }
+    .st { display: inline-flex; align-items: center; gap: 5px; font: 600 12px/normal var(--font-ui); }
     .st.passed { color: var(--success); }
     .st.failed { color: var(--danger); }
     .st.not-run { color: var(--text-muted); }
@@ -129,7 +130,7 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .chk.passed .ring { color: var(--success); }
     .chk.failed, .chk.failed .ring { color: var(--danger); }
     .chk.off, .chk.not-evaluated { color: var(--text-muted); }
-    .res { font: 400 10px/14px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-muted); }
+    .res { font: 400 10px/normal var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-muted); }
     .c.passed { color: var(--success); }
     .c.failed { color: var(--danger); }
     .c.off, .c.not-evaluated { color: var(--text-muted); }
@@ -137,6 +138,7 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .heddle { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border); }
     .wl { position: relative; list-style: none; margin: 0; padding: 0; }
     .thr { position: relative; height: 46px; }
+    .thr.tall { height: 64px; }
     .tline, .tdot { transition: opacity .15s; }
     .thr.dim .tline, .thr.dim .tdot { opacity: .28; }
     .thr.dim .tx, .thr.dim .drop { color: var(--text-muted); }
@@ -154,7 +156,7 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .tv.missing { color: var(--danger); }
     .drop { position: absolute; top: 21px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px; white-space: nowrap; font: 400 11px/16px var(--font-mono); color: var(--text-secondary); background: var(--canvas); border: 1px solid var(--border-strong); border-radius: 999px; }
     .drop.idle { color: var(--text-muted); }
-    .drop.bad { color: var(--danger); border-color: var(--danger); }
+    .drop.bad { color: var(--danger); border-color: var(--danger); white-space: normal; text-align: center; border-radius: 10px; }
     .threads { list-style: none; margin: 0; padding: 0; }
     .thread-li { font: 400 11px/16px var(--font-mono); color: var(--text-secondary); }
     .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-panel); }
@@ -326,7 +328,7 @@ export class MkWorkflowLoom {
           const far = t.drops.reduce((m, d) => Math.max(m, colOf(d.to)), from);
           const x = grid.pct(grid.centre(from));
           return (
-            <li class={{ thr: true, on: this.lens === t.id, dim: !!this.lens && this.lens !== t.id }}>
+            <li class={{ thr: true, tall: t.drops.some((d) => !!d.bad), on: this.lens === t.id, dim: !!this.lens && this.lens !== t.id }}>
               <span class="tline" aria-hidden="true" style={{ left: x, width: grid.pct(grid.centre(far) - grid.centre(from)) }} />
               <span class="tdot" aria-hidden="true" style={{ left: x }} />
               <button
@@ -341,7 +343,10 @@ export class MkWorkflowLoom {
                 {t.missing ? <span class="tv missing">— not produced</span> : t.value !== undefined && <span class="tv">{`= ${t.value}`}</span>}
               </button>
               {t.drops.map((d) => (
-                <span class={{ drop: true, idle: !!d.idle, bad: !!d.bad }} style={{ left: grid.pct(grid.centre(colOf(d.to))) }}>
+                <span
+                  class={{ drop: true, idle: !!d.idle, bad: !!d.bad }}
+                  style={{ left: grid.pct(grid.centre(colOf(d.to))), maxWidth: d.bad ? `calc(${grid.pct(1)} - 8px)` : undefined }}
+                >
                   <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
                     <path d={d.bad ? 'M2 2l6 6M8 2L2 8' : 'M1 5h7M5 2l3 3-3 3'} />
                   </svg>

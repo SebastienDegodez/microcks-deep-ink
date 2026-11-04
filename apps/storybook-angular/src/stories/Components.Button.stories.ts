@@ -49,6 +49,7 @@ export const Sizes: StoryObj = {
       <div class="inline">
         <button mkButton size="lg">Large (44px)</button>
         <button mkButton size="md">Medium (40px)</button>
+        <button mkButton size="tile">Tile (36px)</button>
         <button mkButton size="compact">Compact (34px)</button>
         <button mkButton size="sm">Small (32px)</button>
       </div>
@@ -86,6 +87,18 @@ export const AsLink: StoryObj = {
   render: () => ({
     template: `
 <a mkButton href="#service" variant="primary">Open service</a>
+    `,
+  }),
+};
+
+export const CardFooter: StoryObj = {
+  name: 'Card footer (tile, 36px)',
+  render: () => ({
+    template: `
+      <div class="inline">
+        <button mkButton variant="primary" size="tile" icon="download">Install</button>
+        <a mkButton size="tile" href="#">View in catalogue</a>
+      </div>
     `,
   }),
 };
