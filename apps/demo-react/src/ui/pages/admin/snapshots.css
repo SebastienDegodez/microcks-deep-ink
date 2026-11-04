@@ -15,11 +15,11 @@
 
 .ad-snap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px; margin: 0; padding: 0; border: 0; min-width: 0; }
 .ad-snap-service {
-  display: flex; align-items: center; gap: 10px; min-width: 0; padding: 8px 10px; cursor: pointer;
+  display: flex; align-items: center; gap: 10px; min-width: 0; padding: 9px 10px; cursor: pointer;
   border: 1px solid var(--border); border-radius: 6px; background: var(--surface);
 }
 .ad-snap-service[data-selected] { border-color: var(--action); background: var(--selected); }
-.ad-snap-service > input { flex: none; width: 16px; height: 16px; margin: 0; accent-color: var(--action); }
+.ad-snap-service > input { flex: none; width: 16px; height: 16px; margin: 0; accent-color: var(--action); color-scheme: light; }
 .ad-snap-badge { flex: 1; min-width: 0; }
 .ad-snap-ops { flex: none; font: 400 11px/normal var(--font-mono); color: var(--text-muted); }
 

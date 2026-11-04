@@ -324,9 +324,12 @@ describe('Administration (/admin/:tab?)', () => {
     expect(await screen.findByText('downloaded · 2 services, 4 operations · 28 KB')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Use a sample snapshot' }));
     expect(await screen.findByRole('heading', { level: 3, name: 'Preview · 3 services detected' })).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: /^Change file/ }));
     fireEvent.click(screen.getByRole('button', { name: 'Import snapshot' }));
     expect(await screen.findByText('Imported · 1 created, 2 replaced')).toBeTruthy();
-    expect(screen.getByRole('link', { name: 'Open APIs & Services' })).toBeTruthy();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('link', { name: 'Open APIs & Services' })));
+    fireEvent.click(screen.getByRole('button', { name: 'Import another' }));
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText('Choose a file')));
   });
 
   it('shows the configuration read-only', async () => {
