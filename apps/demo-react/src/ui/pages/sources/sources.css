@@ -15,6 +15,10 @@
 .scan-strip-env { font: 400 11px/16px var(--font-mono); color: var(--text-muted); }
 .scan-strip-sep { width: 1px; height: 16px; background: var(--border); }
 .scan-strip-counts { margin-inline-start: auto; display: inline-flex; flex-wrap: wrap; gap: 8px; }
+/* Counts, not proofs: the value reads bold in --text, the danger fill alone marks failing (the word is there). */
+.scan-strip-counts .api-badge-name { font-weight: 600; }
+.scan-strip-counts .api-badge[data-status='neutral'] .api-badge-name { color: var(--text); }
+.scan-strip-counts .api-badge-name > .icon { display: none; }
 .sources-page .muted { color: var(--text-muted); }
 .sources-page .secondary { color: var(--text-secondary); }
 .sources-page .mono { font-family: var(--font-mono); }
@@ -163,7 +167,8 @@
 }
 button.sync-entry { cursor: pointer; }
 button.sync-entry:hover { background: var(--surface); }
-.sync-entry[aria-pressed='true'] { border-color: var(--action); background: var(--selected); }
+/* After :hover, so the picked entry keeps its fill under the pointer. */
+button.sync-entry[aria-pressed='true'] { border-color: var(--action); background: var(--selected); }
 .sync-entry-line { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 10px; font: 400 13px/normal var(--font-ui); }
 .sync-entry-clock { font-size: 12px; color: var(--text); }
 .sync-entry-when { font-size: 12px; }
@@ -192,6 +197,7 @@ button.sync-entry:hover { background: var(--surface); }
 .diff-view-file { color: var(--text); overflow-wrap: anywhere; }
 .diff-view-rev { margin-inline-start: auto; }
 .diff-view-body { overflow-x: auto; background: var(--bg); padding: 6px 0; }
+.diff-view-body:focus-visible { outline: 2px solid var(--action); outline-offset: -2px; }
 .diff-line { display: flex; min-width: max-content; font: 400 12px/1.65 var(--font-mono); color: var(--text-secondary); }
 .diff-line-sign { flex: none; width: 26px; text-align: center; font-weight: 600; color: var(--text-muted); }
 .diff-line-text { white-space: pre; padding-inline-end: 14px; }

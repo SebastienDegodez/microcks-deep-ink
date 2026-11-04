@@ -1,6 +1,6 @@
 import '../explore-kit/explore.css';
 import './sources.css';
-import { useCallback, useEffect, useState, type ReactNode } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import {
   defaultDiffEntry, diffStats, filterImporters, formatDay, formatHourMinute, formatShortClock, importerStatus, originCounts, splitRevision, statusCounts, SOURCE_ORIGINS,
@@ -62,17 +62,38 @@ export default function SourcesPage() {
   const [query, setQuery] = useState('');
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [confirm, setConfirm] = useState<string | undefined>();
-  const [undoing, setUndoing] = useState<Importer | undefined>();
+  const [undoing, setUndoing] = useState<{ importer: Importer; wasSelected: boolean } | undefined>();
+  /** Card whose name takes focus once the list has reloaded (after an undo). */
+  const focusId = useRef<string | undefined>(undefined);
+  const undoRef = useRef<HTMLButtonElement>(null);
+  const autoRuns = useRef(new Map<string, () => void>());
   const [entryId, setEntryId] = useState<string | undefined>();
   // The inline confirmation takes focus once, when it opens.
   const focusOnOpen = useCallback((el: HTMLButtonElement | null) => el?.focus(), []);
 
-  // Importers that are mid-import when the page opens finish on their own.
+  // Importers that are mid-import when the page opens finish on their own, once: a later reload
+  // (after a delete or an undo) must not restart them nor announce "Import started." again.
   useEffect(() => {
     if (!list.data) return;
-    const unsubs = list.data.filter((i) => i.state === 'running').map((i) => run(i.id));
-    return () => unsubs.forEach((u) => u());
+    for (const i of list.data) {
+      if (i.state === 'running' && !autoRuns.current.has(i.id)) autoRuns.current.set(i.id, run(i.id));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [list.data]);
+  useEffect(() => {
+    const runs = autoRuns.current;
+    return () => runs.forEach((u) => u());
+  }, []);
+
+  // After a delete, focus moves to Undo; after an undo, to the restored card's name.
+  useEffect(() => {
+    if (undoing) undoRef.current?.focus();
+  }, [undoing]);
+  useEffect(() => {
+    const id = focusId.current;
+    if (!id || !list.data?.some((i) => i.id === id)) return;
+    document.getElementById(`source-name-${id}`)?.focus();
+    focusId.current = undefined;
   }, [list.data]);
 
   function run(id: string) {
@@ -115,16 +136,19 @@ export default function SourcesPage() {
   const doDelete = async (gone: Importer) => {
     await uc.importing.deleteImporter(gone.id);
     setConfirm(undefined);
-    setUndoing(gone);
+    setUndoing({ importer: gone, wasSelected: selected?.id === gone.id });
     list.reload();
     if (importerId === gone.id) navigate('/sources', { replace: true });
     announce(`${gone.name} deleted. Undo is available.`);
   };
   const undo = async () => {
     if (!undoing) return;
-    await uc.importing.undoDeleteImporter(undoing.id);
-    announce(`${undoing.name} restored.`);
+    const { importer: back, wasSelected } = undoing;
+    await uc.importing.undoDeleteImporter(back.id);
+    announce(`${back.name} restored.`);
     setUndoing(undefined);
+    if (wasSelected) navigate(`/sources/${back.id}`, { replace: true });
+    focusId.current = back.id;
     list.reload();
   };
 
@@ -191,8 +215,8 @@ export default function SourcesPage() {
         <section aria-label="Sources" className="sources-list">
           {undoing ? (
             <div role="status" className="undo-banner">
-              <span className="undo-banner-text"><strong>{undoing.name}</strong> deleted. Services already discovered remain but are no longer updated.</span>
-              <button type="button" className="undo-banner-action" onClick={() => void undo()}>Undo</button>
+              <span className="undo-banner-text"><strong>{undoing.importer.name}</strong> deleted. Services already discovered remain but are no longer updated.</span>
+              <button type="button" ref={undoRef} className="undo-banner-action" onClick={() => void undo()}>Undo</button>
             </div>
           ) : null}
           {shown.map((j) => {
@@ -208,7 +232,7 @@ export default function SourcesPage() {
                   {upload ? (
                     <span className="source-card-upload" aria-hidden="true" title="Uploaded file, no schedule"><Icon name="upload" size={16} /></span>
                   ) : <Switch label={<span className="sr-only">{`Scan ${j.name} on schedule`}</span>} checked={j.active} onChange={(v) => void toggleActive(j, v)} />}
-                  <button type="button" className="source-card-name" aria-pressed={isSel} onClick={() => navigate(`/sources/${j.id}`)}>{j.name}</button>
+                  <button type="button" id={`source-name-${j.id}`} className="source-card-name" aria-pressed={isSel} onClick={() => navigate(`/sources/${j.id}`)}>{j.name}</button>
                   {running ? <LiveIndicator label="live · importing" variant="inline" /> : (
                     <span className="source-status" data-status={st}><Icon name={STATUS_ICON[st]} size={14} />{STATUS_WORD[st]}</span>
                   )}
@@ -232,10 +256,12 @@ export default function SourcesPage() {
                   <div className="source-notice" data-tone="warning"><Icon name="warning" size={14} /><span>{j.warning}</span></div>
                 ) : null}
                 {confirm === j.id ? (
-                  <div role="alertdialog" aria-label={`Confirm deletion of ${j.name}`} className="delete-confirm">
+                  // Escape cancels, as in a dialog, and gives focus back to the card's Delete button.
+                  // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+                  <div role="alertdialog" aria-label={`Confirm deletion of ${j.name}`} className="delete-confirm" onKeyDown={(e) => { if (e.key === 'Escape') { setConfirm(undefined); document.getElementById(`source-delete-${j.id}`)?.focus(); } }}>
                     <span className="delete-confirm-text">Delete this source? Services already discovered remain but will no longer be updated.</span>
                     <Button size="sm" variant="danger" confirm ref={focusOnOpen} onClick={() => void doDelete(j)}>Delete source</Button>
-                    <Button size="sm" variant="secondary" className="delete-confirm-cancel" onClick={() => setConfirm(undefined)}>Cancel</Button>
+                    <Button size="sm" variant="secondary" className="delete-confirm-cancel" onClick={() => { setConfirm(undefined); document.getElementById(`source-delete-${j.id}`)?.focus(); }}>Cancel</Button>
                   </div>
                 ) : null}
                 <div className="source-card-actions">
@@ -247,7 +273,7 @@ export default function SourcesPage() {
                       <Button asChild size="sm" variant="ghost" icon="edit" className="source-edit"><RouterLink to="/sources/new" aria-label={`Edit ${j.name}`}>Edit</RouterLink></Button>
                     </>
                   )}
-                  <Button size="sm" variant="ghost" icon="trash" className="source-delete" aria-label={`Delete ${j.name}`} onClick={() => setConfirm(j.id)}>Delete</Button>
+                  <Button size="sm" variant="ghost" icon="trash" id={`source-delete-${j.id}`} className="source-delete" aria-label={`Delete ${j.name}`} onClick={() => setConfirm(j.id)}>Delete</Button>
                 </div>
               </article>
             );
@@ -343,7 +369,9 @@ export default function SourcesPage() {
               {diff.data ? (
                 <div className="diff-view">
                   <div className="diff-view-head"><span className="diff-view-file">{diff.data.file ?? 'contract'}</span><span className="muted diff-view-rev">{diff.data.from} → {diff.data.to}</span></div>
-                  <div role="region" aria-label="Unified diff" className="diff-view-body">
+                  {/* Scrolls horizontally: focusable so keyboard users can scroll it (RGAA 7.3). */}
+                  {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
+                  <div role="region" aria-label="Unified diff" className="diff-view-body" tabIndex={0}>
                     {diff.data.lines.map((l, i) => (
                       <div key={i} className="diff-line" data-kind={l.kind}>
                         <span className="diff-line-sign" aria-hidden="true">{DIFF_SIGN[l.kind]}</span>
