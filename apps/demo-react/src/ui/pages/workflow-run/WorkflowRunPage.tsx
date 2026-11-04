@@ -20,7 +20,9 @@ import { RUN_SCENARIOS, type RunScenario } from '@/application/arazzo';
 import { PageHeader, useQuery, useRelativeTime, useSubscription, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
+import { Facts } from '@/ui/components/ui/facts';
 import { Icon } from '@/ui/components/ui/icon';
+import { DataTable } from '@/ui/components/ui/table';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { ButtonRouterLink, ErrorBlock, LoadingBlock, runPath, runSetupPath, workflowPath } from '../workflows/shared';
 import { MetaItem, RunApiPanel, RunBadges, Verdict, implementationsText, runBreadcrumb } from './run-parts';
@@ -417,20 +419,17 @@ function Summary({ run, totals, workflow }: { run: WorkflowRun; totals: { calls:
           <span className="wfr-summary-end">{endLabel(run)}</span>
           <span className="wfr-summary-explain">{explanationOf(run, workflow)}</span>
         </div>
-        <dl className="run-facts wfr-summary-facts" data-layout="columns">
-          <div className="run-facts-row">
-            <dt>Duration</dt>
-            <dd className="wfr-stat">{formatDuration(totals.ms)}</dd>
-          </div>
-          <div className="run-facts-row">
-            <dt>Calls</dt>
-            <dd className="wfr-stat">{totals.calls}</dd>
-          </div>
-          <div className="run-facts-row">
-            <dt>Steps</dt>
-            <dd className="wfr-stat-text">{stepsTally(run)}</dd>
-          </div>
-        </dl>
+        <Facts
+          layout="columns"
+          columns={3}
+          gap="4px 24px"
+          className="wfr-summary-facts"
+          items={[
+            { term: 'Duration', value: <span className="wfr-stat">{formatDuration(totals.ms)}</span> },
+            { term: 'Calls', value: <span className="wfr-stat">{totals.calls}</span> },
+            { term: 'Steps', value: <span className="wfr-stat-text">{stepsTally(run)}</span> },
+          ]}
+        />
       </div>
 
       <StepsBand run={run} />
@@ -438,29 +437,20 @@ function Summary({ run, totals, workflow }: { run: WorkflowRun; totals: { calls:
       <div className="wfr-block">
         <h3 className="wfr-h3">Workflow outputs</h3>
         {outputs.length > 0 ? (
-          <div className="wfr-table-wrap">
-            <table className="wfr-table">
-              <caption className="sr-only">Workflow outputs</caption>
-              <thead>
-                <tr>
-                  <th scope="col">Output</th>
-                  <th scope="col">Runtime expression</th>
-                  <th scope="col">Value</th>
-                </tr>
-              </thead>
-              <tbody>
-                {outputs.map(([name, value]) => (
-                  <tr key={name}>
-                    <th scope="row" className="wfr-mono-strong">
-                      {name}
-                    </th>
-                    <td className="wfr-mono-secondary">{workflowOutputs.get(name) ?? ''}</td>
-                    <td className="wfr-mono-strong">{J(value)}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+          <DataTable
+            caption="Workflow outputs"
+            captionHidden
+            headerCase="sentence"
+            density="compact"
+            className="wfr-outputs-table"
+            rowKey={(r) => r[0]}
+            rows={outputs}
+            columns={[
+              { key: 'output', header: 'Output', render: ([name]) => <span className="wfr-mono-strong">{name}</span> },
+              { key: 'expression', header: 'Runtime expression', render: ([name]) => <span className="wfr-mono-secondary">{workflowOutputs.get(name) ?? ''}</span> },
+              { key: 'value', header: 'Value', render: ([, value]) => <span className="wfr-mono-strong">{J(value)}</span> },
+            ]}
+          />
         ) : (
           <p className="wfr-muted">{passed ? 'None.' : `None: the workflow stopped at ${stopped?.stepId ?? 'a step'} and produced no outputs.`}</p>
         )}
@@ -712,14 +702,7 @@ function Properties({ run, detail, example }: { run: WorkflowRun; detail?: Detai
       <h2 id="wfr-props-h" className="wfr-card-title">
         Properties
       </h2>
-      <dl className="run-facts" data-layout="inline">
-        {rows.map((r) => (
-          <div key={r.term} className="run-facts-row">
-            <dt>{r.term}</dt>
-            <dd>{r.value}</dd>
-          </div>
-        ))}
-      </dl>
+      <Facts layout="inline" termWidth="92px" gap="9px 12px" items={rows} />
     </section>
   );
 }

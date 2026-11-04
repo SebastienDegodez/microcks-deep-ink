@@ -8,6 +8,7 @@ import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
 import { Checkbox, Radio } from '@/ui/components/ui/checkbox';
+import { Facts } from '@/ui/components/ui/facts';
 import { Field } from '@/ui/components/ui/field';
 import { Input } from '@/ui/components/ui/input';
 import { Select } from '@/ui/components/ui/select';
@@ -371,26 +372,19 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
                   <h3 className="wfr-card-subtitle">
                     Expected by <span className="wfr-mono">{chosen.id}</span>
                   </h3>
-                  <dl className="run-facts wfr-expected-facts" data-layout="inline">
-                    {Object.keys(chosen.outputs).length > 0 ? (
-                      <div className="run-facts-row">
-                        <dt>Outputs</dt>
-                        <dd className="wfr-mono">
-                          {Object.entries(chosen.outputs)
-                            .map(([k, v]) => `${k} = ${String(v)}`)
-                            .join(' · ')}
-                        </dd>
-                      </div>
-                    ) : null}
-                    <div className="run-facts-row">
-                      <dt>Steps</dt>
-                      <dd className="wfr-mono">{chosen.steps.map((s) => `${s.stepId} ${s.status}`).join(' ')}</dd>
-                    </div>
-                    <div className="run-facts-row">
-                      <dt>End</dt>
-                      <dd>{chosen.stopsAt ? `Stops at ${chosen.stopsAt}` : 'Runs to its end'}</dd>
-                    </div>
-                  </dl>
+                  <Facts
+                    layout="inline"
+                    termWidth="70px"
+                    gap="6px 14px"
+                    className="wfr-expected-facts"
+                    items={[
+                      ...(Object.keys(chosen.outputs).length > 0
+                        ? [{ term: 'Outputs', mono: true, value: Object.entries(chosen.outputs).map(([k, v]) => `${k} = ${String(v)}`).join(' · ') }]
+                        : []),
+                      { term: 'Steps', mono: true, value: chosen.steps.map((st) => `${st.stepId} ${st.status}`).join(' ') },
+                      { term: 'End', value: chosen.stopsAt ? `Stops at ${chosen.stopsAt}` : 'Runs to its end' },
+                    ]}
+                  />
                 </div>
               ) : detached && Object.keys(inputs).length > 0 ? (
                 <p className="wfr-note" role="status">
