@@ -22,7 +22,7 @@ async function mount(props: Partial<WorkflowLoomProps> = {}) {
   const button = (name: string | RegExp) => {
     const all = [...root.querySelectorAll('button')];
     const found = all.find((b) => {
-      const text = b.getAttribute('aria-label') ?? b.textContent ?? '';
+      const text = b.textContent ?? '';
       return typeof name === 'string' ? text.replace(/\s+/g, ' ').trim().startsWith(name) : name.test(text);
     });
     if (!found) throw new Error(`no button ${String(name)} in ${all.map((b) => b.textContent).join(' | ')}`);
@@ -64,17 +64,20 @@ describe('WorkflowLoom element', () => {
   it('selects a step, and clears the selection when the selected step is pressed again', async () => {
     const onStepSelect = vi.fn();
     const { button } = await mount({ onStepSelect, selectedStep: 'patchPastry' });
-    button('Step 1, listPastries').click();
+    button('Step 1 listPastries').click();
     expect(onStepSelect).toHaveBeenLastCalledWith({ stepId: 'listPastries' });
-    await waitFor(() => expect(button('Step 1, listPastries').getAttribute('aria-pressed')).toBe('true'));
-    button('Step 1, listPastries').click();
+    await waitFor(() => expect(button('Step 1 listPastries').getAttribute('aria-pressed')).toBe('true'));
+    button('Step 1 listPastries').click();
     expect(onStepSelect).toHaveBeenLastCalledWith({ stepId: undefined });
   });
 
-  it('names a node with its number, method, path, status and result', async () => {
-    const { button } = await mount();
-    expect(button('Step 1').getAttribute('aria-label')).toBe('Step 1, listPastries, GET /pastries, Passed, 200 · 212 ms');
-    expect(button('Step 2').getAttribute('aria-label')).toBe('Step 2, patchPastry, PATCH /pastries/{name}, Failed after 3 attempts');
+  it('names a node from its visible content (number, id, method, path, status, checks, result)', async () => {
+    const { button } = await mount({ validatesSchemas: true });
+    const name = (b: HTMLElement) => (b.textContent ?? '').replace(/\s+/g, ' ').trim();
+    const first = button('Step 1');
+    expect(first.hasAttribute('aria-label')).toBe(false);
+    expect(name(first)).toBe('Step 1 listPastries GET /pastries Passed Success criteria not evaluated Schema validation not evaluated 200 · 212 ms');
+    expect(name(button('Step 2'))).toMatch(/^Step 2 patchPastry PATCH \/pastries\/\{name\} Failed after 3 attempts/);
   });
 
   it('shows "Show as table" by default and hides it with tableToggle={false}', async () => {

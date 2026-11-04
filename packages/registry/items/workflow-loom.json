@@ -39,7 +39,7 @@
       ]
     ],
     "aria": [
-      "Every node is a button named \"Step 3, patchPastry, PATCH /pastries/{name}, Failed after 3 attempts, Success criteria passed, Schema validation failed, 200 · 3 attempts · 5.4 s\"; the drawing marks (warp, heddles, lines, end and retry marks) are aria-hidden",
+      "Every node is a button named by its visible content, with a hidden \"Step\" prefix and hidden check states: \"Step 3 patchPastry PATCH /pastries/{name} Failed after 3 attempts Success criteria passed Schema validation failed 200 · 3 attempts · 5.4 s\"; the drawing marks (warp, heddles, lines, end and retry marks) are aria-hidden",
       "Actions (end, retry) and the AsyncAPI \"not runnable\" note are in the node's aria-describedby",
       "Status is words plus a circled icon: Passed, Failed, Not run (dashed outline, never reduced opacity)",
       "Inputs, outputs and thread labels are aria-pressed buttons whose name starts with hidden \"Trace …\" text followed by the visible expression and value; drop chips carry hidden \"to step …\" text",
