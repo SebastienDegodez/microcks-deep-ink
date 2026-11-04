@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen, within } from '@testing-library/react';
-import { axeViolations } from '../../test/axe';
+import { axeViolations } from '../test/axe';
 import { cellKey, ConformanceMatrix, type MatrixColumn, type MatrixGroup } from './conformance-matrix';
 
 afterEach(cleanup);

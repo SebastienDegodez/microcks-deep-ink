@@ -2,7 +2,7 @@
 import { useState } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { axeViolations } from '../../test/axe';
+import { axeViolations } from '../test/axe';
 import { Checkbox, RadioGroup } from './checkbox';
 import { Field } from './field';
 import { Input, Textarea } from './input';

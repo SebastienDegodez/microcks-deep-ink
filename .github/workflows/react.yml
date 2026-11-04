@@ -11,6 +11,9 @@ on:
       - "packages/core/**"
       - "packages/registry/src/css/**"
       - "packages/registry/items/**"
+      - "packages/registry/scripts/**"
+      - "packages/registry/css-order.json"
+      - "packages/plugin-sdk/**"
       - ".github/workflows/react.yml"
   pull_request:
     paths:
@@ -19,6 +22,9 @@ on:
       - "packages/core/**"
       - "packages/registry/src/css/**"
       - "packages/registry/items/**"
+      - "packages/registry/scripts/**"
+      - "packages/registry/css-order.json"
+      - "packages/plugin-sdk/**"
       - ".github/workflows/react.yml"
   workflow_dispatch:
 
@@ -39,6 +45,17 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-          cache-dependency-path: react/pnpm-lock.yaml
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            react/pnpm-lock.yaml
+
+      # Common inputs from the root workspace: tokens, the element bundles (core) and the registry build,
+      # which syncs the bundles into react/packages/deep-ink/src/elements.
+      - run: pnpm install --frozen-lockfile --filter "@microcks-deep-ink/registry..."
+      - run: pnpm --filter "@microcks-deep-ink/registry..." build
+
       - run: pnpm -C react install --frozen-lockfile
+      - run: pnpm -C react lint
+      - run: pnpm -C react typecheck
+      - run: pnpm -C react test
       - run: pnpm -C react build

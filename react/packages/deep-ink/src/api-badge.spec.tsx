@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { axeViolations } from '../../test/axe';
+import { axeViolations } from '../test/axe';
 import { ApiBadge } from './api-badge';
 
 describe('ApiBadge sizes and neutral proofs', () => {

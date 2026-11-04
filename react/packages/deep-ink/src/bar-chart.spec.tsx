@@ -1,7 +1,7 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { describe, expect, it } from 'vitest';
-import { axeViolations } from '../../test/axe';
+import { axeViolations } from '../test/axe';
 import { BarChart, type BarChartBar } from './bar-chart';
 
 const BARS: BarChartBar[] = [

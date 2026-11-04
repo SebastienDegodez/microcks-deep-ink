@@ -1,7 +1,7 @@
 // Chip, Panel and Segmented: small presentational pieces with a few semantics to protect.
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
-import { axeViolations } from '../../test/axe';
+import { axeViolations } from '../test/axe';
 import { Chip } from './chip';
 import { Panel } from './panel';
 import { Segmented } from './segmented';

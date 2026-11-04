@@ -1,6 +1,6 @@
 import { render, screen } from '@testing-library/react';
 import { describe, expect, it } from 'vitest';
-import { axeViolations } from '../../test/axe';
+import { axeViolations } from '../test/axe';
 import { RunMeta } from './run-meta';
 
 describe('RunMeta', () => {

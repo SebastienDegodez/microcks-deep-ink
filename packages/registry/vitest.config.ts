@@ -1,12 +1,10 @@
 import { defineConfig } from 'vitest/config';
 
+// Build and CSS checks (node). The React specs run in react/packages/deep-ink.
 export default defineConfig({
-  oxc: { jsx: { runtime: 'automatic' } },
   test: {
-    environment: 'jsdom',
-    include: ['src/**/*.spec.{ts,tsx}', 'test/**/*.test.{ts,tsx}'],
-    setupFiles: ['test/setup.ts'],
-    css: false,
+    environment: 'node',
+    include: ['test/**/*.test.{ts,tsx}'],
     restoreMocks: true,
   },
 });

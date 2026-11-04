@@ -14,6 +14,6 @@
     "verbatimModuleSyntax": false,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/react/**/*.tsx", "src/react/**/*.ts", "test/element-types.parity.ts"],
-  "exclude": ["src/react/elements/**/*.js"]
+  "include": ["src/**/*.tsx", "src/**/*.ts", "test/element-types.parity.ts"],
+  "exclude": ["src/elements/**/*.js"]
 }
