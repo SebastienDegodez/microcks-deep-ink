@@ -1,61 +1,6 @@
 /* Catalogue (screen 04). Colours come from the design tokens only. */
 .catalogue { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 
-/*
- * Filter panel. Local copy of the future `filter-bar` registry item (same class names, shared with
- * Workflows): drop these rules when the item lands.
- */
-.filter-bar {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
-  padding: 14px 16px;
-  border: 1px solid var(--border);
-  border-radius: 8px;
-  background: var(--canvas);
-}
-.filter-bar-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
-.filter-bar-row:first-child { gap: 12px; }
-.filter-bar-search {
-  box-sizing: border-box;
-  flex: 1 1 260px;
-  min-width: 0;
-  max-width: 420px;
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  height: 38px;
-  padding: 0 10px;
-  border: 1px solid var(--border-strong);
-  border-radius: 4px;
-  background: var(--surface);
-  color: var(--text-muted);
-}
-.filter-bar-search:focus-within { box-shadow: var(--shadow-focus); border-color: var(--action); }
-.filter-bar-search > .input {
-  flex: 1;
-  min-width: 0;
-  min-height: 0;
-  height: 100%;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  box-shadow: none;
-  color: var(--text);
-  font: 400 14px var(--font-ui);
-}
-.filter-bar-search > .input:focus,
-.filter-bar-search > .input:focus-visible { outline: none; box-shadow: none; }
-.filter-bar-label {
-  width: 76px;
-  font: 600 12px/1.5 var(--font-ui);
-  letter-spacing: 0.06em;
-  text-transform: uppercase;
-  color: var(--text-muted);
-}
-.filter-bar-end { margin-left: auto; }
-.filter-bar-reset.button { margin-left: auto; font-size: 13px; font-weight: 500; }
-
 /* Result line: "11 of 11 APIs & services" and the sort order. */
 .catalogue-result {
   display: flex;

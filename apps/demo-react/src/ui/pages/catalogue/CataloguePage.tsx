@@ -12,7 +12,7 @@ import { ConformanceBand, type OperationResult } from '@/ui/components/ui/confor
 import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
 import { EmptyState } from '@/ui/components/ui/empty-state';
 import { Icon } from '@/ui/components/ui/icon';
-import { Input } from '@/ui/components/ui/input';
+import { FilterBar, FilterReset, FilterRow, FilterSearch } from '@/ui/components/ui/filter-bar';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { StatusBadge } from '@/ui/components/ui/status-badge';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
@@ -152,13 +152,9 @@ export default function CataloguePage() {
         actions={actions}
       />
 
-      <section aria-label="Catalogue filters" className="filter-bar" aria-busy={view$.status === 'loading'}>
-        <div className="filter-bar-row">
-          <label className="filter-bar-search" htmlFor="catalogue-search">
-            <Icon name="search" size={16} />
-            <span className="sr-only">Filter by name</span>
-            <Input id="catalogue-search" type="search" placeholder="Filter by name or version…" autoComplete="off" value={filter.query ?? ''} onChange={(e) => setFilter((f) => ({ ...f, query: e.target.value }))} />
-          </label>
+      <FilterBar label="Catalogue filters" aria-busy={view$.status === 'loading'}>
+        <FilterRow>
+          <FilterSearch label="Filter by name" placeholder="Filter by name or version…" autoComplete="off" value={filter.query ?? ''} onChange={(e) => setFilter((f) => ({ ...f, query: e.target.value }))} />
           <Segmented
             label="Last test result"
             value={filter.testStatus ?? 'all'}
@@ -177,17 +173,15 @@ export default function CataloguePage() {
             onChange={(id) => setView(id as 'table' | 'wall')}
             options={[{ id: 'table', label: 'Table', icon: 'list' }, { id: 'wall', label: 'Badge wall', icon: 'badge-wall' }]}
           />
-        </div>
-        <div className="filter-bar-row" role="group" aria-label="Protocol">
-          <span className="filter-bar-label" aria-hidden="true">Protocol</span>
+        </FilterRow>
+        <FilterRow title="Protocol">
           {PROTOCOL_ORDER.map((p: Protocol) => (
             <Chip key={p} protocol={p} count={data.facets.protocols[p] ?? 0} pressed={(filter.protocols ?? []).includes(p)} onClick={() => toggle('protocols', p)}>
               {p}
             </Chip>
           ))}
-        </div>
-        <div className="filter-bar-row" role="group" aria-label="Labels">
-          <span className="filter-bar-label" aria-hidden="true">Labels</span>
+        </FilterRow>
+        <FilterRow title="Labels">
           {labelNames.map((l) => {
             const { key, value } = labelFromString(l);
             return (
@@ -196,13 +190,9 @@ export default function CataloguePage() {
               </Chip>
             );
           })}
-          {activeCount > 0 ? (
-            <Button className="filter-bar-reset" size="sm" variant="link" icon="reset" onClick={reset}>
-              Reset ({activeCount})
-            </Button>
-          ) : null}
-        </div>
-      </section>
+          {activeCount > 0 ? <FilterReset count={activeCount} onClick={reset} /> : null}
+        </FilterRow>
+      </FilterBar>
 
       <div className="catalogue-result">
         <p role="status" aria-live="polite" data-testid="result-count">
