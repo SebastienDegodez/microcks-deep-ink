@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Panel',
+  component: Panel,
   parameters: itemParams(['panel', 'button'], 'A `<section>` named by its heading through `aria-labelledby`. Pick `headingLevel` so the outline stays ordered.'),
-} satisfies Meta;
+} satisfies Meta<typeof Panel>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -38,4 +39,15 @@ export const LabelTitle: StoryObj = {
       </Panel>
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Panel> = {
+  args: { title: 'Last runs', headingLevel: 2, flush: false, titleStyle: 'heading', padding: 'md', as: 'section', children: <p>Three tests ran in the last hour.</p> },
+  argTypes: {
+    titleStyle: { control: 'inline-radio', options: ['heading', 'label'] },
+    padding: { control: 'inline-radio', options: ['md', 'lg'] },
+    as: { control: 'inline-radio', options: ['section', 'div', 'article', 'aside'] },
+    headingLevel: { control: 'inline-radio', options: [1, 2, 3, 4, 5, 6] },
+  },
 };

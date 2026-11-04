@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Select',
+  component: Select,
   parameters: itemParams(['select'], 'The native `<select>`: the browser keeps keyboard, typeahead and the mobile picker.'),
-} satisfies Meta;
+} satisfies Meta<typeof Select>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -33,4 +34,13 @@ export const Small: StoryObj = {
       </Select>
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Select> = {
+  args: {
+    'aria-label': 'Protocol', size: 'md', disabled: false,
+    children: <><option>REST</option><option>EVENT</option><option>gRPC</option></>,
+  },
+  argTypes: { size: { control: 'inline-radio', options: ['md', 'sm'] } },
 };

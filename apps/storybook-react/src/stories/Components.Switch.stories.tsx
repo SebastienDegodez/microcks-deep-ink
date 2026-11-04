@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Switch',
+  component: Switch,
   parameters: itemParams(['switch'], 'A native checkbox with `role="switch"`. The state is the checked state: the track also shows a mark, so it is not color only.'),
-} satisfies Meta;
+} satisfies Meta<typeof Switch>;
 
 export const Default: StoryObj = {
   render: () => {
@@ -30,5 +31,15 @@ export const Large: StoryObj = {
   render: () => {
     const [on, setOn] = useState(true);
     return <Switch label="Stateful" size="lg" checked={on} onChange={setOn} />;
+  },
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Switch> = {
+  args: { label: 'Send a Slack message', description: 'When a test fails.', checked: false, size: 'md', disabled: false },
+  argTypes: { size: { control: 'inline-radio', options: ['md', 'lg'] }, onChange: { table: { disable: true } } },
+  render: (args) => {
+    const [checked, setChecked] = useState(args.checked);
+    return <Switch {...args} checked={checked} onChange={setChecked} />;
   },
 };
