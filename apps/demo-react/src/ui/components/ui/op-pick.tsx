@@ -16,8 +16,8 @@ export interface OpPickOption {
   end?: ReactNode;
   /** Hidden prefix of the end figure ("Calls over 7 days: "). */
   endLabel?: string;
-  /** `warning`: the end is a warning 11px label (AI count). */
-  endTone?: 'warning';
+  /** `warning` / `success`: the end is an 11px label in that colour (pending / accepted AI count). */
+  endTone?: 'warning' | 'success';
 }
 
 export interface OpPickListProps {

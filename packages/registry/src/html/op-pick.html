@@ -3,7 +3,7 @@
   Radio mode (Copilot): role="radiogroup" of buttons with role="radio" aria-checked, roving tabindex
   (tabindex="0" on the checked one, -1 elsewhere), arrows move and select.
   Keep a space between the parts so the button's name reads "GET /pastries List pastries…".
-  .op-pick-end holds an end figure (calls) with a hidden prefix, or a warning AI count (data-tone="warning").
+  .op-pick-end holds an end figure (calls) with a hidden prefix, or an AI count: pending (data-tone="warning") or accepted (data-tone="success").
 -->
 <ul class="op-pick-list" aria-label="Operations">
   <li>
@@ -36,5 +36,6 @@
   <button type="button" class="op-pick" role="radio" aria-checked="false" tabindex="-1">
     <span class="method" data-method="GET" data-protocol="rest">GET</span>
     <span class="op-pick-main"><span class="op-pick-path">/pastries/{name}</span><span class="op-pick-summary">2 examples</span></span>
+    <span class="op-pick-end" data-tone="success">+1 accepted</span>
   </button>
 </div>

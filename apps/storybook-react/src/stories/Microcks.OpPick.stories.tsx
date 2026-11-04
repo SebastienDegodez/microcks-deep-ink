@@ -30,7 +30,7 @@ export const Copilot: StoryObj = {
   name: 'Radio (Copilot)',
   render: () => {
     const [v, setV] = useState('list');
-    const ops: OpPickOption[] = RAIL.map((o, i) => ({ id: o.id, method: o.method, path: o.path, summary: `${3 - i} examples`, end: i === 0 ? '+2 AI' : undefined, endTone: 'warning' }));
+    const ops: OpPickOption[] = RAIL.map((o, i) => ({ id: o.id, method: o.method, path: o.path, summary: `${3 - i} examples`, end: i === 0 ? '+2 pending' : i === 1 ? '+1 accepted' : undefined, endTone: i === 0 ? 'warning' : 'success' }));
     return (
       <section aria-labelledby="op-story" style={{ maxWidth: 380, display: 'flex', flexDirection: 'column', gap: 8 }}>
         <h2 id="op-story" className="section-label" data-size="sm">1 · Operation</h2>

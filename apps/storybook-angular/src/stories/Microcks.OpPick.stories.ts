@@ -27,7 +27,7 @@ export const Copilot: StoryObj = {
   name: 'Radio (Copilot)',
   render: () => ({
     props: {
-      options: RAIL.map((o, i) => ({ id: o.id, method: o.method, path: o.path, summary: `${3 - i} examples`, end: i === 0 ? '+2 AI' : undefined, endTone: 'warning' })),
+      options: RAIL.map((o, i) => ({ id: o.id, method: o.method, path: o.path, summary: `${3 - i} examples`, end: i === 0 ? '+2 pending' : i === 1 ? '+1 accepted' : undefined, endTone: i === 0 ? 'warning' : 'success' })),
       value: 'list',
     },
     template: `<section aria-labelledby="op-story" style="max-width: 380px; display: flex; flex-direction: column; gap: 8px"><h2 id="op-story" class="section-label" data-size="sm">1 · Operation</h2><mk-op-pick-list mode="radio" labelledBy="op-story" [options]="options" [(value)]="value" /></section>`,
