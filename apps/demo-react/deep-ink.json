@@ -62,9 +62,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/callout.tsx": "a2011d7b48278608e226b8a0032e321e2f2f4a805ddc5eef4c058a8f59ee8c89",
-        "src/ui/styles/callout.css": "9b74106e80c31e35f46aa26c6397b35cabfdb42c9018b6239b220601a2b61ff3"
+        "src/ui/styles/callout.css": "a973a967183b255cfdbcb3c6b6a40ac2b848aff77cb41b4f4cf63a155d1a626a"
       },
-      "hash": "342cdfee2638c613"
+      "hash": "450c740dc7846e77"
     },
     "field": {
       "version": "0.2.0",
@@ -101,10 +101,10 @@
     "code-block": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/code-block.tsx": "46a4549c5726db700726988e5a5e46b4be1c183d7717e6bf82ee0f8acdddeaa5",
+        "src/ui/components/ui/code-block.tsx": "0234b2f840707c67a4f3f02284523daa822a3f16dfb019f3246d8fb696d9b0ff",
         "src/ui/styles/code-block.css": "01b3b23bbc3ac27b30563bbf3055722cfb8d1d836368028357fb284f7bf91adf"
       },
-      "hash": "93bc0b1230034594"
+      "hash": "aa266054c9bb03fb"
     },
     "conformance-band": {
       "version": "0.2.0",
@@ -141,10 +141,10 @@
     "drop-zone": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/drop-zone.tsx": "747513a3b45164185e215bc983a2de4b8ab1d44c312a7e8ac2c3485807aa7665",
-        "src/ui/styles/drop-zone.css": "a3e17955601762c2925b8b3123c47dfd2dabea107ba925108a2a5e74eb28b449"
+        "src/ui/components/ui/drop-zone.tsx": "61c60c6b974f0229eb57f901f2216114e45c51dbb19d405ce245d21e6ba89b6f",
+        "src/ui/styles/drop-zone.css": "25ea0926bde6b043d1edfefb8a8bf04e87d0c00dd4b1c04bb617e3a9a610337c"
       },
-      "hash": "9553aa5550e73f32"
+      "hash": "0350e46774f23baf"
     },
     "empty-state": {
       "version": "0.2.0",
@@ -301,10 +301,10 @@
     "table": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/table.tsx": "45ad0715a5bee5ea44f0d051c96832fb8a5c15fb9b10d29955bbcaaa78254964",
-        "src/ui/styles/table.css": "162adfd842e5934b1eb1834790bb59c93031ab3db00ba96a845c658fe6723366"
+        "src/ui/components/ui/table.tsx": "8a90ceec850db022d8ce99c5d0ea7f5387491e3fce72fa16eaec0041f61f3310",
+        "src/ui/styles/table.css": "698a6e715bb6cd03044aad365235eae8591014b93aaaec2dd12ac01b85816417"
       },
-      "hash": "35d0b44150585059"
+      "hash": "18f8e3ef339923d8"
     },
     "tabs": {
       "version": "0.2.0",
@@ -354,9 +354,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/conformance-matrix.tsx": "c76aeb8b7453696f9618750b9e1d39fe01035d6fca8d8d1ce4e8bf132429bd75",
-        "src/ui/styles/conformance-matrix.css": "5d22f687d0987415e7048c2b301dfb717af0cc01f5d42e8e1bceec0f326134be"
+        "src/ui/styles/conformance-matrix.css": "5abe1e469b5ffcf001d41ec2a9c492985d1f6283acabc0dad33246ad865bd8d5"
       },
-      "hash": "b5dff40301c94399"
+      "hash": "385a2a244778c104"
     },
     "skill-list": {
       "version": "0.2.0",
@@ -370,9 +370,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/task-timeline.tsx": "8bdd1cd1280f671eee834b6eacc98334b490c416d7e0bcf9d9dd47d2f5c68b7c",
-        "src/ui/styles/task-timeline.css": "1f1e0749f0a3d776f89234ffb663ad37e1e288cc94246ebd016af9c300445b95"
+        "src/ui/styles/task-timeline.css": "6895e8346bd427d3e41c750b508159bc1f9f264fa1dd4adae61aa9ca6188d7c3"
       },
-      "hash": "15e223a284c62dfd"
+      "hash": "e0e4ab751259f08b"
     },
     "tile": {
       "version": "0.2.0",
@@ -433,21 +433,13 @@
     "facts": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/facts.tsx": "0a269003a885a0ce2b17eb6ebddc694394ff359c6abf6b9bc6d22fc30cc354b5",
-        "src/ui/styles/facts.css": "389c8b4df96600f5fc693fe62511a4ad511c7699b765a0a02a97870e45b3235d"
+        "src/ui/components/ui/facts.tsx": "f5d66fcf95b96081017b24ea2eb6e72cd718eaa3487d1e56841d6abbef0ef837",
+        "src/ui/styles/facts.css": "ce9c494aacc238f8774bacb88c0fe78b4c44455d8343a5b52b7c32139dcf405a"
       },
-      "hash": "cf99aa18463b422a"
-    },
-    "result-box": {
-      "version": "0.2.0",
-      "files": {
-        "src/ui/components/ui/result-box.tsx": "07f21a3fd73122eb57e7842f835504e8acf1987493beaa0bbff45930c3c732b7",
-        "src/ui/styles/result-box.css": "814250668bd0637e38bcf40e6cee84b559b33546ea6c9fcf087de9c503639369"
-      },
-      "hash": "f1124ffd828eafd8"
+      "hash": "a020e5122c541a54"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "d2456e2e76f4d88ffcf9a804e2ab56b8fcf152c31dee148132f99e502a51b923"
+    "src/ui/styles/index.css": "e6cca92f96d101c3c4e0b6c709723983c56dfccc65b2a75995ca7b2299f4b07a"
   }
 }

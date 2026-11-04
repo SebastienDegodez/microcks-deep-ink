@@ -28,3 +28,22 @@ export const Single: StoryObj = {
     </div>
   ),
 };
+
+export const Small: StoryObj = {
+  name: 'Small, in a panel (Admin snapshots)',
+  render: () => (
+    <div style={{ maxWidth: 420 }}>
+      <DropZone
+        size="sm"
+        heading="Drop a snapshot here"
+        hint={<>A <code>microcks-repository.json</code> exported from any Microcks instance</>}
+        chooseLabel="Choose a file"
+        multiple={false}
+        accept="application/json,.json"
+        onFiles={() => undefined}
+      >
+        <button type="button" className="button" data-variant="link">Use a sample snapshot</button>
+      </DropZone>
+    </div>
+  ),
+};

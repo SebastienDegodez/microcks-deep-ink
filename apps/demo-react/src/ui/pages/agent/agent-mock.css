@@ -41,4 +41,8 @@
 /* Long sample lines scroll inside their block, never widen the page. The transport samples fill the card height. */
 .agent-card-panel > .code { contain: inline-size; }
 .agent-transport-sample { display: flex; flex-direction: column; }
+.agent-transport-sample .code-caption { font-family: var(--font-mono); color: var(--text-secondary); }
+/* URL rows: 36px, mono 12, link ink on the surface; text-only Copy. */
+.agent-url-input { min-height: 36px; padding-inline: 10px; font-size: 12px; color: var(--link); background: var(--surface); }
+.agent-url-copy { flex: none; min-width: 0; min-height: 36px; padding-inline: 10px; font-size: 12px; font-weight: 600; }
 .agent-transport-sample > pre { flex: 1; }
