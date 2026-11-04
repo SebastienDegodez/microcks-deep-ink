@@ -11,8 +11,8 @@ export interface StepperStep {
 }
 
 export interface StepperProps extends Omit<HTMLAttributes<HTMLOListElement>, 'children'> {
-  /** Accessible name of the list ("Progress", "Before you paste"). */
-  label: string;
+  /** Accessible name of the list ("Progress", "Before you paste"). Optional: leave it out when the heading above names the list. */
+  label?: string;
   steps: StepperStep[];
   /** `progress` (default): numbered dots. `list`: numbered instructions. */
   variant?: 'progress' | 'list';
@@ -20,10 +20,12 @@ export interface StepperProps extends Omit<HTMLAttributes<HTMLOListElement>, 'ch
   direction?: 'horizontal' | 'vertical';
   /** Hidden word read after a done step (default "done"). */
   doneLabel?: string;
+  /** `list` only. `number` (default): a mono "1.". `circle`: the number in a 22px ring (--stepper-marker, default --proto-rest), 10px gap, 6px rows, the text stacked in a column in the inherited font (WorkflowRun plan). */
+  marker?: 'number' | 'circle';
 }
 
 /** Numbered steps in an `<ol>`; the current step has `aria-current="step"`. */
-export function Stepper({ label, steps, variant = 'progress', direction = 'horizontal', doneLabel = 'done', className, ...rest }: StepperProps) {
+export function Stepper({ label, steps, variant = 'progress', direction = 'horizontal', doneLabel = 'done', marker = 'number', className, ...rest }: StepperProps) {
   return (
     <ol
       {...rest}
@@ -31,13 +33,14 @@ export function Stepper({ label, steps, variant = 'progress', direction = 'horiz
       className={['stepper', className].filter(Boolean).join(' ')}
       data-variant={variant}
       data-direction={direction === 'vertical' ? 'vertical' : undefined}
+      data-marker={variant === 'list' && marker === 'circle' ? 'circle' : undefined}
     >
       {steps.map((s, i) => {
         const n = s.n ?? i + 1;
         if (variant === 'list') {
           return (
             <li key={s.id ?? i}>
-              <span className="stepper-n" aria-hidden="true">{n}.</span>
+              <span className="stepper-n" aria-hidden="true">{n}{marker === 'circle' ? null : '.'}</span>
               <span>{s.label}</span>
             </li>
           );

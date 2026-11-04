@@ -35,13 +35,20 @@ export const Dispatcher: StoryObj = {
   ),
 };
 
+export const Canvas: StoryObj = {
+  name: 'Canvas (Agent test setup)',
+  render: () => (
+    <SummaryStrip role="note" aria-label="Test setup" variant="canvas" style={{ maxWidth: 900 }} parts={[{ text: 'Setup', kind: 'label' }, { text: 'https://agents.acme.io/concierge' }, { text: 'JSON-RPC 2.0', sep: true }]} />
+  ),
+};
+
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof SummaryStrip> = {
   args: {
-    gap: 'normal', values: 'secondary',
+    gap: 'normal', values: 'secondary', variant: 'default',
     parts: [{ text: '12', kind: 'value' }, { text: 'operations', kind: 'label' }, { text: '', sep: true }, { text: '3', kind: 'value' }, { text: 'failing', kind: 'label' }],
   },
-  argTypes: { gap: { control: 'inline-radio', options: ['normal', 'roomy'] }, values: { control: 'inline-radio', options: ['secondary', 'text'] } },
+  argTypes: { gap: { control: 'inline-radio', options: ['normal', 'roomy'] }, values: { control: 'inline-radio', options: ['secondary', 'text'] }, variant: { control: 'inline-radio', options: ['default', 'canvas'] } },
 };
 
 export const FromContent: StoryObj = {
