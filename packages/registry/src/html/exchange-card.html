@@ -1,0 +1,19 @@
+<!--
+  ExchangeCard. Each card is a named <section>; each block a focusable <pre role="region" aria-label> (it may scroll).
+  Block tones: data-tone="secondary" (request line), "params" (warning), "headers" (muted), none (body in --text).
+  data-grow makes the last block fill the card height. data-size="sm" for the compact head (Copilot).
+  The status is written ("200 OK"); data-tone="warning|danger" on .exchange-card-status for 4xx / 5xx.
+-->
+<div class="exchange">
+  <section class="exchange-card" aria-label="Request of Eclair Cafe">
+    <div class="exchange-card-head"><h4 class="exchange-card-title">Request</h4><span class="exchange-card-meta">Eclair Cafe</span></div>
+    <pre data-tone="secondary" role="region" aria-label="Request line" tabindex="0">GET /pastries/Eclair%20Cafe</pre>
+    <pre data-tone="params" role="region" aria-label="Parameters" tabindex="0">name = Eclair Cafe</pre>
+  </section>
+  <div class="exchange-sep" aria-hidden="true">⇄</div>
+  <section class="exchange-card" aria-label="Response of Eclair Cafe">
+    <div class="exchange-card-head"><h4 class="exchange-card-title">Response</h4><span class="exchange-card-status">200 OK</span></div>
+    <pre data-tone="headers" role="region" aria-label="Response headers" tabindex="0">Content-Type: application/json</pre>
+    <pre data-grow role="region" aria-label="Response body" tabindex="0">{ "name": "Eclair Cafe", "price": 2.5 }</pre>
+  </section>
+</div>
