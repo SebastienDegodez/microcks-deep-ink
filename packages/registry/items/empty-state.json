@@ -4,7 +4,8 @@
   "tier": "natural",
   "description": "Explains why a list or page has no content and offers the next action.",
   "registryDependencies": [
-    "base"
+    "base",
+    "icon"
   ],
   "npmDependencies": {
     "react": [],

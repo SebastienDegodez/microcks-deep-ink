@@ -1,19 +1,26 @@
 /* Deep Ink · empty-state@0.2.0 · copied from packages/registry. You own this file. */
 @layer deep-ink.components {
+  /* Centred by default: an optional icon, a title, a short text and the next action. */
   .empty {
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     gap: var(--space-3);
-    padding: var(--space-8) var(--space-6);
-    background: var(--surface);
-    border: 1px dashed var(--border-control);
+    padding: 56px 20px;
+    background: var(--canvas);
+    border: 1.5px dashed var(--border-strong);
     border-radius: var(--radius-node);
-    color: var(--text-secondary);
-    font: var(--type-body);
+    color: var(--text-muted);
+    font: 400 14px/20px var(--font-ui);
+    text-align: center;
   }
-  .empty-title { margin: 0; font: var(--type-title); color: var(--text); }
+  .empty[data-align="start"] { align-items: flex-start; text-align: start; }
+  .empty-icon { color: var(--text-muted); }
+  .empty-icon > .icon { stroke-width: 1.6; }
+  .empty-title { margin: 0; font: 600 18px/24px var(--font-ui); color: var(--text); }
+  .empty-body { max-width: 520px; }
   .empty-body > :first-child { margin-top: 0; }
   .empty-body > :last-child { margin-bottom: 0; }
-  .empty-actions { display: flex; flex-wrap: wrap; gap: var(--space-2); }
+  .empty-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2); }
+  .empty[data-align="start"] .empty-actions { justify-content: flex-start; }
 }
