@@ -62,8 +62,8 @@
   td[data-result="fail"] .matrix-cell { --cell-color: var(--danger); background: var(--danger-tint); border-color: var(--danger); }
   td[data-result="warn"] .matrix-cell { --cell-color: var(--warning); background: var(--warning-tint); border-color: var(--warning); }
   td[data-result="running"] .matrix-cell { --cell-color: var(--running); }
-  /* Queued: dashed, muted text. Never opacity, which would break contrast. */
-  td[data-result="queued"] .matrix-cell { border-style: dashed; font-weight: 400; }
+  /* Queued: a solid neutral frame, regular weight. Never opacity, which would break contrast. */
+  td[data-result="queued"] .matrix-cell { font-weight: 400; }
   button.matrix-cell { cursor: pointer; }
   button.matrix-cell:hover { background: var(--raised); }
   /* Selected: selected fill and action border; the result keeps its colour and aria-pressed carries the state. */
