@@ -35,6 +35,13 @@ afterEach(() => {
   vi.useRealTimers();
 });
 
+const describedBy = (el: HTMLElement) =>
+  (el.getAttribute('aria-describedby') ?? '')
+    .split(' ')
+    .map((id) => document.getElementById(id)?.textContent ?? '')
+    .join(' ')
+    .trim();
+
 describe('Run a test (/tests/create)', () => {
   it('labels every field, mirrors the form in the CI snippet and switches the CI format', async () => {
     renderAt('/tests/create?service=pastry2');
@@ -42,21 +49,26 @@ describe('Run a test (/tests/create)', () => {
     expect((await screen.findAllByRole('radio')).length).toBeGreaterThanOrEqual(2);
     const endpoint = screen.getByLabelText(/Test endpoint/) as HTMLInputElement;
     fireEvent.change(endpoint, { target: { value: 'https://pastry.example.test/api' } });
-    const snippet = screen.getByRole('region', { name: /command/i, hidden: false });
+    const snippet = screen.getByRole('region', { name: 'microcks CLI code' });
     expect(snippet.textContent).toContain('https://pastry.example.test/api');
-    fireEvent.click(screen.getByRole('tab', { name: /GitHub/i }));
-    expect(screen.getByRole('tabpanel').textContent).toContain('uses:');
+    expect(screen.getByText('1 line differs from the default configuration.')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'GitHub Actions' }));
+    expect(screen.getByRole('button', { name: 'GitHub Actions' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('region', { name: 'GitHub Actions code' }).textContent).toContain('- name: Contract test API Pastry 2.0');
   });
 
   it('tells which field is wrong, ties the error to it, and launches a valid test', async () => {
     const router = renderAt('/tests/create?service=pastry2');
     const endpoint = (await screen.findByLabelText(/Test endpoint/)) as HTMLInputElement;
     fireEvent.change(endpoint, { target: { value: '' } });
-    fireEvent.click(screen.getByRole('button', { name: 'Launch test' }));
-    const alert = await screen.findByRole('alert');
-    expect(alert.textContent).toContain('Test endpoint');
+    const launch = screen.getByRole('button', { name: 'Launch test' });
+    expect(launch.getAttribute('aria-disabled')).toBe('true');
+    expect(describedBy(launch)).toBe('A test endpoint is required.');
+    fireEvent.click(launch);
+    expect(document.activeElement).toBe(endpoint);
+    expect(router.state.location.pathname).toBe('/tests/create');
     expect(endpoint.getAttribute('aria-invalid')).toBe('true');
-    expect(endpoint.getAttribute('aria-describedby')).toBeTruthy();
+    expect(describedBy(endpoint)).toContain('A test endpoint is required.');
     fireEvent.change(endpoint, { target: { value: 'https://pastry.example.test/api' } });
     fireEvent.click(screen.getByRole('button', { name: 'Launch test' }));
     await waitFor(() => expect(router.state.location.pathname).toMatch(/^\/tests\/runner\/.+/));
@@ -180,6 +192,8 @@ describe('Usage (/metrics/:serviceId?)', () => {
     const index = screen.getByRole('region', { name: 'Conformance index vs current score' });
     expect(within(index).getByRole('img', { name: 'Current score 92 percent, conformance index 92 percent' })).toBeTruthy();
     expect(within(index).getAllByRole('link')).toHaveLength(10);
+    expect(within(screen.getByRole('combobox', { name: 'Service' })).getAllByRole('option').map((o) => o.textContent)).toEqual(['API Pastry 2.0', 'All services']);
+    expect(screen.getAllByRole('region', { name: 'Conformance' })).toHaveLength(1);
   });
 });
 
@@ -204,20 +218,47 @@ describe('Live traces (/traces)', () => {
 });
 
 describe('Hub (/hub/:packageId?)', () => {
+  const detail = async () => within(await screen.findByRole('region', { name: 'Package detail' }));
+
   it('opens banking and walks install to installed', async () => {
     renderAt('/hub/banking');
     await screen.findByRole('heading', { level: 1, name: 'Hub' });
-    const install = await screen.findByRole('button', { name: /Install/ });
-    fireEvent.click(install);
-    await screen.findByText('Installed', { selector: '.callout *, .callout' }).catch(() => undefined);
-    await waitFor(() => expect(screen.queryByRole('button', { name: /Install/ })).toBeNull());
+    const panel = await detail();
+    expect(panel.getByRole('heading', { level: 2, name: 'Banking APIs (sample)' })).toBeTruthy();
+    fireEvent.click(panel.getByRole('button', { name: 'Install and keep in sync' }));
+    const view = await panel.findByRole('link', { name: /View in catalogue/ });
+    await waitFor(() => expect(document.activeElement).toBe(view));
+    expect(panel.getByRole('link', { name: 'See importers in Sources' })).toBeTruthy();
+    expect(panel.queryByRole('button', { name: /^Install/ })).toBeNull();
+  });
+
+  it('keeps focus on the card while it installs from the grid', async () => {
+    renderAt('/hub/banking');
+    const grid = within(await screen.findByRole('region', { name: 'Packages' }));
+    const card = within(await grid.findByRole('article', { name: 'Telco open APIs' }));
+    fireEvent.click(card.getByRole('button', { name: 'Install' }));
+    const view = await card.findByRole('link', { name: /View in catalogue/ });
+    await waitFor(() => expect(document.activeElement).toBe(view));
   });
 
   it('shows API Pastry as already installed', async () => {
     renderAt('/hub/pastry');
     await screen.findByRole('heading', { level: 1 });
-    await waitFor(() => expect(screen.getAllByText('Installed').length).toBeGreaterThan(0));
-    expect(screen.queryByRole('button', { name: /^Install/ })).toBeNull();
+    const panel = await detail();
+    await waitFor(() => expect(panel.getAllByText('Installed').length).toBeGreaterThan(0));
+    expect(panel.queryByRole('button', { name: /^Install/ })).toBeNull();
+    expect(panel.getAllByText('IN CATALOGUE').length).toBe(2);
+  });
+
+  it('picks a version per API and blocks a secondary install with nothing to merge', async () => {
+    renderAt('/hub/banking');
+    const panel = await detail();
+    const versions = within(panel.getByRole('group', { name: 'Version of Accounts API' }));
+    fireEvent.click(versions.getByRole('button', { name: '1.1.0' }));
+    expect(versions.getByRole('button', { name: '1.1.0' }).getAttribute('aria-pressed')).toBe('true');
+    fireEvent.click(panel.getByRole('radio', { name: /Secondary artifact/ }));
+    expect(panel.getByRole('note').textContent).toMatch(/Choose Main artifact/);
+    expect((panel.getByRole('button', { name: 'Merge examples' }) as HTMLButtonElement).disabled).toBe(true);
   });
 });
 
@@ -225,24 +266,49 @@ describe('Administration (/admin/:tab?)', () => {
   it('changes a role and tells it in a status message', async () => {
     renderAt('/admin/users');
     await screen.findByRole('heading', { level: 1, name: 'Administration' });
-    const selects = (await screen.findAllByRole('combobox')) as HTMLSelectElement[];
-    const editable = selects.find((s) => !s.disabled && s.value === 'user') as HTMLSelectElement;
-    fireEvent.change(editable, { target: { value: 'manager' } });
-    await waitFor(() => expect(document.querySelector('.ad-toast')?.textContent).toMatch(/manager/i));
+    expect(await screen.findByRole('tab', { name: /^Users\W+7$/ })).toBeTruthy();
+    const select = (await screen.findByRole('combobox', { name: 'Role of Léa Martin' })) as HTMLSelectElement;
+    expect([...select.options].map((o) => o.textContent)).toEqual(['User', 'Manager', 'Admin']);
+    expect((screen.getByRole('combobox', { name: 'Role of Microcks Admin' }) as HTMLSelectElement).disabled).toBe(true);
+    fireEvent.change(select, { target: { value: 'manager' } });
+    expect(await screen.findByText('Léa Martin is now a manager in realm microcks.')).toBeTruthy();
+    fireEvent.change(screen.getByRole('searchbox', { name: 'Filter users' }), { target: { value: 'nobody' } });
+    expect(screen.getByText('No user matches “nobody”.')).toBeTruthy();
   });
 
-  it('flags the pending requests on Groups and saves a membership draft', async () => {
+  it('drafts memberships in the groups × managers matrix and applies them', async () => {
     renderAt('/admin/groups');
     await screen.findByRole('heading', { level: 1 });
-    expect(await screen.findByRole('tab', { name: /pending/ })).toBeTruthy();
-    expect(await screen.findByText(/pending requests/)).toBeTruthy();
-    const save = screen.getByRole('button', { name: 'Save changes' }) as HTMLButtonElement;
-    expect(save.disabled).toBe(true);
-    const box = screen.getAllByRole('checkbox')[0] as HTMLInputElement;
-    fireEvent.click(box);
-    expect(save.disabled).toBe(false);
-    fireEvent.click(screen.getByRole('button', { name: 'Cancel' }));
-    expect((screen.getAllByRole('checkbox')[0] as HTMLInputElement).checked).toBe(!box.checked ? false : box.checked);
+    const cell = await screen.findByRole('button', { name: 'Clara Nguyen in /microcks/manager/beer, not a member' }, { timeout: 3000 });
+    expect(screen.queryByRole('button', { name: 'Apply to Keycloak' })).toBeNull();
+    fireEvent.click(cell);
+    expect(screen.getByRole('button', { name: 'Clara Nguyen in /microcks/manager/beer, member, to be added' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('tab', { name: /Groups/ }).textContent).toBe('Groups, 6, 1 pending change');
+    fireEvent.click(screen.getByRole('button', { name: 'Discard' }));
+    expect(screen.queryByRole('button', { name: 'Apply to Keycloak' })).toBeNull();
+    fireEvent.click(screen.getByRole('button', { name: 'Tom Keller in /microcks/manager/pets, member' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Apply to Keycloak' }));
+    expect(await screen.findByText('1 membership change applied in Keycloak realm microcks.', {}, { timeout: 3000 })).toBeTruthy();
+    await waitFor(() => expect(screen.getAllByText('no manager')).toHaveLength(2), { timeout: 3000 });
+  });
+
+  it('exports the preselected services and previews then imports the sample snapshot', async () => {
+    renderAt('/admin/snapshots');
+    expect(await screen.findByText('2 of 10 selected', {}, { timeout: 3000 })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Export snapshot' }));
+    expect(await screen.findByText('downloaded · 2 services, 4 operations · 28 KB')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Use a sample snapshot' }));
+    expect(await screen.findByRole('heading', { level: 3, name: 'Preview · 3 services detected' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Import snapshot' }));
+    expect(await screen.findByText('Imported · 1 created, 2 replaced')).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Open APIs & Services' })).toBeTruthy();
+  });
+
+  it('shows the configuration read-only', async () => {
+    renderAt('/admin/configuration');
+    await screen.findByText('Async API mocking');
+    expect(screen.queryByRole('switch')).toBeNull();
+    expect(screen.queryByRole('checkbox')).toBeNull();
   });
 
   it('creates a secret through the dialog and toggles a feature flag', async () => {

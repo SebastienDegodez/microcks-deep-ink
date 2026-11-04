@@ -89,6 +89,8 @@ export interface Snapshot {
   serviceIds: string[];
   json: string;
   operations?: number;
+  /** Approximate file size in KB. */
+  sizeKb?: number;
 }
 
 export interface SnapshotImportPreviewItem {

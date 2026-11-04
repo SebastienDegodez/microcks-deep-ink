@@ -5,7 +5,7 @@ import { itemParams } from './_meta';
 const meta: Meta = {
   title: 'Components/Button',
   decorators: [moduleMetadata({ imports: [ButtonDirective] })],
-  parameters: itemParams(['button'], "A sturdy, near-square native `<button>`. One primary per task region. The medium size is 44px high; the small size (32px) is never used for the primary action of a page."),
+  parameters: itemParams(['button'], "A sturdy, near-square native `<button>`. One primary per task region. The medium size is 40px high, large 44px (form footers); small (32px) and compact (34px) are never used for the primary action of a page."),
 };
 export default meta;
 
@@ -24,11 +24,32 @@ export const Default: StoryObj = {
   }),
 };
 
+export const FormFooter: StoryObj = {
+  name: 'Form footer, inline delete',
+  render: () => ({
+    template: `
+      <div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start">
+        <div class="inline">
+          <button mkButton variant="outline" size="lg">Cancel</button>
+          <button mkButton variant="primary" size="lg" icon="play">Launch test</button>
+          <button mkButton variant="primary" size="lg" icon="play" disabled>Launch test</button>
+        </div>
+        <div class="inline">
+          <button mkButton variant="dashed" size="compact" icon="plus">Add header</button>
+          <button mkButton variant="ghost" size="sm" tone="danger" icon="trash">Delete</button>
+        </div>
+      </div>
+    `,
+  }),
+};
+
 export const Sizes: StoryObj = {
   render: () => ({
     template: `
       <div class="inline">
-        <button mkButton size="md">Medium (44px)</button>
+        <button mkButton size="lg">Large (44px)</button>
+        <button mkButton size="md">Medium (40px)</button>
+        <button mkButton size="compact">Compact (34px)</button>
         <button mkButton size="sm">Small (32px)</button>
       </div>
     `,
