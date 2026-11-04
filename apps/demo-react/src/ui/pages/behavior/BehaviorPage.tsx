@@ -3,37 +3,26 @@ import './behavior.css';
 import { useMemo, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router';
 import {
-  isValidRegExp, parseJsonBodyRule, reachability, ruleNames, scriptSample, storedAs,
-  type Behavior, type BehaviorDispatcher, type ParameterConstraint,
+  isValidRegExp, scriptSample, type Behavior, type ParameterConstraint,
 } from '@/domain/catalog';
 import { PageHeader, useAnnounce, useQuery, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
 import { Checkbox } from '@/ui/components/ui/checkbox';
-import { CodeBlock } from '@/ui/components/ui/code-block';
 import { Field } from '@/ui/components/ui/field';
 import { Icon } from '@/ui/components/ui/icon';
-import { Input, Textarea } from '@/ui/components/ui/input';
+import { Input } from '@/ui/components/ui/input';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { Panel } from '@/ui/components/ui/panel';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { Select } from '@/ui/components/ui/select';
 import { Switch } from '@/ui/components/ui/switch';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
+import { DispatcherPanel } from './DispatcherPanel';
 import { SimulatorPanel } from './SimulatorPanel';
 
-const CARDS: { id: BehaviorDispatcher; desc: string; tag?: string; disabled?: boolean }[] = [
-  { id: 'URI_PARTS', desc: 'Matches path segments, here {name}.', tag: 'inferred from contract' },
-  { id: 'URI_PARAMS', desc: 'Matches query parameter values.' },
-  { id: 'QUERY_ARGS' as BehaviorDispatcher, desc: 'Matches GraphQL or gRPC arguments.', tag: 'GraphQL & gRPC only', disabled: true },
-  { id: 'JSON_BODY', desc: 'Evaluates a JSON Pointer in the request body.' },
-  { id: 'SCRIPT', desc: 'Groovy or JavaScript returns the example name.' },
-  { id: 'FALLBACK', desc: 'A dispatcher, plus a default example when nothing matches.' },
-  { id: 'PROXY_FALLBACK', desc: 'A dispatcher, else forwards to the real backend.' },
-];
 const DELAY_PRESETS = [0, 100, 250, 500, 1000];
-const JSON_RULE_SAMPLE = JSON.stringify({ exp: '/name', operator: 'equals', cases: { Millefeuille: 'Millefeuille', 'Eclair Cafe': 'Eclair Cafe', default: 'Millefeuille' } }, null, 2);
 
 export default function BehaviorPage() {
   const { serviceId = '', operationId = '' } = useParams();
@@ -53,7 +42,6 @@ export default function BehaviorPage() {
   const [savedAt, setSavedAt] = useState(false);
 
   const dirty = useMemo(() => Boolean(draft && saved.data && JSON.stringify(draft) !== JSON.stringify(saved.data)), [draft, saved.data]);
-  const jsonCheck = useMemo(() => (draft?.dispatcher === 'JSON_BODY' ? parseJsonBodyRule(draft.rule) : undefined), [draft]);
 
   if (op.status === 'error' && !op.data) {
     return (<><PageHeader title="Operation behavior" /><ErrorBlock error={op.error} what="The operation" onRetry={op.reload} /></>);
@@ -63,18 +51,10 @@ export default function BehaviorPage() {
   if (!svc || !operation || !draft || !examples.data) {
     return (<><PageHeader title="Operation behavior" /><LoadingBlock label="the operation behavior" /></>);
   }
-  const exs = examples.data;
+  // A pending AI example is not served until it is accepted, so it does not count here.
+  const exs = examples.data.filter((e) => e.reviewState !== 'pending');
   const pathParams = [...operation.path.matchAll(/\{([^}]+)\}/g)].map((m) => m[1] as string);
   const edit = (patch: Partial<Behavior>) => { setDraft({ ...draft, ...patch }); setSavedAt(false); };
-  const pickDispatcher = (id: BehaviorDispatcher) => {
-    const patch: Partial<Behavior> = { dispatcher: id };
-    if (id === 'JSON_BODY' && 'error' in parseJsonBodyRule(draft.rule)) patch.rule = JSON_RULE_SAMPLE;
-    if (id === 'SCRIPT' && !draft.script) { patch.script = scriptSample(draft.scriptLanguage ?? 'GROOVY', draft.stateful); patch.scriptLanguage = draft.scriptLanguage ?? 'GROOVY'; }
-    if ((id === 'URI_PARTS' || id === 'URI_PARAMS') && draft.rule.trim().startsWith('{')) patch.rule = id === 'URI_PARTS' ? (pathParams[0] ?? '') : '';
-    if (id === 'FALLBACK' && !draft.fallback) patch.fallback = exs[0]?.name;
-    if (id === 'PROXY_FALLBACK' && !draft.proxyUrl) patch.proxyUrl = 'https://pastry.staging.acme.io/v2';
-    edit(patch);
-  };
   const toggleStateful = (on: boolean) => {
     if (on) {
       const lang = draft.scriptLanguage ?? 'GROOVY';
@@ -95,13 +75,6 @@ export default function BehaviorPage() {
     setSavedAt(true);
     announce('Behavior saved.');
   };
-  const reach = reachability(draft, exs);
-  const names = ruleNames(draft.rule);
-  const baseLine = (
-    <div className="ex-row">
-      <span className="ex-secondary">1 · First try</span> <code>{draft.baseDispatcher ?? 'URI_PARTS'}</code> <span className="ex-muted">· {draft.rule}</span> <Icon name="arrow-down" size={14} />
-    </div>
-  );
 
   return (
     <div className="behavior-page">
@@ -129,96 +102,7 @@ export default function BehaviorPage() {
 
       <div className="behavior-layout">
         <div className="behavior-config">
-          <Panel padding="lg" title="Dispatcher" id="sec-dispatcher" actions={<a href="https://microcks.io/documentation/explanations/dispatching/" target="_blank" rel="noreferrer">Dispatching reference</a>}>
-            <p className="panel-lead">Turns an incoming request into dispatch criteria, then into the example to return.</p>
-            <fieldset className="ex-fieldset">
-              <legend className="sr-only">Dispatcher type</legend>
-              <div className="ex-radio-cards">
-                {CARDS.map((c) => (
-                  <label key={c.id} className="ex-radio-card" aria-disabled={c.disabled || undefined}>
-                    <input type="radio" name="dispatcher" value={c.id} checked={draft.dispatcher === c.id} disabled={c.disabled} onChange={() => pickDispatcher(c.id)} />
-                    <span className="ex-radio-card-title ex-row">{c.id}{draft.dispatcher === c.id ? <Icon name="check" size={14} /> : null}</span>
-                    <span className="ex-small ex-secondary">{c.desc}</span>
-                    {c.tag ? <span className="ex-radio-card-tag">{c.tag}</span> : null}
-                  </label>
-                ))}
-              </div>
-            </fieldset>
-            <p className="ex-small ex-secondary">Also available as raw rules: <code>URI_ELEMENTS · QUERY_HEADER · QUERY_MATCH · PROXY · SEQUENCE</code></p>
-
-            <h3>Rules</h3>
-            {draft.dispatcher === 'URI_PARTS' ? (
-              <div className="ex-stack">
-                <span id="parts-label">Path parameters used as criteria</span>
-                <div className="ex-row" role="group" aria-labelledby="parts-label">
-                  {pathParams.map((p) => (
-                    <Button key={p} size="sm" variant="secondary" aria-pressed={names.includes(p)} aria-label={`Use path parameter ${p} as dispatch criteria`} onClick={() => edit({ rule: (names.includes(p) ? names.filter((n) => n !== p) : [...names, p]).join(' && ') })}>
-                      {`{${p}}`}
-                    </Button>
-                  ))}
-                </div>
-                <span className="ex-small ex-secondary">Click a path parameter to include or exclude it. Several parameters are joined with <code>&amp;&amp;</code>.</span>
-              </div>
-            ) : null}
-            {draft.dispatcher === 'URI_PARAMS' ? (
-              <div className="ex-stack">
-                <Field label="Query parameters used as criteria" help="Names separated by &&, for example size && page.">{(c) => <Input {...c} mono value={draft.rule} onChange={(e) => edit({ rule: e.target.value })} />}</Field>
-                <Callout tone="warning">The contract declares no query parameter on this operation. The {exs.length} imported examples carry no query criteria, so every call returns 404 until you add examples that do.</Callout>
-              </div>
-            ) : null}
-            {draft.dispatcher === 'JSON_BODY' ? (
-              <div className="ex-stack">
-                <Field label="Expression, operator and cases" error={jsonCheck && 'error' in jsonCheck ? jsonCheck.error : undefined}>
-                  {(c) => <Textarea {...c} mono rows={9} spellCheck={false} value={draft.rule} onChange={(e) => edit({ rule: e.target.value })} />}
-                </Field>
-                <span className="ex-small ex-secondary">Operators: <code>equals · range · size · regexp · presence</code>. A <code>default</code> case is required. GET requests carry no body here, so only the default case can apply.</span>
-              </div>
-            ) : null}
-            {draft.dispatcher === 'SCRIPT' ? (
-              <div className="ex-stack">
-                <Segmented label="Script language" value={draft.scriptLanguage ?? 'GROOVY'} onChange={(id) => edit({ scriptLanguage: id as 'GROOVY' | 'JS', script: scriptSample(id as 'GROOVY' | 'JS', draft.stateful) })} options={[{ id: 'GROOVY', label: 'Groovy' }, { id: 'JS', label: 'JavaScript' }]} />
-                <span className="ex-small ex-secondary">In scope: <code>mockRequest</code> <code>requestContext</code> <code>store</code> <code>log</code></span>
-                <Field label="Dispatcher script">{(c) => <Textarea {...c} mono rows={Math.min(16, Math.max(8, (draft.script ?? '').split('\n').length + 1))} spellCheck={false} wrap="off" value={draft.script ?? ''} onChange={(e) => edit({ script: e.target.value })} />}</Field>
-                <span className="ex-small ex-secondary">The script returns the name of the example to serve. Use <code>log.info()</code> to trace it in the mock logs.</span>
-              </div>
-            ) : null}
-            {draft.dispatcher === 'FALLBACK' ? (
-              <div className="ex-stack">
-                {baseLine}
-                <Field label="2 · If nothing matches, serve" help="Without a fallback, an unknown pastry name returns 404.">
-                  {(c) => (
-                    <Select {...c} value={draft.fallback ?? ''} onChange={(e) => edit({ fallback: e.target.value || undefined })}>
-                      <option value="">No fallback</option>
-                      {exs.map((e) => <option key={e.id} value={e.name}>{e.name}</option>)}
-                    </Select>
-                  )}
-                </Field>
-              </div>
-            ) : null}
-            {draft.dispatcher === 'PROXY_FALLBACK' ? (
-              <div className="ex-stack">
-                {baseLine}
-                <Field label="2 · Else forward to (proxyUrl)" help="Microcks keeps the path and query, swaps the base URL, and returns the real backend's response.">
-                  {(c) => <Input {...c} type="url" mono value={draft.proxyUrl ?? ''} onChange={(e) => edit({ proxyUrl: e.target.value })} />}
-                </Field>
-              </div>
-            ) : null}
-
-            {draft.dispatcher !== 'SCRIPT' && draft.dispatcher !== 'JSON_BODY' ? (
-              <div className="ex-stack" style={{ marginTop: 12 }}>
-                <div className="ex-row-between"><strong>Examples and their dispatch criteria</strong><span className="ex-small ex-secondary">{reach.filter((r) => r.reachable).length} of {reach.length} reachable</span></div>
-                <ul className="ex-plain-list">
-                  {reach.map((r) => (
-                    <li key={r.name} className="ex-row-between">
-                      <span>{r.name}</span><code className="ex-small">{r.criteria}</code>
-                      <span className="ex-row ex-small"><Icon name={r.reachable ? 'check' : 'cross'} size={14} />{r.reachable ? 'Reachable' : 'Unreachable'}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            ) : null}
-            <CodeBlock code={storedAs(draft)} caption="Stored as" />
-          </Panel>
+          <DispatcherPanel draft={draft} examples={exs} pathParams={pathParams} pathPrefix={operation.path.split('{')[0] ?? '/'} edit={edit} />
 
           <Panel padding="lg" title="Delay" id="sec-delay">
             <p className="panel-lead">Simulates the dependency's response time. Applies to every call unless the caller overrides it.</p>

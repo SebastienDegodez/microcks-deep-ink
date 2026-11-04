@@ -388,7 +388,8 @@ export function reachability(behavior: Behavior, examples: readonly Example[]): 
     return examples.map((e) => {
       const ok = names.length > 0 && names.every((n) => e.request.params[n] !== undefined);
       const text = names.map((n) => (kind === 'URI_PARTS' ? `/${n}=${e.request.params[n] ?? ''}` : `${n}=${e.request.params[n] ?? ''}`)).join(kind === 'URI_PARTS' ? '' : ' && ');
-      return { name: e.name, criteria: ok ? (kind === 'URI_PARTS' ? text : `?${text}`) : names.length ? 'no matching criteria' : '(none)', reachable: ok };
+      const missing = kind === 'URI_PARAMS' ? 'no query criteria' : 'no matching criteria';
+      return { name: e.name, criteria: ok ? (kind === 'URI_PARTS' ? text : `?${text}`) : names.length ? missing : '(none)', reachable: ok };
     });
   };
   if (d === 'URI_PARTS' || d === 'URI_ELEMENTS') return withBase('URI_PARTS');
@@ -435,8 +436,13 @@ export const SCRIPT_SAMPLES: Record<ScriptSampleKey, string> = {
     '// Dispatch on the {name} path segment, case-insensitive.',
     'def uri = mockRequest.getRequest().getRequestURI()',
     "def name = java.net.URLDecoder.decode(uri.tokenize('/').last(), 'UTF-8')",
-    "log.info('Unknown pastry: ' + name);",
-    "return 'Millefeuille';",
+    'switch (name.toLowerCase()) {',
+    "  case 'millefeuille':    return 'Millefeuille'",
+    "  case 'eclair cafe':     return 'Eclair Cafe'",
+    "  case 'eclair chocolat': return 'Eclair Chocolat'",
+    '}',
+    "log.info('Unknown pastry: ' + name)",
+    "return 'Millefeuille'",
   ].join('\n'),
   GROOVY_STATEFUL: [
     '// Count views per pastry; state is kept 60 s in the API store.',
@@ -451,6 +457,11 @@ export const SCRIPT_SAMPLES: Record<ScriptSampleKey, string> = {
     '// Dispatch on the {name} path segment, case-insensitive.',
     'const uri = mockRequest.getRequest().getRequestURI();',
     "const name = decodeURIComponent(uri.split('/').pop());",
+    'switch (name.toLowerCase()) {',
+    "  case 'millefeuille':    return 'Millefeuille';",
+    "  case 'eclair cafe':     return 'Eclair Cafe';",
+    "  case 'eclair chocolat': return 'Eclair Chocolat';",
+    '}',
     "log.info('Unknown pastry: ' + name);",
     "return 'Millefeuille';",
   ].join('\n'),
