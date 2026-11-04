@@ -61,16 +61,6 @@
 .tr-band { display: flex; flex-direction: column; gap: 6px; }
 .tr-band-caption { font-size: 12px; color: var(--text-muted); }
 .tr-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.tr-ci-toggle[aria-expanded='true'] { border-color: var(--action); background: var(--selected); }
-.tr-ci { display: flex; flex-direction: column; gap: 10px; padding: 14px; border: 1px solid var(--border-strong); border-radius: 8px; background: var(--surface); }
-.tr-ci-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
-.tr-ci-title { display: flex; flex-direction: column; gap: 2px; }
-.tr-ci-name { font-size: 14px; font-weight: 600; }
-.tr-ci-hint { font-size: 12px; color: var(--text-muted); }
-.tr-ci-code {
-  margin: 0; padding: 12px 14px; overflow-x: auto; border: 1px solid var(--border); border-radius: 4px; background: var(--bg);
-  color: var(--text-secondary); font: 400 12px/1.6 var(--font-mono); white-space: pre;
-}
 
 
 .tr-top > .tr-card { flex: 3 1 440px; }

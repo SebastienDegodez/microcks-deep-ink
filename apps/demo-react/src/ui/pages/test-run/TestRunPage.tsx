@@ -15,7 +15,7 @@ import { PageHeader, useAnnounce, usePageTitle, useQuery, useRelativeTime, useUs
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { ConformanceBand, type OperationResult } from '@/ui/components/ui/conformance-band';
-import { CopyButton } from '@/ui/components/ui/copy-button';
+import { CiPanel } from '@/ui/components/ui/ci-panel';
 import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { MethodTag } from '@/ui/components/ui/method-tag';
@@ -360,30 +360,25 @@ function RunView({ base }: { base: TestRun }) {
               <Button asChild>
                 <RouterLink to={`/services/${base.serviceId}`}>Back to service</RouterLink>
               </Button>
-              <Button icon="code" className="tr-ci-toggle" aria-expanded={ciOpen} aria-controls="ci-panel" onClick={() => setCiOpen(!ciOpen)}>
+              <Button icon="code" className="ci-panel-toggle" aria-expanded={ciOpen} aria-controls="ci-panel" onClick={() => setCiOpen(!ciOpen)}>
                 Add to CI
               </Button>
             </div>
 
             {ciOpen ? (
-              <div id="ci-panel" role="region" aria-label="Add to CI" className="tr-ci">
-                <div className="tr-ci-head">
-                  <span className="tr-ci-title">
-                    <span className="tr-ci-name">Run this test in your pipeline</span>
-                    <span className="tr-ci-hint">
-                      Same service, endpoint and runner. The command exits non-zero when the test fails, so a contract break stops the build.
-                    </span>
-                  </span>
-                  <CopyButton value={ci} label="Copy command" />
-                </div>
-                <pre className="tr-ci-code" tabIndex={0} aria-label="microcks-cli command">
-                  <code>{ci}</code>
-                </pre>
-                <span className="tr-ci-hint">
-                  Set <span className="tr-mono">MICROCKS_CLIENT_SECRET</span> from the <span className="tr-mono">microcks-serviceaccount</span> credentials. The
-                  same parameters work with the GitHub Action, GitLab CI, Jenkins and Tekton integrations.
-                </span>
-              </div>
+              <CiPanel
+                id="ci-panel"
+                title="Run this test in your pipeline"
+                hint="Same service, endpoint and runner. The command exits non-zero when the test fails, so a contract break stops the build."
+                command={ci}
+                copyLabel="Copy command"
+                footnote={
+                  <>
+                    Set <span className="tr-mono">MICROCKS_CLIENT_SECRET</span> from the <span className="tr-mono">microcks-serviceaccount</span> credentials. The
+                    same parameters work with the GitHub Action, GitLab CI, Jenkins and Tekton integrations.
+                  </>
+                }
+              />
             ) : null}
           </section>
         )}
