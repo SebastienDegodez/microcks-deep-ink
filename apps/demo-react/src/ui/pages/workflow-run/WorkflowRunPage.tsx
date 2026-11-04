@@ -27,6 +27,7 @@ import { StatusBadge } from '@/ui/components/ui/status-badge';
 import { DataTable } from '@/ui/components/ui/table';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { RunMeta } from '@/ui/components/ui/run-meta';
+import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { ButtonRouterLink, runPath, runSetupPath, workflowPath } from '../workflows/shared';
 import { RunApiPanel, RunBadges, Verdict, implementationsText, runBreadcrumb } from './run-parts';
@@ -350,41 +351,34 @@ function Progress({ run, workflow, currentIndex, validated, paused, onStepForwar
   const def = workflow?.steps.find((s) => s.stepId === current?.stepId);
   const target = current?.request ? `${current.request.method} ${current.request.url}` : def ? `${def.method} ${resolvedUrl(run, def)}` : '';
   const nowLabel = !current ? 'All steps ended · computing the result…' : retrying ? `retryAfter → ${target}` : target;
-  const label = (i: number) => {
-    const ph = phaseOf(run, i);
-    return ph === 'running' ? 'running' : ph === 'waiting' ? 'queued' : run.steps[i]?.status === 'not-run' ? 'not run' : (run.steps[i]?.status ?? '');
-  };
   return (
-    <section aria-label="Progress" className="wfr-card wfr-progress" aria-busy="true">
-      <div className="wfr-progress-head">
-        <p className="wfr-progress-count">
-          <span className="wfr-progress-big">{ended}</span>
-          <span className="wfr-progress-of">/{total}</span>
-          <span className="wfr-progress-word">steps ended</span>
-        </p>
-        <p className="wfr-progress-now">
-          <span className="wfr-progress-now-title">{nowTitle}</span>
-          <span className="wfr-progress-now-label">{nowLabel}</span>
-        </p>
-      </div>
-      <div className="wfr-segments" role="img" aria-label={`Progress: ${run.steps.map((s, i) => `${s.stepId} ${label(i)}`).join(', ')}`}>
-        {run.steps.map((s, i) => {
-          const ph = phaseOf(run, i);
-          return <span key={s.stepId} className="wfr-segment" data-status={ph === 'done' ? s.status : ph === 'running' ? 'running' : 'queued'} />;
-        })}
-      </div>
-      <div className="wfr-progress-foot">
-        <p className="wfr-progress-note">
-          Steps run in list order. Each step resolves its runtime expressions, calls its operation, then checks its success criteria
-          {validated ? ' and validates its response against its OpenAPI schema' : ''}.
-        </p>
-        {paused ? (
+    <RunProgress
+      aria-busy="true"
+      done={ended}
+      total={total}
+      caption="steps ended"
+      nowLabel={nowTitle}
+      now={nowLabel}
+      segments={run.steps.map((s, i): RunSegment => {
+        const ph = phaseOf(run, i);
+        if (ph === 'running') return 'current';
+        if (ph !== 'done') return 'queued';
+        return s.status === 'passed' ? 'done' : s.status === 'failed' ? 'failed' : 'queued';
+      })}
+      action={
+        paused ? (
           <Button size="sm" icon="chevron" onClick={onStepForward} aria-disabled={onStepForward ? undefined : true}>
             Step forward
           </Button>
-        ) : null}
-      </div>
-    </section>
+        ) : undefined
+      }
+      note={
+        <>
+          Steps run in list order. Each step resolves its runtime expressions, calls its operation, then checks its success criteria
+          {validated ? ' and validates its response against its OpenAPI schema' : ''}.
+        </>
+      }
+    />
   );
 }
 
