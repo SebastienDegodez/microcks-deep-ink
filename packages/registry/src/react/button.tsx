@@ -4,12 +4,12 @@ import { Icon } from './icon';
 import type { IconName } from './icon';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'dashed' | 'danger';
-export type ButtonSize = 'sm' | 'compact' | 'md' | 'lg';
+export type ButtonSize = 'sm' | 'compact' | 'tile' | 'md' | 'lg';
 
 interface ButtonOwnProps {
   /** One primary per task region. `link` is a small text button (Copy, Clear list); `dashed` an add / try action. */
   variant?: ButtonVariant;
-  /** `md` is 40px high. `sm` is 32px and `compact` 34px (never the primary action of a page); `lg` is 44px (form footers). */
+  /** `md` is 40px high. `sm` is 32px and `compact` 34px (never the primary action of a page); `tile` 36px (actions in a card footer); `lg` is 44px (form footers). */
   size?: ButtonSize;
   /** `danger` (ghost and link only): the text in the danger colour (an inline Delete). */
   tone?: 'danger';
@@ -48,7 +48,7 @@ function requireName(component: string, iconOnly: boolean | undefined, props: Re
 function contents(icon: IconName | undefined, size: ButtonSize, variant: ButtonVariant, children: ReactNode) {
   return (
     <>
-      {icon ? <Icon name={icon} size={size === 'sm' || size === 'compact' || variant === 'link' || variant === 'dashed' ? 14 : 16} /> : null}
+      {icon ? <Icon name={icon} size={size === 'sm' || size === 'compact' || size === 'tile' || variant === 'link' || variant === 'dashed' ? 14 : 16} /> : null}
       {children}
     </>
   );
