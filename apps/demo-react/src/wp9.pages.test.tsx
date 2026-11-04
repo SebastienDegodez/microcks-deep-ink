@@ -147,15 +147,24 @@ describe('Usage (/metrics/:serviceId?)', () => {
     expect(current).toBeTruthy();
     fireEvent.keyDown(current, { key: 'ArrowLeft' });
     await waitFor(() => expect(bars.filter((b) => b.getAttribute('aria-pressed') === 'true')).toHaveLength(1));
-    expect(screen.getAllByText('Show data table').length).toBeGreaterThanOrEqual(3);
+    expect(screen.getAllByText('Show data table').length).toBeGreaterThanOrEqual(2);
   });
 
-  it('switches period and shows a conformance meter', async () => {
+  it('switches period and shows the conformance treemap and index card', async () => {
     renderAt('/metrics/pastry2');
     await screen.findByRole('heading', { level: 1 });
     fireEvent.click(await screen.findByRole('button', { name: '7 days' }));
     await screen.findByRole('group', { name: /one bar per day/ });
-    expect(screen.getByRole('meter')).toBeTruthy();
+    const treemap = await screen.findByRole('region', { name: 'Conformance risk by domain' });
+    const pastry = within(treemap).getByRole('region', { name: 'domain=pastry' });
+    expect(within(pastry).getAllByRole('link').map((l) => l.textContent)).toEqual([
+      expect.stringContaining('API Pastry 2.0'), expect.stringContaining('API Pastry 1.0'), expect.stringContaining('Pastry orders API 0.1.0'),
+    ]);
+    expect(within(treemap).getByRole('link', { name: /API Pastry 2\.0.*conformance\s*92%, conformant/ }).getAttribute('aria-current')).toBe('true');
+    expect(within(treemap).getByRole('region', { name: 'no domain label' })).toBeTruthy();
+    const index = screen.getByRole('region', { name: 'Conformance index vs current score' });
+    expect(within(index).getByRole('img', { name: 'Current score 92 percent, conformance index 92 percent' })).toBeTruthy();
+    expect(within(index).getAllByRole('link')).toHaveLength(10);
   });
 });
 

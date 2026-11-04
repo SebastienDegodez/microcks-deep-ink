@@ -76,12 +76,14 @@ export function usageDataFor(scope: string): UsageData {
       : 'Event APIs (Pastry orders API, User signed-up API) publish on their own schedule: their messages are not invocations and are listed in Live traces.',
     conformance: detailed
       ? {
-          title: 'Conformance', score: 92, index: 92, subtitle: 'index 92% · test #118, 2 h ago', trend: 'up, +7 pts',
+          title: 'Conformance', score: 92, index: 92, subtitle: 'index 92% · test #119, just now', trend: 'up, +7 pts', direction: 'up',
+          subject: 'API Pastry 2.0 · latest test #119 · OPEN_API_SCHEMA · just now',
           advice:
-            'All 3 operations passed in test #118, so the score reached the index. To raise the index, add examples: PATCH /pastries/{name} has a single one, and the AI proposal Tartelette Framboise is still pending on GET /pastries/{name}.',
+            'The score is at the index, so the examples are the limit. To raise the index, add examples: PATCH /pastries/{name} has a single one, and the AI proposal Tartelette Framboise is still pending on GET /pastries/{name}.',
         }
       : {
-          title: 'Average conformance', score: 81, index: 90, subtitle: 'index 90% · 7 tested of 10 services', trend: '2 down, 1 up',
+          title: 'Average conformance', score: 81, index: 90, subtitle: 'index 90% · 7 tested of 10 services', trend: '2 down, 1 up', direction: 'mixed',
+          subject: 'All services · average over the 7 tested services',
           advice:
             'The 9-point gap comes from failing operations, not missing examples: fix Beer Catalog API, API Pastry 1.0 and Movie Graph API first. Petstore, Rocks and User signed-up have an index but no score until a first test runs.',
         },

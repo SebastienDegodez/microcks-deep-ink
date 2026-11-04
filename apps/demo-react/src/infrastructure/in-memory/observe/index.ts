@@ -39,9 +39,13 @@ export function createInMemoryObserveAdapters(_deps: InMemoryDeps = {}): Observe
     conformanceByDomain: () =>
       after<DomainConformance[]>(() => {
         const byDomain = new Map<string, DomainConformance>();
-        for (const s of SERVICES) {
-          const domain = s.labels.find((l) => l.key === 'domain')?.value ?? 'other';
-          const entry = byDomain.get(domain) ?? { domain, score: null, services: 0, items: [] };
+        // A2A agents are scored by their own conformance matrix (Agent test runs), not by contract tests:
+        // the Usage treemap lists the 10 API services, as in the prototype.
+        for (const s of SERVICES.filter((x) => x.protocol !== 'A2A')) {
+          const value = s.labels.find((l) => l.key === 'domain')?.value;
+          const domain = value ?? 'other';
+          const label = value ? `domain=${value}` : 'no domain label';
+          const entry = byDomain.get(domain) ?? { domain, label, score: null, services: 0, items: [] };
           entry.services += 1;
           const meta = CONFORMANCE_INDEX[s.id];
           entry.items?.push({
