@@ -3,7 +3,7 @@ import { Fragment, type HTMLAttributes } from 'react';
 import { Icon } from './icon';
 
 export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
-export type ProofStatus = 'success' | 'danger' | 'warning' | 'info' | 'neutral';
+export type ProofStatus = 'success' | 'danger' | 'warning' | 'info' | 'action' | 'neutral';
 
 export interface ApiBadgeProps extends HTMLAttributes<HTMLSpanElement> {
   /** Left segment for an API badge. Ignored when `label` or `arazzo` is set. */

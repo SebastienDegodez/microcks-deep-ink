@@ -53,6 +53,8 @@
   .api-badge[data-status="danger"] .api-badge-name { background: var(--danger); color: var(--on-status); font-weight: 600; }
   .api-badge[data-status="warning"] .api-badge-name { background: var(--warning); color: var(--on-status); font-weight: 600; }
   .api-badge[data-status="info"] .api-badge-name { background: var(--link); color: var(--on-action); font-weight: 600; }
+  .api-badge[data-status="action"] .api-badge-name,
+  .api-badge-value[data-status="action"] { background: var(--action); color: var(--on-action); font-weight: 600; }
   /* Neutral proof ("untested", "not exposed"): no fill, muted regular text. */
   .api-badge[data-status="neutral"] .api-badge-name,
   .api-badge-value[data-status="neutral"] { color: var(--text-muted); font-weight: 400; }
@@ -63,5 +65,6 @@
   .api-badge-value[data-status="danger"] { background: var(--danger); color: var(--on-status); }
   .api-badge-value[data-status="warning"] { background: var(--warning); color: var(--on-status); }
   .api-badge-value[data-status="info"] { background: var(--link); color: var(--on-action); }
+  .api-badge-value[data-status="action"] { background: var(--action); color: var(--on-action); }
   .api-badge-value > .icon { margin-inline-end: 4px; flex: none; }
 }
