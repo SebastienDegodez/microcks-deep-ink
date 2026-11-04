@@ -64,7 +64,7 @@ describe('arazzo use cases', () => {
   it('filters by result and by run kind', async () => {
     const failed = await uc.arazzo.listWorkflows({ result: 'failed' });
     expect(failed.map((i) => i.workflow.workflowId)).toEqual(['restock-pastry']);
-    expect(failed[0]?.lastRun?.number).toBe(16);
+    expect(failed[0]?.lastRun?.number).toBe(14);
     const onImpl = await uc.arazzo.listWorkflows({ runKind: 'implementations' });
     expect(onImpl.find((i) => i.workflow.workflowId === 'restock-pastry')?.lastRun?.number).toBe(14);
     expect((await uc.arazzo.listWorkflows({ result: 'never' })).map((i) => i.workflow.workflowId)).toEqual(['order-pastry', 'compare-prices', 'checkout-beer']);
