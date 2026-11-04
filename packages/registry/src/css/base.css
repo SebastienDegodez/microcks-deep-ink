@@ -57,6 +57,19 @@
     box-shadow: var(--shadow-focus);
   }
 
+  /*
+   * Route focus targets: after a route change the app moves focus to the page h1 (tabindex="-1") so
+   * screen readers announce the new page. Safari matches :focus-visible on that programmatic focus and
+   * would draw the full ring on a heading, so the ring is removed for :focus AND :focus-visible here.
+   * This stays within RGAA 10.7 / WCAG 2.4.7: a heading is not an operable control, focus still lands
+   * on the content, and every control, the skip link and <main> keep their focus ring.
+   */
+  :where(h1, h2, [data-route-focus])[tabindex="-1"]:focus,
+  :where(h1, h2, [data-route-focus])[tabindex="-1"]:focus-visible {
+    outline: none;
+    box-shadow: none;
+  }
+
   /* Visually hidden, still announced by screen readers. */
   .sr-only {
     position: absolute;
