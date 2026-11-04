@@ -59,6 +59,9 @@
     color: var(--text);
     background: var(--selected);
   }
+  /* Primary tone (joined): the pressed option is filled with the action colour. */
+  .segmented[data-variant="joined"][data-tone="primary"] > button { min-height: 36px; padding: 0 16px; color: var(--text-secondary); font-size: 14px; font-weight: 600; border-inline-end-color: var(--border-strong); }
+  .segmented[data-variant="joined"][data-tone="primary"] > button[aria-pressed="true"] { color: var(--on-action); background: var(--action); }
   /* The focus ring would be cut by the clipped container: draw it inside. */
   .segmented[data-variant="joined"] > button:focus-visible {
     outline-offset: -3px;

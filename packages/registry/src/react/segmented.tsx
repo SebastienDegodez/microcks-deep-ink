@@ -22,6 +22,8 @@ export interface SegmentedProps {
   onChange: (id: string) => void;
   /** `track` (default): padded track, the pressed option raised. `joined`: bordered cells side by side. */
   variant?: 'track' | 'joined';
+  /** `primary` (joined only): the pressed option is filled with the action colour. */
+  tone?: 'neutral' | 'primary';
   className?: string;
 }
 
@@ -29,9 +31,9 @@ export interface SegmentedProps {
  * Filter buttons that behave like one choice (All / Passed / Failed). A `role="group"` of
  * buttons with `aria-pressed`. Announce the result count of the filtered list in a live region.
  */
-export function Segmented({ label, options, value, onChange, variant = 'track', className }: SegmentedProps) {
+export function Segmented({ label, options, value, onChange, variant = 'track', tone = 'neutral', className }: SegmentedProps) {
   return (
-    <div role="group" aria-label={label} className={['segmented', className].filter(Boolean).join(' ')} data-variant={variant}>
+    <div role="group" aria-label={label} className={['segmented', className].filter(Boolean).join(' ')} data-variant={variant} data-tone={tone}>
       {options.map((o) => (
         <button key={o.id} type="button" aria-pressed={o.id === value} onClick={() => onChange(o.id)}>
           {o.dot ? <span className="segmented-dot" data-dot={o.dot} aria-hidden="true" /> : null}

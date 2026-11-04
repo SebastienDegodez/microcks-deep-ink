@@ -22,7 +22,7 @@ export interface SegmentedOption {
   selector: 'mk-segmented',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent],
-  host: { class: 'segmented', role: 'group', '[attr.aria-label]': 'label()', '[attr.data-variant]': 'variant()' },
+  host: { class: 'segmented', role: 'group', '[attr.aria-label]': 'label()', '[attr.data-variant]': 'variant()', '[attr.data-tone]': 'tone()' },
   template: `@for (o of options(); track o.id) {<button type="button" [attr.aria-pressed]="o.id === value()" (click)="value.set(o.id)">@if (o.dot) {<span class="segmented-dot" [attr.data-dot]="o.dot" aria-hidden="true"></span>}@if (o.icon) {<svg mkIcon [name]="o.icon" [size]="15"></svg>}{{ o.label }}@if (o.count !== undefined) {<span class="segmented-count"><span class="sr-only">, </span>{{ o.count }}</span>}</button>}`,
 })
 export class SegmentedComponent {
@@ -33,4 +33,6 @@ export class SegmentedComponent {
   readonly value = model.required<string>();
   /** `track` (default): padded track, the pressed option raised. `joined`: bordered cells side by side. */
   readonly variant = input<'track' | 'joined'>('track');
+  /** `primary` (joined only): the pressed option is filled with the action colour. */
+  readonly tone = input<'neutral' | 'primary'>('neutral');
 }
