@@ -77,10 +77,10 @@
     "checkbox": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/checkbox.tsx": "0aba408afbe6ddd9d63c61fdb28215920d9ba4eacc7b3e2787378e86afe7dc0a",
-        "src/ui/styles/checkbox.css": "793ec2c5340d8c66e6f191794ca8e2d8a19d3bae30b8267c36ab63c20cef6505"
+        "src/ui/components/ui/checkbox.tsx": "8a86423c34c59ed55f403bb6bdab183b3789595fb99347c06f191ecc7aecac97",
+        "src/ui/styles/checkbox.css": "7dcf4f6ec8bc7c5208edc0c4f8f812f63de8f9dc2af658d02435b9897df484b5"
       },
-      "hash": "28904160a7c47381"
+      "hash": "e6f9ec11891b74e0"
     },
     "chip": {
       "version": "0.2.0",
@@ -93,10 +93,10 @@
     "copy-button": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/copy-button.tsx": "9009f1e9639e58d9a0a3a93ec1e67e49150e48d11d51eced3d01c1a9aa50c98f",
-        "src/ui/styles/copy-button.css": "5ddb1d42d4d0898870b3278b332f59693c0b88ac038f392b404a2786f3cf44b3"
+        "src/ui/components/ui/copy-button.tsx": "40382f0461551ce61516948e1fc446c6e94920f73620f1cfb5b27274e83f9dfa",
+        "src/ui/styles/copy-button.css": "3d67e9fab1a06ef14499b0d0d5d5e0fa468625e6cbe17fdf2e3a784fce7b6288"
       },
-      "hash": "4aef64e2ff094490"
+      "hash": "171637535c71d679"
     },
     "code-block": {
       "version": "0.2.0",
