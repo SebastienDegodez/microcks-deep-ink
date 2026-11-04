@@ -59,7 +59,7 @@ describe('WP7 pages', () => {
   it('Catalogue: shows 11 services, filters by status and resets', async () => {
     renderAt('/services');
     await h1('APIs & Services');
-    await screen.findByRole('link', { name: /API Pastry 2\.0/ });
+    await screen.findByRole('link', { name: 'Open API Pastry 2.0' });
     expect(screen.getByTestId('result-count').textContent).toContain('11 of 11');
     fireEvent.click(screen.getByRole('button', { name: /^Failing/ }));
     await waitFor(() => expect(screen.getByTestId('result-count').textContent).toContain('5 of 11'));
@@ -112,20 +112,37 @@ describe('WP7 pages', () => {
     renderAt('/sources/new');
     await h1('Add a source');
     fireEvent.click(screen.getByRole('button', { name: 'Sample: API Pastry' }));
-    expect(await screen.findByRole('heading', { level: 2, name: 'Preview before import' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 2, name: 'Preview before creating the source' })).toBeTruthy();
     expect(screen.getByText(/3 Operations discovered · 7 Examples/)).toBeTruthy();
+    expect(screen.getByText('Microcks sample · samples/APIPastry-openapi.yaml')).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Import' }));
-    expect(await screen.findByRole('heading', { level: 2, name: 'Mock is live' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 2, name: 'Source created' })).toBeTruthy();
     expect(screen.getByRole('link', { name: 'Open service' }).getAttribute('href')).toContain('/services/pastry2');
+    expect(screen.getByText('apipastry-openapi.yaml · primary')).toBeTruthy();
   });
 
-  it('Import: the Direct API form shows labelled errors', async () => {
+  it('Import: a Git source with empty fields takes the placeholders', async () => {
+    renderAt('/sources/new');
+    await h1('Add a source');
+    fireEvent.click(screen.getByRole('tab', { name: 'Git repository' }));
+    fireEvent.click(screen.getByRole('button', { name: 'Analyze repository' }));
+    expect(await screen.findByText(/The source “API Pastry — main” will be created/)).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Create source' }));
+    expect(await screen.findByRole('heading', { level: 2, name: 'Source created' })).toBeTruthy();
+  });
+
+  it('Import: the Direct API form takes the placeholders and shows labelled errors', async () => {
     renderAt('/sources/new');
     await h1('Add a source');
     fireEvent.click(screen.getByRole('tab', { name: 'Direct API' }));
+    fireEvent.change(screen.getByLabelText('Resource'), { target: { value: '1x' } });
     fireEvent.click(screen.getByRole('button', { name: 'Create mock' }));
-    expect(await screen.findByText(/Name the API/)).toBeTruthy();
-    expect(screen.getByLabelText(/^API name/).getAttribute('aria-invalid')).toBe('true');
+    expect(await screen.findByText(/Use letters, digits/)).toBeTruthy();
+    expect(screen.getByLabelText('Resource').getAttribute('aria-invalid')).toBe('true');
+    fireEvent.change(screen.getByLabelText('Resource'), { target: { value: '' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Create mock' }));
+    expect(await screen.findByRole('heading', { level: 2, name: 'Mock created and live' })).toBeTruthy();
+    expect(screen.getByText(/Order API 1.0 exposes the “order” resource/)).toBeTruthy();
   });
 
   it('Sources: lists jobs, filters failed, deletes with a confirmation and undoes', async () => {
@@ -134,9 +151,10 @@ describe('WP7 pages', () => {
     await screen.findByRole('article', { name: 'Pastry orders events' });
     fireEvent.click(screen.getByRole('button', { name: /^Failed/ }));
     await waitFor(() => expect(screen.queryByRole('article', { name: 'Hello gRPC' })).toBeNull());
-    expect(screen.getByText(/401 Unauthorized/, { selector: '[role="alert"]' })).toBeTruthy();
+    expect(screen.getByRole('alert').textContent).toMatch(/401 Unauthorized/);
     fireEvent.click(screen.getByRole('button', { name: 'Delete Pastry orders events' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete source' }));
+    const confirm = await screen.findByRole('alertdialog', { name: 'Confirm deletion of Pastry orders events' });
+    fireEvent.click(within(confirm).getByRole('button', { name: 'Delete source' }));
     expect(await screen.findByText(/deleted. Services already discovered remain/)).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
     await screen.findByRole('article', { name: 'Pastry orders events' });

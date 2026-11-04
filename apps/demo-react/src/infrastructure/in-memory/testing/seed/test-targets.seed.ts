@@ -5,7 +5,7 @@ const REST_HELP = 'HTTP(S) base URL of the implementation. Microcks appends each
 /** The services of the "Run a test" prototype: contract artifacts, runners, operations and recent endpoints. */
 export const TEST_TARGETS: TestTarget[] = [
   {
-    serviceId: 'pastry2', type: 'REST', artifacts: 'OpenAPI 3.0.2 + Postman collection', lastTest: { ok: true, text: 'passed · 2 h ago' },
+    serviceId: 'pastry2', type: 'REST', artifacts: 'OpenAPI 3.0.2 + Postman collection', lastTest: { ok: false, text: 'failed · just now' },
     endpoint: 'https://pastry.staging.acme.io/v2', endpointHelp: REST_HELP,
     runners: [
       { id: 'HTTP' }, { id: 'OPEN_API_SCHEMA', recommended: true }, { id: 'POSTMAN' },

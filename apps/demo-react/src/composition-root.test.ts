@@ -124,11 +124,15 @@ describe('testing, observe, govern and importing use cases', () => {
     // movie, pastry1, beer, concierge (run #3) and, since test #119, pastry2
     expect(cockpit.kpis.failingServices).toBe(5);
     expect(cockpit.recentTests[0]?.id).toBe('119');
+    // The 6 latest runs, at most 2 per service; the week's verdicts (the #113 timeout is left out).
+    expect(cockpit.recentTests.map((r) => r.id)).toEqual(['119', '41', '3', '118', '17', '9']);
+    expect(cockpit.kpis.tests7d).toEqual({ passed: 14, failed: 7 });
+    expect(cockpit.recentCalls.map((c) => c.protocol)).toEqual(['REST', 'gRPC', 'REST', 'GRAPHQL', 'EVENT']);
   });
 
   it('computes invocations and conformance by domain', async () => {
     expect((await uc.observe.invocations('pastry2', 'day')).points).toHaveLength(24);
-    expect((await uc.observe.conformanceByDomain()).find((d) => d.domain === 'pastry')?.services).toBe(4);
+    expect((await uc.observe.conformanceByDomain()).find((d) => d.domain === 'pastry')?.services).toBe(3);
   });
 
   it('installs a hub package and reports progress', async () => {

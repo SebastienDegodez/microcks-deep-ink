@@ -1,4 +1,4 @@
-/* Test run (09). `.run-progress*` and `.runner-log*` are the future registry items (also on the Agent test run). */
+/* Test run (09). */
 
 /* Header: badges sit centred on the title row; the meta line is the description, at full width. */
 .tr-badges { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 12px; align-self: center; }
@@ -8,7 +8,7 @@
 .tr-spin { animation: tr-spin 0.9s linear infinite; transform-origin: 50% 50%; }
 @keyframes tr-spin { to { transform: rotate(360deg); } }
 @keyframes tr-pulse { 50% { opacity: 0.35; } }
-@media (prefers-reduced-motion: reduce) { .tr-spin, .run-progress-bar > [data-state='run'], .tr-op-segs > [data-state='run'] { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .tr-spin, .tr-op-segs > [data-state='run'] { animation: none; } }
 
 .demo-page-header-text:has(.tr-meta) { gap: 12px; flex-basis: 520px; }
 .demo-page-description:has(> .tr-meta) { max-width: none; }
@@ -25,41 +25,18 @@
 /* Progress or verdict card | runner log card */
 .tr-top { display: flex; flex-wrap: wrap; align-items: stretch; gap: 20px; }
 
-.run-progress,
 .tr-verdict {
   display: flex; flex: 3 1 440px; flex-direction: column; box-sizing: border-box; min-width: 0; padding: 20px;
   border: 1px solid var(--border); border-radius: 8px; background: var(--canvas);
 }
-.run-progress { gap: 16px; line-height: normal; }
-.run-progress-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 16px; }
-.run-progress-count { display: flex; align-items: baseline; gap: 10px; }
-.run-progress-num { font: 800 56px/0.9 var(--font-brand); color: var(--text); }
-.run-progress-total { color: var(--text-muted); }
-.run-progress-caption { font-size: 14px; color: var(--text-secondary); }
-.run-progress-now { display: flex; flex-direction: column; gap: 4px; min-width: 0; text-align: end; }
-.run-progress-now-label { font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
-.run-progress-now-value { font: 400 13px/1.4 var(--font-mono); color: var(--running); overflow-wrap: anywhere; }
-.run-progress-bar { display: flex; gap: 4px; }
-.run-progress-bar > span { flex: 1; height: 10px; border-radius: 2px; background: var(--border); }
-.run-progress-bar > [data-state='pass'],
 .tr-op-segs > [data-state='pass'] { background: var(--success); }
-.run-progress-bar > [data-state='fail'],
 .tr-op-segs > [data-state='fail'] { background: var(--danger); }
-.run-progress-bar > [data-state='run'],
 .tr-op-segs > [data-state='run'] { background: var(--running); animation: tr-pulse 1.4s ease-in-out infinite; }
-.run-progress-foot { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
-.run-progress-counts { display: inline-flex; flex-wrap: wrap; gap: 6px 16px; font-size: 13px; }
-.run-progress-counts > span { display: inline-flex; align-items: center; gap: 6px; }
-.run-progress-counts > [data-kind='pass'] { color: var(--success); }
-.run-progress-counts > [data-kind='fail'] { color: var(--danger); }
-.run-progress-counts > [data-kind='pending'] { color: var(--text-muted); }
-.run-progress-counts .icon { stroke-width: 2.6; }
-.run-progress-counts > [data-kind='pending'] .icon { stroke-width: 2; }
-.run-progress-step { background: transparent; border-color: var(--border-strong); font-size: 13px; font-weight: 500; }
-.run-progress-note { margin: 0; font-size: 13px; line-height: 1.5; color: var(--text-muted); }
 
 /* Verdict */
 .tr-verdict { gap: 18px; line-height: normal; }
+.tr-verdict:focus { outline: none; }
+.tr-verdict:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
 .tr-verdict-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 32px; }
 .tr-score { display: flex; flex-direction: column; gap: 4px; }
 .tr-score-label { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
@@ -95,32 +72,10 @@
   color: var(--text-secondary); font: 400 12px/1.6 var(--font-mono); white-space: pre;
 }
 
-/* Runner log */
-.runner-log {
-  display: flex; flex: 2 1 360px; flex-direction: column; box-sizing: border-box; min-width: 0; overflow: hidden;
-  border: 1px solid var(--border); border-radius: 8px; background: var(--canvas);
-}
-.runner-log-head {
-  display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 14px;
-  border-bottom: 1px solid var(--border); background: var(--surface);
-}
-.runner-log-title { margin: 0; font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
-.runner-log-count { font: 400 11px/1.4 var(--font-mono); color: var(--text-muted); }
-.runner-log-body {
-  display: flex; flex: 1; flex-direction: column-reverse; min-height: 220px; max-height: 300px; overflow: auto; padding: 8px 0; background: var(--bg);
-}
-.runner-log-lines { display: inline-block; min-width: 100%; }
-.runner-log-line { display: flex; gap: 10px; padding: 1px 14px; font: 400 12px/1.6 var(--font-mono); white-space: pre; }
-.runner-log-time { flex: none; color: var(--text-muted); }
-.runner-log-level { flex: none; width: 34px; font-weight: 600; color: var(--text-secondary); }
-.runner-log-level[data-level='SEND'] { color: var(--link); }
-.runner-log-level[data-level='PASS'] { color: var(--success); }
-.runner-log-level[data-level='FAIL'] { color: var(--danger); }
-.runner-log-level[data-level='WAIT'] { color: var(--text-muted); }
-.runner-log-msg { color: var(--text-secondary); }
-.runner-log-line[data-tone='emphasis'] .runner-log-msg { color: var(--text); }
-.runner-log-line[data-tone='error'] .runner-log-msg { color: var(--danger); }
-.runner-log-line[data-tone='muted'] .runner-log-msg { color: var(--text-muted); }
+
+.tr-top > .tr-card { flex: 3 1 440px; }
+.tr-top > .tr-log { flex: 2 1 360px; }
+.tr-step-forward { background: transparent; border-color: var(--border-strong); font-size: 13px; font-weight: 500; }
 
 /* Results */
 .tr-results { display: flex; flex-direction: column; gap: 12px; }

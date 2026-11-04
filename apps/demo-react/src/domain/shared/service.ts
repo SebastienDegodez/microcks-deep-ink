@@ -35,7 +35,8 @@ export interface ServiceSummary {
   lastResults: ('pass' | 'fail')[] | null;
   labels: Label[];
   testStatus: TestStatus;
-  lastTest?: { runId: string; when: string };
+  /** `checks`: passed / total checks of a run that counts checks rather than operations (A2A: 13/15). */
+  lastTest?: { runId: string; when: string; checks?: { passed: number; total: number } };
   /** 0..100, or null when never tested. */
   conformance: number | null;
   calls24h: number;

@@ -78,7 +78,8 @@ export function createCatalogUseCases({ catalog }: CatalogPorts): CatalogUseCase
       const usages = await Promise.all(all.map((s) => catalog.workflowUsages(s.id)));
       const workflows = new Set(usages.flat().map((u) => `${u.documentId}/${u.workflowId}`));
       return {
-        services: filterServices(all, filter),
+        // "sort: recently updated": newest first.
+        services: filterServices(all, filter).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt)),
         total: all.length,
         operationsTotal: all.reduce((n, s) => n + s.operationCount, 0),
         workflowsUsing: workflows.size,
@@ -104,7 +105,9 @@ export function createCatalogUseCases({ catalog }: CatalogPorts): CatalogUseCase
         catalog.examples(serviceId, operationId),
         draft ? Promise.resolve(draft) : need('Behavior', operationId, catalog.behavior(serviceId, operationId)),
       ]);
-      return dispatch(request, saved, examples, { method: operation.method, path: operation.path });
+      // A pending AI example is not served until it is accepted.
+      const served = examples.filter((e) => e.reviewState !== 'pending');
+      return dispatch(request, saved, served, { method: operation.method, path: operation.path });
     },
     workflowUsages: (serviceId) => catalog.workflowUsages(serviceId),
     commands: () => catalog.commands(),

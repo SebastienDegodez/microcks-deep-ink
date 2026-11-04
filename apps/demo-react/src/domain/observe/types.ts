@@ -30,7 +30,10 @@ export interface ConformanceItem {
 }
 
 export interface DomainConformance {
+  /** Value of the `domain` label, `other` when the service has none. */
   domain: string;
+  /** Visible group name: "domain=pastry", or "no domain label". */
+  label: string;
   /** 0..100, null when nothing is tested. */
   score: number | null;
   services: number;

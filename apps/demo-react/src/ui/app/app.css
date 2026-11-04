@@ -140,6 +140,18 @@
   max-width: 760px;
   font-size: 15px;
 }
+.demo-page-title[data-variant='subtitle'] {
+  font: 700 26px/1 var(--font-brand);
+  color: var(--text-secondary);
+}
+.demo-page-title[data-variant='mono'] {
+  font: 600 24px/1.2 var(--font-mono);
+}
+/* A leading node (Tests badge, Behavior method tag): centred with the title, 12px apart. */
+.demo-page-title-row[data-leading] {
+  align-items: center;
+  gap: 12px;
+}
 
 .demo-page-meta {
   padding: 2px 8px;
@@ -164,6 +176,14 @@
 }
 .demo-page-description[data-tone='secondary'] {
   color: var(--text-secondary);
+}
+/* Plain title (Import): breadcrumb 6px above the title, 15px description up to 680px. */
+.demo-page-header:has(.demo-page-title[data-variant='plain']) {
+  gap: 6px;
+}
+.demo-page-header:has(.demo-page-title[data-variant='plain']) .demo-page-description {
+  max-width: 680px;
+  font-size: 15px;
 }
 
 .demo-page-actions {
