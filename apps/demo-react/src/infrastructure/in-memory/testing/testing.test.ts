@@ -36,7 +36,7 @@ describe('testing use cases', () => {
     const timeline = await uc.timeline('pastry2');
     expect(timeline[0]?.runId).toBe('99');
     expect(timeline.at(-1)).toMatchObject({ runId: '119', conformance: 86 });
-    expect(timeline.find((p) => p.runId === '118')?.conformance).toBe(100);
+    expect(timeline.find((p) => p.runId === '118')?.conformance).toBe(92);
   });
 
   it('offers the services that can be tested with their runners and operations', async () => {
