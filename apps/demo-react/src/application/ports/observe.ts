@@ -1,4 +1,4 @@
-import type { DomainConformance, Invocations, Period, TraceCall, TraceFilter, TraceTopology, UsageData } from '@/domain/observe';
+import type { DomainConformance, Invocations, Period, TraceCall, TraceFilter, TraceTopology, UsageData, UsageScope } from '@/domain/observe';
 import type { Subscribe } from '@/application/shared';
 
 export interface MetricsRepository {
@@ -6,6 +6,8 @@ export interface MetricsRepository {
   conformanceByDomain(): Promise<DomainConformance[]>;
   /** Raw usage series of a service, or of every service with `all`. */
   usageData(scope: string): Promise<UsageData>;
+  /** The scopes that have usage series, in display order. */
+  usageScopes(): Promise<UsageScope[]>;
 }
 
 export interface TraceStream {

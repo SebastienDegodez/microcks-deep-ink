@@ -3,7 +3,7 @@
   .method {
     --method-bg: var(--proto-rest);
     display: inline-block;
-    min-width: 3.5em;
+    min-width: var(--method-min-width, 3.5em);
     box-sizing: border-box;
     padding: 3px 7px;
     background: var(--method-bg);
