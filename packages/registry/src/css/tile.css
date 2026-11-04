@@ -95,7 +95,7 @@
   }
   a.tile-action:hover { text-decoration: underline; }
   /* The focus ring is drawn around the whole tile, where the click target is. */
-  .tile-action:focus-visible { outline: none; box-shadow: none; }
+  .tile-action:focus-visible { outline-color: transparent; box-shadow: none; }
   .tile-action:focus-visible::after {
     outline: 2px solid var(--action);
     outline-offset: 2px;
