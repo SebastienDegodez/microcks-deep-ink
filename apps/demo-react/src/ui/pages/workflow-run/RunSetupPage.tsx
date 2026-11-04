@@ -160,6 +160,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
         badge={<RunBadges workflowId={workflow.workflowId} documentLabel={documentLabel} to={workflowTo} chip={<ApiBadge label="status" value="not started" />} />}
         descriptionTone="secondary"
         descriptionWidth={900}
+        align="start"
         description={
           <span className="wfr-meta">
             <MetaItem label="Document">
@@ -540,7 +541,7 @@ function SourceBlock({
       <div className="wfr-source-head">
         <span className="wfr-mono wfr-strong">{name}</span>
         {s ? (
-          <RouterLink to={`/services/${s.id}`} className="wfr-badge-link" aria-label={`Service ${s.name} ${s.version}`}>
+          <RouterLink to={`/services/${s.id}`} className="wfr-badge-link">
             <ApiBadge protocol={s.protocol} name={s.name} version={s.version} />
           </RouterLink>
         ) : (

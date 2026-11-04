@@ -8,6 +8,9 @@ import {
   stepsTally,
   stoppedStep,
   verdictExplanation,
+  resolveExpression,
+  runContext,
+  type Step,
   type Workflow,
   type WorkflowExample,
   type WorkflowRun,
@@ -35,8 +38,12 @@ export default function WorkflowRunPage() {
   usePageTitle('Workflow run · Microcks');
 
   const stored = useQuery(() => uc.arazzo.getRun(runId), [runId, live]);
-  const stream = useSubscription<WorkflowRun, WorkflowRun | undefined>(live ? (l) => uc.arazzo.watchRun(runId, l) : undefined, [runId, live], { initial: undefined });
-  const run = live ? (stream.value ?? undefined) : stored.data;
+  const stream = useSubscription<WorkflowRun, WorkflowRun[]>(live ? (l) => uc.arazzo.watchRun(runId, l) : undefined, [runId, live], {
+    initial: [],
+    reduce: (frames, frame) => [...frames, frame],
+  });
+  const replay = useReplay(stream.value);
+  const run = live ? replay.frame : stored.data;
 
   const detail = useQuery(
     () => (run ? uc.arazzo.getWorkflow(run.documentId, run.workflowId) : Promise.resolve(undefined)),
@@ -67,12 +74,50 @@ export default function WorkflowRunPage() {
   return (
     <RunView
       run={run}
-      paused={stream.paused}
-      onTogglePause={stream.toggle}
+      paused={replay.paused}
+      onTogglePause={replay.toggle}
+      onStepForward={replay.canStep ? replay.step : undefined}
       detail={d}
       example={examples.data?.find((e) => e.id === run.options.example)}
     />
   );
+}
+
+
+/** Gap between two replayed frames once the replay is behind the stream (after a pause), in ms. */
+const REPLAY_TICK_MS = 1000;
+
+/**
+ * Plays the buffered frames of a live run one by one. Pause stops the replay clock where it is (WCAG 2.2.2):
+ * Resume continues from that frame, one frame per tick, and Step forward shows the next frame while paused.
+ */
+function useReplay(frames: readonly WorkflowRun[]) {
+  const [index, setIndex] = useState(0);
+  const [paused, setPaused] = useState(false);
+  // Set by a pause, cleared once the replay has caught up with the stream.
+  const [behind, setBehind] = useState(false);
+  const last = frames.length - 1;
+  useEffect(() => {
+    if (paused) return undefined;
+    if (index >= last) {
+      if (behind) setBehind(false);
+      return undefined;
+    }
+    // Caught up: show a new frame as soon as it arrives. Behind (after a pause): one frame per tick.
+    const timer = setTimeout(() => setIndex((i) => Math.min(i + 1, last)), behind || last - index > 1 ? REPLAY_TICK_MS : 0);
+    return () => clearTimeout(timer);
+  }, [paused, behind, index, last]);
+  const frame = frames[Math.min(index, Math.max(last, 0))];
+  return {
+    frame,
+    paused,
+    toggle: () => {
+      setPaused((p) => !p);
+      setBehind(true);
+    },
+    canStep: paused && index < last,
+    step: () => setIndex((i) => Math.min(i + 1, last)),
+  };
 }
 
 type Detail = Awaited<ReturnType<ReturnType<typeof useUseCases>['arazzo']['getWorkflow']>>;
@@ -109,12 +154,14 @@ function RunView({
   run,
   paused,
   onTogglePause,
+  onStepForward,
   detail,
   example,
 }: {
   run: WorkflowRun;
   paused: boolean;
   onTogglePause: () => void;
+  onStepForward?: () => void;
   detail?: Detail;
   example?: WorkflowExample;
 }) {
@@ -143,6 +190,16 @@ function RunView({
     }
   }, [running, currentStepId, currentIndex, total, headline.title, headline.detail]);
 
+  // When the live run ends, its Pause / Skip buttons go away: move focus to the verdict instead of losing it.
+  const wasRunning = useRef(running);
+  useEffect(() => {
+    if (wasRunning.current && !running) {
+      const active = document.activeElement;
+      if (!active || active === document.body) document.getElementById('wfr-verdict-h')?.focus();
+    }
+    wasRunning.current = running;
+  }, [running]);
+
   const workflowTo = workflowPath(run.documentId, run.workflowId);
   const runsTo = workflowPath(run.documentId, run.workflowId, 'runs');
   const passed = run.status === 'SUCCESS';
@@ -169,6 +226,7 @@ function RunView({
         badge={<RunBadges workflowId={run.workflowId} documentLabel={documentLabel} to={workflowTo} chip={chip} />}
         descriptionTone="secondary"
         descriptionWidth={900}
+        align="start"
         description={
           <span className="wfr-meta">
             {detail ? (
@@ -223,8 +281,8 @@ function RunView({
 
       <div className="wfr-layout">
         <div className="wfr-main">
-          {running ? <Progress run={run} workflow={workflow} currentIndex={currentIndex} validated={run.options.validateSchemas} /> : <Summary run={run} totals={totals} workflow={workflow} />}
-          {example && !running ? <ExampleJudging run={run} example={example} /> : null}
+          {running ? <Progress run={run} workflow={workflow} currentIndex={currentIndex} validated={run.options.validateSchemas} paused={paused} onStepForward={onStepForward} /> : <Summary run={run} totals={totals} workflow={workflow} />}
+          {example ? <ExampleJudging run={run} example={example} pending={running} /> : null}
           <RunSteps run={run} workflow={workflow} />
         </div>
 
@@ -277,14 +335,14 @@ function apiBodyOf(run: WorkflowRun) {
 
 /* ------------------------------------------------------------------------------------- running */
 
-function Progress({ run, workflow, currentIndex, validated }: { run: WorkflowRun; workflow?: Workflow; currentIndex: number; validated: boolean }) {
+function Progress({ run, workflow, currentIndex, validated, paused, onStepForward }: { run: WorkflowRun; workflow?: Workflow; currentIndex: number; validated: boolean; paused: boolean; onStepForward?: () => void }) {
   const total = run.steps.length;
   const ended = Math.min(currentIndex, total);
   const current = run.current ? run.steps.find((s) => s.stepId === run.current?.stepId) : undefined;
   const retrying = run.current && run.current.attempt > 1;
   const nowTitle = !current ? 'Now calling' : retrying ? `Retrying · attempt ${run.current?.attempt} of ${current.attempts.length}` : 'Now calling';
   const def = workflow?.steps.find((s) => s.stepId === current?.stepId);
-  const target = current?.request ? `${current.request.method} ${current.request.url}` : def ? `${def.method} ${def.path}` : '';
+  const target = current?.request ? `${current.request.method} ${current.request.url}` : def ? `${def.method} ${resolvedUrl(run, def)}` : '';
   const nowLabel = !current ? 'All steps ended · computing the result…' : retrying ? `retryAfter → ${target}` : target;
   const label = (i: number) => {
     const ph = phaseOf(run, i);
@@ -309,12 +367,34 @@ function Progress({ run, workflow, currentIndex, validated }: { run: WorkflowRun
           return <span key={s.stepId} className="wfr-segment" data-status={ph === 'done' ? s.status : ph === 'running' ? 'running' : 'queued'} />;
         })}
       </div>
-      <p className="wfr-progress-note">
-        Steps run in list order. Each step resolves its runtime expressions, calls its operation, then checks its success criteria
-        {validated ? ' and validates its response against its OpenAPI schema' : ''}.
-      </p>
+      <div className="wfr-progress-foot">
+        <p className="wfr-progress-note">
+          Steps run in list order. Each step resolves its runtime expressions, calls its operation, then checks its success criteria
+          {validated ? ' and validates its response against its OpenAPI schema' : ''}.
+        </p>
+        {paused ? (
+          <Button size="sm" icon="chevron" onClick={onStepForward} aria-disabled={onStepForward ? undefined : true}>
+            Step forward
+          </Button>
+        ) : null}
+      </div>
     </section>
   );
+}
+
+/** URL a step calls, resolved from the inputs and the outputs the run has so far (before its request exists). */
+function resolvedUrl(run: WorkflowRun, def: Step): string {
+  const ctx = runContext(run);
+  let path = def.path;
+  const query: string[] = [];
+  for (const p of def.parameters) {
+    const v = p.value.startsWith('$') ? resolveExpression(p.value, ctx) : p.value;
+    const text = v === undefined ? `{${p.name}}` : String(v);
+    if (p.in === 'path') path = path.replace(`{${p.name}}`, encodeURIComponent(text));
+    else if (p.in === 'query') query.push(`${p.name}=${encodeURIComponent(text)}`);
+  }
+  const base = run.target.kind === 'implementations' ? (run.target.baseUrls[def.sourceName] ?? '') : (run.steps.find((x) => x.request)?.request?.url.replace(/\/pastries.*$/, '') ?? '');
+  return `${base}${path}${query.length ? `?${query.join('&')}` : ''}`;
 }
 
 /* ------------------------------------------------------------------------------------- summary */
@@ -328,12 +408,12 @@ function Summary({ run, totals, workflow }: { run: WorkflowRun; totals: { calls:
     <section aria-label="Run summary" className="wfr-card wfr-summary" data-result={passed ? 'passed' : 'failed'}>
       <div className="wfr-summary-head">
         <div className="wfr-summary-text">
-          <h2 className="wfr-verdict-title">
+          <h2 className="wfr-verdict-title" id="wfr-verdict-h" tabIndex={-1}>
             <Icon name={passed ? 'check' : 'cross'} size={20} strokeWidth={2.6} />
             {passed ? 'Run passed' : 'Run failed'}
           </h2>
           <span className="wfr-summary-end">{endLabel(run)}</span>
-          <span className="wfr-summary-explain">{verdictExplanation(run)}</span>
+          <span className="wfr-summary-explain">{explanationOf(run, workflow)}</span>
         </div>
         <dl className="run-facts wfr-summary-facts" data-layout="columns">
           <div className="run-facts-row">
@@ -406,6 +486,16 @@ function Summary({ run, totals, workflow }: { run: WorkflowRun; totals: { calls:
   );
 }
 
+/** The verdict sentence; a run ended early by an onSuccess end says which criterion held and what it spared. */
+function explanationOf(run: WorkflowRun, workflow?: Workflow): string {
+  const stopped = stoppedStep(run);
+  if (run.status !== 'SUCCESS' || !stopped) return verdictExplanation(run);
+  const action = workflow?.steps.find((s) => s.stepId === stopped.stepId)?.onSuccess.find((a) => a.type === 'end');
+  const held = action?.criteria?.map((c) => c.condition).join(' and ');
+  const name = run.workflowId === 'restock-pastry' ? run.outputs['pastryName'] : undefined;
+  return `${stopped.stepId}'s onSuccess end applied${held ? `: ${held} held` : ''}${typeof name === 'string' ? `, so ${name} needs no restock` : ''}. The run ended with SUCCESS; its outputs come from the steps it reached.`;
+}
+
 /** "Open operation PATCH /pastries/{name}": the operation of the step where the run stopped (else the last that ran). */
 function OpenOperation({ run, workflow }: { run: WorkflowRun; workflow?: Workflow }) {
   const step = stoppedStep(run) ?? [...run.steps].reverse().find((s) => s.status !== 'not-run');
@@ -468,17 +558,29 @@ function StepsBand({ run }: { run: WorkflowRun }) {
 
 /* ----------------------------------------------------------------------------- example judging */
 
-function ExampleJudging({ run, example }: { run: WorkflowRun; example: WorkflowExample }) {
-  const { rows, unmet, matches } = judgeExample(run, example);
+function ExampleJudging({ run, example, pending }: { run: WorkflowRun; example: WorkflowExample; pending: boolean }) {
+  const judged = judgeExample(run, example);
+  // While the run plays, the expectations wait for its end: every row is "Pending".
+  const rows = pending ? judged.rows.map((r) => ({ ...r, got: '…' })) : judged.rows;
+  const unmet = pending ? [] : judged.unmet;
+  const matches = judged.matches;
   return (
-    <section aria-labelledby="wfr-ex-h" className="wfr-card wfr-example" data-result={matches ? 'passed' : 'failed'}>
+    <section aria-labelledby="wfr-ex-h" className="wfr-card wfr-example" data-result={pending ? 'pending' : matches ? 'passed' : 'failed'}>
       <div className="wfr-example-head">
         <h2 id="wfr-ex-h" className="wfr-example-title">
           Example <span className="wfr-example-name">{example.id}</span>
         </h2>
-        <Verdict tone={matches ? 'success' : 'danger'} icon={matches ? 'check' : 'cross'} size={14}>
-          {matches ? 'Matches the example' : 'Does not match the example'}
-        </Verdict>
+        <span role="status">
+          {pending ? (
+            <Verdict tone="muted" icon="running" size={14}>
+              Judged once the run ends
+            </Verdict>
+          ) : (
+            <Verdict tone={matches ? 'success' : 'danger'} icon={matches ? 'check' : 'cross'} size={14}>
+              {matches ? 'Matches the example' : 'Does not match the example'}
+            </Verdict>
+          )}
+        </span>
       </div>
       <div className="wfr-table-wrap">
         <table className="wfr-table" data-min="560">
@@ -493,18 +595,24 @@ function ExampleJudging({ run, example }: { run: WorkflowRun; example: WorkflowE
           </thead>
           <tbody>
             {rows.map((r, i) => (
-              <tr key={i} data-met={r.met ? undefined : 'false'}>
+              <tr key={i} data-met={pending || r.met ? undefined : 'false'}>
                 <th scope="row" className="wfr-example-kind">
                   {r.kind}
                 </th>
                 <td className="wfr-mono-sm">{r.expected}</td>
-                <td className="wfr-mono-sm" data-tone={r.met ? undefined : 'danger'}>
+                <td className="wfr-mono-sm" data-tone={pending ? 'muted' : r.met ? undefined : 'danger'}>
                   {r.got}
                 </td>
                 <td>
-                  <Verdict tone={r.met ? 'success' : 'danger'} icon={r.met ? 'check' : 'cross'}>
-                    {r.met ? 'Met' : 'Not met'}
-                  </Verdict>
+                  {pending ? (
+                    <Verdict tone="muted" icon="dash">
+                      Pending
+                    </Verdict>
+                  ) : (
+                    <Verdict tone={r.met ? 'success' : 'danger'} icon={r.met ? 'check' : 'cross'}>
+                      {r.met ? 'Met' : 'Not met'}
+                    </Verdict>
+                  )}
                 </td>
               </tr>
             ))}
@@ -528,7 +636,7 @@ function Properties({ run, detail, example }: { run: WorkflowRun; detail?: Detai
   const onMocks = run.target.kind === 'mocks';
   const firstBaggage = run.steps.find((s) => s.status !== 'not-run')?.baggage;
   const outputs = Object.entries(run.outputs);
-  const verdict = example && run.status !== 'RUNNING' ? (judgeExample(run, example).matches ? 'Matches' : 'Does not match') : undefined;
+  const verdict = example ? (run.status === 'RUNNING' ? 'Judged once the run ends' : judgeExample(run, example).matches ? 'Matches' : 'Does not match') : undefined;
   const rows: { term: string; value: React.ReactNode }[] = [
     {
       term: 'Workflow',

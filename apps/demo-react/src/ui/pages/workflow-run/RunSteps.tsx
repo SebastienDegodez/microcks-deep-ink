@@ -372,7 +372,7 @@ function StepBody({ step, def, run, running }: { step: StepResult; def?: Step; r
             lineNumbers
             copy={false}
             variant="plain"
-            aria-label={`Response of ${step.stepId}`}
+            caption={`Response of ${step.stepId}${step.attempts.length > 1 ? `, attempt ${step.attempts.length}` : ''}`}
           />
         ) : (
           <span className="wfr-faint wfr-small">Body · Empty</span>
