@@ -12,7 +12,7 @@
   .table {
     width: 100%;
     border-collapse: collapse;
-    font: 400 14px/20px var(--font-ui);
+    font: 400 13px/18px var(--font-ui);
     color: var(--text);
   }
 
@@ -22,25 +22,31 @@
     font: var(--type-heading);
   }
 
-  .table th {
-    padding: 10px var(--space-4);
-    text-align: start;
-    white-space: nowrap;
-    font: var(--type-label);
-    letter-spacing: var(--type-label-tracking);
-    text-transform: uppercase;
-    color: var(--text-secondary);
-    background: var(--canvas);
-    border-bottom: 1px solid var(--border);
-  }
-
+  .table th,
   .table td {
-    padding: var(--space-3) var(--space-4);
-    white-space: nowrap;
+    padding: 10px 14px;
+    text-align: start;
+    vertical-align: middle;
     border-bottom: 1px solid var(--border);
   }
+  /* Column headers only: row headers (th scope=row) read like body cells. */
+  .table thead th {
+    white-space: nowrap;
+    font: 600 11px/16px var(--font-ui);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    background: var(--surface);
+  }
+  .table tbody th {
+    font-weight: 600;
+  }
+  .table [data-nowrap] {
+    white-space: nowrap;
+  }
+  .table[data-density="compact"] th,
   .table[data-density="compact"] td {
-    padding-block: var(--space-2);
+    padding: 8px 12px;
   }
   .table tbody tr:last-child td {
     border-bottom: 0;
@@ -50,19 +56,23 @@
     text-align: end;
   }
   .table td[data-mono] {
-    font: var(--type-code);
+    font: 400 13px/18px var(--font-mono);
   }
 
   /* Rows with a link: the link of the first cell is stretched over the whole row. */
   .table tbody tr {
     position: relative;
   }
-  .table tbody tr:hover {
-    background: var(--raised);
+  .table tbody tr:has(.table-rowlink):hover {
+    background: var(--surface);
   }
+  /* The row link reads as the row's name: plain text, underlined on hover. */
   .table-rowlink {
-    color: var(--link);
-    font-weight: 600;
+    color: inherit;
+    font-weight: inherit;
+    text-decoration: none;
+  }
+  .table-rowlink:hover {
     text-decoration: underline;
   }
   .table-rowlink::after {
@@ -77,12 +87,13 @@
     z-index: 1;
   }
 
-  /* Selected row: tint, a bar on the start edge (shape, not only hue), and aria-current on its link. */
-  .table tbody tr[data-selected] {
+  /* Selected row: the selected fill, and aria-current on its link (or a hidden "Selected:"). */
+  .table tbody tr[data-selected],
+  .table tbody tr[data-selected]:hover {
     background: var(--selected);
   }
-  .table tbody tr[data-selected] td:first-child {
-    box-shadow: inset 3px 0 0 var(--action);
+  @media (forced-colors: active) {
+    .table tbody tr[data-selected] td:first-child { border-inline-start: 3px solid Highlight; }
   }
 
   /* Sort button inside a header cell */

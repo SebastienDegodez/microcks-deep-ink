@@ -14,6 +14,8 @@ export interface DataTableColumn<T> {
   header: string;
   align?: 'start' | 'end';
   mono?: boolean;
+  /** Keeps the cells of this column on one line. Cells wrap by default. */
+  nowrap?: boolean;
   /** Custom cell text. Defaults to `String(row[key])`. For rich cells use `<ng-template mkCell="key">`. */
   render?: (row: T) => string;
   /** Renders the header as a sort button. */
@@ -103,7 +105,7 @@ export class TableDirective {
             @for (row of rows(); track keyOf(row)) {
               <tr [attr.data-selected]="isSelected(row) ? '' : null">
                 @for (c of columns(); track c.key; let i = $index) {
-                  <td [attr.data-align]="c.align === 'end' ? 'end' : null" [attr.data-mono]="c.mono ? '' : null">
+                  <td [attr.data-align]="c.align === 'end' ? 'end' : null" [attr.data-mono]="c.mono ? '' : null" [attr.data-nowrap]="c.nowrap ? '' : null">
                     @if (i === 0 && rowHref()) {
                       @if (rowLinkTemplate(); as link) {
                         <ng-container
