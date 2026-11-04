@@ -202,3 +202,5 @@ button.sync-entry:hover { background: var(--surface); }
 .diff-line[data-kind='skipped'], .diff-line[data-kind='skipped'] > .diff-line-sign { color: var(--warning); }
 .diff-line > .diff-line-sign { background: transparent; }
 .diff-empty { padding: 12px 14px; border: 1px dashed var(--border-strong); border-radius: var(--radius-badge); font: 400 13px/1.5 var(--font-ui); color: var(--text-secondary); }
+
+.sources-shown { font: 400 13px/18px var(--font-ui); color: var(--text-muted); }
