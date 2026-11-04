@@ -50,4 +50,6 @@
 @import './section-label.css';
 @import './bar-chart.css';
 @import './facts.css';
-@import './result-box.css';
+@import './projection-pill.css';
+@import './run-meta.css';
+@import './ci-panel.css';

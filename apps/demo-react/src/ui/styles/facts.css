@@ -67,6 +67,10 @@
   /* Boxed on the surface fill (Traces call detail). */
   .facts[data-boxed="surface"] { padding: 12px; background: var(--surface); }
 
+  /* Small terms (Traces call detail, Usage totals): 11px with a normal line height. lg is below. */
+  .facts[data-size="sm"] > .facts-row > dt { font-size: 11px; line-height: normal; }
+  .facts[data-size="sm"] > .facts-row > dd { line-height: normal; }
+
   /* Strong values: figures (Usage totals 14px, WorkflowRun stats). */
   .facts[data-strong] > .facts-row > dd { font-size: 14px; font-weight: 600; }
 

@@ -1,0 +1,19 @@
+/* Deep Ink · projection-pill@0.2.0 · copied from packages/registry. You own this file. */
+@layer deep-ink.components {
+  /* A proposed feature, not available today: dashed strong border, muted 11px mono text (Agent, AgentTestRun, Import, Sources). */
+  .projection-pill {
+    display: inline-flex;
+    align-items: center;
+    box-sizing: border-box;
+    height: 24px;
+    padding: 0 9px;
+    border: 1px dashed var(--border-strong);
+    border-radius: 6px;
+    color: var(--text-muted);
+    font: 400 11px/16px var(--font-mono);
+    white-space: nowrap;
+  }
+  @media (forced-colors: active) {
+    .projection-pill { border-color: CanvasText; }
+  }
+}

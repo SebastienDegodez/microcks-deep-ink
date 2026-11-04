@@ -32,9 +32,10 @@ describe('Arazzo screens', () => {
 
   it('Workflow shows tabs with a roving tabindex and a Steps table with the same steps', async () => {
     renderAt('/workflows/pastry/restock-pastry/steps?run=14');
-    expect(await screen.findByRole('heading', { level: 1, name: 'restock-pastry' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 1, name: /Restock a pastry/ })).toBeTruthy();
     const tabs = await screen.findAllByRole('tab');
-    expect(tabs.map((t) => t.textContent)).toEqual(expect.arrayContaining(['Loom', 'Steps', 'Source', 'Mock URL', 'Sessions', 'Examples', 'Runs']));
+    for (const name of ['Loom', 'Steps', 'Source', 'Mock URL', 'Sessions', 'Examples', 'Runs']) expect(screen.getByRole('tab', { name: new RegExp(`^${name}`) })).toBeTruthy();
+    expect(screen.getByRole('note').textContent).toContain('Run #14 · step 3, patchPastry, failed after 3 attempts');
     expect(tabs.filter((t) => t.getAttribute('tabindex') === '0')).toHaveLength(1);
     expect((await screen.findAllByText('patchPastry')).length).toBeGreaterThan(0);
   });
