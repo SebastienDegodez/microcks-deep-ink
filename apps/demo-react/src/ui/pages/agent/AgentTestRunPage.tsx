@@ -364,6 +364,11 @@ function Results({ run, phase, tick, conversationSubs, onStep, onReplay, onEdit 
   const current = running ? run.checks[tick] : undefined;
   const log = agentRunnerLog(run, shown, running);
 
+  // While running, only failures are announced (the start and the finish are announced too), never each check.
+  useEffect(() => {
+    if (running && last?.result === 'fail') announce(`${agentCellName(last.row, last.transport)} failed.`);
+  }, [running, last, announce]);
+
   useEffect(() => {
     if (!running) announce(`Test finished. ${all.conversationPassed} of ${all.conversationTotal} conversation checks passed.`);
   }, [running, announce, all.conversationPassed, all.conversationTotal]);
@@ -539,6 +544,18 @@ export default function AgentTestRunPage() {
   }, []);
 
   const n = current?.checks.length ?? 0;
+  const announce = useAnnounce();
+  // When the run finishes on its own timer, Step forward and Skip to result disappear: give the focus to the title.
+  const previousPhase = useRef(phase);
+  useEffect(() => {
+    const was = previousPhase.current;
+    previousPhase.current = phase;
+    if (was === 'running' && phase === 'done') {
+      requestAnimationFrame(() => {
+        if (!document.activeElement || document.activeElement === document.body) document.getElementById(PAGE_TITLE_ID)?.focus();
+      });
+    }
+  }, [phase]);
   const step = useCallback(() => {
     setTick((t) => {
       if (t + 1 >= n) {
@@ -562,25 +579,26 @@ export default function AgentTestRunPage() {
         setTick(0);
         setError('');
         setPhase('running');
+        announce(`Run #${result.id} started: ${result.checks.length} checks.`);
         focusTitle();
       } catch (e) {
         setError(e instanceof Error ? e.message : String(e));
       }
     },
-    [uc, focusTitle],
+    [uc, focusTitle, announce],
   );
 
   const hasRun = phase !== 'setup' && Boolean(current);
   const running = phase === 'running';
   const elapsed = current ? agentElapsedMs(current.checks, running ? tick : current.checks.length) : 0;
   const passed = current ? agentRunPassed(current.checks) : true;
-  const replay = () => { setTick(0); setReplays((r) => r + 1); setPhase('running'); };
+  const replay = () => { setTick(0); setReplays((r) => r + 1); setPhase('running'); announce(`Run #${id} replayed: ${n} checks.`); };
   const skip = () => { setPhase('done'); focusTitle(); };
   const cardUrl = hasRun && current ? current.setup.cardUrl : (current?.setup.cardUrl ?? defaults.data?.setup.cardUrl ?? '');
 
   const badges = (
     <span className="run-badges">
-      <RouterLink to={`/services/${serviceId}`} className="run-badge-link" aria-label="Agent Pastry concierge 1.0">
+      <RouterLink to={`/services/${serviceId}`} className="run-badge-link">
         <ApiBadge protocol="A2A" name="Pastry concierge 1.0" size="lg" />
       </RouterLink>
       <span className="projection-pill" title="A2A does not exist in Microcks today: this screen projects a protocol module for v2">Projection · v2 module</span>
@@ -589,7 +607,7 @@ export default function AgentTestRunPage() {
       ) : running ? (
         <>
           <LiveIndicator />
-          <span role="status" className="run-running">
+          <span className="run-running">
             <Icon name="running" size={15} className="run-spin" />
             Running · check {Math.min(tick + 1, n)} of {n}
           </span>

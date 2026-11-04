@@ -216,7 +216,7 @@
 }
 .stream-events > li:last-child { border-bottom: 0; }
 .stream-events > li[data-bad] { background: var(--danger-tint); }
-.stream-events > li[data-expected] { border-bottom-style: dashed; border-bottom-color: var(--danger); }
+.stream-events > li[data-expected] { border-bottom-style: dashed; border-bottom-color: var(--border-strong); }
 .stream-at { flex: 0 0 72px; white-space: nowrap; font-variant-numeric: tabular-nums; color: var(--text-muted); }
 .stream-mark { flex: 0 0 18px; font-size: 13px; font-weight: 600; color: var(--danger); }
 .stream-kind { flex: 0 1 230px; min-width: 0; font-weight: 600; color: var(--text); overflow-wrap: anywhere; }
