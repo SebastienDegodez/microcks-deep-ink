@@ -57,7 +57,7 @@
 .constraints-table th:nth-child(4) { width: 84px; }
 .constraints-table th:last-child,
 .constraints-table td:last-child { width: 44px; padding-right: 12px; }
-.constraints-table th:nth-child(2) { width: 24%; }
+.constraints-table th:nth-child(2) { width: 150px; }
 .constraints-table thead th {
   background: var(--surface);
   font: 600 11px/16px var(--font-ui);

@@ -416,12 +416,41 @@ export function reachability(behavior: Behavior, examples: readonly Example[]): 
   }));
 }
 
+/** Name stored as `dispatcher`: the script language for SCRIPT, else the dispatcher itself. */
+function storedDispatcher(behavior: Behavior): string {
+  return behavior.dispatcher === 'SCRIPT' ? (behavior.scriptLanguage ?? 'GROOVY') : behavior.dispatcher;
+}
+
+/**
+ * One-line form of `storedAs`, for the Saved strip: `URI_PARTS · rule: name`, `GROOVY · <script, 10 lines>`,
+ * `JSON_BODY · /name, 2 cases`, `FALLBACK · URI_PARTS name → Millefeuille`, `PROXY_FALLBACK · URI_PARTS name → proxyUrl`.
+ */
+export function storedSummary(behavior: Behavior): string {
+  const dispatcher = storedDispatcher(behavior);
+  const base = `${behavior.baseDispatcher ?? 'URI_PARTS'} ${behavior.rule || '(none)'}`;
+  switch (behavior.dispatcher) {
+    case 'SCRIPT':
+      return `${dispatcher} · <script, ${(behavior.script ?? '').split('\n').length} lines>`;
+    case 'JSON_BODY': {
+      const parsed = parseJsonBodyRule(behavior.rule);
+      if ('error' in parsed) return `${dispatcher} · invalid rules`;
+      const n = Object.keys(parsed.rule.cases).length;
+      return `${dispatcher} · ${parsed.rule.exp || '?'}, ${n} ${n === 1 ? 'case' : 'cases'}`;
+    }
+    case 'FALLBACK':
+      return `${dispatcher} · ${base} → ${behavior.fallback ?? 'no fallback'}`;
+    case 'PROXY_FALLBACK':
+      return `${dispatcher} · ${base} → proxyUrl`;
+    default:
+      return `${dispatcher} · rule: ${behavior.rule || '(none)'}`;
+  }
+}
+
 /** "dispatcher: URI_PARTS / dispatcherRules: name", as stored in the contract. */
 export function storedAs(behavior: Behavior): string {
-  let dispatcher: string = behavior.dispatcher;
+  const dispatcher = storedDispatcher(behavior);
   let rules = behavior.rule;
   if (behavior.dispatcher === 'SCRIPT') {
-    dispatcher = behavior.scriptLanguage ?? 'GROOVY';
     rules = `<script, ${(behavior.script ?? '').split('\n').length} lines>`;
   } else if (behavior.dispatcher === 'FALLBACK') {
     rules = JSON.stringify({ dispatcher: behavior.baseDispatcher ?? 'URI_PARTS', dispatcherRules: behavior.rule, fallback: behavior.fallback }, null, 2);

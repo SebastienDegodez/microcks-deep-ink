@@ -4,7 +4,7 @@ import './config.css';
 import { useMemo, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router';
 import {
-  isValidRegExp, scriptSample, type Behavior, type ParameterConstraint,
+  isValidRegExp, scriptSample, storedSummary, type Behavior, type ParameterConstraint,
 } from '@/domain/catalog';
 import { PageHeader, useAnnounce, useQuery, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
@@ -35,8 +35,11 @@ export default function BehaviorPage() {
   const setDraft = (value: Behavior | undefined) => setEdits(value ? { key: editKey, value } : undefined);
   const [switched, setSwitched] = useState(false);
   const [savedAt, setSavedAt] = useState(false);
+  // What was just saved, shown at once while the saved query reloads.
+  const [justSaved, setJustSaved] = useState<{ key: string; value: Behavior } | undefined>();
+  const current = justSaved?.key === editKey ? justSaved.value : saved.data;
 
-  const dirty = useMemo(() => Boolean(draft && saved.data && JSON.stringify(draft) !== JSON.stringify(saved.data)), [draft, saved.data]);
+  const dirty = useMemo(() => Boolean(draft && current && JSON.stringify(draft) !== JSON.stringify(current)), [draft, current]);
 
   if (op.status === 'error' && !op.data) {
     return (<><PageHeader title="Operation behavior" /><ErrorBlock error={op.error} what="The operation" onRetry={op.reload} /></>);
@@ -57,10 +60,13 @@ export default function BehaviorPage() {
       setSwitched(true);
       announce('Stateful mock on. Dispatcher switched to SCRIPT with a view-counter sample.');
     } else {
-      edit({ stateful: false });
+      // Back to the plain sample of the language; the counters of the store are dropped with it.
+      edit({ stateful: false, script: scriptSample(draft.scriptLanguage ?? 'GROOVY', false) });
       setSwitched(false);
     }
   };
+  // The contract infers URI_PARTS on the path parameters; say so only while that is what is saved.
+  const inferred = current?.dispatcher === 'URI_PARTS' && current.rule === pathParams.join(' && ');
   const headerCount = draft.constraints.filter((c) => c.in === 'header').length;
   const counts = `${headerCount} header · ${draft.constraints.length - headerCount} query`;
   const setConstraint = (i: number, patch: Partial<ParameterConstraint>) =>
@@ -68,6 +74,7 @@ export default function BehaviorPage() {
 
   const save = async () => {
     await uc.catalog.saveBehavior(serviceId, operationId, draft);
+    setJustSaved({ key: editKey, value: draft });
     saved.reload();
     setSavedAt(true);
     announce('Behavior saved.');
@@ -96,13 +103,13 @@ export default function BehaviorPage() {
         />
         <div role="note" aria-label="Saved behavior" className="summary-strip">
           <span className="summary-strip-label">Saved</span>
-          <span className="summary-strip-value">{saved.data?.dispatcher} · rule: {saved.data?.rule || '(none)'}</span>
+          <span className="summary-strip-value">{current ? storedSummary(current) : ''}</span>
           <span aria-hidden="true" className="summary-strip-sep" />
-          <span className="summary-strip-value">delay {saved.data?.delayMs} ms {saved.data?.delayStrategy ?? 'fixed'}</span>
+          <span className="summary-strip-value">delay {current?.delayMs} ms {current?.delayStrategy ?? 'fixed'}</span>
           <span aria-hidden="true" className="summary-strip-sep" />
-          <span className="summary-strip-value">{saved.data?.constraints.length} constraints</span>
+          <span className="summary-strip-value">{current?.constraints.length} constraints</span>
           <span aria-hidden="true" className="summary-strip-sep" />
-          <span className="summary-strip-label">{exs.length} examples · dispatcher inferred from the OpenAPI path parameter</span>
+          <span className="summary-strip-label">{exs.length} examples{inferred ? ' · dispatcher inferred from the OpenAPI path parameter' : ''}</span>
           {savedAt ? <span role="status" className="behavior-saved"><Icon name="check" size={14} />Behavior saved</span> : null}
         </div>
       </div>
