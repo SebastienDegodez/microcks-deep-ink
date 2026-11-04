@@ -19,7 +19,12 @@
   .api-badge[data-protocol="a2a"] { --badge-proto: var(--proto-a2a); }
 
   .api-badge > span { display: inline-flex; align-items: center; padding: 4px 9px; }
+  .api-badge[data-size="md"] > .api-badge-type { padding-inline: 8px; }
   .api-badge[data-size="sm"] > span { padding: 2px 6px; font-size: 11px; }
+  /* Card (badge wall): 13px, roomier segments, the version in the text colour, a long name ellipsed. */
+  .api-badge[data-size="card"] > span { padding: 6px 10px; font-size: 13px; }
+  .api-badge[data-size="card"] > .api-badge-version { color: var(--text); }
+  .api-badge[data-size="card"] > .api-badge-name { display: block; flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
   /* Page headers: the name is set in the brand font. lg sits beside an h1, xl is the h1 itself. */
   .api-badge[data-size="lg"] > .api-badge-type { padding: 0 9px; }
   .api-badge[data-size="lg"] > .api-badge-name,
@@ -47,6 +52,9 @@
   .api-badge[data-status="danger"] .api-badge-name { background: var(--danger); color: var(--on-status); font-weight: 600; }
   .api-badge[data-status="warning"] .api-badge-name { background: var(--warning); color: var(--on-status); font-weight: 600; }
   .api-badge[data-status="info"] .api-badge-name { background: var(--link); color: var(--on-action); font-weight: 600; }
+  /* Neutral proof ("untested", "not exposed"): no fill, muted regular text. */
+  .api-badge[data-status="neutral"] .api-badge-name,
+  .api-badge-value[data-status="neutral"] { color: var(--text-muted); font-weight: 400; }
   .api-badge-name > .icon { margin-inline-end: 4px; flex: none; }
   /* Extra proof values ("samples │ 7 │ +1 AI") are further filled segments of the same badge. */
   .api-badge-value { font-weight: 600; background: var(--surface); color: var(--text); }

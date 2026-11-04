@@ -82,3 +82,16 @@ export const ProofValues: StoryObj = {
     template: `<span mkApiBadge label="samples" value="7" [values]="values"></span>`,
   }),
 };
+
+export const Card: StoryObj = {
+  name: "Card (badge wall)",
+  render: () => ({
+    template: `
+      <div class="stack" style="max-width: 260px">
+        <span mkApiBadge size="card" protocol="REST" name="API Pastry" version="2.0"></span>
+        <span mkApiBadge size="card" protocol="EVENT" name="Pastry orders API with a long name" version="0.1.0"></span>
+        <span mkApiBadge label="conformance" value="untested" status="neutral"></span>
+      </div>
+    `,
+  }),
+};
