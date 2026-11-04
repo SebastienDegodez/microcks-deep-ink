@@ -31,7 +31,7 @@ export default function RunSetupPage() {
   if (setup.status === 'error') {
     return (
       <>
-        <PageHeader title="Run a workflow" eyebrow="Workflows" />
+        <PageHeader title="Run a workflow" />
         <ErrorBlock error={setup.error} onRetry={setup.reload} title="The run form could not be loaded" />
       </>
     );
@@ -39,7 +39,7 @@ export default function RunSetupPage() {
   if (!setup.data) {
     return (
       <>
-        <PageHeader title="Run a workflow" eyebrow="Workflows" />
+        <PageHeader title="Run a workflow" />
         <LoadingBlock label="Loading the run form" rows={6} />
       </>
     );
@@ -163,7 +163,6 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
     <>
       <PageHeader
         title="Run a workflow"
-        eyebrow="Workflows"
         badge={<ApiBadge arazzo name={workflow.workflowId} />}
       />
       <div className="wf-grid-2">

@@ -29,7 +29,7 @@ let nextId = 0;
 
 /**
  * Skip link, banner, navigation and main landmarks. Below 768px the nav sits behind a Menu
- * disclosure button. Slots: `[mkShellBrand]`, `[mkShellActions]`, `[mkShellBanner]`; the page goes in the default slot.
+ * disclosure button. Slots: `[mkShellBrand]`, `[mkShellCenter]` (between the brand and the actions), `[mkShellActions]`, `[mkShellBanner]`; the page goes in the default slot.
  */
 @Component({
   selector: 'mk-app-shell',
@@ -45,6 +45,7 @@ let nextId = 0;
         Menu
       </button>
       <div class="topbar-brand">{{ brand() }}<ng-content select="[mkShellBrand]" /></div>
+      <div class="topbar-center"><ng-content select="[mkShellCenter]" /></div>
       <div class="topbar-actions"><ng-content select="[mkShellActions]" /></div>
     </header>
     <div class="shell-banner"><ng-content select="[mkShellBanner]" /></div>

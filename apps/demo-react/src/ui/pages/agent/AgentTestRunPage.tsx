@@ -344,7 +344,7 @@ export default function AgentTestRunPage() {
   const header = (
     <PageHeader
       title={title}
-      eyebrow={<span role="group" aria-label="Breadcrumb"><RouterLink to="/services">APIs &amp; Services</RouterLink> / <RouterLink to={`/services/${serviceId}/skills`}>Pastry concierge 1.0</RouterLink> / <span aria-current="page">Agent test</span></span>}
+      breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: 'Pastry concierge 1.0', to: `/services/${serviceId}/skills` }, { label: 'Agent test' }]}
       badge={<ApiBadge protocol="A2A" name="Pastry concierge" version="1.0" />}
       actions={<Button asChild variant="secondary"><RouterLink to={`/tests/service/${serviceId}`}>Test history</RouterLink></Button>}
     />
