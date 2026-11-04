@@ -40,3 +40,6 @@ export const SNAPSHOT_IMPORT_PREVIEW: SnapshotImportPreviewItem[] = [
   { name: 'Beer Catalog API 0.9', protocol: 'REST', effect: 'already exists · will be replaced', kind: 'replace' },
   { name: 'Order Tracking API 1.0', protocol: 'REST', effect: 'new · 2 operations, 5 examples', kind: 'new' },
 ];
+
+/** Export list of the Snapshots tab, in the prototype's order (agents are not exported). */
+export const SNAPSHOT_SERVICE_ORDER = ['pastry2', 'pastry1', 'orders', 'usersignedup', 'hellogrpc', 'movie', 'hellosoap', 'petstore', 'beer', 'rocks'];
