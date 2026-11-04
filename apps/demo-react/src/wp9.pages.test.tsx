@@ -149,23 +149,26 @@ describe('Usage (/metrics/:serviceId?)', () => {
     expect(within(figures).getByRole('region', { name: 'Conformance' }).textContent).toContain('92%');
   });
 
-  it('selects a bar with the keyboard and offers the data table', async () => {
+  it('selects a bar with the keyboard and keeps text equivalents', async () => {
     renderAt('/metrics/pastry2');
     await screen.findByRole('heading', { level: 1, name: 'Usage & conformance' });
-    const group = await screen.findByRole('group', { name: /one bar per hour/ });
+    const group = await screen.findByRole('group', { name: /one bar per hour/i });
     const bars = within(group).getAllByRole('button');
     const current = bars.find((b) => b.getAttribute('aria-pressed') === 'true') as HTMLElement;
     expect(current).toBeTruthy();
     fireEvent.keyDown(current, { key: 'ArrowLeft' });
     await waitFor(() => expect(bars.filter((b) => b.getAttribute('aria-pressed') === 'true')).toHaveLength(1));
-    expect(screen.getAllByText('Show data table').length).toBeGreaterThanOrEqual(2);
+    expect(screen.getByRole('table', { name: 'Invocations per hour · today' })).toBeTruthy();
+    expect(screen.getByRole('table', { name: 'Invocations per week and weekday' })).toBeTruthy();
+    const ops = screen.getByRole('table', { name: 'Invocations per operation' });
+    expect(within(ops).getAllByRole('columnheader').map((h) => h.textContent)).toEqual(['Operation', 'Dispatcher', 'Invocations', 'Share', 'vs previous', 'Last call']);
   });
 
   it('switches period and shows the conformance treemap and index card', async () => {
     renderAt('/metrics/pastry2');
     await screen.findByRole('heading', { level: 1 });
     fireEvent.click(await screen.findByRole('button', { name: '7 days' }));
-    await screen.findByRole('group', { name: /one bar per day/ });
+    await screen.findByRole('group', { name: /one bar per day/i });
     const treemap = await screen.findByRole('region', { name: 'Conformance risk by domain' });
     const pastry = within(treemap).getByRole('region', { name: 'domain=pastry' });
     expect(within(pastry).getAllByRole('link').map((l) => l.textContent)).toEqual([
