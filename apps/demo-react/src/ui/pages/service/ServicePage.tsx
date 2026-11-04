@@ -17,6 +17,7 @@ import { Input } from '@/ui/components/ui/input';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { Menu } from '@/ui/components/ui/menu';
 import { MethodTag } from '@/ui/components/ui/method-tag';
+import { SectionLabel } from '@/ui/components/ui/section-label';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
 import AgentPage from '../agent/AgentPage';
@@ -254,7 +255,7 @@ function ApiServicePage() {
         <TabPanel id="operations" idPrefix="svc" value={tabId}>
           <div className="service-ops">
             <div className="op-rail">
-              <p className="op-rail-head"><span>{pluralize(ops.data?.length ?? 0, 'operation')}</span><span>calls · 7 d</span></p>
+              <SectionLabel as="p" size="sm" weight="regular" split className="op-rail-head"><span>{pluralize(ops.data?.length ?? 0, 'operation')}</span><span>calls · 7 d</span></SectionLabel>
               <ul className="op-rail-list" aria-label={`Operations of ${svc.name} ${svc.version}`}>
                 {(ops.data ?? []).map((o) => {
                   const exs = allExamples.data?.[o.id] ?? [];
@@ -290,7 +291,7 @@ function ApiServicePage() {
                 </div>
 
                 <div className="op-mock">
-                  <label htmlFor="mock-url" className="section-label">Mock URL</label>
+                  <SectionLabel as="label" htmlFor="mock-url">Mock URL</SectionLabel>
                   <div className="op-mock-url">
                     <Input id="mock-url" mono readOnly value={mockUrl} />
                     <CopyButton value={mockUrl} size="md" label="Copy" />
@@ -462,7 +463,7 @@ function ApiServicePage() {
                 </div>
                 <p className="agent-card-lead">Every mock operation is published as an MCP tool. An AI agent discovers it via <span className="ex-mono">tools/list</span> and calls it with arguments derived from the contract's schemas: path, query and body grouped under <span className="ex-mono">params.arguments</span>.</p>
                 <div className="agent-card-block">
-                  <h3 className="section-label">Endpoints</h3>
+                  <SectionLabel as="h3">Endpoints</SectionLabel>
                   {[
                     { name: 'HTTP SSE', spec: 'MCP 2024-11-05', url: det.mcp.sseUrl },
                     { name: 'Streamable HTTP', spec: 'MCP 2025-03-26', url: det.mcp.httpUrl },
@@ -475,7 +476,7 @@ function ApiServicePage() {
                   ))}
                 </div>
                 <div className="agent-card-block">
-                  <h3 className="section-label">Exposed tools, as an agent sees them</h3>
+                  <SectionLabel as="h3">Exposed tools, as an agent sees them</SectionLabel>
                   {det.mcp.tools.map((t) => (
                     <div key={t.name} className="tool-card">
                       <div className="tool-card-main">
@@ -488,7 +489,7 @@ function ApiServicePage() {
                   ))}
                 </div>
                 <div className="agent-card-block">
-                  <h3 className="section-label">MCP client config</h3>
+                  <SectionLabel as="h3">MCP client config</SectionLabel>
                   <ScrollPre aria-label="MCP client config" className="agent-card-config">{det.mcp.clientConfig}</ScrollPre>
                   <span className="agent-card-foot">Tested with MCP Inspector, Claude, Postman and Cherry Studio.</span>
                 </div>
