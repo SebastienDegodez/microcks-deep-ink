@@ -1,0 +1,22 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "facts",
+  "title": "Facts",
+  "tier": "microcks",
+  "description": "Key/value list of an object's facts in a native <dl>: rows with a fixed term column (Sources, Service), an inline two-column grid (AgentTestRun, WorkflowRun), or columns of term-over-value (Workflow, Usage). Values can be mono, toned, or carry a muted sub line.",
+  "registryDependencies": ["base"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "Native <dl> > div.facts-row > dt + dd",
+    "keyboard": [["Tab", "Reaches links or buttons placed in a value"]],
+    "aria": [
+      "Each term/value pair is wrapped in a div, which keeps valid <dl> content and the term-value association",
+      "In the inline layout the row is display: contents, so the grid does not change the reading order",
+      "A value tone (success, danger) is secondary: the words carry the meaning"
+    ],
+    "rgaa": ["9.3", "3.1"],
+    "wcag": ["1.3.1", "1.4.1"],
+    "notes": "Static item: not focusable. Muted terms stay at 4.5:1 on the canvas, surface and bg backgrounds in both themes."
+  },
+  "stories": ["Microcks/Facts"]
+}
