@@ -1,4 +1,4 @@
-/* AI Copilot (Copilot.dc.html). `op-pick*` and `exchange*` are the class names of the coming registry items: switch to them when they land. */
+/* AI Copilot (Copilot.dc.html). The operation cards and the request / response cards are the registry op-pick and exchange-card. */
 .copilot { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .copilot .demo-page-description { max-width: 780px; font-size: 15px; line-height: 1.5; }
 .copilot-title-icon { color: var(--warning); stroke-width: 1.8; }
@@ -32,21 +32,6 @@
 .copilot-section-label { margin: 0; font-size: 11px; font-weight: 600; line-height: normal; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
 .copilot-op { display: flex; flex-direction: column; gap: 8px; }
 .copilot-op > .copilot-section-label { padding: 0 4px; }
-
-/* Operation picker cards */
-.op-pick-list { display: flex; flex-direction: column; gap: 6px; }
-.op-pick {
-  box-sizing: border-box; line-height: normal; display: flex; align-items: center; gap: 10px; width: 100%; margin: 0; padding: 10px 12px;
-  border: 1px solid var(--border); border-radius: 6px; background: var(--canvas); color: var(--text); font: inherit; text-align: start; cursor: pointer;
-}
-.op-pick:hover { border-color: var(--border-strong); }
-.op-pick[aria-checked="true"] { border-color: var(--action); background: var(--selected); }
-.op-pick > .method { flex: none; min-width: 48px; box-sizing: border-box; justify-content: center; text-align: center; }
-.op-pick-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.op-pick-path { font: 400 13px/normal var(--font-mono); overflow-wrap: break-word; }
-.op-pick-summary { font-size: 12px; line-height: normal; color: var(--text-muted); }
-.op-pick-end { flex: none; display: inline-flex; align-items: center; gap: 4px; font: 400 11px/1 var(--font-mono); color: var(--warning); }
-.op-pick-end[data-tone="success"] { color: var(--success); }
 
 /* Generation settings */
 .copilot-box { display: flex; flex-direction: column; gap: 14px; padding: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); }
@@ -140,20 +125,8 @@
 .proposal-conflict > .icon { flex: none; margin-top: 2px; }
 .proposal-body { padding: 0 12px 12px; }
 
-/* Request / response cards */
-.exchange { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
-.exchange-card { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
-.exchange-card-head {
-  display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 7px 12px;
-  background: var(--surface); border-bottom: 1px solid var(--border); font-size: 11px; line-height: 1.4;
-}
-.exchange-card-title { margin: 0; font: inherit; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
-.exchange-card-status { padding: 1px 7px; border-radius: 4px; background: var(--success); color: var(--on-status); font-family: var(--font-mono); font-weight: 600; }
-.exchange-card > pre { margin: 0; padding: 10px 12px; background: var(--bg); color: var(--text); font: 400 12px/1.6 var(--font-mono); white-space: pre; overflow-x: auto; }
-.exchange-card > pre + pre { padding-block: 8px; border-top: 1px solid var(--border); }
-.exchange-card > pre[data-tone="secondary"] { color: var(--text-secondary); }
-.exchange-card > pre[data-tone="params"] { color: var(--warning); }
-.exchange-card > pre[data-grow] { flex: 1; }
+/* Request / response cards: registry exchange-card (sm). The prototype pads the blocks after the first 8px 12px. */
+.proposal-body .exchange-card > pre + pre { padding-block: 8px; }
 
 /* Edit mode */
 .proposal-edit { display: flex; flex-direction: column; gap: 10px; }
