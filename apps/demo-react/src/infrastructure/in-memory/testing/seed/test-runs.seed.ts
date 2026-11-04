@@ -209,7 +209,7 @@ function conciergeRun(): TestRun {
   ];
   return {
     id: '3', serviceId: 'concierge', runner: 'A2A_CONFORMANCE', environment: 'staging', endpoint: 'https://concierge.staging.acme.io/.well-known/agent-card.json',
-    result: 'failed', startedAt: '2026-11-03T08:10:04Z', durationMs: 27_300, passed: 13, total: 15, timeoutMs: 15_000, steps, launchedBy: 'MA',
+    result: 'failed', startedAt: '2026-11-03T08:10:04Z', durationMs: 32_130, passed: 13, total: 15, timeoutMs: 15_000, steps, launchedBy: 'MA',
     reason: 'order-pastry · HTTP+JSON resumes input-required on a new task', operations: ['pass', 'fail', 'fail'],
     operationLabels: [{ id: 'recommend-pastry', method: 'SKILL', path: 'recommend-pastry' }, { id: 'order-pastry', method: 'SKILL', path: 'order-pastry' }, { id: 'track-order', method: 'SKILL', path: 'track-order' }],
   };
