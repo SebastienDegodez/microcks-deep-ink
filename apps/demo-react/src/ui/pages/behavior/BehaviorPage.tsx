@@ -14,7 +14,7 @@ import { MethodTag } from '@/ui/components/ui/method-tag';
 import { Panel } from '@/ui/components/ui/panel';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { SummaryStrip } from '@/ui/components/ui/summary-strip';
-import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { DispatcherPanel } from './DispatcherPanel';
 import { SimulatorPanel } from './SimulatorPanel';
 

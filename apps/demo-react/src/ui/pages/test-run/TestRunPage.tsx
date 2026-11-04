@@ -16,12 +16,14 @@ import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { ConformanceBand, type OperationResult } from '@/ui/components/ui/conformance-band';
 import { CiPanel } from '@/ui/components/ui/ci-panel';
+import { TEST_RESULT_WORD } from '@/ui/app/outcomes';
+import { useReplay } from '@/ui/app/use-replay';
 import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
 import { RunnerLog } from '@/ui/components/ui/runner-log';
-import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { useThrottledAnnounce } from '../tests/useThrottledAnnounce';
 import './test-run.css';
 
@@ -38,7 +40,6 @@ const LOOK: Record<StepState, { word: string; icon: IconName }> = {
   pend: { word: 'Queued', icon: 'circle' },
 };
 const SEGMENT: Record<StepState, RunSegment> = { pass: 'done', fail: 'failed', run: 'current', pend: 'queued' };
-const RESULT_WORD: Record<TestRun['result'], string> = { passed: 'passed', failed: 'failed', timeout: 'timed out', running: 'running' };
 
 export default function TestRunPage() {
   const { testRunId = '' } = useParams();
@@ -100,11 +101,7 @@ function RunView({ base }: { base: TestRun }) {
     () => setPlay((p) => (p.phase !== 'running' ? p : p.tick >= total ? { phase: 'done', tick: total } : { phase: 'running', tick: p.tick + 1 })),
     [total],
   );
-  useEffect(() => {
-    if (!running) return undefined;
-    const timer = setInterval(advance, STEP_MS);
-    return () => clearInterval(timer);
-  }, [running, advance]);
+  useReplay(running, advance, STEP_MS);
 
   const replay = () => {
     setPlay({ phase: 'running', tick: 0 });
@@ -146,7 +143,7 @@ function RunView({ base }: { base: TestRun }) {
     const prev = previousProgress.current;
     previousProgress.current = { finished, done };
     if (done && !prev.done) {
-      announce(`Test run #${base.id} ${RESULT_WORD[base.result]}: ${passCount} of ${total} steps passed.`);
+      announce(`Test run #${base.id} ${TEST_RESULT_WORD[base.result].toLowerCase()}: ${passCount} of ${total} steps passed.`);
     } else if (!done && finished > prev.finished) {
       const step = base.steps[finished - 1];
       if (step) throttled(`Step ${finished} of ${total}: ${step.name} ${step.result}.`);
@@ -207,7 +204,7 @@ function RunView({ base }: { base: TestRun }) {
           </span>
         </>
       ) : (
-        <ApiBadge label="result" value={RESULT_WORD[base.result]} status={base.result === 'passed' ? 'success' : base.result === 'failed' ? 'danger' : 'warning'} />
+        <ApiBadge label="result" value={TEST_RESULT_WORD[base.result].toLowerCase()} status={base.result === 'passed' ? 'success' : base.result === 'failed' ? 'danger' : 'warning'} />
       )}
     </span>
   );

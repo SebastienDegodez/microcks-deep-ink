@@ -22,6 +22,17 @@ export const ListAndDetail: StoryObj = {
   ),
 };
 
+/** `align="stretch"` makes both panes as tall as the taller one; `balanced` shares the width; `gap` sets the spacing. */
+export const StretchAndBalanced: StoryObj = {
+  name: 'Stretch, balanced and gap',
+  render: () => (
+    <SplitPane align="stretch" balanced gap="32px">
+      <SplitPaneSide as="nav" aria-label="Operations"><Panel title="Operations"><p>Short list</p></Panel></SplitPaneSide>
+      <SplitPaneMain><Panel title="Detail"><p>The detail pane is longer.</p><p>Both panes end on the same line.</p></Panel></SplitPaneMain>
+    </SplitPane>
+  ),
+};
+
 export const DetailFirst: StoryObj = {
   name: 'Wide list, detail on the right (Traces, Hub)',
   render: () => (

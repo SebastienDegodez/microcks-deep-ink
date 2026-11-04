@@ -24,6 +24,12 @@ export const Default: StoryObj = {
   },
 };
 
+/** `globalShortcut={false}` turns Ctrl/\u2318K off, for a page that has its own shortcut. */
+export const NoShortcut: StoryObj = {
+  name: 'Without the global shortcut',
+  render: () => <CommandBar inline globalShortcut={false} items={COMMANDS} label="Local commands" placeholder="Type a command" />,
+};
+
 export const Modal: StoryObj = {
   render: () => {
     const [open, setOpen] = useState(false);

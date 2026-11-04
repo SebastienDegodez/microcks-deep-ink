@@ -27,3 +27,27 @@ export const Tones: StoryObj = {
     `,
   }),
 };
+
+/** `tone="warning"`, a custom `icon`, `dismissLabel`, and `live="off"` for a box that is already on screen at load. */
+export const WarningDismissible: StoryObj = {
+  name: 'Warning, dismissible, not announced',
+  render: () => ({
+    template: `
+      <div style="max-width:560px">
+        <div mkResultBox tone="warning" icon="spark" title="Partial result" live="off" [dismissible]="true" dismissLabel="Dismiss the partial result">2 of 12 operations were skipped.</div>
+      </div>
+    `,
+  }),
+};
+
+/** `[bordered]="false"` and `surface="raised"`: a flat note on the raised fill, as the Agent test verdict. */
+export const FlatRaised: StoryObj = {
+  name: 'Not bordered, raised (verdict)',
+  render: () => ({
+    template: `
+      <div style="max-width:720px">
+        <div mkResultBox tone="danger" icon="cross" title="The agent answered a canceled task" [bordered]="false" surface="raised" live="off">tasks/cancel returned 200, then message/send on the same task id returned a new artifact. A canceled task must stay terminal.</div>
+      </div>
+    `,
+  }),
+};

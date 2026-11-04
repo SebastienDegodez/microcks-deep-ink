@@ -24,6 +24,25 @@ export const States: StoryObj = {
   }),
 };
 
+/** The terminal states `auth-required`, `canceled` and `rejected`, a ghost tag, a custom `label` and `showUnreached`. */
+export const OtherStates: StoryObj = {
+  name: 'Other states',
+  render: () => ({
+    props: { nodes: [{ state: 'submitted', at: '09:10:01' }, { state: 'working', at: '09:10:03', connector: '2 s' }, { state: 'canceled', at: '09:10:05', connector: '2 s' }] },
+    template: `
+      <div class="stack">
+        <div class="inline">
+          <span mkTaskStateTag state="auth-required"></span>
+          <span mkTaskStateTag state="canceled"></span>
+          <span mkTaskStateTag state="rejected"></span>
+          <span mkTaskStateTag state="completed" [ghost]="true"></span>
+        </div>
+        <ol mkTaskTimeline label="Cancelled task" [showUnreached]="false" [nodes]="nodes"></ol>
+      </div>
+    `,
+  }),
+};
+
 export const Timeline: StoryObj = {
   render: () => ({
     props: { nodes: AGENT_LIFECYCLE },

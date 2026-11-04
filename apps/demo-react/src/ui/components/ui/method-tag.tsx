@@ -1,6 +1,7 @@
 // Deep Ink · method-tag@0.2.0 · copied from packages/registry. You own this file.
 import type { HTMLAttributes } from 'react';
 
+/** The protocol union shared by method-tag, chip and api-badge (they re-export it from here). */
 export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 
 export interface MethodTagProps extends HTMLAttributes<HTMLSpanElement> {
@@ -13,7 +14,8 @@ export interface MethodTagProps extends HTMLAttributes<HTMLSpanElement> {
   size?: 'md' | 'sm' | 'xs';
 }
 
-const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
+/** `data-protocol` value of each protocol. */
+export const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
 
 /** The verb is the text, so color is never the only signal. */
 export function MethodTag({ method, protocol = 'REST', minWidth, size = 'md', className, style, ...rest }: MethodTagProps) {

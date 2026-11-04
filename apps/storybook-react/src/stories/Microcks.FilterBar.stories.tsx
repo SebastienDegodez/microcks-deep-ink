@@ -54,6 +54,17 @@ export const Catalogue: StoryObj = {
   },
 };
 
+/** `FilterReset` takes a `label` and shows the number of active filters. */
+export const ResetLabel: StoryObj = {
+  name: 'Reset button label',
+  render: () => (
+    <FilterBar label="Filter runs">
+      <FilterSearch label="Search runs" placeholder="Run number" />
+      <FilterReset count={3} label="Clear filters" />
+    </FilterBar>
+  ),
+};
+
 export const PageSearch: StoryObj = {
   name: 'Page search and category pills (Hub)',
   render: function Render() {

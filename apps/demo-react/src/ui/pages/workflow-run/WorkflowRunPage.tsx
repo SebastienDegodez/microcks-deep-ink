@@ -25,7 +25,8 @@ import { Icon } from '@/ui/components/ui/icon';
 import { DataTable } from '@/ui/components/ui/table';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { RunMeta } from '@/ui/components/ui/run-meta';
-import { ButtonRouterLink, ErrorBlock, LoadingBlock, runPath, runSetupPath, workflowPath } from '../workflows/shared';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
+import { ButtonRouterLink, runPath, runSetupPath, workflowPath } from '../workflows/shared';
 import { RunApiPanel, RunBadges, Verdict, implementationsText, runBreadcrumb } from './run-parts';
 import { RunSteps, phaseOf } from './RunSteps';
 import './workflow-run.css';
@@ -69,7 +70,7 @@ export default function WorkflowRunPage() {
     return (
       <>
         <PageHeader title="Workflow run" />
-        <LoadingBlock label="Loading the run" rows={5} />
+        <LoadingBlock label="the run" rows={5} />
       </>
     );
   }

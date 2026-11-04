@@ -5,7 +5,8 @@
   "description": "Signature shield: protocol or metric on the left, name and version or a proof on the right. The ARAZZO variant is inverted and never borrows a protocol color.",
   "registryDependencies": [
     "base",
-    "icon"
+    "icon",
+    "method-tag"
   ],
   "npmDependencies": {
     "react": [],

@@ -1,3 +1,4 @@
+import '../tests/page-kit.css';
 import { useId, useRef, useState, type FormEvent } from 'react';
 import { Link as RouterLink, useNavigate, useSearchParams } from 'react-router';
 import type { CreateTestForm } from '@/application/testing';
@@ -29,7 +30,7 @@ import { Input } from '@/ui/components/ui/input';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { Select } from '@/ui/components/ui/select';
 import { Switch } from '@/ui/components/ui/switch';
-import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import './test-create.css';
 
 interface HeaderRow extends CiHeader {

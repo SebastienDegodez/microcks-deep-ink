@@ -6,7 +6,7 @@ import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { SectionLabel } from '@/ui/components/ui/section-label';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { Select } from '@/ui/components/ui/select';
-import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { ConformanceSection } from './ConformanceSection';
 import { HourlyChart } from './HourlyChart';
 import { OperationsTable } from './OperationsTable';

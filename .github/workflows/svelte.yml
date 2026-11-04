@@ -1,0 +1,52 @@
+name: Svelte package
+
+# The Svelte workspace (svelte/): the stylesheet only, no components yet. Nothing is published.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "svelte/**"
+      - "packages/tokens/**"
+      - "packages/registry/src/css/**"
+      - "packages/registry/items/**"
+      - "packages/registry/css-order.json"
+      - "packages/registry/scripts/build-css.mjs"
+      - ".github/workflows/svelte.yml"
+  pull_request:
+    paths:
+      - "svelte/**"
+      - "packages/tokens/**"
+      - "packages/registry/src/css/**"
+      - "packages/registry/items/**"
+      - "packages/registry/css-order.json"
+      - "packages/registry/scripts/build-css.mjs"
+      - ".github/workflows/svelte.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: svelte-${{ github.ref }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+jobs:
+  svelte:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: |
+            pnpm-lock.yaml
+            svelte/pnpm-lock.yaml
+      # The stylesheet needs only the tokens and the registry CSS build (no Stencil, no Angular).
+      - run: pnpm install --frozen-lockfile --filter @microcks-deep-ink/tokens --filter @microcks-deep-ink/registry
+      - run: pnpm --filter @microcks-deep-ink/tokens build
+      - run: pnpm --filter @microcks-deep-ink/registry exec node scripts/build-css.mjs
+      - run: pnpm -C svelte install --frozen-lockfile
+      - run: pnpm -C svelte build
+      - run: test -s svelte/packages/deep-ink/dist/styles.css && test -s svelte/packages/deep-ink/dist/styles.no-fonts.css

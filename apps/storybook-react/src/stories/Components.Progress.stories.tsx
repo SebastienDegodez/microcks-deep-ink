@@ -18,6 +18,17 @@ export const Default: StoryObj = {
   ),
 };
 
+/** `Progress.max` for a count, and `Meter.min` for a range that does not start at zero. */
+export const CustomRange: StoryObj = {
+  name: 'Custom range',
+  render: () => (
+    <div className="sb-col" style={{ maxWidth: 420 }}>
+      <Progress label="Operations tested" value={8} max={12} />
+      <Meter label="Latency" value={140} min={50} max={500} low={200} high={350} optimum={80} valueText="140 ms" />
+    </div>
+  ),
+};
+
 export const MeterStory: StoryObj = {
   name: 'Meter',
   render: () => (

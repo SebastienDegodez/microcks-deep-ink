@@ -9,7 +9,7 @@ import { ProjectionPill } from '@/ui/components/ui/projection-pill';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { Select } from '@/ui/components/ui/select';
-import { pluralize } from '../explore-kit/format';
+import { pluralize } from '@/ui/app/format';
 
 interface ImportPreviewProps {
   preview: ImportPreview;

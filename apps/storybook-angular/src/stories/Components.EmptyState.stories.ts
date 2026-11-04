@@ -22,6 +22,19 @@ export const Default: StoryObj = {
   }),
 };
 
+/** `align="start"` for an empty panel inside a page; `headingLevel` follows the page outline. */
+export const AlignStart: StoryObj = {
+  name: 'Aligned to the start',
+  render: () => ({
+    template: `
+      <section mkEmptyState title="No runs yet" align="start" [headingLevel]="3">
+        Runs appear here after the first test.
+        <button mkEmptyActions mkButton variant="primary" icon="tests">Run a test</button>
+      </section>
+    `,
+  }),
+};
+
 export const NoResults: StoryObj = {
   name: "No results (icon)",
   render: () => ({

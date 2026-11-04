@@ -3,6 +3,8 @@
   data-tone: success (default) | warning | danger | neutral (thin frame on --bg) | info (strong frame on --raised).
   data-size="md" for 14px text in --text (toast). The icon is decorative; the words carry the result.
   An optional title (.result-box-title), an action slot and a 28px dismiss button named "Dismiss message".
+  data-surface="raised" for the --raised fill. data-bordered="false": no frame, a top-aligned note layout
+  (15px icon offset 3px, title in normal line height, 13px/1.55 text up to 80ch), as the Agent test verdict.
 -->
 <div class="result-box" role="status" data-size="md">
   <span class="result-box-icon" aria-hidden="true"><svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12l5 5 9-11"/></svg></span>
@@ -22,4 +24,12 @@
 <div class="result-box" role="status" data-tone="info">
   <div class="result-box-body"><span><strong>Pastry orders events</strong> deleted. Services already discovered remain but are no longer updated.</span></div>
   <span class="result-box-action"><button type="button" class="button" data-variant="secondary" data-size="sm">Undo</button></span>
+</div>
+
+<div class="result-box" data-tone="danger" data-bordered="false" data-surface="raised">
+  <span class="result-box-icon" aria-hidden="true"><svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg></span>
+  <div class="result-box-body">
+    <p class="result-box-title">The agent answered a canceled task</p>
+    <span>tasks/cancel returned 200, then message/send on the same task id returned a new artifact. A canceled task must stay terminal.</span>
+  </div>
 </div>
