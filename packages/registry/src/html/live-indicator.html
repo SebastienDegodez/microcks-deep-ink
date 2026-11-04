@@ -1,11 +1,12 @@
 <!-- LiveIndicator. Marks a real-time stream only. Not a status, not a live region.
-     data-size="md | sm | lg"; data-variant="pill | inline | box" (inline: no border, for KPI cards;
-     box: a dashed 36px frame, lg 44px, shown in place of a busy button). The dot pulses (1.6s), not under reduced motion. -->
+     data-size="md | sm | lg"; data-variant="pill | inline | box | dot" (inline: no border, for KPI cards;
+     box: a dashed 36px frame, lg 44px, shown in place of a busy button; dot: the 7px dot alone, the label in .sr-only). The dot pulses (1.6s), not under reduced motion. -->
 <span class="live" data-size="md" data-variant="pill"><span class="live-dot" aria-hidden="true"></span>live · ~19 calls/min</span>
 <span class="live" data-size="sm" data-variant="pill"><span class="live-dot" aria-hidden="true"></span>live</span>
 <span class="live" data-size="md" data-variant="box"><span class="live-dot" aria-hidden="true"></span>live · installing 3 APIs</span>
 <span class="live" data-size="lg" data-variant="box"><span class="live-dot" aria-hidden="true"></span>live · fetching and importing artifacts</span>
 <span class="live" data-variant="inline"><span class="live-dot" aria-hidden="true"></span>live</span>
+<span class="live" data-size="md" data-variant="dot"><span class="live-dot" aria-hidden="true"></span><span class="sr-only">live</span></span>
 
 <!-- Paused: add data-paused, swap the dot for a pause glyph and write the word. -->
 <span class="live" data-paused data-size="md" data-variant="pill"><svg class="icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 5v14M16 5v14"/></svg>paused · 2 new calls</span>
