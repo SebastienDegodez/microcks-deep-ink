@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/EmptyState',
+  component: EmptyState,
   parameters: itemParams(['empty-state', 'button'], 'Says what is missing and offers the next step. The title is a heading: choose its level with `headingLevel`.'),
-} satisfies Meta;
+} satisfies Meta<typeof EmptyState>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -24,4 +25,13 @@ export const NoResults: StoryObj = {
       <p>None of the 11 services matches: “zzz”. Remove a filter or reset the selection.</p>
     </EmptyState>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof EmptyState> = {
+  args: { title: 'No services yet', headingLevel: 2, icon: 'search-x', align: 'center', children: 'Import a contract to create your first service.' },
+  argTypes: {
+    align: { control: 'inline-radio', options: ['center', 'start'] },
+    headingLevel: { control: 'inline-radio', options: [1, 2, 3, 4, 5, 6] },
+  },
 };

@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Field',
+  component: Field,
   parameters: itemParams(['field', 'input'], 'Links the visible label, help and error to the control through `id` and `aria-describedby`, and sets `aria-invalid`. The error shows an icon and text, never color alone.'),
-} satisfies Meta;
+} satisfies Meta<typeof Field>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -38,4 +39,9 @@ export const WithError: StoryObj = {
       </Field>
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Field> = {
+  args: { label: 'Service name', help: 'As written in the contract title.', error: undefined, required: false, children: (c) => <Input {...c} defaultValue="API Pastry" /> },
 };
