@@ -340,9 +340,13 @@ describe('Administration (/admin/:tab?)', () => {
     renderAt('/admin/secrets');
     await screen.findByRole('heading', { level: 1 });
     fireEvent.click(await screen.findByRole('button', { name: 'New secret' }, { timeout: 3000 }));
-    const create = screen.getByRole('button', { name: 'Create secret' }) as HTMLButtonElement;
-    expect(create.disabled).toBe(true);
+    expect((screen.getByRole('button', { name: 'Create secret' }) as HTMLButtonElement).disabled).toBe(true);
     expect(screen.getByText('Name required')).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByLabelText('Name'));
+    fireEvent.keyDown(screen.getByLabelText('Name'), { key: 'Escape' });
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'New secret' })));
+    fireEvent.click(screen.getByRole('button', { name: 'New secret' }));
+    const create = screen.getByRole('button', { name: 'Create secret' }) as HTMLButtonElement;
     fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'staging-token' } });
     fireEvent.click(screen.getByRole('button', { name: 'Token' }));
     fireEvent.change(screen.getByLabelText('Token'), { target: { value: 'hunter2hunter2' } });
@@ -353,13 +357,16 @@ describe('Administration (/admin/:tab?)', () => {
 
     fireEvent.click(screen.getByRole('button', { name: 'Edit secret postman-api' }));
     expect(screen.getByRole('heading', { level: 2, name: 'Edit secret postman-api' })).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByLabelText(/^Description/));
     fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
     expect(await screen.findByText('Secret postman-api updated.')).toBeTruthy();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Edit secret postman-api' })));
 
     fireEvent.click(screen.getByRole('button', { name: 'Delete secret gitlab-bakery' }));
     expect(screen.getByRole('alert').textContent).toContain('Delete gitlab-bakery? 1 importer still reference it and will fail on next run.');
     fireEvent.click(screen.getByRole('button', { name: 'Delete secret' }));
     await waitFor(() => expect(screen.queryByText('gitlab-bakery')).toBeNull());
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Delete secret github-contracts' })));
   });
 });
 

@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from 'react';
+import { Fragment, useEffect, useRef, useState, type FormEvent } from 'react';
 import type { SecretSummary } from '@/domain/shared';
 import {
   SECRET_KIND_HINT,
@@ -21,6 +21,11 @@ import './secrets.css';
 const KINDS: SecretFormKind[] = ['basic', 'token', 'oauth2', 'ca'];
 const DATE = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 
+/** Keeps each "••••••••" mask on one line. */
+function maskNoWrap(text: string) {
+  return text.split(/(•+)/).map((part, i) => (part.startsWith('•') ? <span key={i} className="ad-nowrap">{part}</span> : part));
+}
+
 interface FormState {
   mode: 'new' | 'edit';
   /** Secret id in edit mode. */
@@ -42,6 +47,19 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
   const clock = useClock();
   const [form, setForm] = useState<FormState | null>(null);
   const [confirming, setConfirming] = useState('');
+  // Id of the control to focus after the next render: a removed control must not drop focus to the page body.
+  const focusRef = useRef('');
+  const setFocusId = (id: string) => {
+    focusRef.current = id;
+  };
+  useEffect(() => {
+    if (!focusRef.current) return;
+    const el = document.getElementById(focusRef.current);
+    if (el) {
+      el.focus();
+      focusRef.current = '';
+    }
+  });
 
   if (secrets.status === 'error') return <ErrorBlock error={secrets.error} what="Secrets" onRetry={secrets.reload} />;
   if (!secrets.data) return <LoadingBlock label="secrets" />;
@@ -52,11 +70,18 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
     return clock.now().getTime() - at.getTime() < 60_000 ? 'Just now' : DATE.format(at);
   };
   const remove = async (s: SecretSummary) => {
+    const at = list.findIndex((x) => x.id === s.id);
+    const next = list[at + 1] ?? list[at - 1];
     await uc.govern.deleteSecret(s.id);
+    setFocusId(next ? `ad-del-${next.id}` : 'ad-secrets-title');
     setConfirming('');
     if (form?.id === s.id) setForm(null);
     notify(`Secret ${s.name} deleted.`);
     secrets.reload();
+  };
+  const closeForm = () => {
+    setFocusId(form?.mode === 'edit' && form.id ? `ad-edit-${form.id}` : 'ad-new-secret');
+    setForm(null);
   };
   const edit = (s: SecretSummary) => {
     setConfirming('');
@@ -68,11 +93,11 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
       <section className="ad-secrets-list" aria-labelledby="ad-secrets-title">
         <div className="ad-section-head ad-section-head-center">
           <div className="ad-section-title">
-            <h2 id="ad-secrets-title">Authentication secrets</h2>
+            <h2 id="ad-secrets-title" tabIndex={-1}>Authentication secrets</h2>
             <p>Credentials for Git repositories, remote endpoints and brokers. Users only see a Secret’s name and description.</p>
           </div>
           {form ? null : (
-            <Button variant="primary" icon="plus" onClick={() => { setConfirming(''); setForm({ ...EMPTY }); }}>New secret</Button>
+            <Button id="ad-new-secret" variant="primary" icon="plus" onClick={() => { setConfirming(''); setForm({ ...EMPTY }); }}>New secret</Button>
           )}
         </div>
         <div className="table-wrap ad-secrets-table">
@@ -91,8 +116,9 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
             <tbody>
               {list.map((s) => {
                 const used = s.usedBy ?? 0;
-                return [
-                  <tr key={s.id} data-selected={form?.id === s.id ? '' : undefined} data-confirming={confirming === s.id ? '' : undefined}>
+                return (
+                  <Fragment key={s.id}>
+                  <tr data-selected={form?.id === s.id ? '' : undefined} data-confirming={confirming === s.id ? '' : undefined}>
                     <th scope="row">
                       <span className="ad-secret-name">
                         <Icon name="key" size={16} />
@@ -103,31 +129,32 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
                       </span>
                     </th>
                     <td><span className="ad-secret-type">{SECRET_KIND_LABEL[s.kind]}</span></td>
-                    <td className="ad-secret-detail">{s.detail ?? s.masked}</td>
+                    <td className="ad-secret-detail">{maskNoWrap(s.detail ?? s.masked)}</td>
                     <td className="ad-secret-used" data-unused={used === 0 ? '' : undefined}>{used === 0 ? 'unused' : plural(used, 'importer')}</td>
                     <td className="ad-secret-updated">{updated(s)}</td>
                     <td data-align="end">
                       <span className="ad-secret-actions">
-                        <button type="button" className="ad-text-button" aria-label={`Edit secret ${s.name}`} onClick={() => edit(s)}>Edit</button>
-                        <button type="button" className="ad-danger-button" aria-label={`Delete secret ${s.name}`} aria-expanded={confirming === s.id} onClick={() => setConfirming(s.id)}>Delete</button>
+                        <button type="button" id={`ad-edit-${s.id}`} className="ad-text-button" aria-label={`Edit secret ${s.name}`} onClick={() => edit(s)}>Edit</button>
+                        <button type="button" id={`ad-del-${s.id}`} className="ad-danger-button" aria-label={`Delete secret ${s.name}`} aria-expanded={confirming === s.id} onClick={() => setConfirming(s.id)}>Delete</button>
                       </span>
                     </td>
-                  </tr>,
-                  confirming === s.id ? (
-                    <tr key={`${s.id}-confirm`} className="ad-confirm-row">
+                  </tr>
+                  {confirming === s.id ? (
+                    <tr className="ad-confirm-row">
                       <td colSpan={6}>
                         <div role="alert" className="ad-confirm">
                           <Icon name="warning" size={14} />
                           <span className="ad-confirm-text">
                             Delete {s.name}? {used ? `${plural(used, 'importer')} still reference it and will fail on next run.` : 'No importer references it.'}
                           </span>
-                          <button type="button" className="ad-small-button" onClick={() => setConfirming('')}>Cancel</button>
+                          <button type="button" className="ad-small-button" onClick={() => { setConfirming(''); setFocusId(`ad-del-${s.id}`); }}>Cancel</button>
                           <button type="button" className="ad-small-button" data-danger="" onClick={() => remove(s)}>Delete secret</button>
                         </div>
                       </td>
                     </tr>
-                  ) : null,
-                ];
+                  ) : null}
+                  </Fragment>
+                );
               })}
             </tbody>
           </table>
@@ -138,9 +165,9 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
           key={form.id ?? 'new'}
           initial={form}
           names={list.map((s) => s.name)}
-          onCancel={() => setForm(null)}
+          onCancel={closeForm}
           onSaved={(message) => {
-            setForm(null);
+            closeForm();
             notify(message);
             secrets.reload();
           }}
@@ -153,6 +180,29 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
 function SecretForm({ initial, names, onCancel, onSaved }: { initial: FormState; names: string[]; onCancel: () => void; onSaved: (message: string) => void }) {
   const uc = useUseCases();
   const [f, setF] = useState(initial);
+  const sectionRef = useRef<HTMLElement>(null);
+  const firstRef = useRef<HTMLInputElement>(null);
+  const cancelRef = useRef(onCancel);
+  useEffect(() => {
+    cancelRef.current = onCancel;
+  });
+  // The form opens with focus on its first field (Description when editing: the name is fixed).
+  useEffect(() => {
+    firstRef.current?.focus();
+  }, []);
+  // Escape closes the form, as a dialog would. A DOM listener: the section itself is not a control.
+  useEffect(() => {
+    const el = sectionRef.current;
+    if (!el) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        e.preventDefault();
+        cancelRef.current();
+      }
+    };
+    el.addEventListener('keydown', onKey);
+    return () => el.removeEventListener('keydown', onKey);
+  }, []);
   const editing = f.mode === 'edit';
   const set = (patch: Partial<FormState>) => setF((x) => ({ ...x, ...patch }));
   const hint = secretFormHint(validateSecretForm(f, names, editing));
@@ -178,7 +228,7 @@ function SecretForm({ initial, names, onCancel, onSaved }: { initial: FormState;
   };
 
   return (
-    <section className="ad-secret-form" aria-labelledby="ad-secret-form-title">
+    <section ref={sectionRef} className="ad-secret-form" aria-labelledby="ad-secret-form-title">
       <div className="ad-secret-form-head">
         <h2 id="ad-secret-form-title">{title}</h2>
         <button type="button" className="ad-close-button" aria-label="Close form" onClick={onCancel}>
@@ -193,11 +243,11 @@ function SecretForm({ initial, names, onCancel, onSaved }: { initial: FormState;
           </div>
         ) : (
           <Field label="Name">
-            {(c) => <Input {...c} mono data-autofocus="" autoComplete="off" spellCheck={false} placeholder="gitlab-bakery" value={f.name} onChange={(e) => set({ name: e.target.value })} />}
+            {(c) => <Input {...c} ref={firstRef} mono autoComplete="off" spellCheck={false} placeholder="gitlab-bakery" aria-describedby={hint && hint !== 'Credential required' ? 'ad-secret-hint' : undefined} value={f.name} onChange={(e) => set({ name: e.target.value })} />}
           </Field>
         )}
         <Field label={<>Description <span className="ad-label-note">· visible to every user</span></>}>
-          {(c) => <Input {...c} autoComplete="off" placeholder="What this secret gives access to" value={f.description} onChange={(e) => set({ description: e.target.value })} />}
+          {(c) => <Input {...c} ref={editing ? firstRef : undefined} autoComplete="off" placeholder="What this secret gives access to" value={f.description} onChange={(e) => set({ description: e.target.value })} />}
         </Field>
         <div className="field">
           <span className="label">Type</span>
