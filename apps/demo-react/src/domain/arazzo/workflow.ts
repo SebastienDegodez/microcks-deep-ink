@@ -51,6 +51,8 @@ export interface Workflow {
   workflowId: string;
   documentId: string;
   summary: string;
+  /** Longer description of the workflow (the Workflow page lead). */
+  description?: string;
   inputs: WorkflowInput[];
   steps: Step[];
   outputs: NamedExpression[];

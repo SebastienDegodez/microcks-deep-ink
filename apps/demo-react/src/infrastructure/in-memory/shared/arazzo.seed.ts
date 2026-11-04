@@ -121,6 +121,7 @@ const RUNNABLE = { runnable: true } as const;
 export const WORKFLOWS: Workflow[] = [
   {
     workflowId: 'restock-pastry', documentId: 'pastry', summary: 'Restock a pastry',
+    description: 'Lists the pastries of a size and reads the first one. When it is already available the workflow ends there; otherwise it is made available again at a new price, then read again to verify.',
     inputs: [{ name: 'size', type: 'string', example: 'M' }, { name: 'newPrice', type: 'number', example: '3.9' }],
     steps: RESTOCK_STEPS,
     outputs: [
