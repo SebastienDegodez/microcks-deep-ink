@@ -1,0 +1,23 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "filter-bar",
+  "title": "FilterBar",
+  "tier": "microcks",
+  "description": "Box of filter rows for lists (Catalogue, Workflows, Traces): a search field with an icon, titled rows of chips or segmented controls, a trailing group and a link-style Reset (n).",
+  "registryDependencies": ["base", "icon"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "<section aria-label> with rows; titled rows are role=\"group\" named by their title; native search input inside its label",
+    "keyboard": [["Tab", "Moves through the search field, the filter controls and Reset in reading order"]],
+    "aria": [
+      "The search label is visually hidden and repeated as the placeholder, so the field has a visible hint and a name",
+      "Each titled row is a group named by its title (\"Protocol\", \"Labels\")",
+      "Reset writes the number of active filters and is disabled when there is none",
+      "Announce the new result count in a role=\"status\" region elsewhere"
+    ],
+    "rgaa": ["11.1", "11.2", "11.5", "11.6", "10.7"],
+    "wcag": ["1.3.1", "2.4.6", "2.4.7", "3.3.2", "4.1.2"],
+    "notes": "Use Chip (toggle, protocol) and Segmented for the controls inside the rows."
+  },
+  "stories": ["Microcks/FilterBar"]
+}
