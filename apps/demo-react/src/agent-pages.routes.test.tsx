@@ -50,7 +50,8 @@ describe('Agent (screen 18)', () => {
     await h1('Pastry concierge 1.0');
     fireEvent.click(await screen.findByRole('button', { name: 'Served by the mock' }));
     expect(await screen.findByText(/supportedInterfaces rewritten to the mock/)).toBeTruthy();
-    expect(screen.getByRole('list', { name: 'Lines that change in the mock copy' })).toBeTruthy();
+    const lines = screen.getByRole('list', { name: 'Lines of the mock copy, changed lines marked' });
+    expect(within(lines).getAllByText('added:')).toHaveLength(3);
   });
 
   it('writes one sample per binding and switches to the streaming call', async () => {
