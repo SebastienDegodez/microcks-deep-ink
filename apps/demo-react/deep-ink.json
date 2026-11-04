@@ -45,10 +45,10 @@
     "api-badge": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/api-badge.tsx": "a7bc1fa9cb32b58f89e7417468b205415ff857e13e301fe5c6224dcca5a23d44",
-        "src/ui/styles/api-badge.css": "23b75bf5af48177f5a9e9538f2a48fa10c39845b6d6294c0639561c962915eef"
+        "src/ui/components/ui/api-badge.tsx": "066ba81e5175c3c2039399921a9cb924a200b6ee05811688091d9857315c3ccb",
+        "src/ui/styles/api-badge.css": "ac76da1ac0f38530e98e8053f25d15a60ecbd929d5f41a8136d883b54fda6deb"
       },
-      "hash": "d61b7e99c71d7a0f"
+      "hash": "758ae858ac95013f"
     },
     "app-shell": {
       "version": "0.2.0",
@@ -197,10 +197,10 @@
     "method-tag": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/method-tag.tsx": "d720b037060409dbde766c93972320a00cb2b9236bab818ed870dc39d690f102",
-        "src/ui/styles/method-tag.css": "6c3c9a3fe99b14289aba11d0e320a984487a5d120449325086c56b5c39419969"
+        "src/ui/components/ui/method-tag.tsx": "16d5822c6d15572c3475f1602bd51e943d584633fa69552e8d5267c779979e38",
+        "src/ui/styles/method-tag.css": "739ac7dadbab006dddf952bb5e755c0f637f69ab2a0e3c93ff0fb619de32501b"
       },
-      "hash": "831556f95847c5bc"
+      "hash": "e395c3648377f69a"
     },
     "segmented": {
       "version": "0.2.0",
@@ -301,10 +301,10 @@
     "table": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/table.tsx": "8a90ceec850db022d8ce99c5d0ea7f5387491e3fce72fa16eaec0041f61f3310",
-        "src/ui/styles/table.css": "698a6e715bb6cd03044aad365235eae8591014b93aaaec2dd12ac01b85816417"
+        "src/ui/components/ui/table.tsx": "4956efce542dd0e6a38d22ad75f617bf27cb462bf1b5391a8e8498f0520f17fc",
+        "src/ui/styles/table.css": "9b8bca88cec3ae6ab1a0d57f43519894e7b8c2011f10e8b7bfc00090bbfc5dd0"
       },
-      "hash": "18f8e3ef339923d8"
+      "hash": "25c04193b0969dd7"
     },
     "tabs": {
       "version": "0.2.0",
@@ -434,9 +434,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/facts.tsx": "d02ec87e0490c92a08602563ba02d2a41c08676fbff89a205380f03a5d937c67",
-        "src/ui/styles/facts.css": "a32b89048dc865f3836652be9edd84f78cf1c80b7d04b1bacb93ea3c25642029"
+        "src/ui/styles/facts.css": "690d766410791ca28f6a686b185c325cb70120e5a3dae492b400d3b82a861368"
       },
-      "hash": "2aa9b707c302ab08"
+      "hash": "7ac97e276ef8d3b8"
     }
   },
   "generated": {

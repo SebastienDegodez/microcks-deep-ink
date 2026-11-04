@@ -14,6 +14,8 @@
   }
   /* Small: 11px 600, padding 1px 5px, 44px wide by default (WorkflowRun step lists). */
   .method[data-size="sm"] { min-width: var(--method-min-width, 44px); padding: 1px 5px; font-size: 11px; font-weight: 600; line-height: 14px; }
+  /* Extra small: 10px 600, padding 1px 5px, radius 3, no minimum width (Workflow Steps and Sessions tables, loom inspector). */
+  .method[data-size="xs"] { min-width: var(--method-min-width, 0); padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: 600; line-height: 13px; }
   .method[data-protocol="rest"] { --method-bg: var(--proto-rest); }
   .method[data-protocol="soap"] { --method-bg: var(--proto-soap); }
   .method[data-protocol="event"] { --method-bg: var(--proto-event); }

@@ -12,7 +12,7 @@ const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EV
     class: 'method',
     '[attr.data-method]': 'method()',
     '[attr.data-protocol]': 'protocolAttr()',
-    '[attr.data-size]': "size() === 'sm' ? 'sm' : null",
+    '[attr.data-size]': "size() === 'md' ? null : size()",
     '[style.--method-min-width]': "minWidth() ? minWidth() + 'px' : null",
   },
   template: `{{ method() }}`,
@@ -23,8 +23,8 @@ export class MethodTagComponent {
   readonly protocol = input<Protocol>('REST');
   /** Fixed minimum width in px, so tags line up in a list (Import 52, Service 48, Usage 46, Traces 44). */
   readonly minWidth = input<number>();
-  /** `sm`: 11px 600, padding 1px 5px, 44px wide unless `minWidth` is set (step lists). */
-  readonly size = input<'md' | 'sm'>('md');
+  /** `sm`: 11px 600, padding 1px 5px, 44px wide unless `minWidth` is set (step lists). `xs`: 10px 600, no minimum width (dense tables). */
+  readonly size = input<'md' | 'sm' | 'xs'>('md');
 
   protected protocolAttr(): string {
     return PROTOCOL_ATTR[this.protocol()];

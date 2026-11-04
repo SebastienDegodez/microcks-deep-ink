@@ -52,3 +52,10 @@ describe('Facts', () => {
     expect(dls[2]!.hasAttribute('data-size')).toBe(false);
   });
 });
+
+describe('Facts size', () => {
+  it('has a large rows size', () => {
+    const { container } = render(<Facts size="lg" termWidth="150px" items={[{ term: 'Version', value: '2.0', mono: true }]} />);
+    expect(container.querySelector('dl')?.getAttribute('data-size')).toBe('lg');
+  });
+});

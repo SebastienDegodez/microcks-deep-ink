@@ -80,17 +80,7 @@ export const SurfaceAndGap: StoryObj = {
   ),
 };
 
-export const Large: StoryObj = {
-  name: 'Large (Service)',
-  render: () => (
-    <Facts
-      size="lg"
-      termWidth="150px"
-      style={{ maxWidth: 640 }}
-      items={[
-        { term: 'Mock URL', value: 'https://microcks.acme.io/rest/API+Pastry/2.0', mono: true },
-        { term: 'Owner', value: 'Pastry team' },
-      ]}
-    />
-  ),
+export const LargeRows: StoryObj = {
+  name: 'Large rows (Service)',
+  render: () => <Facts size="lg" termWidth="150px" style={{ maxWidth: 560 }} items={[{ term: 'Version', value: '2.0', mono: true }, { term: 'Type', value: 'REST · OpenAPI 3.1' }, { term: 'Created', value: 'Oct 12, 2026' }]} />,
 };
