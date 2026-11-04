@@ -182,7 +182,7 @@ export default function WorkflowsPage() {
       : `${totalWorkflows} workflows · ${documents.length} Arazzo documents · ${allSources.length} source descriptions (${unlinkedTotal} not linked)`;
 
   return (
-    <div className="wf-page">
+    <div className="wf-page" data-main-pad="roomy">
       <PageHeader
         title="Workflows"
         meta={countLine}
