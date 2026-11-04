@@ -276,7 +276,7 @@ export default function SourcesPage() {
                       <Button asChild size="sm" variant="ghost" icon="edit" className="source-edit"><RouterLink to="/sources/new" aria-label={`Edit ${j.name}`}>Edit</RouterLink></Button>
                     </>
                   )}
-                  <Button size="sm" variant="ghost" icon="trash-plain" id={`source-delete-${j.id}`} className="source-delete" aria-label={`Delete ${j.name}`} onClick={() => setConfirm(j.id)}>Delete</Button>
+                  <Button size="sm" variant="ghost" tone="danger" icon="trash-plain" id={`source-delete-${j.id}`} aria-label={`Delete ${j.name}`} onClick={() => setConfirm(j.id)}>Delete</Button>
                 </div>
               </article>
             );

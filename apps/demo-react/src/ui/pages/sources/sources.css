@@ -18,7 +18,6 @@
 /* Counts, not proofs: the value reads bold in --text, the danger fill alone marks failing (the word is there). */
 .scan-strip-counts .api-badge-name { font-weight: 600; }
 .scan-strip-counts .api-badge[data-status='neutral'] .api-badge-name { color: var(--text); }
-.scan-strip-counts .api-badge-name > .icon { display: none; }
 .sources-page .muted { color: var(--text-muted); }
 .sources-page .secondary { color: var(--text-secondary); }
 .sources-page .mono { font-family: var(--font-mono); }
@@ -70,8 +69,7 @@
 .source-card-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .source-card-actions .button[data-size='sm'] { padding-inline: 10px; gap: 6px; }
 .source-import { font-weight: 600; }
-.source-edit, .source-delete { border-color: transparent; }
-.source-delete { color: var(--danger); }
+.source-edit { border-color: transparent; }
 
 /* Inline delete confirmation */
 .delete-confirm {
