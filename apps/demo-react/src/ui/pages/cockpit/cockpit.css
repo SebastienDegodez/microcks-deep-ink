@@ -31,8 +31,6 @@
 .kpi-workflows > a:hover { text-decoration: underline; }
 .tone-success { color: var(--success); }
 .tone-danger { color: var(--danger); }
-.tone-warning { color: var(--warning); }
-.tone-muted { color: var(--text-muted); }
 
 /* API wall */
 .wall { display: flex; flex-direction: column; gap: 14px; padding: 18px; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); min-width: 0; }
