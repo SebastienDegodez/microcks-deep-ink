@@ -230,9 +230,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/panel.tsx": "f57692d87ae62baa1bbbb3b0b9e8b7b9bdacd6c7871de525948c3c16242276dc",
-        "src/ui/styles/panel.css": "49a7480be80c37d13fc4212b9cfb7fd179f5e67b60be68c50ad766a839421d8f"
+        "src/ui/styles/panel.css": "c83bee43b31e6953a52ca0deb8ffd3605c891ea6c039f468afc7803b7b369993"
       },
-      "hash": "a51cfbaa2d0123eb"
+      "hash": "38872d292cc621c6"
     },
     "progress": {
       "version": "0.2.0",
@@ -293,10 +293,10 @@
     "switch": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/switch.tsx": "ed7d12e04b2cb80cba1edace11a1c7756696412b9389407e7a6b2aa665f331fd",
-        "src/ui/styles/switch.css": "5c66b3f02568f97d612adf3040befcdd5075d1ed88588c88254afb761cd92c12"
+        "src/ui/components/ui/switch.tsx": "994db6b8d67b4547a16e280606a5101518210f3ffb204f6ae687af43697342f9",
+        "src/ui/styles/switch.css": "8e5174bdb2f463e8b1f2a45db2a8fcfd94f60c87ebf5d017a4587bf1c7ceea5f"
       },
-      "hash": "b9076a0b34e90880"
+      "hash": "554d1b9e107f63e9"
     },
     "table": {
       "version": "0.2.0",
