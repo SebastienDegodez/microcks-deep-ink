@@ -437,9 +437,17 @@
         "src/ui/styles/facts.css": "f7d2dba9484899925448067060762495e8716fb2960990880c2160ba55cb4f89"
       },
       "hash": "5fc2017c9fc38091"
+    },
+    "split-pane": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/split-pane.tsx": "c58dcf1a0d445fcbce25cfccf3b586fd17a6c3f2c86bb5bfd7e14b22dda77fd7",
+        "src/ui/styles/split-pane.css": "3932a121239887c52cd7954c35d55ad0335ae81e4a7a75e30b58fa642cdd29f0"
+      },
+      "hash": "7d7c09386333e0a6"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "e6cca92f96d101c3c4e0b6c709723983c56dfccc65b2a75995ca7b2299f4b07a"
+    "src/ui/styles/index.css": "12e86cc3db5b6a625162284f2db038c083b3950fbea3df0d6c2ff1d61b05d511"
   }
 }
