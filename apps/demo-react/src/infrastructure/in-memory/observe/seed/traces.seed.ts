@@ -211,3 +211,24 @@ export function makeCall(seq: number): TraceCall {
 export function historyCalls(): TraceCall[] {
   return Array.from({ length: HISTORY_LENGTH }, (_, i) => makeCall(i + 1));
 }
+
+/**
+ * The calls the Cockpit ticker opens with (Cockpit.dc.html POOL), newest first: a 404 on an unknown pastry, a gRPC
+ * greeting, a REST list, a GraphQL query and a Kafka publication. They are numbered apart (2001+) from the Live
+ * traces history, which they do not change.
+ */
+export function recentTraffic(): TraceCall[] {
+  const row = (n: number, secondsAgo: number, call: Omit<TraceCall, 'seq' | 'callId' | 'at'>): TraceCall => ({
+    seq: 2000 + n,
+    callId: `call-${2000 + n}`,
+    at: new Date(NOW_MS - secondsAgo * 1000).toISOString(),
+    ...call,
+  });
+  return [
+    row(5, 1, { serviceId: 'pastry2', serviceName: 'API Pastry 2.0', protocol: 'REST', method: 'GET', path: `${REST_BASE}/pastries/Croissant`, status: 404, ms: 1, kind: 'REST', exampleName: 'No matching example' }),
+    row(4, 4, { serviceId: 'hellogrpc', serviceName: 'HelloService v1', protocol: 'gRPC', method: 'gRPC', path: 'io.github.microcks.grpc.hello.v1.HelloService/greeting', status: 200, ms: 1 }),
+    row(3, 7, { serviceId: 'pastry2', serviceName: 'API Pastry 2.0', protocol: 'REST', method: 'GET', path: `${REST_BASE}/pastries?size=M`, status: 200, ms: 1, kind: 'REST', exampleName: 'Size M' }),
+    row(2, 10, { serviceId: 'movie', serviceName: 'Movie Graph API 1.0', protocol: 'GRAPHQL', method: 'POST', path: '/graphql/Movie+Graph+API/1.0 · allFilms', status: 200, ms: 5 }),
+    row(1, 13, { serviceId: 'orders', serviceName: 'Pastry orders API 0.1.0', protocol: 'EVENT', method: 'PUBLISH', path: TOPIC, status: 200, ms: 1, kind: 'EVENT' }),
+  ];
+}

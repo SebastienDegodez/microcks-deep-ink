@@ -160,13 +160,18 @@ export function seedTestRuns(): TestRun[] {
   return [run119, ...HISTORY.map(toRun), orders, conciergeRun(), ...OTHER_SERVICES.map(otherRun)];
 }
 
-/** Latest runs of other services, as the Catalogue and the Cockpit prototypes show them (#17, #9, #86). */
+/** Runs of other services: the latest ones the Catalogue and the Cockpit prototypes show (#17, #9, #86), and earlier passes. */
 const OTHER_SERVICES: { id: string; serviceId: string; runner: TestRunner; endpoint: string; at: string; ms: number; ops: string; reason?: string }[] = [
   { id: '17', serviceId: 'movie', runner: 'GRAPHQL_SCHEMA', endpoint: 'https://movies.staging.acme.io/graphql', at: '2026-11-03T03:10:04Z', ms: 1320, ops: 'pppf',
     reason: 'addReview · response does not match the schema: rating expected Int, got Float' },
   { id: '9', serviceId: 'hellogrpc', runner: 'GRPC_PROTOBUF', endpoint: 'grpc://hello.staging.acme.io:9000', at: '2026-11-02T08:00:04Z', ms: 410, ops: 'p' },
   { id: '86', serviceId: 'pastry1', runner: 'OPEN_API_SCHEMA', endpoint: 'https://pastry.staging.acme.io/v1', at: '2026-10-31T08:00:04Z', ms: 1650, ops: 'ppf',
     reason: 'PATCH /pastries/{name} · response body does not match schema: $.price expected number, got string' },
+  // Earlier passing runs of the week, so the Cockpit's "Tests · last 7 days" reads 14 passed, 7 failed.
+  { id: '40', serviceId: 'orders', runner: 'ASYNC_API_SCHEMA', endpoint: 'kafka://kafka.staging.acme.io:9092/PastryordersAPI-0.1.0-pastry-orders',
+    at: '2026-11-01T14:00:04Z', ms: 1180, ops: 'p' },
+  { id: '16', serviceId: 'movie', runner: 'GRAPHQL_SCHEMA', endpoint: 'https://movies.staging.acme.io/graphql', at: '2026-10-31T10:30:04Z', ms: 1290, ops: 'pppp' },
+  { id: '8', serviceId: 'hellogrpc', runner: 'GRPC_PROTOBUF', endpoint: 'grpc://hello.staging.acme.io:9000', at: '2026-10-30T09:00:04Z', ms: 420, ops: 'p' },
 ];
 
 function otherRun(raw: (typeof OTHER_SERVICES)[number]): TestRun {

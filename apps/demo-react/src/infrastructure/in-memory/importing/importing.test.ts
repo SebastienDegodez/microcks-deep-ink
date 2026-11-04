@@ -26,7 +26,7 @@ describe('Import screen', () => {
     expect(preview.arazzo?.workflows).toHaveLength(4);
     expect(preview.arazzo?.workflows.reduce((n, w) => n + w.steps, 0)).toBe(14);
     expect(preview.arazzo?.sources).toHaveLength(3);
-    expect(preview.arazzo?.workflows.find((w) => w.blocked)?.workflowId).toBe('track-order');
+    expect(preview.arazzo?.workflows.find((w) => w.blocked)?.workflowId).toBe('order-pastry');
     const done = await uc.importing.import(preview.previewId, { role: 'primary' });
     expect(done).toMatchObject({ outcome: 'arazzo', arazzo: { workflows: 4, steps: 14, sources: 3 } });
   });
@@ -47,16 +47,29 @@ describe('Import screen', () => {
     const input = { type: 'REST' as const, name: 'Order API', version: '1.0', resource: 'order', payload: '{"id":1}' };
     expect(validateDirectApi(input)).toEqual({});
     const result = await uc.importing.createDirectApi(input);
-    expect(result).toMatchObject({ outcome: 'direct', samples: '1 payload', mockLabel: 'Mock base URL' });
-    expect(result.mockUrl).toBe(directApiEndpoint(input, 'https://microcks.bakery.dev').value);
+    expect(result).toMatchObject({ outcome: 'direct', protocol: 'DIRECT', samples: 'dynamic', mockLabel: 'Mock base URL' });
+    expect(result.mockUrl).toBe(directApiEndpoint(input, 'http://microcks.local:8080').value);
     expect(directApiEndpoint({ ...input, type: 'GENERIC_EVENT' }, 'x').value).toBe('OrderAPI-1.0-order');
   });
 
   it('lists the recent imports and detects formats', async () => {
-    expect((await uc.importing.recentImports(3)).length).toBe(3);
+    expect((await uc.importing.recentImports(3)).map((r) => r.name)).toEqual(['API Pastry 2.0', 'Pastry orders API 0.1.0', 'HelloService v1']);
     expect(detectArtifactKind('pastry.arazzo.yaml')).toBe('arazzo');
     expect(detectArtifactKind('hello.proto')).toBe('grpc');
     expect(validateGitForm({ name: '', url: 'nope' })).toMatchObject({ name: expect.any(String), url: expect.any(String) });
+  });
+
+  it('puts a done import at the top of the recent imports', async () => {
+    const preview = await uc.importing.analyze({ kind: 'file', sample: true, files: [{ name: 'agent-card.json', sizeBytes: 3277 }] });
+    await uc.importing.import(preview.previewId, { role: 'primary' });
+    const recent = await uc.importing.recentImports(3);
+    expect(recent.map((r) => r.name)).toEqual(['Pastry concierge 1.0', 'API Pastry 2.0', 'Pastry orders API 0.1.0']);
+    expect(recent[0]).toMatchObject({ via: 'Upload', statusText: 'No conversations' });
+    const pastry = await uc.importing.analyze({ kind: 'url', url: 'https://example.com/apipastry-openapi.yaml' });
+    expect(pastry.services[0]?.name).toBe('API Pastry');
+    const done = await uc.importing.import(pastry.previewId, { role: 'primary' });
+    expect(done.createdSource).toMatchObject({ origin: 'URL', schedule: 'scheduled · global scan' });
+    expect((await uc.importing.recentImports(3)).map((r) => r.name)).toEqual(['API Pastry 2.0', 'Pastry concierge 1.0', 'Pastry orders API 0.1.0']);
   });
 });
 

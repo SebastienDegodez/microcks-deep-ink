@@ -83,32 +83,36 @@ export default function TestCreatePage() {
   const [params] = useSearchParams();
   const serviceParam = params.get('service') ?? undefined;
   const query = useQuery(() => uc.testing.getCreateForm(serviceParam), [serviceParam]);
+  const [chosen, setChosen] = useState<string | undefined>(undefined);
+  const form = query.data;
+  const serviceId = chosen ?? form?.defaults.serviceId;
+  const service = form?.services.find((s) => s.id === serviceId);
+  const target = form?.targets.find((t) => t.serviceId === serviceId);
+  const serviceLabel = service ? `${service.name} ${service.version}`.trim() : 'Service';
 
   return (
     <>
       <PageHeader
         title="Run a test"
+        breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: serviceLabel, to: service ? `/services/${service.id}` : '/services' }, { label: 'New test' }]}
+        description="Replay the contract's examples against a deployed implementation and check that it conforms. Every choice below is mirrored, line by line, in the CI snippet on the right."
+        descriptionTone="secondary"
         actions={
-          <Button asChild variant="ghost">
-            <RouterLink to="/tests">All test runs</RouterLink>
-          </Button>
+          target ? (
+            <ApiBadge label="last test" value={target.lastTest.text} status={target.lastTest.ok === null ? 'neutral' : target.lastTest.ok ? 'success' : 'danger'} />
+          ) : null
         }
       />
-      <p className="demo-muted">
-        Replay the contract&apos;s examples against a deployed implementation and check that it conforms. Every choice below is mirrored, line by line, in
-        the CI snippet next to the form.
-      </p>
-      {query.status === 'loading' && !query.data ? <LoadingBlock label="the test form" /> : null}
+      {query.status === 'loading' && !form ? <LoadingBlock label="the test form" /> : null}
       {query.status === 'error' ? <ErrorBlock error={query.error} what="The test form" onRetry={query.reload} /> : null}
-      {query.data ? <TestForm key={serviceParam ?? 'default'} form={query.data} initialServiceId={query.data.defaults.serviceId} /> : null}
+      {form && serviceId ? <TestForm key={serviceParam ?? 'default'} form={form} chosen={serviceId} onChoose={setChosen} /> : null}
     </>
   );
 }
 
-function TestForm({ form, initialServiceId }: { form: CreateTestForm; initialServiceId: string }) {
+function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: string; onChoose: (id: string) => void }) {
   const uc = useUseCases();
   const navigate = useNavigate();
-  const [chosen, setChosen] = useState(initialServiceId);
   const [draft, setDraft] = useState<Draft | null>(null);
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [attempts, setAttempts] = useState(0);
@@ -228,14 +232,14 @@ function TestForm({ form, initialServiceId }: { form: CreateTestForm; initialSer
   };
 
   const pickService = (id: string) => {
-    setChosen(id);
+    onChoose(id);
     setDraft(null);
     setTouched({});
     setAttempts(0);
   };
 
   return (
-    <div className="demo-two-col" data-wide-aside="">
+    <div className="tc-layout">
       <form className="tc-form" aria-label="Test configuration" onSubmit={onSubmit} noValidate>
         {submitted && errorEntries.length > 0 ? (
           <div ref={summaryRef} role="alert" tabIndex={-1} className="demo-error-summary" style={{ margin: 16 }}>

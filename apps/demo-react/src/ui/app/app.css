@@ -124,6 +124,18 @@
 .demo-page-title[data-variant='plain'] {
   font: 600 28px/1.2 var(--font-ui);
 }
+.demo-page-title[data-variant='subtitle'] {
+  font: 700 26px/1 var(--font-brand);
+  color: var(--text-secondary);
+}
+.demo-page-title[data-variant='mono'] {
+  font: 600 24px/1.2 var(--font-mono);
+}
+/* A leading node (Tests badge, Behavior method tag): centred with the title, 12px apart. */
+.demo-page-title-row[data-leading] {
+  align-items: center;
+  gap: 12px;
+}
 
 .demo-page-meta {
   padding: 2px 8px;

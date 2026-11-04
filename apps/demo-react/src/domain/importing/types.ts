@@ -2,7 +2,7 @@ import type { Label, Protocol } from '@/domain/shared';
 
 
 export type ImportSource =
-  | { kind: 'file'; files: { name: string; sizeBytes: number }[] }
+  | { kind: 'file'; files: { name: string; sizeBytes: number }[]; /** One of the Microcks samples or examples, not a file of the person. */ sample?: boolean }
   | { kind: 'url'; url: string; secretName?: string }
   | {
       kind: 'git';
@@ -78,13 +78,15 @@ export interface AgentPreview {
   fileName: string;
   provider: string;
   specVersion: string;
-  skills: { id: string; name: string }[];
+  /** `modes`: "text in · application/json out"; `note`: "multi-turn · input-required". */
+  skills: { id: string; name: string; modes?: string; note?: string }[];
   /** `supportedInterfaces`, in order. */
   interfaces: { binding: string; url: string; preferred: boolean }[];
   /** The same interfaces once the card is served by the mock. */
   mockInterfaces: { binding: string; url: string }[];
   security: string;
-  capabilities: string[];
+  /** Every capability the card declares, on or off. */
+  capabilities: { name: string; on: boolean }[];
   modes: string[];
 }
 
@@ -132,6 +134,24 @@ export interface ImportResult {
   agent?: { skills: number; conversations: number; transports: string[] };
   /** Name of the scheduled importer created from a Git repository. */
   importerName?: string;
+  /** Direct APIs: the resource the mock serves ("order"). */
+  resource?: string;
+  /** Mock endpoints, one per transport (A2A agents). */
+  endpoints?: { binding: string; url: string }[];
+  /** The source created by the import, as listed in Sources (none for a Direct API). */
+  createdSource?: CreatedSource;
+}
+
+/** One line of the done screen: the source the import created. */
+export interface CreatedSource {
+  /** "API Pastry 2.0 · OpenAPI" */
+  name: string;
+  /** "apipastry-openapi.yaml · primary" */
+  detail: string;
+  /** "Upload", "URL", "Git". */
+  origin: string;
+  /** "no schedule · one-off" */
+  schedule: string;
 }
 
 export interface DirectApiInput {
