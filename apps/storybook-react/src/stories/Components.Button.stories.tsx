@@ -15,6 +15,7 @@ export const Default: StoryObj = {
       <Button>Cancel</Button>
       <Button variant="ghost">Skip</Button>
       <Button variant="link" icon="copy">Copy</Button>
+      <Button variant="dashed" icon="plus">Add header</Button>
       <Button variant="danger">Delete service</Button>
     </div>
   ),

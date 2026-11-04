@@ -72,6 +72,27 @@
     text-decoration: underline;
   }
 
+  /* Dashed: a secondary, "add / try" action (Show empty install, Add header). */
+  .button[data-variant="dashed"] {
+    padding: 0 12px;
+    background: transparent;
+    border-style: dashed;
+    border-color: var(--border-strong);
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 18px;
+  }
+  .button[data-variant="dashed"]:hover {
+    background: var(--raised);
+    color: var(--text);
+  }
+  .button[data-variant="dashed"][aria-pressed="true"] {
+    background: var(--selected);
+    border-color: var(--border-strong);
+    box-shadow: none;
+    color: var(--text);
+  }
+
   .button[data-variant="danger"] {
     background: transparent;
     border-color: var(--danger);
