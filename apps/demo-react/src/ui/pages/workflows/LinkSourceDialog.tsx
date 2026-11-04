@@ -32,7 +32,13 @@ export function LinkSourceDialog({ open, onClose, document, source, onLinked }: 
   const wanted = source.type === 'asyncapi' ? 'EVENT' : 'REST';
   const candidates = (services.data ?? []).filter((s) => s.protocol === wanted || (source.type === 'openapi' && s.protocol === 'DIRECT'));
   const file = source.link.status === 'not-linked' ? source.link.expectedFile : source.url;
-  const hint = candidates.find((s) => s.name.toLowerCase().replace(/\s+/g, '').includes(source.name.toLowerCase().replace(/catalog$/, '')));
+  // Preselect an API only when its name AND the version of the declared file match ("beer-catalog-1.0" never picks 0.9).
+  const fileVersion = /-(\d+(?:\.\d+)+)-/.exec(file)?.[1];
+  const hint = candidates.find(
+    (s) =>
+      s.name.toLowerCase().replace(/\s+/g, '').includes(source.name.toLowerCase().replace(/catalog$/, '')) &&
+      (!fileVersion || s.version === fileVersion),
+  );
   const selected = choice || hint?.id || '';
 
   const link = async () => {

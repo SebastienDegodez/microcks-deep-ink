@@ -50,6 +50,10 @@
 .wf-cell-wide { min-inline-size: 240px; max-inline-size: 360px; white-space: normal; }
 
 /* Workflows list (screen 15) */
+.wf-list-page { gap: 20px; font-variant-numeric: tabular-nums; }
+.wf-focus-target:focus { outline: none; }
+.wf-focus-target:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; border-radius: var(--radius-panel); }
+.wf-filters .filter-bar-search { max-width: 400px; }
 .wf-text2 { color: var(--text-secondary); }
 .wf-muted-text { color: var(--text-muted); }
 .wf-plain-link { color: var(--link); font-weight: 500; text-decoration: none; }
@@ -70,6 +74,11 @@
 .chip.wf-src-unlinked .chip-label { gap: 8px; align-items: center; }
 .chip.wf-src-unlinked .chip-value { display: inline-flex; align-items: center; gap: 8px; }
 .chip.wf-src-unlinked .chip-count { color: inherit; font-weight: 400; }
+/* Zero count: faded like the other source chips (muted text, never opacity). */
+.chip.wf-src-unlinked[data-empty]:not([aria-pressed="true"]),
+.chip.wf-src-unlinked[data-empty]:not([aria-pressed="true"]) .chip-value,
+.chip.wf-src-unlinked[data-empty]:not([aria-pressed="true"]) .chip-count { color: var(--text-muted); font-weight: 400; }
+.chip.wf-src-unlinked[data-empty]:not([aria-pressed="true"]) .icon { opacity: 0.45; }
 button.chip.wf-src-unlinked[aria-pressed="true"] { background: var(--warning); border-color: var(--warning); color: var(--on-proto); }
 button.chip.wf-src-unlinked[aria-pressed="true"] .icon { color: var(--on-proto); }
 
@@ -159,7 +168,12 @@ button.chip.wf-src-unlinked[aria-pressed="true"] .icon { color: var(--on-proto);
 .wf-cell-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .wf-cell-run { display: flex; justify-content: flex-end; }
 .api-badge.wf-name-badge { max-width: 100%; white-space: nowrap; }
-.api-badge.wf-name-badge > .api-badge-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.api-badge.wf-name-badge > .api-badge-type { flex: none; }
+/* A long name ends with an ellipsis; the version gives way first ("Compare v1 / v2 prices 1…"). */
+.api-badge.wf-name-badge > .api-badge-name,
+.api-badge.wf-name-badge > .api-badge-version { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.api-badge.wf-name-badge > .api-badge-name { flex: 0 1 auto; }
+.api-badge.wf-name-badge > .api-badge-version { flex: 0 1000 auto; }
 .wf-id { font: 400 12px var(--font-mono); color: var(--text-secondary); }
 .wf-block { display: inline-flex; align-items: center; gap: 4px; padding: 0 6px; border: 1px solid var(--border-strong); border-radius: 4px; font: 600 11px var(--font-ui); color: var(--text-secondary); }
 .wf-note { font: 400 12px var(--font-ui); color: var(--text-muted); }

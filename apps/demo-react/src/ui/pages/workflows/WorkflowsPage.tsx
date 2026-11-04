@@ -18,6 +18,8 @@ import { ButtonRouterLink, ErrorBlock, runPath, runSetupPath, workflowPath } fro
 
 type Result = 'all' | 'passed' | 'failed' | 'never';
 
+const SEARCH_ID = 'wf-search';
+
 const RESULTS: (SegmentedOption & { id: Result })[] = [
   { id: 'all', label: 'All', dot: 'neutral' },
   { id: 'passed', label: 'Passed', dot: 'success' },
@@ -183,6 +185,7 @@ export default function WorkflowsPage() {
   const [demo, setDemo] = useState<'loading' | 'empty' | null>(null);
   const [linking, setLinking] = useState<LinkTarget | null>(null);
   const [linked, setLinked] = useState<string | null>(null);
+  const linkedRef = useRef<HTMLDivElement>(null);
 
   const docs = useQuery(() => uc.arazzo.listDocuments(), [linked]);
   const services = useQuery(() => uc.catalog.listServices(), []);
@@ -234,12 +237,19 @@ export default function WorkflowsPage() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [list.status, items.length, result]);
 
+  // The reset buttons unmount once no filter is left: focus goes back to the search field.
   const reset = () => {
     setQ('');
     setResult('all');
     setRunKind('any');
     setSources([]);
+    document.getElementById(SEARCH_ID)?.focus();
   };
+
+  // After linking, the trigger ("Link sources") is gone: focus the success message.
+  useEffect(() => {
+    if (linked) linkedRef.current?.focus();
+  }, [linked]);
 
   const serviceOf = (id: string) => services.data?.find((s) => s.id === id);
   const serviceName = (id: string) => {
@@ -265,7 +275,7 @@ export default function WorkflowsPage() {
   const ready = !loading && !showOnboarding && docs.status === 'success';
 
   return (
-    <div className="wf-page" data-main-pad="roomy">
+    <div className="wf-page wf-list-page" data-main-pad="roomy">
       <PageHeader
         title="Workflows"
         meta={countLine}
@@ -284,9 +294,11 @@ export default function WorkflowsPage() {
       />
 
       {linked ? (
-        <Callout tone="success" title={`${linked} linked`} live="polite">
-          The workflows that use it can run now.
-        </Callout>
+        <div ref={linkedRef} tabIndex={-1} className="wf-focus-target">
+          <Callout tone="success" title={`${linked} linked`} live="polite">
+            The workflows that use it can run now.
+          </Callout>
+        </div>
       ) : null}
 
       {docs.status === 'error' || list.status === 'error' ? (
@@ -294,9 +306,9 @@ export default function WorkflowsPage() {
       ) : null}
 
       {!showOnboarding ? (
-        <FilterBar label="Workflow filters">
+        <FilterBar label="Workflow filters" className="wf-filters">
           <FilterRow>
-            <FilterSearch label="Filter workflows" placeholder="Filter by name, workflowId or stepId…" autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)} />
+            <FilterSearch id={SEARCH_ID} label="Filter workflows" placeholder="Filter by name, workflowId or stepId…" autoComplete="off" value={q} onChange={(e) => setQ(e.target.value)} />
             <Segmented label="Last run result" options={RESULTS.map((r) => ({ ...r, count: counts?.[r.id] }))} value={result} onChange={(id) => setResult(id as Result)} />
             <Segmented
               label="Run target"
@@ -612,7 +624,11 @@ function WorkflowRow({
   return (
     <div role="row" className="wf-wrow">
       <div role="cell" className="wf-cell wf-cell-workflow">
-        <RouterLink to={workflowPath(document.id, workflow.workflowId)} className="wf-badge-link wf-name-link">
+        <RouterLink
+          to={workflowPath(document.id, workflow.workflowId)}
+          className="wf-badge-link wf-name-link"
+          aria-label={`${workflow.summary} ${document.version}`}
+        >
           <ApiBadge arazzo name={workflow.summary} version={document.version} className="wf-name-badge" />
         </RouterLink>
         <div className="wf-cell-line">
@@ -670,7 +686,7 @@ function WorkflowRow({
       <div role="cell" className="wf-cell wf-cell-last">
         <span className="wf-cell-line">
           <span className="wf-result-word" data-result={shown}>
-            <Icon name={shown === 'passed' ? 'check-circle' : shown === 'failed' ? 'x-circle' : 'never-tested'} size={15} strokeWidth={shown === 'never' ? 2 : 2.2} />
+            <Icon name={shown === 'passed' ? 'check-circle' : shown === 'failed' ? 'x-circle' : 'never-tested'} size={15} strokeWidth={shown === 'never' ? 1.6 : 2.2} />
             {shown === 'passed' ? 'Passed' : shown === 'failed' ? 'Failed' : 'Never run'}
           </span>
           {lastRun ? <span className="wf-tag">{targetLabel(lastRun)}</span> : null}
@@ -693,7 +709,7 @@ function WorkflowRow({
 
       <div role="cell" className="wf-cell wf-cell-mock">
         <span className="wf-mock-state" data-ready={runnable ? '' : undefined}>
-          <Icon name={runnable ? 'link' : 'never-tested'} size={15} />
+          <Icon name={runnable ? 'link' : 'never-tested'} size={15} strokeWidth={runnable ? 2 : 1.6} />
           {runnable ? 'Ready' : 'Not available'}
         </span>
         {runnable ? (
