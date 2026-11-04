@@ -79,7 +79,11 @@
     border-color: var(--action);
   }
   button.chip[aria-pressed="true"] .chip-key { color: var(--link); }
-  .chip[data-empty] { opacity: 0.45; }
+  /* Zero count: muted text (never opacity, which would break 4.5:1) and a faded swatch. */
+  .chip[data-empty]:not([aria-pressed="true"]),
+  .chip[data-empty]:not([aria-pressed="true"]) .chip-value,
+  .chip[data-empty]:not([aria-pressed="true"]) .chip-key { color: var(--text-muted); font-weight: 400; }
+  .chip[data-empty]::before { opacity: 0.45; }
 
   /* Protocol filter: square corners, a 9px swatch in the protocol colour, filled when pressed. */
   .chip[data-protocol] {
