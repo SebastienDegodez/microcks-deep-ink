@@ -132,9 +132,10 @@ describe('WP7 pages', () => {
     await screen.findByRole('article', { name: 'Pastry orders events' });
     fireEvent.click(screen.getByRole('button', { name: /^Failed/ }));
     await waitFor(() => expect(screen.queryByRole('article', { name: 'Hello gRPC' })).toBeNull());
-    expect(screen.getByText(/401 Unauthorized/, { selector: '[role="alert"]' })).toBeTruthy();
+    expect(screen.getByRole('alert').textContent).toMatch(/401 Unauthorized/);
     fireEvent.click(screen.getByRole('button', { name: 'Delete Pastry orders events' }));
-    fireEvent.click(await screen.findByRole('button', { name: 'Delete source' }));
+    const confirm = await screen.findByRole('alertdialog', { name: 'Confirm deletion of Pastry orders events' });
+    fireEvent.click(within(confirm).getByRole('button', { name: 'Delete source' }));
     expect(await screen.findByText(/deleted. Services already discovered remain/)).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
     await screen.findByRole('article', { name: 'Pastry orders events' });
