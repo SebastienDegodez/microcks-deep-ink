@@ -1,5 +1,5 @@
 import { useLayoutEffect, useRef } from 'react';
-import type { DetailedHTMLProps, HTMLAttributes, ReactNode, Ref } from 'react';
+import type { HTMLAttributes, ReactNode, Ref } from 'react';
 import './elements/plugin-slot.js';
 
 export { getPluginHost } from './elements/plugin-slot.js';
@@ -38,7 +38,7 @@ declare module 'react' {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      'plugin-slot': DetailedHTMLProps<HTMLAttributes<PluginSlotElement>, PluginSlotElement>;
+      'plugin-slot': import('react').DetailedHTMLProps<import('react').HTMLAttributes<PluginSlotElement>, PluginSlotElement>;
     }
   }
 }

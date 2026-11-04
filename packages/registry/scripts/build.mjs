@@ -201,6 +201,8 @@ export function buildRegistry(options = {}) {
     if (!existsSync(abs)) continue;
     for (const d of readdirSync(abs, { withFileTypes: true })) {
       if (!d.isFile() || /\.(spec|stories)\./.test(d.name)) continue;
+      // The React package barrel (generated) is not a copyable file.
+      if (dir === 'react' && d.name === 'index.ts') continue;
       if (!exts.some((e) => d.name.endsWith('.' + e))) continue;
       if (!claimed.has(`${src}/${d.name}`)) warn(`${src}/${d.name}: not owned by any item (name must start with an item name)`);
     }
