@@ -3,18 +3,28 @@
   .matrix-wrap { overflow-x: auto; border: 1px solid var(--border); border-radius: var(--radius-panel); background: var(--canvas); }
   .matrix {
     width: 100%;
-    min-width: calc(260px + var(--matrix-columns, 3) * 150px);
+    min-width: calc(316px + var(--matrix-columns, 3) * 150px);
+    table-layout: fixed;
     border-collapse: collapse;
     color: var(--text);
     font: var(--type-body);
   }
   .matrix th, .matrix td { padding: var(--space-2) var(--space-3); border-bottom: 1px solid var(--border); text-align: start; vertical-align: middle; }
-  .matrix thead th { background: var(--surface); color: var(--text-secondary); font: var(--type-small); font-weight: 600; }
+  .matrix thead th { background: var(--surface); color: var(--text); font: 600 13px/18px var(--font-ui); }
+  /* The check column is fixed; the result columns share the rest equally. */
+  .matrix thead th:first-child {
+    width: 316px;
+    color: var(--text-muted);
+    font: 600 11px/16px var(--font-ui);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
   .matrix thead th span { display: block; }
+  .matrix thead .matrix-sub { font: 400 10px/14px var(--font-mono); color: var(--text-muted); }
   .matrix tbody:last-of-type tr:last-child > *, .matrix tfoot tr:last-child > * { border-bottom: 0; }
   .matrix tbody th[scope="row"] { font-weight: 500; }
-  .matrix tbody th[scope="row"][data-mono] > span:first-child { font: var(--type-code); }
-  .matrix-sub { display: block; margin-top: 2px; color: var(--text-secondary); font: var(--type-small); font-weight: 400; }
+  .matrix tbody th[scope="row"][data-mono] > span:first-child { font: 600 13px/18px var(--font-mono); }
+  .matrix-sub { display: block; margin-top: 2px; color: var(--text-muted); font: 400 11px/16px var(--font-ui); }
   .matrix-group th { background: var(--surface); color: var(--text); font: 600 13px/18px var(--font-ui); border-top: 1px solid var(--border); }
   .matrix-group .matrix-sub { display: inline; }
 
@@ -46,11 +56,15 @@
   td[data-result="queued"] .matrix-cell { border-style: dashed; font-weight: 400; }
   button.matrix-cell { cursor: pointer; }
   button.matrix-cell:hover { background: var(--raised); }
-  button.matrix-cell[aria-pressed="true"] { background: var(--selected); border-color: var(--action); border-width: 2px; padding: 3px 9px; }
+  /* Selected: selected fill and action border; the result keeps its colour and aria-pressed carries the state. */
+  button.matrix-cell[aria-pressed="true"] { background: var(--selected); border-color: var(--action); }
+  @media (forced-colors: active) {
+    button.matrix-cell[aria-pressed="true"] { border-width: 2px; padding: 3px 9px; border-color: Highlight; }
+  }
   button.matrix-cell:focus-visible { outline-offset: 2px; }
 
   .matrix tfoot th { color: var(--text-secondary); font: var(--type-small); font-weight: 600; background: var(--surface); }
-  .matrix tfoot td { background: var(--surface); font: 600 13px/18px var(--font-ui); font-variant-numeric: tabular-nums; }
+  .matrix tfoot td { background: var(--surface); font: 600 13px/18px var(--font-mono); font-variant-numeric: tabular-nums; }
   .matrix tfoot td[data-tone="success"] { color: var(--success); }
   .matrix tfoot td[data-tone="danger"] { color: var(--danger); }
 }

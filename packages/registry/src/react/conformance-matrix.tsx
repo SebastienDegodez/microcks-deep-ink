@@ -14,6 +14,8 @@ export interface MatrixCell {
   /** Column of the cell. Omit it for a cell that spans every column. */
   columnId?: string;
   result: CheckResult;
+  /** Word shown instead of the default one ("Absent" for a missing signature). */
+  label?: string;
   /** Duration, shown once the check has finished. */
   duration?: string;
 }
@@ -110,7 +112,7 @@ export function ConformanceMatrix({ caption, columns, groups, footer, selectedKe
                   const body = (
                     <>
                       <Icon name={look.icon} size={14} />
-                      <span>{look.word}</span>{' '}
+                      <span>{cell.label ?? look.word}</span>{' '}
                       {finished && cell.duration ? <span className="matrix-ms">{cell.duration}</span> : null}
                     </>
                   );

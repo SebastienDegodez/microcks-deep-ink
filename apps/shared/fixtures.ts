@@ -320,7 +320,7 @@ export const MATRIX_GROUPS: MatrixGroup[] = [
     rows: [
       { id: 'schema', label: 'Schema · required fields', sub: 'A2A v1.0 JSON Schema', cells: [{ result: 'pass', duration: '42 ms' }] },
       { id: 'iface', label: 'Interfaces reachable', cells: [{ columnId: 'jsonrpc', result: 'pass', duration: '96 ms' }, { columnId: 'http', result: 'pass', duration: '88 ms' }, { columnId: 'grpc', result: 'pass', duration: '131 ms' }] },
-      { id: 'sig', label: 'Signature (JWS)', sub: 'optional in v1.0 · absent is a warning', cells: [{ result: 'warn', duration: '4 ms' }] },
+      { id: 'sig', label: 'Signature (JWS)', sub: 'optional in v1.0 · absent is a warning', cells: [{ result: 'warn', label: 'Absent', duration: '4 ms' }] },
     ],
   },
   {
