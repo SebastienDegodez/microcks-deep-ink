@@ -18,7 +18,14 @@
   }
   .panel-title {
     margin: 0;
-    font: var(--type-title);
+    font: var(--type-heading);
+  }
+  /* Uppercase label title (RUNNER LOG, KEY FIGURES). */
+  .panel[data-title="label"] .panel-title {
+    font: 600 12px/16px var(--font-ui);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--text-muted);
   }
   .panel-actions {
     display: flex;
@@ -29,6 +36,19 @@
 
   .panel-body {
     padding: var(--space-4);
+  }
+  .panel-header + .panel-body {
+    padding-block-start: var(--space-3);
+  }
+  /* Roomier panel: 20px padding. */
+  .panel[data-pad="lg"] .panel-header {
+    padding: 20px 20px 0;
+  }
+  .panel[data-pad="lg"] .panel-body {
+    padding: 20px;
+  }
+  .panel[data-pad="lg"] .panel-header + .panel-body {
+    padding-block-start: var(--space-3);
   }
   .panel[data-flush] .panel-body {
     padding: 0;

@@ -3,13 +3,13 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactElement, ReactNod
 import { Icon } from './icon';
 import type { IconName } from './icon';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'link' | 'danger';
 export type ButtonSize = 'md' | 'sm';
 
 interface ButtonOwnProps {
-  /** One primary per task region. */
+  /** One primary per task region. `link` is a small text button (Copy, Clear list). */
   variant?: ButtonVariant;
-  /** `md` is 44px high. `sm` is 32px and is never used for the primary action of a page. */
+  /** `md` is 40px high. `sm` is 32px and is never used for the primary action of a page. */
   size?: ButtonSize;
   /** Filled danger, only inside a confirmation dialog. Use with `variant="danger"`. */
   confirm?: boolean;
@@ -43,10 +43,10 @@ function requireName(component: string, iconOnly: boolean | undefined, props: Re
   console.error(`Deep Ink ${component}: an icon-only button needs an accessible name. Add aria-label.`);
 }
 
-function contents(icon: IconName | undefined, size: ButtonSize, children: ReactNode) {
+function contents(icon: IconName | undefined, size: ButtonSize, variant: ButtonVariant, children: ReactNode) {
   return (
     <>
-      {icon ? <Icon name={icon} size={size === 'sm' ? 14 : 16} /> : null}
+      {icon ? <Icon name={icon} size={size === 'sm' || variant === 'link' ? 14 : 16} /> : null}
       {children}
     </>
   );
@@ -89,12 +89,12 @@ export function Button({
       ...rest,
       ...shared,
       className: [shared.className, child.props.className].filter(Boolean).join(' '),
-      children: contents(icon, size, child.props.children),
+      children: contents(icon, size, variant, child.props.children),
     } as Record<string, unknown>);
   }
   return (
     <button ref={ref} type={type} disabled={disabled || loading} {...rest} {...shared}>
-      {contents(icon, size, children)}
+      {contents(icon, size, variant, children)}
     </button>
   );
 }
@@ -124,7 +124,7 @@ export function ButtonLink({
       data-icon-only={iconOnly ? '' : undefined}
       aria-busy={loading ? true : undefined}
     >
-      {contents(icon, size, children)}
+      {contents(icon, size, variant, children)}
     </a>
   );
 }

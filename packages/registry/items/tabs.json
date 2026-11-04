@@ -17,6 +17,7 @@
     "aria": [
       "role=\"tablist\" with aria-label",
       "aria-selected and aria-controls on each tab, aria-labelledby on each panel",
+      "The live dot and the warning pill are read as text (\", live\", \", 2 pending changes\"); the dot itself is aria-hidden",
       "Only the selected tab is in the Tab order (tabindex 0, others -1)",
       "Counts are read as \"Operations, 4\""
     ],

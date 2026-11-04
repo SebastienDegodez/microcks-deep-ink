@@ -2,13 +2,13 @@ import { afterNextRender, booleanAttribute, Directive, effect, ElementRef, injec
 import { createIconElement } from './icon';
 import type { IconName } from './icon';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'danger';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'link' | 'danger';
 export type ButtonSize = 'md' | 'sm';
 
 /**
  * Native `<button>` or `<a>` with the `button` styling: `<button mkButton variant="primary">Save</button>`.
  * Defaults to `type="button"`. Use `<a mkButton href="...">` for navigation, a button for actions.
- * `md` is 44px high; `sm` is 32px and is never used for the primary action of a page.
+ * `md` is 40px high; `variant="link"` is a small text button (Copy, Clear list); `sm` is 32px and is never used for the primary action of a page.
  */
 @Directive({
   selector: 'button[mkButton], a[mkButton]',
@@ -45,7 +45,7 @@ export class ButtonDirective {
     let iconEl: SVGSVGElement | null = null;
     effect(() => {
       const name = this.icon();
-      const size = this.size() === 'sm' ? 14 : 16;
+      const size = this.size() === 'sm' || this.variant() === 'link' ? 14 : 16;
       iconEl?.remove();
       iconEl = null;
       if (name) {

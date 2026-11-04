@@ -30,3 +30,14 @@ export const Flush: StoryObj = {
     `,
   }),
 };
+
+export const LabelTitle: StoryObj = {
+  name: "Label title, large padding",
+  render: () => ({
+    template: `
+      <section mkPanel title="Runner log" titleStyle="label" padding="lg" style="max-width:560px;display:block">
+        <p style="margin:0">An uppercase 12px title and a 20px padding.</p>
+      </section>
+    `,
+  }),
+};
