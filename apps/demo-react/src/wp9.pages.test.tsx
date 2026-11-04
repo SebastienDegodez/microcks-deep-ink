@@ -263,6 +263,18 @@ describe('Administration (/admin/:tab?)', () => {
     await waitFor(() => expect(screen.getAllByText('no manager')).toHaveLength(2), { timeout: 3000 });
   });
 
+  it('exports the preselected services and previews then imports the sample snapshot', async () => {
+    renderAt('/admin/snapshots');
+    expect(await screen.findByText('2 of 10 selected', {}, { timeout: 3000 })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Export snapshot' }));
+    expect(await screen.findByText('downloaded · 2 services, 4 operations · 28 KB')).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Use a sample snapshot' }));
+    expect(await screen.findByRole('heading', { level: 3, name: 'Preview · 3 services detected' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Import snapshot' }));
+    expect(await screen.findByText('Imported · 1 created, 2 replaced')).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Open APIs & Services' })).toBeTruthy();
+  });
+
   it('shows the configuration read-only', async () => {
     renderAt('/admin/configuration');
     await screen.findByText('Async API mocking');
