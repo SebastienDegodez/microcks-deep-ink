@@ -89,8 +89,8 @@ export function AgentCardTab({ agent }: { agent: AgentProfile }) {
         <div className="agent-card-url">
           <label htmlFor="agent-card-url" className="sr-only">Agent Card URL</label>
           <Input id="agent-card-url" mono readOnly value={url} className="agent-card-url-input" />
-          <CopyButton value={url} label="Copy URL" size="md" />
-          <CopyButton value={(isMock ? mock : published).join('\n')} label="Copy JSON" size="md" />
+          <CopyButton value={url} label="Copy URL" size="md" className="agent-copy-plain" />
+          <CopyButton value={(isMock ? mock : published).join('\n')} label="Copy JSON" size="md" className="agent-copy-plain" />
         </div>
         {isMock ? (
           <p className="agent-card-mock-note">

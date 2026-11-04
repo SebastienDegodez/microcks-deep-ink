@@ -37,3 +37,18 @@ export const AlignedInAList: StoryObj = {
     `,
   }),
 };
+
+export const Small: StoryObj = {
+  name: 'Small and extra small',
+  render: () => ({
+    template: `
+      <div class="inline">
+        <span mkMethodTag method="GET" size="sm"></span>
+        <span mkMethodTag method="PATCH" size="sm"></span>
+        <span mkMethodTag method="POST" size="sm"></span>
+        <span mkMethodTag method="GET" size="xs"></span>
+        <span mkMethodTag method="PATCH" size="xs"></span>
+      </div>
+    `,
+  }),
+};

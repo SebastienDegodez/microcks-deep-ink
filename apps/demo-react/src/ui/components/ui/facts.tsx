@@ -20,14 +20,16 @@ export interface FactsProps extends Omit<HTMLAttributes<HTMLDListElement>, 'chil
   items?: Fact[];
   /** `rows` (default): term column + separators. `inline`: two-column grid. `columns`: term over value. */
   layout?: 'rows' | 'inline' | 'columns';
-  /** Frames the list on the page background (padding 12px 14px, radius 6). */
-  boxed?: boolean;
+  /** Frames the list on the page background (padding 12px 14px, radius 6); `surface`: on the surface fill, padding 12px. */
+  boxed?: boolean | 'surface';
   /** 14px 600 values (figures). */
   strong?: boolean;
   /** Width of the term column in `rows` (130px) and `inline` (92px): `150px`. */
   termWidth?: string;
   /** `columns` only: a fixed number of equal columns instead of auto-fit. */
   columns?: number;
+  /** `inline` and `columns`: the grid gap, row then column (default `8px 16px`; WorkflowRun `9px 12px`). */
+  gap?: string;
   /** Extra `FactRow`s after the items. */
   children?: ReactNode;
 }
@@ -60,16 +62,17 @@ export function FactRow({ term, sub, mono, tone, className, children, ...rest }:
 }
 
 /** Key/value facts of an object in a native `<dl>`. */
-export function Facts({ items = [], layout = 'rows', boxed, strong, termWidth, columns, className, style, children, ...rest }: FactsProps) {
+export function Facts({ items = [], layout = 'rows', boxed, strong, termWidth, columns, gap, className, style, children, ...rest }: FactsProps) {
   const vars: Record<string, string> = {};
   if (termWidth) vars['--facts-term'] = termWidth;
+  if (gap) vars['--facts-gap'] = gap;
   if (columns) vars['--facts-cols'] = `repeat(${columns}, minmax(0, 1fr))`;
   return (
     <dl
       {...rest}
       className={['facts', className].filter(Boolean).join(' ')}
       data-layout={layout === 'rows' ? undefined : layout}
-      data-boxed={boxed ? '' : undefined}
+      data-boxed={boxed === 'surface' ? 'surface' : boxed ? '' : undefined}
       data-strong={strong ? '' : undefined}
       style={{ ...(vars as CSSProperties), ...style }}
     >

@@ -89,6 +89,7 @@ export default function HubPage() {
     <>
       <PageHeader
         title="Hub"
+        descriptionWidth={760}
         description="Community packages of API mocks and conformance tests. Install one to get its Services, examples and tests in this instance, once or kept in sync."
         actions={
           <span className="hb-connected">
@@ -101,7 +102,7 @@ export default function HubPage() {
       <div className="hb-filters">
         <div className="hb-search-row">
           <FilterSearch
-            className="hb-search"
+            size="lg"
             label="Search packages and APIs"
             placeholder="Search packages, APIs, protocols…"
             autoComplete="off"
@@ -113,11 +114,11 @@ export default function HubPage() {
           </span>
         </div>
         <div role="group" aria-label="Categories" className="hb-cats">
-          <Chip pressed={category === ''} count={byQuery.length} onClick={() => setCategory('')}>
+          <Chip size="lg" pressed={category === ''} count={byQuery.length} onClick={() => setCategory('')}>
             All
           </Chip>
           {(categories.data ?? []).map((c) => (
-            <Chip key={c.name} pressed={category === c.name} count={byQuery.filter((p) => p.category === c.name).length} onClick={() => setCategory(c.name)}>
+            <Chip key={c.name} size="lg" pressed={category === c.name} count={byQuery.filter((p) => p.category === c.name).length} onClick={() => setCategory(c.name)}>
               {c.name}
             </Chip>
           ))}
@@ -199,12 +200,12 @@ function PackageTile({
       footer={
         <>
           {status === '' ? (
-            <Button variant="primary" size="compact" icon="download" onClick={onInstall}>
+            <Button variant="primary" size="tile" icon="download" onClick={onInstall}>
               Install
             </Button>
           ) : null}
           {status === 'installing' ? (
-            <LiveIndicator id={`hb-card-${pkg.id}-live`} tabIndex={-1} className="hb-live" label={`live · installing ${pkg.apiCount} APIs`} />
+            <LiveIndicator id={`hb-card-${pkg.id}-live`} tabIndex={-1} variant="box" label={`live · installing ${pkg.apiCount} APIs`} />
           ) : null}
           {status === 'installed' ? (
             <>
@@ -212,7 +213,7 @@ function PackageTile({
                 <Icon name="check" size={15} />
                 Installed
               </span>
-              <Button asChild size="compact">
+              <Button asChild size="tile">
                 <RouterLink id={`hb-card-${pkg.id}-view`} to="/services">
                   View in catalogue
                   <Icon name="arrow-right" size={13} />
@@ -286,7 +287,7 @@ function Detail({
           return (
             <div key={a.name} className="hb-api">
               <div className="hb-api-head">
-                <ApiBadge size="sm" protocol={a.protocol} name={a.name} />
+                <ApiBadge size="compact" protocol={a.protocol} name={a.name} />
                 <div role="group" aria-label={`Version of ${a.name}`} className="hb-versions">
                   {a.versions.map((x) => (
                     <button key={x} type="button" aria-pressed={x === v} onClick={() => setPicked((p) => ({ ...p, [a.name]: x }))}>
@@ -355,10 +356,9 @@ function Detail({
           ))}
         </ul>
         {preview.blocked && status === '' ? (
-          <div role="note" className="hb-note">
-            <Icon name="warning" size={14} />
-            <span>{preview.blocked}</span>
-          </div>
+          <Callout tone="warning" variant="outline">
+            <p>{preview.blocked}</p>
+          </Callout>
         ) : null}
       </div>
 
@@ -377,7 +377,7 @@ function Detail({
             <span className="hb-hint">Nothing is written before you click.</span>
           </>
         ) : null}
-        {status === 'installing' ? <LiveIndicator id="hb-detail-live" tabIndex={-1} className="hb-live" label="live · fetching and importing artifacts" /> : null}
+        {status === 'installing' ? <LiveIndicator id="hb-detail-live" tabIndex={-1} variant="box" size="lg" label="live · fetching and importing artifacts" /> : null}
         {status === 'installed' ? (
           <>
             <span className="hb-installed">
@@ -408,15 +408,15 @@ function PreviewBadges({ row }: { row: PreviewRow }) {
       <span className="hb-tag" data-tag={row.tag.toLowerCase().replace(' ', '-')}>
         {row.tag}
       </span>
-      <ApiBadge size="sm" protocol={row.protocol} name={row.name} version={row.version} />
-      <ApiBadge size="sm" label="samples" value={String(row.samples)} status="action" />
+      <ApiBadge size="compact" protocol={row.protocol} name={row.name} version={row.version} />
+      <ApiBadge size="compact" label="samples" value={String(row.samples)} status="action" />
       <ApiBadge
-        size="sm"
+        size="compact"
         label="conformance"
         value={row.conformance === null ? 'not tested' : `${row.conformance}%`}
         status={row.conformance === null ? 'neutral' : 'success'}
       />
-      {row.mcp ? <ApiBadge size="sm" label="mcp" value="agent-ready" status="info" /> : null}
+      {row.mcp ? <ApiBadge size="compact" label="mcp" value="agent-ready" status="info" /> : null}
     </li>
   );
 }

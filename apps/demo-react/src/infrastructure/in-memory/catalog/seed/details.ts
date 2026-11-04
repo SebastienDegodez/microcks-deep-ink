@@ -43,6 +43,13 @@ const PASTRY2_SCHEMAS: Record<string, string> = {
   ),
 };
 
+/** Tool descriptions of API Pastry 2.0: the contract's operation summaries, as an agent reads them. */
+const PASTRY2_TOOL_DESCRIPTIONS: Record<string, string> = {
+  get_pastries: 'Get list of pastries by size',
+  get_pastries_name: 'Get Pastry by name',
+  patch_pastries_name: 'Update Pastry price or status',
+};
+
 const ARTIFACT_BY_PROTOCOL: Record<string, { ext: string; kind: string }> = {
   REST: { ext: 'openapi.yaml', kind: 'OPEN_API_SPEC' },
   EVENT: { ext: 'asyncapi.yaml', kind: 'ASYNC_API_SPEC' },
@@ -68,7 +75,7 @@ function mcpFor(service: ServiceSummary, operations: Operation[]): McpInfo | und
     const name = op.mcpTool ?? mcpToolName(op.method, op.path);
     return {
       name,
-      description: op.summary,
+      description: (service.id === 'pastry2' ? PASTRY2_TOOL_DESCRIPTIONS[name] : undefined) ?? op.summary,
       method: op.method,
       path: op.path,
       inputSchema: (service.id === 'pastry2' ? PASTRY2_SCHEMAS[name] : undefined) ?? deriveInputSchema(op),
@@ -99,7 +106,6 @@ export function buildDetails(service: ServiceSummary, operations: Operation[]): 
       description: "A bakery demo API: list pastries by size, get a pastry by its name, and update its price or availability.",
       createdAt: '2026-07-14T10:21:00Z',
       createdLabel: 'Jul 14, 2026',
-      importedAt: ago(HOUR + 56 * MIN),
       importedBy: 'MA',
       artifacts: [
         { role: 'primary', file: 'apipastry-2.0-openapi.yaml', kind: 'OPEN_API_SPEC', summary: 'operations, schemas, 6 examples' },

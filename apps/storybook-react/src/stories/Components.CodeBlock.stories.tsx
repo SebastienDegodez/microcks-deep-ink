@@ -92,3 +92,27 @@ export const ChangedLines: StoryObj = {
     </div>
   ),
 };
+
+export const SchemaMismatch: StoryObj = {
+  name: 'Narrow gutter, danger frame (schema mismatch)',
+  render: () => (
+    <CodeBlock
+      variant="plain"
+      caption="Response body"
+      lineNumbers
+      gutter="narrow"
+      tone="danger"
+      lines={[{ text: '{' }, { text: '  "name": "Eclair Cafe",' }, { text: '  "price": "3.9"', bad: true, note: 'schema: number' }, { text: '}' }]}
+    />
+  ),
+};
+
+export const RegionLabel: StoryObj = {
+  name: 'Same caption, distinct region names',
+  render: () => (
+    <div className="stack">
+      <CodeBlock caption="SendMessage · curl" label="SendMessage · curl, JSON-RPC binding" code={"curl -X POST https://agent.acme.io/a2a -d '{\"jsonrpc\":\"2.0\",\"method\":\"message/send\"}'"} />
+      <CodeBlock caption="SendMessage · curl" label="SendMessage · curl, HTTP+JSON binding" code="curl -X POST https://agent.acme.io/v1/message:send" />
+    </div>
+  ),
+};
