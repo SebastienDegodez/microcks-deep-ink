@@ -1,5 +1,5 @@
 import type { ContractProperty, OperationOutcome, TestEnvironment, TestResult, TestRun, TestRunner, TestStepResult } from '@/domain/testing';
-import { RUN_IDS, STAGING_BASE } from '../../shared';
+import { OPERATIONS, RUN_IDS, STAGING_BASE } from '../../shared';
 
 export const PROD_BASE = 'https://pastry.acme.io/v2';
 export const LOCAL_BASE = 'http://localhost:8282/v2';
@@ -149,13 +149,38 @@ export function seedTestRuns(): TestRun[] {
   const orders: TestRun = {
     id: '41', serviceId: 'orders', runner: 'ASYNC_API_SCHEMA', environment: 'staging',
     endpoint: 'kafka://kafka.staging.acme.io:9092/PastryordersAPI-0.1.0-pastry-orders', result: 'passed',
-    startedAt: '2026-11-03T08:25:04Z', durationMs: 1210, passed: 2, total: 2, timeoutMs: 10_000, launchedBy: 'MA',
+    startedAt: '2026-11-03T08:25:04Z', durationMs: 1210, passed: 2, total: 2, timeoutMs: 10_000, launchedBy: 'MA', operations: ['pass'],
     steps: [
       { id: 's1', operationId: 'publish-order', name: 'Validated order', method: 'SUB', path: 'pastry/orders', ms: 540, result: 'passed', violations: [] },
       { id: 's2', operationId: 'publish-order', name: 'Cancelled order', method: 'SUB', path: 'pastry/orders', ms: 610, result: 'passed', violations: [] },
     ],
   };
-  return [run119, ...HISTORY.map(toRun), orders, conciergeRun()];
+  return [run119, ...HISTORY.map(toRun), orders, conciergeRun(), ...OTHER_SERVICES.map(otherRun)];
+}
+
+/** Latest runs of other services, as the Catalogue and the Cockpit prototypes show them (#17, #9, #86). */
+const OTHER_SERVICES: { id: string; serviceId: string; runner: TestRunner; endpoint: string; at: string; ms: number; ops: string; reason?: string }[] = [
+  { id: '17', serviceId: 'movie', runner: 'GRAPHQL_SCHEMA', endpoint: 'https://movies.staging.acme.io/graphql', at: '2026-11-03T03:10:04Z', ms: 1320, ops: 'pppf',
+    reason: 'addReview · response does not match the schema: rating expected Int, got Float' },
+  { id: '9', serviceId: 'hellogrpc', runner: 'GRPC_PROTOBUF', endpoint: 'grpc://hello.staging.acme.io:9000', at: '2026-11-02T08:00:04Z', ms: 410, ops: 'p' },
+  { id: '86', serviceId: 'pastry1', runner: 'OPEN_API_SCHEMA', endpoint: 'https://pastry.staging.acme.io/v1', at: '2026-10-31T08:00:04Z', ms: 1650, ops: 'ppf',
+    reason: 'PATCH /pastries/{name} · response body does not match schema: $.price expected number, got string' },
+];
+
+function otherRun(raw: (typeof OTHER_SERVICES)[number]): TestRun {
+  const ops = OPERATIONS[raw.serviceId] ?? [];
+  const operations = [...raw.ops].map((c) => OUTCOME[c] ?? 'none');
+  const steps: TestStepResult[] = ops.map((o, i) => ({
+    id: `s${i + 1}`, operationId: o.id, name: o.summary, method: o.method, path: o.path, ms: Math.round(raw.ms / ops.length),
+    result: operations[i] === 'fail' ? 'failed' : 'passed',
+    violations: operations[i] === 'fail' ? [{ path: '$', message: raw.reason ?? 'Response does not match the contract.' }] : [],
+  }));
+  const failed = operations.includes('fail');
+  return {
+    id: raw.id, serviceId: raw.serviceId, runner: raw.runner, environment: 'staging', endpoint: raw.endpoint, result: failed ? 'failed' : 'passed',
+    startedAt: raw.at, durationMs: raw.ms, passed: steps.filter((st) => st.result === 'passed').length, total: steps.length, timeoutMs: 10_000,
+    steps, reason: raw.reason, operations, operationLabels: ops.map((o) => ({ id: o.id, method: o.method, path: o.path })), launchedBy: 'MA',
+  };
 }
 
 /** Run #3 of Pastry concierge 1.0 (A2A_CONFORMANCE): 13 of 15 checks passed. The Agent test screen holds its matrix. */

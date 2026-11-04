@@ -30,6 +30,8 @@ export interface CockpitView {
   };
   services: ServiceSummary[];
   recentTests: TestRunSummary[];
+  /** The 5 latest mock calls, newest first, so Live traces is not empty before the stream ticks. */
+  recentCalls: TraceCall[];
 }
 
 export interface ObserveUseCases {
@@ -51,7 +53,16 @@ export interface ObserveUseCases {
 export function createObserveUseCases(ports: ObservePorts): ObserveUseCases {
   return {
     getCockpit: async () => {
-      const [services, recentTests] = await Promise.all([ports.catalog.list(), ports.testRuns.recent(5)]);
+      const [services, latest, topology] = await Promise.all([ports.catalog.list(), ports.testRuns.recent(40), ports.traces.topology()]);
+      // The 6 latest runs, at most 2 per service, so one busy service does not fill the list.
+      const perService = new Map<string, number>();
+      const recentTests = latest
+        .filter((r) => {
+          const n = perService.get(r.serviceId) ?? 0;
+          perService.set(r.serviceId, n + 1);
+          return n < 2;
+        })
+        .slice(0, 6);
       const scored = services.filter((s) => s.conformance !== null);
       return {
         asOf: ports.clock.now().toISOString(),
@@ -67,6 +78,7 @@ export function createObserveUseCases(ports: ObservePorts): ObserveUseCases {
         },
         services,
         recentTests,
+        recentCalls: [...topology.history].sort((a, b) => b.seq - a.seq).slice(0, 5),
       };
     },
     subscribeTraffic: (listener) => ports.traffic.subscribe(listener),
