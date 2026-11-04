@@ -13,6 +13,7 @@ import { Field } from '@/ui/components/ui/field';
 import { Input } from '@/ui/components/ui/input';
 import { RunMeta } from '@/ui/components/ui/run-meta';
 import { Select } from '@/ui/components/ui/select';
+import { Stepper } from '@/ui/components/ui/stepper';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { ButtonRouterLink, workflowPath, runPath, runSetupPath } from '../workflows/shared';
 import { RunApiPanel, RunBadges, runBreadcrumb } from './run-parts';
@@ -447,18 +448,18 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
                 View in the loom
               </RouterLink>
             </div>
-            <ol className="wfr-plan-list">
-              {workflow.steps.map((s, i) => {
+            <Stepper
+              variant="list"
+              marker="circle"
+              steps={workflow.steps.map((s, i) => {
                 const actions = [
                   ...s.onSuccess.map((a) => (a.type === 'end' ? `onSuccess end${a.criteria?.length ? ` when ${a.criteria.map((c) => c.condition).join(' and ')}` : ''}` : '')),
                   ...s.onFailure.map((a) => (a.type === 'retry' ? `onFailure retry · retryAfter ${a.retryAfter} · retryLimit ${a.retryLimit}` : `onFailure end`)),
                 ].filter(Boolean);
-                return (
-                  <li key={s.stepId}>
-                    <span className="wfr-plan-no" aria-hidden="true">
-                      {i + 1}
-                    </span>
-                    <span className="wfr-plan-text">
+                return {
+                  id: s.stepId,
+                  label: (
+                    <>
                       <span className="wfr-plan-id">
                         <span className="sr-only">Step {i + 1}: </span>
                         {s.stepId}
@@ -471,11 +472,11 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
                           {a}
                         </span>
                       ))}
-                    </span>
-                  </li>
-                );
+                    </>
+                  ),
+                };
               })}
-            </ol>
+            />
             <p className="wfr-note">
               A step passes when its success criteria hold and, with schema validation on, its response conforms to its OpenAPI schema. A failed step applies its first
               onFailure action whose criteria hold; without one, the run ends there and later steps are not run.
