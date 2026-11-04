@@ -75,7 +75,9 @@ for (const [framework, app] of Object.entries(APPS)) {
           assert.ok(found, `${rel} imports ${spec}`);
         }
       }
-      for (const tag of ['workflow-loom', 'command-bar', 'plugin-slot']) assert.ok(existsSync(join(dir, lock.out, 'elements', `${tag}.js`)), tag);
+      for (const tag of ['workflow-loom', 'plugin-slot']) assert.ok(existsSync(join(dir, lock.out, 'elements', `${tag}.js`)), tag);
+      // command-bar is a native component: no element bundle.
+      assert.ok(!existsSync(join(dir, lock.out, 'elements', 'command-bar.js')), 'command-bar has no element bundle');
     });
 
     it('status reports everything up to date and diff finds nothing', () => {
