@@ -114,4 +114,4 @@ export const CardWithIcons: StoryObj = {
 };
 
 /** Interactive: every input is a control in the Controls panel. */
-export const Playground: StoryObj = playground('tabs', 'TabsComponent', { label: 'Service sections', value: 'operations', activation: 'automatic', variant: 'line', idPrefix: 'pg', items: [{ id: 'operations', label: 'Operations', count: 8 }, { id: 'tests', label: 'Tests' }, { id: 'contract', label: 'Contract' }] }, '');
+export const Playground: StoryObj = playground('tabs', 'TabsComponent', { label: 'Service sections', value: 'operations', activation: 'automatic', variant: 'line', idPrefix: 'pg', items: [{ id: 'operations', label: 'Operations', count: 8 }, { id: 'tests', label: 'Tests' }, { id: 'contract', label: 'Contract' }] }, '<div mkTabPanel tab="operations" idPrefix="pg"><p style="margin:0">Operations panel</p></div><div mkTabPanel tab="tests" idPrefix="pg"><p style="margin:0">Tests panel</p></div><div mkTabPanel tab="contract" idPrefix="pg"><p style="margin:0">Contract panel</p></div>');
