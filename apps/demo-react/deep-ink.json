@@ -373,9 +373,17 @@
         "src/ui/styles/task-timeline.css": "b503d219157662f602fc2a5ee8f182728d16507a9cb7929e82ce73e8540b3a4e"
       },
       "hash": "baa3a8ce8f22883d"
+    },
+    "tile": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/tile.tsx": "bb451a89d82a9a08ea3159f7592b42cf68d5646657cd16af97b26e9cd4737556",
+        "src/ui/styles/tile.css": "4c572a9478403804cf70c5094330da21e9af61e626081322451a929713d31c70"
+      },
+      "hash": "c73cb14e4b4c6432"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "b9f2f7622a9c0b9fa6f2fd89ae19417a4bf09edd20690fc6349e2d9cdcb539c2"
+    "src/ui/styles/index.css": "16212ac2b661733688ce6924191fa8ceee053a096d9b1717f62ee74881bf0655"
   }
 }
