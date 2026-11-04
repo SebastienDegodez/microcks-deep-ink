@@ -39,8 +39,12 @@
 .agent-json-line[data-mark='-'] .agent-json-mark { color: var(--danger); }
 .agent-json-line[data-mark='+'] .agent-json-mark { color: var(--success); }
 .agent-json-text { white-space: pre; padding-right: 16px; color: var(--text); }
-.agent-json-line[data-mark='-'] .agent-json-text { text-decoration: line-through; opacity: 0.75; }
+.agent-json-line[data-mark='-'] .agent-json-text { text-decoration: line-through; }
+/* Removed lines: one secondary ink for every token, so they stay at 4.5:1 on the danger tint in both themes. */
+.agent-json-line[data-mark='-'] .agent-json-text [data-tok] { color: var(--text-secondary); }
 .agent-json-text [data-tok='key'] { color: var(--link); }
 .agent-json-text :is([data-tok='colon'], [data-tok='punct']) { color: var(--text-muted); }
 .agent-json-text [data-tok='num'] { color: var(--warning); }
 .agent-json-text [data-tok='lit'] { color: var(--proto-a2a); }
+/* Text-only copy buttons, as in the prototype: the URL keeps the room. The result is still announced by CopyButton. */
+.agent-copy-plain > .icon { display: none; }

@@ -78,7 +78,7 @@
 .agent-bubble-who { color: var(--text-secondary); font-weight: 600; }
 .agent-part { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .agent-part-label { font: 400 10px/1.4 var(--font-mono); color: var(--text-muted); }
-.agent-part-text { font: 400 14px/1.5 var(--font-ui); color: var(--text); overflow-wrap: anywhere; }
+.agent-part-text { font: 400 14px/normal var(--font-ui); color: var(--text); overflow-wrap: anywhere; }
 .agent-part-data { margin: 0; padding: 8px 10px; border-radius: 4px; background: var(--bg); color: var(--text); font: 400 12px/1.55 var(--font-mono); white-space: pre; overflow-x: auto; }
 
 /* Outbound call of the agent. */
