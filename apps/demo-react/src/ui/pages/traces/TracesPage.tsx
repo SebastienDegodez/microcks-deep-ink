@@ -24,6 +24,7 @@ import { Field } from '@/ui/components/ui/field';
 import { Icon } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { Select } from '@/ui/components/ui/select';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
 import { useThrottledAnnounce } from '../tests/useThrottledAnnounce';
 import { CallGraph } from './CallGraph';
@@ -286,8 +287,8 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
             flash={flashCall}
           />
 
-          <div className="tr2-split">
-            <section aria-labelledby="tr2-list-title" className="tr2-list">
+          <SplitPane sideWidth="400px" sideMax="none" mainWidth="560px">
+            <SplitPaneMain as="section" aria-labelledby="tr2-list-title" className="tr2-list">
               <div className="tr2-list-head">
                 <div className="tr2-list-title">
                   <h2 id="tr2-list-title">Latest calls</h2>
@@ -338,7 +339,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
                   )}
                 </div>
               </div>
-            </section>
+            </SplitPaneMain>
 
             {selected ? (
               <CallDetail
@@ -348,12 +349,12 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
                 onReplay={() => replay(selected)}
               />
             ) : (
-              <aside aria-label="Call detail" className="tr2-noselect">
+              <SplitPaneSide as="aside" aria-label="Call detail" className="tr2-noselect">
                 <span className="tr2-noselect-title">Select a call</span>
                 <span>See its request and response, the dispatch criteria Microcks computed and the example it served. You can replay it from there.</span>
-              </aside>
+              </SplitPaneSide>
             )}
-          </div>
+          </SplitPane>
         </div>
       )}
     </>
@@ -429,7 +430,7 @@ function CallDetail({ call: c, replayNote, onClose, onReplay }: { call: TraceCal
   const workflowId = arazzoWorkflow(c);
   const openTo = c.operationId ? `/services/${c.serviceId}/operations/${c.operationId}` : `/services/${c.serviceId}`;
   return (
-    <section aria-labelledby="tr2-detail-title" className="tr2-detail">
+    <SplitPaneSide as="section" aria-labelledby="tr2-detail-title" className="tr2-detail">
       <div className="tr2-detail-head">
         <div className="tr2-detail-id">
           <div className="tr2-detail-title">
@@ -563,6 +564,6 @@ function CallDetail({ call: c, replayNote, onClose, onReplay }: { call: TraceCal
           </>
         ) : null}
       </p>
-    </section>
+    </SplitPaneSide>
   );
 }
