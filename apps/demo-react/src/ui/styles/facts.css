@@ -81,6 +81,14 @@
   .facts-row > dd[data-tone="warning"] { color: var(--warning); }
   .facts-row > dd[data-tone="danger"] { color: var(--danger); }
   .facts-row > dd[data-tone="muted"] { color: var(--text-secondary); }
+  /* Secondary values (Agent test cell facts): values in --text-secondary, the muted tone one step below. */
+  .facts[data-values="secondary"] > .facts-row > dd { color: var(--text-secondary); }
+  .facts[data-values="secondary"] > .facts-row > dd[data-tone="success"] { color: var(--success); }
+  .facts[data-values="secondary"] > .facts-row > dd[data-tone="warning"] { color: var(--warning); }
+  .facts[data-values="secondary"] > .facts-row > dd[data-tone="danger"] { color: var(--danger); }
+  .facts[data-values="secondary"] > .facts-row > dd[data-tone="muted"] { color: var(--text-muted); }
+  /* Relaxed values: line height 1.6 (Agent test cell facts). */
+  .facts[data-line-height="relaxed"] > .facts-row > dd { line-height: 1.6; }
   .facts-sub { font-family: var(--font-ui); font-size: 12px; font-weight: 400; color: var(--text-muted); }
   /* Large rows (Service Properties): 14px, padding 8px 0, mono values 14px. */
   .facts[data-size="lg"] { font-size: 14px; }

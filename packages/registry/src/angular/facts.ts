@@ -27,6 +27,8 @@ export interface Fact {
     '[attr.data-boxed]': "boxed() === 'surface' ? 'surface' : boxed() ? '' : null",
     '[attr.data-strong]': "strong() ? '' : null",
     '[attr.data-size]': "size() === 'md' ? null : size()",
+    '[attr.data-values]': "values() === 'text' ? null : values()",
+    '[attr.data-line-height]': "lineHeight() === 'inherit' ? null : lineHeight()",
     '[style.--facts-term]': 'termWidth() ?? null',
     '[style.--facts-gap]': 'gap() ?? null',
     '[style.--facts-cols]': "columns() ? 'repeat(' + columns() + ', minmax(0, 1fr))' : null",
@@ -49,6 +51,10 @@ export class FactsComponent {
   readonly size = input<'sm' | 'md' | 'lg'>('md');
   /** `inline` and `columns`: the grid gap, row then column (default `8px 16px`; WorkflowRun `9px 12px`). */
   readonly gap = input<string>();
+  /** `secondary`: values in --text-secondary, and the `muted` tone drops to --text-muted (Agent test cell facts). Default `text`. */
+  readonly values = input<'text' | 'secondary'>('text');
+  /** `relaxed`: values at line height 1.6 (Agent test cell facts). Default `inherit`. */
+  readonly lineHeight = input<'inherit' | 'relaxed'>('inherit');
 }
 
 /** One term/value pair, for rich values (links, badges, buttons): `<div mkFactRow term="Statistics" mono>…</div>`. */

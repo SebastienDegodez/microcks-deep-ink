@@ -1,6 +1,7 @@
 <!--
   SummaryStrip. A row of key facts: .summary-strip-label (muted), .summary-strip-value (mono, --text-secondary),
   and aria-hidden .summary-strip-sep separators. data-gap="roomy" for 10px rows, data-values="text" for values in --text.
+  data-variant="canvas": --canvas fill, radius 8, padding 10px 14px, 6px rows, normal line height (Agent test setup strip).
   Add role="note" and an aria-label when the strip sums up the state of the form below it.
 -->
 <div class="summary-strip" role="note" aria-label="Saved behaviour">
@@ -12,4 +13,11 @@
   <span class="summary-strip-value">2 constraints</span>
   <span class="summary-strip-sep" aria-hidden="true"></span>
   <span class="summary-strip-label">3 examples · dispatcher inferred from the OpenAPI path parameter</span>
+</div>
+
+<div class="summary-strip" data-variant="canvas" role="note" aria-label="Test setup">
+  <span class="summary-strip-label">Setup</span>
+  <span class="summary-strip-value">https://agents.acme.io/concierge</span>
+  <span class="summary-strip-sep" aria-hidden="true"></span>
+  <span class="summary-strip-value">JSON-RPC 2.0</span>
 </div>

@@ -1,6 +1,6 @@
 @layer deep-ink.components {
   .method {
-    --method-bg: var(--proto-rest);
+    --method-bg: var(--proto, var(--proto-rest));
     display: inline-block;
     min-width: var(--method-min-width, 3.5em);
     box-sizing: border-box;
@@ -16,13 +16,6 @@
   .method[data-size="sm"] { min-width: var(--method-min-width, 44px); padding: 1px 5px; font-size: 11px; font-weight: 600; line-height: 14px; }
   /* Extra small: 10px 600, padding 1px 5px, radius 3, no minimum width (Workflow Steps and Sessions tables, loom inspector). */
   .method[data-size="xs"] { min-width: var(--method-min-width, 0); padding: 1px 5px; border-radius: 3px; font-size: 10px; font-weight: 600; line-height: 13px; }
-  .method[data-protocol="rest"] { --method-bg: var(--proto-rest); }
-  .method[data-protocol="soap"] { --method-bg: var(--proto-soap); }
-  .method[data-protocol="event"] { --method-bg: var(--proto-event); }
-  .method[data-protocol="grpc"] { --method-bg: var(--proto-grpc); }
-  .method[data-protocol="graphql"] { --method-bg: var(--proto-graphql); }
-  .method[data-protocol="direct"] { --method-bg: var(--proto-direct); }
-  .method[data-protocol="a2a"] { --method-bg: var(--proto-a2a); }
   /* REST verbs: reads in the REST color, writes in the event color, deletes in danger. */
   .method[data-protocol="rest"]:is([data-method="POST" i], [data-method="PUT" i], [data-method="PATCH" i]) { --method-bg: var(--proto-event); }
   .method[data-protocol="rest"][data-method="DELETE" i] { --method-bg: var(--danger); color: var(--on-status); }

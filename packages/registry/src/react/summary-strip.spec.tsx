@@ -18,6 +18,12 @@ describe('SummaryStrip', () => {
     expect(note.querySelectorAll('.summary-strip-sep[aria-hidden="true"]')).toHaveLength(1);
     expect(screen.getByText('Saved').className).toBe('summary-strip-label');
     expect(screen.getByText('delay 0 ms fixed').className).toBe('summary-strip-value');
+    expect(note.hasAttribute('data-variant')).toBe(false);
     expect(await axeViolations(container)).toEqual([]);
+  });
+
+  it('exposes the canvas variant', () => {
+    render(<SummaryStrip role="note" aria-label="Test setup" variant="canvas" parts={[{ text: 'Setup', kind: 'label' }, { text: 'JSON-RPC 2.0' }]} />);
+    expect(screen.getByRole('note', { name: 'Test setup' }).getAttribute('data-variant')).toBe('canvas');
   });
 });

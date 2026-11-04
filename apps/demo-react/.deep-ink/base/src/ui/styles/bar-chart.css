@@ -68,7 +68,7 @@
   /* Selected: an outline (Tests) or a --link fill (Usage). */
   .bar-chart[data-selection="outline"] .bar-chart-bar[aria-pressed="true"] > .bar-chart-fill { outline: 2px solid var(--text); outline-offset: 2px; }
   .bar-chart[data-selection="fill"] .bar-chart-bar[aria-pressed="true"] > .bar-chart-fill { background: var(--link); }
-  .bar-chart-bar:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; border-radius: 2px; }
+  .bar-chart-bar:focus-visible { border-radius: 2px; }
   /* Future slot (an hour still to come): a dashed full-height frame, not selectable. */
   .bar-chart-future { display: block; box-sizing: border-box; height: 100%; border: 1px dashed var(--border); border-radius: 2px 2px 0 0; }
   /* Overlay (a line chart): drawn over the bars, never catches the pointer. */

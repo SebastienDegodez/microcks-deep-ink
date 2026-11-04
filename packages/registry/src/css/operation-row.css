@@ -32,7 +32,7 @@
   }
   a.operation-link, button.operation-link { cursor: pointer; }
   a.operation-link:hover, button.operation-link:hover { background: var(--raised); }
-  .operation-link:focus-visible { outline-offset: -2px; }
+  .operation-link { --focus-offset: -2px; }
   /* Selected: fill, a leading bar and a heavier path, on top of aria-current. */
   .operation-row[data-selected] .operation-link { box-shadow: inset 3px 0 0 var(--action); }
   .operation-row[data-selected] .operation-path { font-weight: 600; }

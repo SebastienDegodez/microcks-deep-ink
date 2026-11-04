@@ -99,15 +99,32 @@ export const LargeRows: StoryObj = {
   render: () => <Facts size="lg" termWidth="150px" style={{ maxWidth: 560 }} items={[{ term: 'Version', value: '2.0', mono: true }, { term: 'Type', value: 'REST · OpenAPI 3.1' }, { term: 'Created', value: 'Oct 12, 2026' }]} />,
 };
 
+export const SecondaryRelaxed: StoryObj = {
+  name: 'Secondary values, relaxed (Agent test)',
+  render: () => (
+    <Facts
+      layout="inline" boxed values="secondary" lineHeight="relaxed" termWidth="120px" style={{ maxWidth: 560 }}
+      items={[
+        { term: 'Method', value: 'tasks/cancel', mono: true },
+        { term: 'Expected', value: 'state = canceled', mono: true, tone: 'success' },
+        { term: 'Received', value: 'state = working', mono: true, tone: 'danger' },
+        { term: 'Retries', value: 'none', mono: true, tone: 'muted' },
+      ]}
+    />
+  ),
+};
+
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof Facts> = {
   args: {
     items: [{ term: 'Service', value: 'API Pastry' }, { term: 'Version', value: '2.0.0', mono: true }, { term: 'Status', value: 'Healthy', tone: 'success', sub: 'Last check 2 min ago' }],
-    layout: 'rows', boxed: false, strong: false, size: 'md', termWidth: undefined, columns: undefined, gap: undefined,
+    layout: 'rows', boxed: false, strong: false, size: 'md', termWidth: undefined, columns: undefined, gap: undefined, values: 'text', lineHeight: 'inherit',
   },
   argTypes: {
     layout: { control: 'inline-radio', options: ['rows', 'inline', 'columns'] },
     boxed: { control: 'inline-radio', options: [false, true, 'surface'] },
     size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] },
+    values: { control: 'inline-radio', options: ['text', 'secondary'] },
+    lineHeight: { control: 'inline-radio', options: ['inherit', 'relaxed'] },
   },
 };

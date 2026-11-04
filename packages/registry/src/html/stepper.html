@@ -2,6 +2,8 @@
   Stepper. data-variant="progress" (default: numbered dots) | "list" (numbered instructions).
   Progress: data-state="done" on done steps (+ sr-only ", done"), aria-current="step" on the current step.
   data-direction="vertical" stacks the progress dots.
+  List: data-marker="circle" puts the number (no dot) in a 22px ring (--stepper-marker, default --proto-rest) and stacks
+  the text in a column (WorkflowRun plan). aria-label is optional when a heading above names the list.
 -->
 <ol class="stepper" data-variant="progress" aria-label="Progress">
   <li data-state="done"><span class="stepper-dot">1</span>Source<span class="sr-only">, done</span></li>
@@ -12,4 +14,9 @@
 <ol class="stepper" data-variant="list" aria-label="Before you paste">
   <li><span class="stepper-n" aria-hidden="true">1.</span><span>Add MICROCKS_URL and the service account secret to the repository.</span></li>
   <li><span class="stepper-n" aria-hidden="true">2.</span><span>Paste the job in .github/workflows/contract-tests.yml.</span></li>
+</ol>
+
+<ol class="stepper" data-variant="list" data-marker="circle">
+  <li><span class="stepper-n" aria-hidden="true">1</span><span><span class="sr-only">Step 1: </span><span>checkMenu</span><span>GET /pastries</span></span></li>
+  <li><span class="stepper-n" aria-hidden="true">2</span><span><span class="sr-only">Step 2: </span><span>orderPastry</span><span>POST /orders</span></span></li>
 </ol>

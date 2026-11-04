@@ -74,7 +74,7 @@
     gap: 20px;
   }
   /* Focus lands here from the skip link: keep the base focus ring, drawn inside the box. */
-  .main:focus-visible { outline-offset: -2px; }
+  .main { --focus-offset: -2px; }
 
   /* Below 768px: one column; the nav sits behind the Menu disclosure button. */
   @media (max-width: 767px) {

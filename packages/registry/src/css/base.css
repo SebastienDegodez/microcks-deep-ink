@@ -6,6 +6,15 @@
  */
 @layer deep-ink.base, deep-ink.components;
 
+/*
+ * Element-local hooks. They do not inherit, so a value set on one element never reaches its descendants,
+ * and var(--x, fallback) falls back wherever the element does not set it.
+ *   --proto         the protocol colour of an element with a known data-protocol (see the map below);
+ *   --focus-offset  the offset of this element's focus ring (-2px draws it inside a clipped container).
+ */
+@property --proto { syntax: "*"; inherits: false; }
+@property --focus-offset { syntax: "*"; inherits: false; }
+
 @layer deep-ink.base {
   html {
     -webkit-text-size-adjust: 100%;
@@ -53,7 +62,7 @@
   /* One visible focus indicator for the whole system (WCAG 2.4.7, RGAA 10.7). */
   :focus-visible {
     outline: 2px solid var(--action);
-    outline-offset: 2px;
+    outline-offset: var(--focus-offset, 2px);
     box-shadow: var(--shadow-focus);
   }
 
@@ -118,6 +127,18 @@
     align-items: center;
     gap: var(--gap, var(--space-2));
   }
+  /* Protocol colours, read by method-tag, chip and api-badge through var(--proto). */
+  [data-protocol="rest"] { --proto: var(--proto-rest); }
+  [data-protocol="soap"] { --proto: var(--proto-soap); }
+  [data-protocol="event"] { --proto: var(--proto-event); }
+  [data-protocol="grpc"] { --proto: var(--proto-grpc); }
+  [data-protocol="graphql"] { --proto: var(--proto-graphql); }
+  [data-protocol="direct"] { --proto: var(--proto-direct); }
+  [data-protocol="a2a"] { --proto: var(--proto-a2a); }
+
+  /* Shared motion. A pulse dims to --pulse-opacity (0.35) half way. Reduced motion stops both (below). */
+  @keyframes deep-ink-spin { to { transform: rotate(360deg); } }
+  @keyframes deep-ink-pulse { 50% { opacity: var(--pulse-opacity, 0.35); } }
 }
 
 /*

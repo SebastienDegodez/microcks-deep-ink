@@ -7,6 +7,8 @@
   style="--facts-gap: 9px 12px" changes the grid gap of the inline and columns layouts. data-strong makes the values 14px 600 (figures).
   Override the term width with --facts-term, the column minimum with --facts-min, or fix the columns with
   style="--facts-cols: repeat(3, minmax(0, 1fr))".
+  data-values="secondary": values in --text-secondary, dd[data-tone="muted"] then in --text-muted (Agent test cell facts).
+  data-line-height="relaxed": values at line height 1.6.
   dd[data-mono] for code values, dd[data-tone="success|warning|danger|muted"], <span class="facts-sub"> for a muted line.
 -->
 <dl class="facts">
@@ -24,4 +26,11 @@
   <div class="facts-row"><dt>Duration</dt><dd data-mono>1.84 s</dd></div>
   <div class="facts-row"><dt>Calls</dt><dd data-mono>6</dd></div>
   <div class="facts-row"><dt>Steps</dt><dd>4 passed</dd></div>
+</dl>
+
+<dl class="facts" data-layout="inline" data-boxed data-values="secondary" data-line-height="relaxed" style="--facts-term: 120px">
+  <div class="facts-row"><dt>Method</dt><dd data-mono>tasks/cancel</dd></div>
+  <div class="facts-row"><dt>Expected</dt><dd data-mono data-tone="success">state = canceled</dd></div>
+  <div class="facts-row"><dt>Received</dt><dd data-mono data-tone="danger">state = working</dd></div>
+  <div class="facts-row"><dt>Retries</dt><dd data-mono data-tone="muted">none</dd></div>
 </dl>

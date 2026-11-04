@@ -16,18 +16,21 @@ export interface SummaryStripProps extends Omit<HTMLAttributes<HTMLDivElement>, 
   gap?: 'normal' | 'roomy';
   /** `text`: values in --text instead of --text-secondary (Service). */
   values?: 'secondary' | 'text';
+  /** `canvas`: the --canvas fill, radius 8, padding 10px 14px, 6px between wrapped rows and the font's own line height (Agent test setup strip). Default `default`. */
+  variant?: 'default' | 'canvas';
   /** Free content after the parts (links, a code box). */
   children?: ReactNode;
 }
 
 /** Key facts in one bordered row with decorative separators. Pass `role="note"` and `aria-label` for a page summary. */
-export function SummaryStrip({ parts = [], gap = 'normal', values = 'secondary', className, children, ...rest }: SummaryStripProps) {
+export function SummaryStrip({ parts = [], gap = 'normal', values = 'secondary', variant = 'default', className, children, ...rest }: SummaryStripProps) {
   return (
     <div
       {...rest}
       className={['summary-strip', className].filter(Boolean).join(' ')}
       data-gap={gap === 'roomy' ? 'roomy' : undefined}
       data-values={values === 'text' ? 'text' : undefined}
+      data-variant={variant === 'default' ? undefined : variant}
     >
       {parts.map((p, i) => (
         <Fragment key={i}>

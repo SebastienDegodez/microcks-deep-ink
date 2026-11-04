@@ -41,5 +41,13 @@ export const Instructions: StoryObj = {
   }),
 };
 
+export const CircledPlan: StoryObj = {
+  name: 'List with circled numbers (WorkflowRun plan)',
+  render: () => ({
+    props: { steps: [{ label: 'checkMenu · GET /pastries' }, { label: 'orderPastry · POST /orders' }] },
+    template: `<section aria-labelledby="stepper-plan" style="max-width: 420px"><h3 id="stepper-plan" class="section-label">Plan</h3><ol mkStepper variant="list" marker="circle" [steps]="steps"></ol></section>`,
+  }),
+};
+
 /** Interactive: every input is a control in the Controls panel. */
 export const Playground: StoryObj = playground('stepper', 'StepperComponent', { label: 'Import steps', variant: 'progress', direction: 'horizontal', doneLabel: 'done', steps: [{ label: 'Upload', state: 'done' }, { label: 'Review', state: 'current' }, { label: 'Publish', state: 'upcoming' }] }, '');
