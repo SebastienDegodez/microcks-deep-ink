@@ -1,7 +1,7 @@
 import { matchesTraceFilter, type DomainConformance, type InvocationPoint, type Invocations, type Period, type TraceCall, type TraceFilter } from '@/domain/observe';
 import type { MetricsRepository, TraceStream, TrafficStream } from '@/application/ports/observe';
 import { SERVICES, after, createTickingStream, type InMemoryDeps } from '../shared';
-import { HISTORY_LENGTH, CLIENT_EDGES, EXAMPLE_EDGES, TOPOLOGY_CLIENTS, TOPOLOGY_ENDPOINTS, TOPOLOGY_EXAMPLES, historyCalls, makeCall } from './seed/traces.seed';
+import { HISTORY_LENGTH, CLIENT_EDGES, recentTraffic, EXAMPLE_EDGES, TOPOLOGY_CLIENTS, TOPOLOGY_ENDPOINTS, TOPOLOGY_EXAMPLES, historyCalls, makeCall } from './seed/traces.seed';
 import { CONFORMANCE_INDEX, usageDataFor } from './seed/usage.seed';
 
 export { makeCall } from './seed/traces.seed';
@@ -84,6 +84,6 @@ export function createInMemoryObserveAdapters(_deps: InMemoryDeps = {}): Observe
       })),
   };
 
-  const traffic: TrafficStream = { subscribe: stream };
+  const traffic: TrafficStream = { subscribe: stream, recent: (limit) => after(() => recentTraffic().slice(0, limit)) };
   return { metrics, traces, traffic };
 }

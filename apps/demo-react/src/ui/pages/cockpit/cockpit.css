@@ -62,8 +62,12 @@
 .wall-tile-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-width: 0; }
 .wall-tile-badge { min-width: 0; font-size: 12px; border-radius: 6px; }
 .wall-tile-badge > .api-badge-type { flex: none; padding: 3px 7px; }
-.wall-tile-badge > .api-badge-name { padding-block: 3px; padding-inline-start: 8px; min-width: 0; overflow: hidden; text-overflow: ellipsis; display: block; }
-.wall-tile-badge > .api-badge-version { padding-block: 3px; padding-inline-end: 8px; flex: none; }
+/* Name and version read as one segment: the version gives way first, then the name takes the ellipsis. */
+.wall-tile-badge > .api-badge-name { flex: 0 1 auto; padding-block: 3px; padding-inline-start: 8px; min-width: 0; overflow: hidden; text-overflow: ellipsis; display: block; }
+.wall-tile-badge > .api-badge-version { flex: 0 1000 auto; padding-block: 3px; padding-inline: 0; min-width: 0; overflow: hidden; white-space: nowrap; display: block; }
+.wall-tile-badge > .api-badge-version::before { content: '\00a0'; }
+/* The end padding sits on the badge, so a fully hidden version leaves no sliver. */
+.wall-tile-badge:has(> .api-badge-version) { padding-inline-end: 8px; background: var(--surface); }
 .wall-tile-live { flex: none; gap: 5px; }
 .wall-tile-live .live-dot { width: 8px; height: 8px; }
 .wall-tile-score { display: flex; align-items: center; gap: 8px; }
@@ -135,7 +139,7 @@
 .top-proto { flex: none; padding: 1px 5px; border-radius: 3px; background: var(--row-proto); color: var(--on-proto); font: 600 10px/normal var(--font-mono); }
 .top-label { font: 500 14px/normal var(--font-ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .top-version { color: var(--text-muted); }
-.top-live { flex: none; width: 7px; height: 7px; border-radius: 999px; background: var(--live); animation: live-pulse 1.4s ease-in-out infinite; }
+.top-live { flex: none; width: 7px; height: 7px; border-radius: 999px; background: var(--live); animation: live-pulse 1.6s ease-in-out infinite; }
 .top-count { flex: none; font: 600 13px/normal var(--font-mono); }
 .top-bar { display: block; margin-left: 26px; height: 6px; border-radius: 2px; background: var(--raised); }
 .top-bar > span { display: block; height: 100%; border-radius: 2px; background: var(--action); }

@@ -45,6 +45,17 @@ function usageText(s: ServiceSummary) {
 const runCounts = (r: { operations?: OperationOutcome[]; runner: string; passed: number; total: number }) =>
   r.runner === 'A2A_CONFORMANCE' ? `${r.passed}/${r.total} checks` : r.operations ? `${r.operations.filter((o) => o === 'pass').length}/${r.operations.length} ops` : '';
 
+/** "Tuesday, Nov 3, 2026 · 09:10": the demo clock, in UTC like the trace times. */
+const headerDate = (iso: string) => {
+  const d = new Date(iso);
+  const day = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
+  return `${day} · ${iso.slice(11, 16)}`;
+};
+
+/** Status column of the ticker: messages for events, OK for gRPC, the HTTP code otherwise. */
+const traceStatus = (t: TraceCall) =>
+  t.protocol === 'EVENT' ? '1 msg' : `${t.protocol === 'gRPC' && t.status < 400 ? 'OK' : t.status} · ${t.ms} ms`;
+
 /** Third part of the runner line: the transports of an agent test, the broker of an event test. */
 const runDetail = (r: { runner: string; endpoint: string }) =>
   r.runner === 'A2A_CONFORMANCE' ? '3 transports' : r.endpoint.startsWith('kafka') ? 'Kafka' : '';
@@ -130,8 +141,8 @@ export default function CockpitPage() {
   const firstOpen = START_STEPS.findIndex((s) => !done[s.id]);
   const tests = empty ? [] : data.recentTests;
   const calls = [...ticker.value, ...data.recentCalls.filter((c) => !ticker.value.some((t) => t.callId === c.callId))].slice(0, 5);
-  const passedRuns = empty ? 0 : 14;
-  const failedRuns = empty ? 0 : 7;
+  const passedRuns = empty ? 0 : data.kpis.tests7d.passed;
+  const failedRuns = empty ? 0 : data.kpis.tests7d.failed;
 
   return (
     <div className="cockpit">
@@ -140,7 +151,7 @@ export default function CockpitPage() {
         size="lg"
         description={
           <>
-            <span className="ex-mono">microcks.local:8080</span> · Monday, Nov 2, 2026 · 11:20 ·{' '}
+            <span className="ex-mono">microcks.local:8080</span> · {headerDate(data.asOf)} ·{' '}
             {empty ? 'fresh install, nothing imported yet' : `${live.length} mocks live, ${attention.length} items need attention`}
           </>
         }
@@ -442,9 +453,9 @@ export default function CockpitPage() {
                 {calls.map((t, i) => (
                   <div key={t.callId} className="trace-row" data-new={i === 0 && !ticker.paused ? '' : undefined}>
                     <span className="trace-time">{t.at.slice(11, 19)}</span>
-                    <span className="trace-verb" data-protocol={PROTOCOL_ATTR[t.protocol]}>{t.method}</span>
-                    <span className="trace-path">{t.path}</span>
-                    <span className="trace-status" data-ok={t.status < 400 ? '' : undefined}>{t.protocol === 'EVENT' ? '1 msg' : `${t.status} · ${t.ms} ms`}</span>
+                    <span className="trace-verb" data-protocol={PROTOCOL_ATTR[t.protocol]}>{t.protocol === 'EVENT' ? 'PUBLISH' : t.method}</span>
+                    <span className="trace-path">{t.protocol === 'EVENT' ? `kafka · ${t.path}` : t.path}</span>
+                    <span className="trace-status" data-ok={t.status < 400 ? '' : undefined}>{traceStatus(t)}</span>
                   </div>
                 ))}
               </div>
