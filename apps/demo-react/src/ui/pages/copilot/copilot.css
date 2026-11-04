@@ -1,6 +1,6 @@
 /* AI Copilot (Copilot.dc.html). The operation cards and the request / response cards are the registry op-pick and exchange-card. */
 .copilot { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
-.copilot .demo-page-description { max-width: 780px; font-size: 15px; line-height: 1.5; }
+.copilot .demo-page-description { font-size: 15px; line-height: 1.5; }
 .copilot-title-icon { color: var(--warning); stroke-width: 1.8; }
 .copilot-badges { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .copilot-badge-link { display: inline-flex; text-decoration: none; }

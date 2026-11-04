@@ -203,6 +203,19 @@ export default function CopilotPage() {
     <div className="copilot">
       <PageHeader
         title="AI Copilot"
+        size="sm"
+        notice={
+          wf ? (
+            <div role="note" aria-label="Opened from a workflow run" className="copilot-workflow">
+              <ApiBadge arazzo size="sm" />
+              <span className="copilot-workflow-text">
+                Opened from workflow <strong>{wf.workflowSummary}</strong> · the mocks lack an example for <code className="copilot-strong-code">{wf.criteria}</code> (<code>{wf.arazzoOperationId}</code>)
+              </span>
+              <RouterLink to={`/workflows/runs/${wf.runId}`} className="copilot-back"><Icon name="arrow-left" size={13} />Back to the run</RouterLink>
+              <Button size="sm" variant="ghost" iconOnly icon="close" aria-label="Dismiss the workflow context" className="copilot-dismiss" onClick={() => setWfDismissed(true)} />
+            </div>
+          ) : undefined
+        }
         breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}`, to: `/services/${svc.id}` }, { label: 'AI Copilot' }]}
         leading={<Icon name="spark" size={26} className="copilot-title-icon" />}
         badge={
@@ -213,17 +226,8 @@ export default function CopilotPage() {
         }
         description="Generate request and response examples from the contract's schemas when the specification has too few. You review every proposal before it joins the Service."
         descriptionTone="secondary"
+        descriptionWidth={780}
       />
-      {wf ? (
-        <div role="note" aria-label="Opened from a workflow run" className="copilot-workflow">
-          <ApiBadge arazzo size="sm" />
-          <span className="copilot-workflow-text">
-            Opened from workflow <strong>{wf.workflowSummary}</strong> · the mocks lack an example for <code className="copilot-strong-code">{wf.criteria}</code> (<code>{wf.arazzoOperationId}</code>)
-          </span>
-          <RouterLink to={`/workflows/runs/${wf.runId}`} className="copilot-back"><Icon name="arrow-left" size={13} />Back to the run</RouterLink>
-          <Button size="sm" variant="ghost" iconOnly icon="close" aria-label="Dismiss the workflow context" className="copilot-dismiss" onClick={() => setWfDismissed(true)} />
-        </div>
-      ) : null}
       <div role="note" className="copilot-rule">
         <Icon name="spark" size={15} />
         <span><strong>AI examples are never served by the mock, counted in conformance tests or exported until a person accepts them.</strong> Accepted examples keep an AI provenance tag on the Service.</span>
