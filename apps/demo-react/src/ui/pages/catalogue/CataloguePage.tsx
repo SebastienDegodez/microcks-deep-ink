@@ -1,7 +1,8 @@
 import '../explore-kit/explore.css';
+import './catalogue.css';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router';
-import { labelToString, type Protocol, type ServiceSummary } from '@/domain/shared';
+import { labelFromString, labelToString, type Protocol, type ServiceSummary } from '@/domain/shared';
 import type { ServiceFilter } from '@/domain/catalog';
 import { PageHeader, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
@@ -10,6 +11,7 @@ import { Chip } from '@/ui/components/ui/chip';
 import { ConformanceBand, type OperationResult } from '@/ui/components/ui/conformance-band';
 import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
 import { EmptyState } from '@/ui/components/ui/empty-state';
+import { Icon } from '@/ui/components/ui/icon';
 import { Input } from '@/ui/components/ui/input';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { StatusBadge } from '@/ui/components/ui/status-badge';
@@ -20,6 +22,9 @@ const bandOf = (s: ServiceSummary): OperationResult[] =>
   s.lastResults ? s.lastResults.map((r) => (r === 'pass' ? 'pass' : 'fail')) : Array.from({ length: s.operationCount }, () => 'untested');
 const outcomeOf = (s: ServiceSummary) => (s.testStatus === 'passed' ? 'conformant' : s.testStatus === 'failed' ? 'failed' : 'never');
 const callsText = (s: ServiceSummary) => `${fmt(s.calls24h)} ${s.protocol === 'EVENT' ? 'msg' : 'req'}`;
+/** The label chips of the filter panel (the prototype shows a curated set, not every label). */
+const FEATURED_LABELS = ['domain=pastry', 'domain=movies', 'status=GA', 'status=beta', 'team=platform'];
+
 const lastTestText = (s: ServiceSummary, relative: (d: string) => string) => (s.lastTest ? `#${s.lastTest.runId} · ${relative(s.lastTest.when)}` : 'no test run yet');
 
 export default function CataloguePage() {
@@ -62,7 +67,8 @@ export default function CataloguePage() {
     );
   }
 
-  const labelNames = (labels$.data ?? []).map((l) => labelToString(l.label));
+  const known = new Set((labels$.data ?? []).map((l) => labelToString(l.label)));
+  const labelNames = FEATURED_LABELS.filter((l) => known.has(l));
   const columns: DataTableColumn<ServiceSummary>[] = [
     {
       key: 'name', header: 'API / service',
@@ -90,7 +96,7 @@ export default function CataloguePage() {
   ];
 
   return (
-    <div className="ex-stack">
+    <div className="catalogue">
       <PageHeader
         title="APIs & Services"
         size="lg"
@@ -99,50 +105,67 @@ export default function CataloguePage() {
             {data.total} services · {data.operationsTotal} operations · <RouterLink to="/workflows">used by {data.workflowsUsing} workflows</RouterLink>
           </>
         }
+        description="Every imported contract becomes a live mock and a test target. Filter by protocol, by label or by last test result."
         actions={actions}
       />
-      <p className="ex-secondary" style={{ margin: 0 }}>Every imported contract becomes a live mock and a test target. Filter by protocol, by label or by last test result.</p>
 
-      <section aria-label="Catalogue filters" className="ex-stack" aria-busy={view$.status === 'loading'}>
-        <div className="ex-row">
-          <Input type="search" aria-label="Filter by name" placeholder="Filter by name or version…" autoComplete="off" value={filter.query ?? ''} onChange={(e) => setFilter((f) => ({ ...f, query: e.target.value }))} />
+      <section aria-label="Catalogue filters" className="filter-bar" aria-busy={view$.status === 'loading'}>
+        <div className="filter-bar-row">
+          <label className="filter-bar-search" htmlFor="catalogue-search">
+            <Icon name="search" size={16} />
+            <span className="sr-only">Filter by name</span>
+            <Input id="catalogue-search" type="search" placeholder="Filter by name or version…" autoComplete="off" value={filter.query ?? ''} onChange={(e) => setFilter((f) => ({ ...f, query: e.target.value }))} />
+          </label>
           <Segmented
             label="Last test result"
             value={filter.testStatus ?? 'all'}
             onChange={(id) => setFilter((f) => ({ ...f, testStatus: id as ServiceFilter['testStatus'] }))}
             options={[
-              { id: 'all', label: 'All', count: data.facets.testStatus.all },
-              { id: 'passed', label: 'Conformant', count: data.facets.testStatus.passed },
-              { id: 'failed', label: 'Failing', count: data.facets.testStatus.failed },
-              { id: 'never', label: 'Never tested', count: data.facets.testStatus.never },
+              { id: 'all', label: 'All', dot: 'neutral', count: data.facets.testStatus.all },
+              { id: 'passed', label: 'Conformant', dot: 'success', count: data.facets.testStatus.passed },
+              { id: 'failed', label: 'Failing', dot: 'danger', count: data.facets.testStatus.failed },
+              { id: 'never', label: 'Never tested', dot: 'muted', count: data.facets.testStatus.never },
             ]}
           />
-          <Segmented label="View mode" value={view} onChange={(id) => setView(id as 'table' | 'wall')} options={[{ id: 'table', label: 'Table' }, { id: 'wall', label: 'Badge wall' }]} />
+          <Segmented
+            className="filter-bar-end"
+            label="View mode"
+            value={view}
+            onChange={(id) => setView(id as 'table' | 'wall')}
+            options={[{ id: 'table', label: 'Table', icon: 'list' }, { id: 'wall', label: 'Badge wall', icon: 'badge-wall' }]}
+          />
         </div>
-        <div className="ex-row" role="group" aria-label="Protocol">
-          <span className="ex-small ex-secondary" aria-hidden="true">Protocol</span>
+        <div className="filter-bar-row" role="group" aria-label="Protocol">
+          <span className="filter-bar-label" aria-hidden="true">Protocol</span>
           {PROTOCOL_ORDER.map((p: Protocol) => (
-            <Chip key={p} pressed={(filter.protocols ?? []).includes(p)} onClick={() => toggle('protocols', p)}>
-              {p} {data.facets.protocols[p] ?? 0}
+            <Chip key={p} protocol={p} count={data.facets.protocols[p] ?? 0} pressed={(filter.protocols ?? []).includes(p)} onClick={() => toggle('protocols', p)}>
+              {p}
             </Chip>
           ))}
         </div>
-        <div className="ex-row" role="group" aria-label="Labels">
-          <span className="ex-small ex-secondary" aria-hidden="true">Labels</span>
-          {labelNames.map((l) => (
-            <Chip key={l} pressed={(filter.labels ?? []).includes(l)} onClick={() => toggle('labels', l)}>
-              {l} {data.facets.labels[l] ?? 0}
-            </Chip>
-          ))}
-          {activeCount > 0 ? <Button size="sm" variant="ghost" onClick={reset}>Reset ({activeCount})</Button> : null}
+        <div className="filter-bar-row" role="group" aria-label="Labels">
+          <span className="filter-bar-label" aria-hidden="true">Labels</span>
+          {labelNames.map((l) => {
+            const { key, value } = labelFromString(l);
+            return (
+              <Chip key={l} labelKey={key} count={data.facets.labels[l] ?? 0} pressed={(filter.labels ?? []).includes(l)} onClick={() => toggle('labels', l)}>
+                {value}
+              </Chip>
+            );
+          })}
+          {activeCount > 0 ? (
+            <Button className="filter-bar-reset" size="sm" variant="link" icon="reset" onClick={reset}>
+              Reset ({activeCount})
+            </Button>
+          ) : null}
         </div>
       </section>
 
-      <div className="ex-row-between">
-        <p role="status" aria-live="polite" data-testid="result-count" className="ex-secondary" style={{ margin: 0 }}>
+      <div className="catalogue-result">
+        <p role="status" aria-live="polite" data-testid="result-count">
           <strong>{data.services.length}</strong> of {data.total} APIs &amp; services
         </p>
-        <span className="ex-small ex-muted">sort: recently updated</span>
+        <span className="catalogue-sort">sort: recently updated</span>
       </div>
 
       {data.services.length === 0 ? (
