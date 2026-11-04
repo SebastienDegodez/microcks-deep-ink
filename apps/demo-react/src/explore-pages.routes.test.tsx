@@ -106,16 +106,30 @@ describe('WP7 pages', () => {
     expect(strip.textContent).not.toContain('inferred');
   });
 
-  it('Copilot: shows the workflow context, generates proposals and accepts one', async () => {
+  it('Copilot: opens on 3 proposals from the workflow context, accepts one and rejects one', async () => {
     renderAt('/services/pastry2/copilot?op=get-name&hint=Tarte%20Tatin');
     await h1('AI Copilot');
     expect(await screen.findByLabelText('Opened from a workflow run')).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Generate examples' }));
-    const first = await screen.findByRole('article', { name: /Tarte Tatin.*pending/ });
-    expect(first).toBeTruthy();
-    fireEvent.click(within(first).getByRole('button', { name: /^Accept / }));
-    expect(await screen.findByText('Accepted')).toBeTruthy();
-    expect(screen.getByRole('button', { name: /Export accepted examples/ }).hasAttribute('disabled')).toBe(false);
+    const first = await screen.findByRole('article', { name: 'Tartelette Framboise, pending' });
+    expect(within(first).getByRole('button', { name: /^200 Tartelette Framboise/ }).getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByRole('button', { name: /Export accepted examples/ }).hasAttribute('disabled')).toBe(true);
+    fireEvent.click(within(first).getByRole('button', { name: 'Accept Tartelette Framboise' }));
+    expect(await screen.findByRole('article', { name: 'Tartelette Framboise, accepted' })).toBeTruthy();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Undo for Tartelette Framboise' })));
+    fireEvent.click(screen.getByRole('button', { name: 'Reject Paris-Brest' }));
+    expect(await screen.findByRole('article', { name: 'Paris-Brest, rejected' })).toBeTruthy();
+    expect(screen.getByText('1 pending proposal stays here and are not added.')).toBeTruthy();
+    const exportButton = screen.getByRole('button', { name: /Export accepted examples/ });
+    fireEvent.click(exportButton);
+    expect(exportButton.getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByText('api-pastry-2.0-examples.yaml')).toBeTruthy();
+    expect(screen.getByRole('link', { name: /Add 1 example to API Pastry 2.0/ })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Generate again' }));
+    await waitFor(() => expect(screen.queryByRole('article', { name: 'Paris-Brest, rejected' })).toBeNull());
+    expect(screen.getByRole('article', { name: 'Tartelette Framboise, accepted' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Cancel generation' }));
+    expect(screen.queryByRole('article', { name: 'Kouign-amann, pending' })).toBeNull();
+    expect(screen.getByRole('article', { name: 'Tartelette Framboise, accepted' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Dismiss the workflow context' }));
     expect(screen.queryByLabelText('Opened from a workflow run')).toBeNull();
   });
