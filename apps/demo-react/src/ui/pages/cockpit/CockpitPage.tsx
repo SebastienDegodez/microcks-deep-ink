@@ -67,8 +67,7 @@ export default function CockpitPage() {
   const actions = (
     <>
       <Button
-        variant="secondary"
-        className="button-dashed"
+        variant="dashed"
         icon="window"
         aria-pressed={empty}
         onClick={() => {
