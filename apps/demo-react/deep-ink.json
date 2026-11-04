@@ -421,9 +421,17 @@
         "src/ui/styles/section-label.css": "17215c6135327222fcb6f6c72591ca8c6821cfffe54b0bb71863665aea23264c"
       },
       "hash": "45dd753bd200c6b9"
+    },
+    "exchange-card": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/exchange-card.tsx": "831e295fcabf0c201138dd473bc3dc540a3a393622ba662e6db5f8680566adc5",
+        "src/ui/styles/exchange-card.css": "9beb16bd85d8ea21c0ca8b26dc86a418f3016042fa6ffe0a9054ef5e9282455a"
+      },
+      "hash": "59acb2534d7575e0"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "72826b4a4eb01789632b037a8539699dddf10537015287b80c82c42f449b0077"
+    "src/ui/styles/index.css": "42ce7579af6392c2c79aa4f0f09557182cc50e5813c07fab0fb16603d6fbebed"
   }
 }
