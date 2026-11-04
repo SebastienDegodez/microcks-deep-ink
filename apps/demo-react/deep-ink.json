@@ -46,9 +46,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/api-badge.tsx": "8d475a4a438949befdc5ac6076b784563043cb09f01808550b0a1900c9313167",
-        "src/ui/styles/api-badge.css": "3e5f1840085bccafc612d8f0a3b77d5ed9dc64a5c9ad5475769b7376db56bc33"
+        "src/ui/styles/api-badge.css": "6e6cd17071857e1b0c9cf51ec99739dceef85b8350cceb76fbb510b869cf2504"
       },
-      "hash": "ab0dd3e5372a566d"
+      "hash": "300abf719e612759"
     },
     "app-shell": {
       "version": "0.2.0",
@@ -205,10 +205,10 @@
     "segmented": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/segmented.tsx": "48f6cc9ca88578f5e1f0a3e7200b91b66a1344a92bac3973216eec34ca92c8b4",
-        "src/ui/styles/segmented.css": "10e7dd6bcd2d54b425775996466564957826f0f2c8de5880d55b2054f0df4738"
+        "src/ui/components/ui/segmented.tsx": "43da8158955364a242f95900418176bf888748c735c9ee5f5b4fad2a0d11e0fa",
+        "src/ui/styles/segmented.css": "4618ecd12070a4cd5cd0ca8cd553f77e18ae6ccb9689917f9696e178efcdc02f"
       },
-      "hash": "3710e536fb5f2207"
+      "hash": "8dd642942a2efaa9"
     },
     "mock-url": {
       "version": "0.2.0",
@@ -398,24 +398,16 @@
       },
       "hash": "22d0b49f781ca129"
     },
-    "run-progress": {
+    "section-label": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/run-progress.tsx": "9428f6c69afc165a643b78d0ed37d2b2aefe7841c93d57d16541aad1b1e3c3c8",
-        "src/ui/styles/run-progress.css": "d528d5af3efd7b85de957664642f09e41b725495424e318d91f937d9a3ebe8a0"
+        "src/ui/components/ui/section-label.tsx": "28558ccba5b6074e608b9d61b3c1891bba6b50562607d0052ea38ce70bd3001f",
+        "src/ui/styles/section-label.css": "17215c6135327222fcb6f6c72591ca8c6821cfffe54b0bb71863665aea23264c"
       },
-      "hash": "452776151a17ecb4"
-    },
-    "runner-log": {
-      "version": "0.2.0",
-      "files": {
-        "src/ui/components/ui/runner-log.tsx": "9747d30c0e46f743735c1e41e7b7607c2e969c2a0512636a2d5375c139471b81",
-        "src/ui/styles/runner-log.css": "6492310d27c28260304e63f2cd06e5e8f24e7d18617780ff70a280657b24b968"
-      },
-      "hash": "c0ceb32097c0e335"
+      "hash": "45dd753bd200c6b9"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "6a86eec7f18ebdfdf27ba42268f7c4a2545c829e514903c7e95642ae4854d7c5"
+    "src/ui/styles/index.css": "caa3165bc6852f16b215c172c36a426564938d1965e9476a6131c535ec59a423"
   }
 }

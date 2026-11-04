@@ -1,0 +1,21 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "section-label",
+  "title": "SectionLabel",
+  "tier": "microcks",
+  "description": "Small uppercase muted label that names a block: a section heading (\"Endpoints\", \"1 · Operation\"), a field label (\"Mock URL\") or a list header (\"3 operations\"). Used on Service, Copilot, Behavior, TestCreate, TestRun, Traces, Usage and more.",
+  "registryDependencies": ["base"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "A class on the right native element: <h2>-<h6> for a section heading, <label for> for a field, <span> for a plain caption",
+    "keyboard": [],
+    "aria": [
+      "The text is written in its normal case: text-transform only changes the look, so screen readers do not spell it letter by letter",
+      "As a heading it keeps the page outline: pick the level from the page, not from the size"
+    ],
+    "rgaa": ["9.1", "11.1"],
+    "wcag": ["1.3.1", "2.4.6", "1.4.3"],
+    "notes": "Muted text on the canvas, surface and raised backgrounds stays at 4.5:1 in both themes. Static item: not focusable."
+  },
+  "stories": ["Microcks/SectionLabel"]
+}
