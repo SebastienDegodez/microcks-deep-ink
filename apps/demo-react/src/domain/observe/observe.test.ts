@@ -1,6 +1,9 @@
 import { describe, expect, it } from 'vitest';
 import {
   buildUsageView,
+  conformanceBand,
+  gapList,
+  treemapRows,
   flowCounts,
   heatLevel,
   heatmapWeeks,
@@ -10,6 +13,8 @@ import {
   traceEvents,
   traceIds,
   trendPercent,
+  type ConformanceItem,
+  type DomainConformance,
   type TraceCall,
   type TraceTopology,
   type UsageData,
@@ -70,7 +75,7 @@ describe('usage view', () => {
   const daily = Array.from({ length: 79 }, (_, i) => 100 + i);
   const data: UsageData = {
     scope: 'pastry2', label: 'API Pastry 2.0', scopeLine: '', dailyStart: '2026-08-17', daily, hourly: [1, 2, 3, 10], previous: { today: 10, '7d': 700, '30d': 3000 },
-    lastCall: '', tableNote: '', conformance: { title: 'Conformance', score: 92, index: 92, subtitle: '', trend: '', advice: '' },
+    lastCall: '', tableNote: '', conformance: { title: 'Conformance', score: 92, index: 92, subtitle: '', subject: '', trend: '', advice: '' },
     rows: [
       { id: 'a', name: 'a', detail: '', today: 6, w7: 300, trend: { today: 1, '7d': 2, '30d': 3 }, last: '', live: false },
       { id: 'b', name: 'b', detail: '', today: 10, w7: 400, trend: { today: 1, '7d': 2, '30d': 3 }, last: '', live: false },
@@ -112,5 +117,29 @@ describe('usage view', () => {
     expect(heatLevel(10, 100)).toBe(0);
     expect(trendPercent(120, 100)).toBe(20);
     expect(trendPercent(5, 0)).toBe(0);
+  });
+});
+
+describe('conformance treemap', () => {
+  const item = (serviceId: string, operations: number, score: number | null, index: number): ConformanceItem => ({
+    serviceId, name: serviceId, protocol: 'REST', operations, score, index, trend: null,
+  });
+  const domain = (name: string, items: ConformanceItem[]): DomainConformance => ({ domain: name, label: `domain=${name}`, score: null, services: items.length, items });
+  const domains = [
+    domain('small', [item('s', 1, 100, 100)]),
+    domain('big', [item('b1', 1, 50, 90), item('b2', 4, 92, 92)]),
+    domain('mid', [item('m', 3, null, 70)]),
+  ];
+
+  it('puts the two largest domains on the first row, services by operations', () => {
+    const rows = treemapRows(domains);
+    expect(rows.map((r) => r.domains.map((d) => d.domain))).toEqual([['big', 'mid'], ['small']]);
+    expect(rows[0]?.operations).toBe(8);
+    expect(rows[0]?.domains[0]?.items?.map((i) => i.serviceId)).toEqual(['b2', 'b1']);
+  });
+
+  it('sorts the gap list by gap, never tested last, and bands the scores', () => {
+    expect(gapList(domains).map((i) => i.serviceId)).toEqual(['b1', 's', 'b2', 'm']);
+    expect([92, 67, 33, null].map(conformanceBand)).toEqual(['ok', 'partial', 'risk', 'untested']);
   });
 });

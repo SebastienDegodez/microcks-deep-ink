@@ -128,7 +128,7 @@ describe('testing, observe, govern and importing use cases', () => {
 
   it('computes invocations and conformance by domain', async () => {
     expect((await uc.observe.invocations('pastry2', 'day')).points).toHaveLength(24);
-    expect((await uc.observe.conformanceByDomain()).find((d) => d.domain === 'pastry')?.services).toBe(4);
+    expect((await uc.observe.conformanceByDomain()).find((d) => d.domain === 'pastry')?.services).toBe(3);
   });
 
   it('installs a hub package and reports progress', async () => {

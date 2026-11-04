@@ -41,7 +41,18 @@ export interface UsageData {
   lastCallAgo?: string;
   rows: UsageRowData[];
   tableNote: string;
-  conformance: { title: string; score: number | null; index?: number; subtitle: string; trend?: string; advice?: string };
+  conformance: {
+    title: string;
+    score: number | null;
+    index?: number;
+    subtitle: string;
+    /** What the index card compares: "API Pastry 2.0 · latest test #119 · OPEN_API_SCHEMA · just now". */
+    subject: string;
+    trend?: string;
+    /** Direction of the trend; `mixed` when services go both ways. */
+    direction?: 'up' | 'down' | 'stable' | 'mixed';
+    advice?: string;
+  };
 }
 
 export interface UsagePoint {
