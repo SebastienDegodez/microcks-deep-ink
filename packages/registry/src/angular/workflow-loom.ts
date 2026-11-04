@@ -38,6 +38,13 @@ export type LoomAction =
       runLabel?: string;
     };
 
+/** A check row drawn on a node: "Call #2", "Data passing", "Contract". */
+export interface LoomCheck {
+  label: string;
+  /** pass / fail; skip: deliberately not run (off); idle: not evaluated yet. */
+  state: 'pass' | 'fail' | 'skip' | 'idle';
+}
+
 export interface LoomStep {
   stepId: string;
   source: string;
@@ -53,7 +60,11 @@ export interface LoomStep {
   dependsOn?: string[];
   status?: LoomStepStatus;
   attempts?: number;
-  checks?: { successCriteria: LoomCheckState; schemaValidation?: LoomCheckState };
+  /**
+   * Checks drawn on the node: any list of `{ label, state }` rows, or the run's two checks
+   * `{ successCriteria, schemaValidation? }` (drawn when `validatesSchemas` is set).
+   */
+  checks?: LoomCheck[] | { successCriteria: LoomCheckState; schemaValidation?: LoomCheckState };
   actions?: LoomAction[];
 }
 
@@ -118,6 +129,8 @@ export interface WorkflowLoomElement extends HTMLElement {
   lens?: string;
   tableToggle: boolean;
   label: string;
+  /** Moves focus to a step's node (focus targets inside the shadow root are not reachable from the page). Resolves false when the step is not drawn. */
+  focusStep(stepId: string): Promise<boolean>;
 }
 
 /** Detail of `mkLensSelect`: the traced thread id, undefined when the lens is cleared. */

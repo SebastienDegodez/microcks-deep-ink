@@ -63,7 +63,7 @@ export const SurfaceAndGap: StoryObj = {
     },
     template: `
       <div class="stack" style="max-width: 560px">
-        <dl mkFacts layout="columns" [columns]="2" boxed="surface" gap="10px 16px" [items]="call"></dl>
+        <dl mkFacts layout="columns" [columns]="2" boxed="surface" gap="10px 16px" size="sm" [items]="call"></dl>
         <dl mkFacts layout="inline" gap="9px 12px" [items]="props"></dl>
       </div>
     `,
