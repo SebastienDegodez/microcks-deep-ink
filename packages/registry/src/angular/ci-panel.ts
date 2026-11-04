@@ -1,7 +1,15 @@
-import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, Directive, input } from '@angular/core';
 import { CopyButtonComponent } from './copy-button';
 
 let nextId = 0;
+
+/** The muted hint under the title: `<p mkCiPanelHint>…</p>`. Same class as React's `hint`. */
+@Directive({ selector: '[mkCiPanelHint]', host: { class: 'ci-panel-hint' } })
+export class CiPanelHintDirective {}
+
+/** The muted footnote under the command: `<p mkCiPanelFoot>…</p>`. Same class as React's `footnote`. */
+@Directive({ selector: '[mkCiPanelFoot]', host: { class: 'ci-panel-foot' } })
+export class CiPanelFootDirective {}
 
 /**
  * "Run it from CI" panel: `<section mkCiPanel id="ci-panel" title="Run this test in your pipeline" [command]="cmd">`.
@@ -41,3 +49,5 @@ export class CiPanelComponent {
   readonly copyLabel = input('Copy');
   protected readonly titleId = `mk-ci-panel-${++nextId}`;
 }
+
+export const CI_PANEL = [CiPanelComponent, CiPanelHintDirective, CiPanelFootDirective] as const;

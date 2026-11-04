@@ -1,4 +1,5 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
+import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 export type FactTone = 'success' | 'warning' | 'danger' | 'muted';
 
@@ -15,7 +16,7 @@ export interface Fact {
 
 /**
  * Key/value facts of an object in a native `<dl>`: `<dl mkFacts [items]="facts"></dl>`.
- * For rich values, project rows after the items: `<div class="facts-row"><dt>Statistics</dt><dd>…</dd></div>`.
+ * For rich values, project `FactRow`s after the items: `<div mkFactRow term="Statistics">…</div>`.
  */
 @Component({
   selector: 'dl[mkFacts]',
@@ -49,3 +50,23 @@ export class FactsComponent {
   /** `inline` and `columns`: the grid gap, row then column (default `8px 16px`; WorkflowRun `9px 12px`). */
   readonly gap = input<string>();
 }
+
+/** One term/value pair, for rich values (links, badges, buttons): `<div mkFactRow term="Statistics" mono>…</div>`. */
+@Component({
+  selector: 'div[mkFactRow]',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  imports: [NgTemplateOutlet],
+  host: { class: 'facts-row' },
+  template: `<ng-template #value><ng-content /></ng-template><dt>{{ term() }}</dt><dd [attr.data-mono]="mono() ? '' : null" [attr.data-tone]="tone() ?? null">@if (sub()) {<span><ng-container [ngTemplateOutlet]="value" /></span><span class="facts-sub">{{ sub() }}</span>} @else {<ng-container [ngTemplateOutlet]="value" />}</dd>`,
+})
+export class FactRowComponent {
+  readonly term = input.required<string>();
+  /** Muted 12px line under the value. */
+  readonly sub = input<string>();
+  /** Monospace 12px value (ids, paths, versions). */
+  readonly mono = input(false, { transform: booleanAttribute });
+  /** Colour of the value. The words must carry the meaning too. */
+  readonly tone = input<FactTone>();
+}
+
+export const FACTS = [FactsComponent, FactRowComponent] as const;
