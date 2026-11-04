@@ -28,3 +28,15 @@ export const Small: StoryObj = {
     </div>
   ),
 };
+
+export const Bare: StoryObj = {
+  name: 'Bare (step outcomes)',
+  render: () => (
+    <div className="inline">
+      <StatusBadge shape="bare" status="conformant" label="Passed" />
+      <StatusBadge shape="bare" status="failed" />
+      <StatusBadge shape="bare" status="running" />
+      <StatusBadge shape="bare" status="never" label="Pending" />
+    </div>
+  ),
+};
