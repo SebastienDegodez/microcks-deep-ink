@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/OpPick',
+  component: OpPickList,
   parameters: itemParams(['op-pick', 'method-tag'], 'Operation picker cards. Toggle mode is a list of aria-pressed buttons (Service rail); radio mode is a radiogroup with arrow keys (Copilot).'),
-} satisfies Meta;
+} satisfies Meta<typeof OpPickList>;
 
 const RAIL: OpPickOption[] = [
   { id: 'list', method: 'GET', path: '/pastries', summary: 'List pastries by size', meta: '3 examples · +1 AI', end: '812', endLabel: 'Calls over 7 days: ' },
@@ -37,5 +38,22 @@ export const Copilot: StoryObj = {
         <OpPickList mode="radio" labelledBy="op-story" options={ops} value={v} onChange={setV} />
       </section>
     );
+  },
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof OpPickList> = {
+  args: {
+    label: 'Operations to test', mode: 'toggle', value: undefined,
+    options: [
+      { id: 'list', method: 'GET', path: '/pastries', summary: 'List pastries' },
+      { id: 'one', method: 'GET', path: '/pastries/{name}', summary: 'Get one pastry' },
+      { id: 'patch', method: 'PATCH', path: '/pastries/{name}', summary: 'Update a pastry', end: 'Retry', endTone: 'warning' },
+    ],
+  },
+  argTypes: { mode: { control: 'inline-radio', options: ['toggle', 'radio'] }, onChange: { table: { disable: true } } },
+  render: (args) => {
+    const [value, setValue] = useState(args.value);
+    return <OpPickList {...args} value={value} onChange={setValue} />;
   },
 };

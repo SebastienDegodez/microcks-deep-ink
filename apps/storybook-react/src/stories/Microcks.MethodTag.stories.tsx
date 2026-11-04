@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/MethodTag',
+  component: MethodTag,
   parameters: itemParams(['method-tag'], 'The operation verb in mono, always written out. The color only speeds up scanning.'),
-} satisfies Meta;
+} satisfies Meta<typeof MethodTag>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -43,4 +44,13 @@ export const Small: StoryObj = {
       <MethodTag method="PATCH" size="xs" />
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof MethodTag> = {
+  args: { method: 'GET', protocol: 'REST', size: 'md', minWidth: undefined },
+  argTypes: {
+    protocol: { control: 'select', options: ['REST', 'SOAP', 'EVENT', 'gRPC', 'GRAPHQL', 'DIRECT', 'A2A'] },
+    size: { control: 'inline-radio', options: ['md', 'sm', 'xs'] },
+  },
 };

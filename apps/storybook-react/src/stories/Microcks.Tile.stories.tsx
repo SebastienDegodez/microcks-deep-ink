@@ -7,8 +7,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/Tile',
+  component: Tile,
   parameters: itemParams(['tile', 'api-badge', 'button'], 'A card in a wrapping grid. The title is the one link (or toggle button) of the tile, stretched over it, so the whole card is clickable without nesting controls. Footer controls stay separate.'),
-} satisfies Meta;
+} satisfies Meta<typeof Tile>;
 
 interface Pkg {
   id: string;
@@ -86,4 +87,11 @@ export const Static: StoryObj = {
       </Tile>
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Tile> = {
+  args: { title: 'API Pastry', headingLevel: 3, meta: 'REST · 2.0', aside: <ApiBadge protocol="REST" />, footer: '12 operations', selected: false, as: 'article' },
+  argTypes: { as: { control: 'inline-radio', options: ['article', 'li', 'div'] } },
+  decorators: [(Story) => <div style={{ maxWidth: 360 }}><Story /></div>],
 };

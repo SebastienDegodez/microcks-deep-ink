@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/ConformanceBand',
+  component: ConformanceBand,
   parameters: itemParams(['conformance-band'], 'One segment per operation. The band is `role="img"` with a sentence ("11 of 12 operations pass, 1 fails"). Failed segments are hatched as well as colored, and the full size writes the summary.'),
-} satisfies Meta;
+} satisfies Meta<typeof ConformanceBand>;
 
 export const Default: StoryObj = {
   render: () => <ConformanceBand outcomes={CONFORMANCE} />,
@@ -42,4 +43,10 @@ export const Labelled: StoryObj = {
 export const WithSummary: StoryObj = {
   name: 'With summary',
   render: () => <ConformanceBand outcomes={CONFORMANCE} showSummary />,
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof ConformanceBand> = {
+  args: { outcomes: ['pass', 'pass', 'fail', 'pass', 'untested', 'pass'], size: 'full', unit: 'operation', showSummary: true },
+  argTypes: { size: { control: 'inline-radio', options: ['full', 'mini'] } },
 };

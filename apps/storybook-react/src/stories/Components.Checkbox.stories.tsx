@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Checkbox',
+  component: Checkbox,
   parameters: itemParams(['checkbox'], 'A native checkbox inside its label. The description is linked with `aria-describedby`.'),
-} satisfies Meta;
+} satisfies Meta<typeof Checkbox>;
 
 export const Default: StoryObj = {
   render: () => {
@@ -43,4 +44,10 @@ export const CompactCards: StoryObj = {
       </div>
     );
   },
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Checkbox> = {
+  args: { label: 'Run on every push', description: 'The test starts from your CI pipeline.', variant: 'plain', disabled: false },
+  argTypes: { variant: { control: 'inline-radio', options: ['plain', 'card', 'compact'] } },
 };

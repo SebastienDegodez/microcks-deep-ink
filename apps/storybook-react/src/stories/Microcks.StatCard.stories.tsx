@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/StatCard',
+  component: StatCard,
   parameters: itemParams(['stat-card', 'live-indicator'], 'A key figure: a small heading (a real heading), the figure as text with its unit, and optional detail. The tone colours the figure only; the words carry the meaning.'),
-} satisfies Meta;
+} satisfies Meta<typeof StatCard>;
 
 export const KeyFigures: StoryObj = {
   name: 'Key figures',
@@ -33,4 +34,13 @@ export const Tones: StoryObj = {
       <StatCard title="Failed" headingLevel={3} value="3" tone="danger">Runs with a failing step.</StatCard>
     </StatGrid>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof StatCard> = {
+  args: { title: 'Conformance', headingLevel: 2, value: '92', unit: '%', tone: 'success', children: 'Across 12 operations.' },
+  argTypes: {
+    tone: { control: 'inline-radio', options: ['neutral', 'success', 'warning', 'danger'] },
+    headingLevel: { control: 'inline-radio', options: [2, 3, 4, 5, 6] },
+  },
 };

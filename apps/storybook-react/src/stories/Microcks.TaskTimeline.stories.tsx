@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/TaskTimeline',
+  component: TaskTimeline,
   parameters: itemParams(['task-timeline', 'icon'], 'The lifecycle of an A2A task. `TaskStateTag` writes one state (glyph + word), `TaskTimeline` chains them and can select the steps of a script, and `TaskLanes` lays the expected and the actual lifecycle side by side. Color never carries the state alone: the word and the glyph shape do.'),
-} satisfies Meta;
+} satisfies Meta<typeof TaskTimeline>;
 
 export const States: StoryObj = {
   render: () => (
@@ -49,4 +50,17 @@ export const Selectable: StoryObj = {
 export const StateMachineDiff: StoryObj = {
   name: 'State-machine diff',
   render: () => <TaskLanes lanes={AGENT_LANES} />,
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof TaskTimeline> = {
+  args: {
+    label: 'Task lifecycle', showUnreached: true, selectedIndex: 1,
+    nodes: [{ state: 'submitted', at: '09:10:01' }, { state: 'working', at: '09:10:03', connector: '2 s' }, { state: 'completed', at: '09:10:09', connector: '6 s' }],
+  },
+  argTypes: { onSelectNode: { table: { disable: true } } },
+  render: (args) => {
+    const [i, setI] = useState(args.selectedIndex);
+    return <TaskTimeline {...args} selectedIndex={i} onSelectNode={setI} />;
+  },
 };

@@ -6,8 +6,9 @@ import { Panel } from '@microcks-deep-ink/registry/react/panel';
 
 export default {
   title: 'Microcks/SplitPane',
+  component: SplitPane,
   parameters: itemParams(['split-pane'], 'List + detail layout. The side pane grows to a cap, the main pane takes the rest and wraps under the list on narrow screens. The DOM order is the reading order.'),
-} satisfies Meta;
+} satisfies Meta<typeof SplitPane>;
 
 const box: React.CSSProperties = { padding: 16, border: '1px solid var(--border)', borderRadius: 8, background: 'var(--canvas)' };
 
@@ -40,4 +41,18 @@ export const DetailFirst: StoryObj = {
       <SplitPaneSide as="aside" aria-label="Call detail" style={box}>The detail of the selected call.</SplitPaneSide>
     </SplitPane>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof SplitPane> = {
+  args: {
+    sideWidth: '280px', sideMax: undefined, mainWidth: undefined, gap: undefined, align: 'start', balanced: false,
+    children: (
+      <>
+        <SplitPaneSide as="nav"><Panel title="Services"><p>List</p></Panel></SplitPaneSide>
+        <SplitPaneMain><Panel title="Detail"><p>Detail of the selected item.</p></Panel></SplitPaneMain>
+      </>
+    ),
+  },
+  argTypes: { align: { control: 'inline-radio', options: ['start', 'stretch'] } },
 };

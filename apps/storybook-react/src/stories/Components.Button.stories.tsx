@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Button',
+  component: Button,
   parameters: itemParams(['button'], 'A sturdy, near-square native `<button>`. One primary per task region. The medium size is 40px high, large 44px (form footers); small (32px) and compact (34px) are never used for the primary action of a page.'),
-} satisfies Meta;
+} satisfies Meta<typeof Button>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -86,4 +87,14 @@ export const CardFooter: StoryObj = {
       <ButtonLink size="tile" href="#">View in catalogue</ButtonLink>
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Button> = {
+  args: { children: 'Run test', variant: 'primary', size: 'md', icon: undefined, iconOnly: false, loading: false, confirm: false, disabled: false },
+  argTypes: {
+    variant: { control: 'select', options: ['primary', 'secondary', 'outline', 'ghost', 'link', 'dashed', 'danger'] },
+    size: { control: 'inline-radio', options: ['sm', 'compact', 'tile', 'md', 'lg'] },
+    tone: { control: 'inline-radio', options: [undefined, 'danger'] },
+  },
 };

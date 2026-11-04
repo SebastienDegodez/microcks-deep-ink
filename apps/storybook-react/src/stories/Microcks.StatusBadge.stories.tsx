@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/StatusBadge',
+  component: StatusBadge,
   parameters: itemParams(['status-badge', 'icon'], 'An icon and a word, always. The icon shapes differ (check, cross, triangle, arc, circle), so the status is readable without color.'),
-} satisfies Meta;
+} satisfies Meta<typeof StatusBadge>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -39,4 +40,14 @@ export const Bare: StoryObj = {
       <StatusBadge shape="bare" status="never" label="Pending" />
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof StatusBadge> = {
+  args: { status: 'conformant', size: 'md', shape: 'circled' },
+  argTypes: {
+    status: { control: 'select', options: ['conformant', 'failed', 'partial', 'running', 'never'] },
+    size: { control: 'inline-radio', options: ['md', 'sm'] },
+    shape: { control: 'inline-radio', options: ['circled', 'bare'] },
+  },
 };

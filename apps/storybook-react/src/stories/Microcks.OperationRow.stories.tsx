@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/OperationRow',
+  component: OperationRow,
   parameters: itemParams(['operation-row', 'method-tag', 'mock-url'], 'A list of operations. Each row is a link or a button (never a clickable `<div>`); the selected row has `aria-current="true"` and reveals its mock URL.'),
-} satisfies Meta;
+} satisfies Meta<typeof OperationRow>;
 
 export const Default: StoryObj = {
   render: () => {
@@ -35,4 +36,11 @@ export const AsLinks: StoryObj = {
       </OperationList>
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof OperationRow> = {
+  args: { method: 'GET', path: '/pastries/{name}', protocol: 'REST', meta: '3 examples', mockUrl: undefined, selected: false, href: undefined },
+  argTypes: { protocol: { control: 'select', options: ['REST', 'SOAP', 'EVENT', 'gRPC', 'GRAPHQL', 'DIRECT', 'A2A'] } },
+  decorators: [(Story) => <OperationList label="Operations"><Story /></OperationList>],
 };

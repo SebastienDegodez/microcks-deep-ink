@@ -15,7 +15,7 @@
     "build:site": "bash tools/site/assemble.sh",
     "test": "pnpm -r --if-present test",
     "lint": "pnpm --filter @microcks-deep-ink/registry lint && pnpm --filter demo-react lint && pnpm --filter demo-react lint:arch",
-    "typecheck": "pnpm --filter @microcks-deep-ink/registry typecheck",
+    "typecheck": "pnpm --filter @microcks-deep-ink/registry typecheck && pnpm --filter storybook-react exec tsc --noEmit",
     "a11y": "pnpm --filter a11y-tools build && python3 tools/a11y/smoke.py --site site --out a11y-report",
     "deep-ink": "node packages/cli/bin/deep-ink.mjs",
     "storybook:react": "pnpm --filter storybook-react storybook",

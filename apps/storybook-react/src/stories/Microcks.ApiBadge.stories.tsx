@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/ApiBadge',
+  component: ApiBadge,
   parameters: itemParams(['api-badge', 'icon'], 'Three segments: type, name, version. The visible text is the accessible name ("REST API Pastry 2.0"). The Arazzo variant inverts the left segment and never uses a protocol color.'),
-} satisfies Meta;
+} satisfies Meta<typeof ApiBadge>;
 
 const PROTOCOLS: Array<[Protocol, string, string]> = [
   ['REST', 'API Pastry', '2.0'],
@@ -123,4 +124,15 @@ export const ProofIcons: StoryObj = {
       <ApiBadge protocol="REST" name="API Pastry" version="2.0" versionTone="text" />
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof ApiBadge> = {
+  args: { protocol: 'REST', name: 'API Pastry', version: '2.0', arazzo: false, versionTone: undefined, size: 'md' },
+  argTypes: {
+    protocol: { control: 'select', options: ['REST', 'SOAP', 'EVENT', 'gRPC', 'GRAPHQL', 'DIRECT', 'A2A'] },
+    versionTone: { control: 'inline-radio', options: [undefined, 'muted', 'text'] },
+    size: { control: 'select', options: ['sm', 'compact', 'md', 'card', 'lg', 'xl'] },
+    status: { control: 'select', options: ['success', 'danger', 'warning', 'info', 'action', 'neutral', 'muted', 'text', 'plain', 'positive', 'protocol'] },
+  },
 };

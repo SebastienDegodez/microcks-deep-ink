@@ -6,7 +6,7 @@ import { COMMANDS } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { itemParams } from './_meta';
 
 const meta: Meta = {
-  title: 'Elements/Command bar',
+  title: 'Elements/CommandBar',
   decorators: [moduleMetadata({ imports: [CommandBarDirective, ButtonDirective], schemas: [CUSTOM_ELEMENTS_SCHEMA] })],
   parameters: itemParams(['command-bar'], "A search field and a list of commands (ARIA 1.2 combobox): arrows move, Enter runs, Escape closes, Ctrl/\u2318K opens it from anywhere. In modal mode it uses a native `<dialog>` and returns focus to the opener. The host component needs `schemas: [CUSTOM_ELEMENTS_SCHEMA]`."),
 };
@@ -30,6 +30,19 @@ export const Modal: StoryObj = {
     template: `
       <button mkButton variant="primary" (click)="open = true">Open the command bar</button>
       <command-bar [items]="commands" [open]="open" [globalShortcut]="false" (command)="open = false" (closed)="open = false"></command-bar>
+    `,
+  }),
+};
+
+export const Default: StoryObj = {
+  name: 'Default (inline)',
+  render: () => ({
+    props: { commands: COMMANDS, last: '' },
+    template: `
+      <div style="max-width:560px">
+        <command-bar inline [items]="commands" label="Command bar" placeholder="Type a command or a service" (command)="last = $event.label"></command-bar>
+        <p role="status" class="sb-note">{{ last ? 'Ran: ' + last : 'Press Enter on an option to run it.' }}</p>
+      </div>
     `,
   }),
 };

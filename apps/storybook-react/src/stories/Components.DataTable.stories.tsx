@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Data table',
+  component: DataTable,
   parameters: itemParams(['table', 'icon'], 'A native `<table>` with a caption, `th scope="col"`, `aria-sort` on sortable headers (a real button inside) and a focusable scroll region. With `rowHref` the first cell holds a link stretched over the row: no clickable `<tr>`.'),
-} satisfies Meta;
+} satisfies Meta<typeof DataTable>;
 
 export const Default: StoryObj = {
   render: () => (
@@ -69,4 +70,22 @@ export const SentenceCase: StoryObj = {
       rowTone={(r) => (r.result.startsWith('Failed') ? 'danger' : r.result.startsWith('Idle') ? 'idle' : undefined)}
     />
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof DataTable> = {
+  args: {
+    caption: 'Services',
+    captionHidden: false,
+    columns: CATALOGUE_COLUMNS,
+    rows: CATALOGUE_ROWS,
+    rowKey: (row) => (row as CatalogueRow).id,
+    density: 'comfortable',
+    headerCase: 'upper',
+    emptyText: 'No service matches.',
+  },
+  argTypes: {
+    density: { control: 'inline-radio', options: ['comfortable', 'compact'] },
+    headerCase: { control: 'inline-radio', options: ['upper', 'sentence'] },
+  },
 };
