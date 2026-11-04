@@ -143,6 +143,7 @@ export function simulateRun(input: SimulateRunInput): WorkflowRun {
       httpStatus: a.statusCode,
       ms: a.ms,
       when: a.n === 1 ? 'first call' : `after ${retryAfter ?? 0} s`,
+      ...(a.n > 1 ? { waitMs: (retryAfter ?? 0) * 1000 } : {}),
     }));
     if (p.status === 'not-run' || attempts.length === 0) {
       return {

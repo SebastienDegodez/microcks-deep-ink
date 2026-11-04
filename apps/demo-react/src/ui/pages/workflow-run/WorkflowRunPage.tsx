@@ -1,24 +1,31 @@
 import { useEffect, useRef, useState } from 'react';
-import { useParams, useSearchParams } from 'react-router';
-import { callTotals, runHeadline, stepsTally, stoppedStep, verdictExplanation, type StepResult, type Workflow, type WorkflowRun } from '@/domain/arazzo';
+import { Link as RouterLink, useParams, useSearchParams } from 'react-router';
+import {
+  callTotals,
+  endLabel,
+  judgeExample,
+  runHeadline,
+  stepsTally,
+  stoppedStep,
+  verdictExplanation,
+  type Workflow,
+  type WorkflowExample,
+  type WorkflowRun,
+} from '@/domain/arazzo';
 import { formatClock, formatDuration } from '@/domain/shared';
+import { RUN_SCENARIOS, type RunScenario } from '@/application/arazzo';
 import { PageHeader, useQuery, useRelativeTime, useSubscription, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { CodeBlock } from '@/ui/components/ui/code-block';
-import { DescriptionList } from '@/ui/components/ui/description-list';
-import { Disclosure } from '@/ui/components/ui/disclosure';
+import { Icon } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { Panel } from '@/ui/components/ui/panel';
-import { StepChecks, StepStatus } from '@/ui/components/ui/step-status';
-import { ButtonRouterLink, ErrorBlock, LoadingBlock, PageLink, ResultWord, RunOriginOf, RunTargetOf, runInputsText, runSetupPath, workflowPath } from '../workflows/shared';
-import '../workflows/workflows.css';
+import { ButtonRouterLink, ErrorBlock, LoadingBlock, runPath, runSetupPath, workflowPath } from '../workflows/shared';
+import { MetaItem, RunApiPanel, RunBadges, Verdict, implementationsText, runBreadcrumb } from './run-parts';
+import { RunSteps, phaseOf } from './RunSteps';
+import './workflow-run.css';
 
-type Phase = 'done' | 'running' | 'waiting';
-
-/** Value shown for a JSON-ish output. */
-const show = (v: unknown) => (typeof v === 'string' ? v : JSON.stringify(v));
+/** JSON-ish value as the prototype prints it: `"Eclair Cafe"`, `3.9`. */
+const J = (v: unknown) => JSON.stringify(v);
 
 export default function WorkflowRunPage() {
   const { runId = '' } = useParams();
@@ -33,6 +40,10 @@ export default function WorkflowRunPage() {
 
   const detail = useQuery(
     () => (run ? uc.arazzo.getWorkflow(run.documentId, run.workflowId) : Promise.resolve(undefined)),
+    [run?.documentId, run?.workflowId],
+  );
+  const examples = useQuery(
+    () => (run ? uc.arazzo.listExamples(run.documentId, run.workflowId) : Promise.resolve([])),
     [run?.documentId, run?.workflowId],
   );
 
@@ -52,41 +63,68 @@ export default function WorkflowRunPage() {
       </>
     );
   }
-  return <RunView run={run} live={live} paused={stream.paused} onTogglePause={stream.toggle} workflow={detail.data?.workflow} documentTitle={detail.data ? `${detail.data.document.title} ${detail.data.document.version}` : undefined} documentFile={detail.data?.document.file} apiId={detail.data?.document.apiId} />;
+  const d = detail.data;
+  return (
+    <RunView
+      run={run}
+      paused={stream.paused}
+      onTogglePause={stream.toggle}
+      detail={d}
+      example={examples.data?.find((e) => e.id === run.options.example)}
+    />
+  );
 }
 
-function phaseOf(run: WorkflowRun, index: number): Phase {
-  if (run.status !== 'RUNNING') return 'done';
-  const currentIndex = run.steps.findIndex((s) => s.stepId === run.current?.stepId);
-  if (currentIndex < 0) return run.steps[index]?.status === 'not-run' ? 'waiting' : 'done';
-  return index < currentIndex ? 'done' : index === currentIndex ? 'running' : 'waiting';
+type Detail = Awaited<ReturnType<ReturnType<typeof useUseCases>['arazzo']['getWorkflow']>>;
+
+/** The three prototype scenarios, each opening on its run (#14, #15, #16). */
+const SCENARIO_DOT: Record<RunScenario, 'danger' | 'success' | 'warning'> = { impl14: 'danger', mocksEnd: 'success', mocksMissing: 'warning' };
+
+function ScenarioBar({ run }: { run: WorkflowRun }) {
+  return (
+    <div className="wfr-scenarios">
+      <span id="wfr-scn-label" className="wfr-scenarios-label">
+        Scenario
+      </span>
+      <ul aria-labelledby="wfr-scn-label" className="wfr-scenarios-list">
+        {(Object.keys(RUN_SCENARIOS) as RunScenario[]).map((key) => {
+          const s = RUN_SCENARIOS[key];
+          const current = s.runId === run.id;
+          return (
+            <li key={key}>
+              <RouterLink to={runPath(s.runId)} className="wfr-scenario" aria-current={current ? 'page' : undefined}>
+                <span className="wfr-scenario-dot" data-tone={SCENARIO_DOT[key]} aria-hidden="true" />
+                {s.label}
+              </RouterLink>
+            </li>
+          );
+        })}
+      </ul>
+      <span className="wfr-scenarios-note">Three runs of restock-pastry for review: each opens on its result; Replay live plays it step by step.</span>
+    </div>
+  );
 }
 
 function RunView({
   run,
-  live,
   paused,
   onTogglePause,
-  workflow,
-  documentTitle,
-  documentFile,
-  apiId,
+  detail,
+  example,
 }: {
   run: WorkflowRun;
-  live: boolean;
   paused: boolean;
   onTogglePause: () => void;
-  workflow?: Workflow;
-  documentTitle?: string;
-  documentFile?: string;
-  apiId?: string;
+  detail?: Detail;
+  example?: WorkflowExample;
 }) {
   const relative = useRelativeTime();
   const running = run.status === 'RUNNING';
   const headline = runHeadline(run);
   const totals = callTotals(run);
-  const stopped = stoppedStep(run);
   const total = run.steps.length;
+  const workflow = detail?.workflow;
+  const documentLabel = detail ? `${detail.document.title} ${detail.document.version}` : undefined;
   const currentIndex = running ? Math.max(0, run.steps.findIndex((s) => s.stepId === run.current?.stepId)) : total;
 
   // Polite, not chatty: one sentence when the current step changes, one when the run ends.
@@ -105,186 +143,102 @@ function RunView({
     }
   }, [running, currentStepId, currentIndex, total, headline.title, headline.detail]);
 
-  const endpoint = apiId && workflow ? `/api/arazzo/documents/${apiId}/workflows/${workflow.workflowId}/runs` : undefined;
-  const curl = endpoint
-    ? `curl -X POST 'http://microcks.local:8080${endpoint}' \\\n  -H 'Content-Type: application/json' \\\n  -d '${JSON.stringify({ target: run.target.kind === 'implementations' ? { kind: 'implementations', baseUrls: run.target.baseUrls } : { kind: run.target.kind }, ...(run.options.example ? { example: run.options.example } : {}), inputs: run.options.inputs, validateSchemas: run.options.validateSchemas, timeoutMs: run.options.timeoutMs })}'`
-    : undefined;
+  const workflowTo = workflowPath(run.documentId, run.workflowId);
+  const runsTo = workflowPath(run.documentId, run.workflowId, 'runs');
+  const passed = run.status === 'SUCCESS';
+  const isScenarioWorkflow = run.workflowId === 'restock-pastry' && run.documentId === 'pastry';
 
-  const outputs = Object.entries(run.outputs);
-  const baggageOf = (s: StepResult) => s.baggage;
-  const firstBaggage = run.steps.find((s) => s.baggage)?.baggage;
+  const chip = running ? (
+    <span className="wfr-running">
+      <LiveIndicator paused={paused} />
+      <span className="wfr-running-label" role="status">
+        <Icon name="running" size={14} strokeWidth={2.6} className="wfr-spin" />
+        Running · step {Math.min(currentIndex + 1, total)} of {total}
+        {run.current && run.current.attempt > 1 ? ` · attempt ${run.current.attempt}` : ''}
+      </span>
+    </span>
+  ) : (
+    <ApiBadge label="result" value={passed ? 'passed' : 'failed'} status={passed ? 'success' : 'danger'} />
+  );
 
   return (
     <>
       <PageHeader
-        title="Workflow run"
-        breadcrumb={[{ label: 'Workflows', to: '/workflows' }, { label: `${run.workflowId} runs`, to: workflowPath(run.documentId, run.workflowId, 'runs') }, { label: `Run #${run.number}` }]}
-        badge={<ApiBadge arazzo name={`${run.workflowId} · run #${run.number}`} />}
+        title={`Run #${run.number}`}
+        breadcrumb={runBreadcrumb(detail ? `${detail.document.title} - ${detail.document.version}` : undefined, workflowTo, runsTo, `Run #${run.number}`)}
+        badge={<RunBadges workflowId={run.workflowId} documentLabel={documentLabel} to={workflowTo} chip={chip} />}
+        descriptionTone="secondary"
+        description={
+          <span className="wfr-meta">
+            {detail ? (
+              <MetaItem label="Document">
+                <RouterLink to={workflowPath(run.documentId, run.workflowId, 'source')} className="wfr-meta-file">
+                  {detail.document.file}
+                </RouterLink>
+              </MetaItem>
+            ) : null}
+            <MetaItem label="Run against">
+              <span className="wfr-meta-value">{targetLine(run)}</span>
+            </MetaItem>
+            <MetaItem label="Started">
+              <span className="wfr-meta-value">{relative(run.startedAt)}</span>
+              <span className="wfr-meta-clock">{formatClock(run.startedAt)}</span>
+            </MetaItem>
+            <MetaItem label={running ? 'Elapsed' : 'Duration'}>
+              <span className="wfr-meta-mono">{formatDuration(totals.ms)}</span>
+            </MetaItem>
+            <MetaItem label="Launched by">
+              <span className="wfr-meta-value">{launchedBy(run)}</span>
+            </MetaItem>
+          </span>
+        }
         actions={
-          <>
-            {live ? (
+          running ? (
+            <>
               <Button onClick={onTogglePause} aria-pressed={paused} icon={paused ? 'play' : 'pause'}>
                 {paused ? 'Resume' : 'Pause'} updates
               </Button>
-            ) : null}
-            {!running ? (
-              <ButtonRouterLink to={runSetupPath(run.documentId, run.workflowId)} icon="retry">
+              <ButtonRouterLink to={runPath(run.id)} variant="primary" icon="skip">
+                Skip to result
+              </ButtonRouterLink>
+            </>
+          ) : (
+            <>
+              <ButtonRouterLink to={runPath(run.id, true)} icon="reset">
+                Replay live
+              </ButtonRouterLink>
+              <ButtonRouterLink to={runSetupPath(run.documentId, run.workflowId, scenarioOf(run.id))} variant="primary" icon="play">
                 Run again
               </ButtonRouterLink>
-            ) : null}
-          </>
+            </>
+          )
         }
       />
-      <p className="wf-row wf-small" style={{ margin: 0 }}>
-        {running ? <LiveIndicator paused={paused} /> : <ResultWord result={run.status === 'SUCCESS' ? 'passed' : 'failed'} />}
-        <RunTargetOf run={run} />
-        <RunOriginOf origin={run.origin} />
-        <span>
-          Started {relative(run.startedAt)} · {formatClock(run.startedAt)}
-        </span>
-        {totals.ms > 0 ? <span>Duration {formatDuration(totals.ms)}</span> : null}
-      </p>
       <p className="sr-only" role="status" aria-live="polite" aria-atomic="true">
         {message}
       </p>
 
-      <div className="wf-grid-2">
-        <div className="wf-section">
-          {running ? (
-            <section aria-label="Progress" className="wf-progress" aria-busy="true">
-              <p style={{ margin: 0 }}>
-                <strong>
-                  {Math.min(currentIndex, total)} of {total}
-                </strong>{' '}
-                steps ended · {run.current ? `${run.current.stepId}${run.current.attempt > 1 ? `, attempt ${run.current.attempt}` : ''} running` : 'starting'}
-              </p>
-              <div className="wf-segments" role="img" aria-label={`Progress: ${run.steps.map((s, i) => `${s.stepId} ${phaseOf(run, i) === 'running' ? 'running' : phaseOf(run, i) === 'waiting' ? 'waiting' : s.status}`).join(', ')}`}>
-                {run.steps.map((s, i) => {
-                  const ph = phaseOf(run, i);
-                  return (
-                    <div key={s.stepId} className="wf-segment" data-status={ph === 'done' ? s.status : ph === 'running' ? 'running' : 'not-run'}>
-                      {s.stepId}
-                    </div>
-                  );
-                })}
-              </div>
-            </section>
-          ) : (
-            <section aria-label="Run summary" className="wf-section">
-              <Callout tone={run.status === 'SUCCESS' ? 'success' : 'danger'} title={`${headline.title}${headline.detail ? ` · ${headline.detail}` : ''}`}>
-                {verdictExplanation(run)}
-              </Callout>
-              <dl className="wf-tally">
-                <div>
-                  <dt>Duration</dt>
-                  <dd>{formatDuration(totals.ms)}</dd>
-                </div>
-                <div>
-                  <dt>Calls</dt>
-                  <dd>{totals.calls}</dd>
-                </div>
-                <div>
-                  <dt>Steps</dt>
-                  <dd>{stepsTally(run)}</dd>
-                </div>
-              </dl>
-              <h2 className="wf-h2">Workflow outputs</h2>
-              {outputs.length > 0 ? (
-                <table className="table">
-                  <caption className="sr-only">Workflow outputs</caption>
-                  <thead>
-                    <tr>
-                      <th scope="col">Output</th>
-                      <th scope="col">Value</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {outputs.map(([name, value]) => (
-                      <tr key={name}>
-                        <th scope="row">{name}</th>
-                        <td>
-                          <code>{show(value)}</code>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p className="wf-muted">{run.status === 'FAILURE' ? 'No outputs: the workflow stopped before producing them.' : 'This workflow declares no output.'}</p>
-              )}
-              <div className="wf-row">
-                {run.relatedTestRunId ? <PageLink to={`/tests/runner/${run.relatedTestRunId}`}>Same bug in test run #{run.relatedTestRunId}</PageLink> : null}
-                <PageLink to={workflowPath(run.documentId, run.workflowId, 'loom', { run: String(run.number), step: stopped?.stepId })}>Back to the workflow</PageLink>
-              </div>
-            </section>
-          )}
+      {isScenarioWorkflow ? <ScenarioBar run={run} /> : null}
 
-          {run.coherence.length > 0 && !running ? (
-            <Callout
-              tone="warning"
-              title="The mocks do not form a coherent scenario"
-              actions={
-                <ButtonRouterLink to={`/services/pastry2/copilot?op=get-name&hint=${encodeURIComponent(run.coherence[0]?.missing.split('=').pop()?.trim() ?? 'Tarte Tatin')}`} size="sm">
-                  Generate the example with the AI Copilot
-                </ButtonRouterLink>
-              }
-            >
-              {run.coherence.map((c) => (
-                <span key={c.stepId} style={{ display: 'block' }}>
-                  <code>{c.stepId}</code> needs {c.missing}, and <code>{c.operationId}</code> has none. Add that example to the OpenAPI document, or let the workflow send a value that has one.
-                </span>
-              ))}
-            </Callout>
-          ) : null}
-
-          <section aria-labelledby="run-steps-h" className="wf-section">
-            <h2 id="run-steps-h" className="wf-h2">
-              Steps
-            </h2>
-            <ol className="wf-steps" aria-label="Workflow steps">
-              {run.steps.map((s, i) => (
-                <StepItem key={s.stepId} index={i} step={s} phase={phaseOf(run, i)} run={run} workflow={workflow} baggage={baggageOf(s)} />
-              ))}
-            </ol>
-          </section>
+      <div className="wfr-layout">
+        <div className="wfr-main">
+          {running ? <Progress run={run} currentIndex={currentIndex} validated={run.options.validateSchemas} /> : <Summary run={run} totals={totals} workflow={workflow} />}
+          {example && !running ? <ExampleJudging run={run} example={example} /> : null}
+          <RunSteps run={run} workflow={workflow} />
         </div>
 
-        <aside aria-label="Run side panels" className="wf-section">
-          <Panel title="Properties">
-            <DescriptionList
-              items={[
-                {
-                  term: 'Workflow',
-                  value: (
-                    <>
-                      <PageLink to={workflowPath(run.documentId, run.workflowId)}>{run.workflowId}</PageLink> in {documentTitle ?? run.documentId}
-                      {documentFile ? <span className="wf-small wf-muted"> · {documentFile}</span> : null}
-                    </>
-                  ),
-                },
-                { term: 'Target', value: targetText(run) },
-                { term: 'Secret', value: run.options.secret ?? 'none' },
-                { term: 'Inputs', value: runInputsText(run) },
-                { term: 'Schema validation', value: run.options.validateSchemas ? 'On' : 'Off' },
-                { term: 'Timeout per step', value: `${run.options.timeoutMs} ms` },
-                ...(run.options.example ? [{ term: 'Example', value: run.options.example }] : []),
-                ...(firstBaggage ? [{ term: 'Baggage', value: <code className="wf-small">{firstBaggage}</code> }] : []),
-                { term: 'Origin', value: run.origin.kind === 'session' ? `Session ${run.origin.sessionId}` : run.origin.kind === 'ui' ? 'UI · Run a workflow' : run.origin.kind === 'api' ? 'API' : 'Mock URL' },
-              ]}
+        <aside aria-label="Run side panels" className="wfr-aside">
+          <Properties run={run} detail={detail} example={example} />
+          {detail && workflow ? (
+            <RunApiPanel
+              hint={`Launches the same run as run #${run.number}.`}
+              documentApiId={detail.document.apiId}
+              documentLabel={documentLabel ?? ''}
+              workflowId={run.workflowId}
+              mockUrl={workflow.mockUrl}
+              mixed={run.target.kind === 'mixed'}
+              body={apiBodyOf(run)}
             />
-            {firstBaggage ? (
-              <p className="wf-small" style={{ margin: 0 }}>
-                <PageLink to={`/traces?run=${run.id}`}>Open in Live traces</PageLink>
-              </p>
-            ) : null}
-          </Panel>
-          {curl ? (
-            <Panel title="Run it from the API">
-              <p className="wf-small wf-muted" style={{ margin: 0 }}>
-                <code>POST {endpoint}</code>
-              </p>
-              <CodeBlock language="bash" caption="curl command that launches the same run" code={curl} />
-            </Panel>
           ) : null}
         </aside>
       </div>
@@ -292,166 +246,375 @@ function RunView({
   );
 }
 
-function targetText(run: WorkflowRun): string {
-  if (run.target.kind === 'mocks') return 'Microcks mocks';
-  if (run.target.kind === 'implementations') return `Implementations · ${Object.values(run.target.baseUrls).join(', ')}`;
-  return `Mixed (proposed, beyond POC) · ${Object.entries(run.target.perSource).map(([k, v]) => `${k}: ${v}`).join(', ')}`;
+function scenarioOf(runId: string): RunScenario | undefined {
+  return (Object.keys(RUN_SCENARIOS) as RunScenario[]).find((k) => RUN_SCENARIOS[k].runId === runId);
 }
 
-function StepItem({ index, step, phase, run, workflow, baggage }: { index: number; step: StepResult; phase: Phase; run: WorkflowRun; workflow?: Workflow; baggage: string }) {
-  const def = workflow?.steps.find((s) => s.stepId === step.stepId);
-  const coherence = run.coherence.find((c) => c.stepId === step.stepId);
-  const finished = phase === 'done' && step.status !== 'not-run';
-  const outcome = phase === 'done' ? step.status : 'not-run';
-  const word = phase === 'running' ? 'Running' : phase === 'waiting' ? 'Waiting' : undefined;
-  const validated = run.options.validateSchemas;
-  const criteriaState = !finished ? 'not-evaluated' : step.criteria.every((c) => c.held) ? 'passed' : 'failed';
-  const schemaState = !validated ? undefined : !finished ? 'not-evaluated' : step.schema.state === 'pass' ? 'passed' : step.schema.state === 'fail' ? 'failed' : 'off';
+function launchedBy(run: WorkflowRun): string {
+  if (run.origin.kind === 'session') return run.origin.app;
+  if (run.origin.kind === 'api') return 'API';
+  if (run.origin.kind === 'mock-url') return 'Mock URL';
+  return 'MA';
+}
 
+function targetLine(run: WorkflowRun): string {
+  if (run.target.kind === 'mocks') return 'Microcks mocks';
+  if (run.target.kind === 'implementations') return `Implementations · ${implementationsText(run.target.baseUrls)}`;
+  return 'Mixed · proposed, beyond POC';
+}
+
+function apiBodyOf(run: WorkflowRun) {
+  return {
+    inputs: run.options.inputs,
+    timeout: run.options.timeoutMs,
+    ...(run.target.kind === 'implementations' ? { implementations: run.target.baseUrls } : {}),
+    ...(run.target.kind !== 'mocks' && run.options.secret ? { secretName: run.options.secret } : {}),
+    validateSchema: run.options.validateSchemas,
+    ...(run.options.example ? { example: run.options.example } : {}),
+  };
+}
+
+/* ------------------------------------------------------------------------------------- running */
+
+function Progress({ run, currentIndex, validated }: { run: WorkflowRun; currentIndex: number; validated: boolean }) {
+  const total = run.steps.length;
+  const ended = Math.min(currentIndex, total);
+  const current = run.current ? run.steps.find((s) => s.stepId === run.current?.stepId) : undefined;
+  const retrying = run.current && run.current.attempt > 1;
+  const nowTitle = !current ? 'Now calling' : retrying ? `Retrying · attempt ${run.current?.attempt} of ${current.attempts.length}` : 'Now calling';
+  const target = current?.request ? `${current.request.method} ${current.request.url}` : '';
+  const nowLabel = !current ? 'All steps ended · computing the result…' : retrying ? `retryAfter → ${target}` : target;
+  const label = (i: number) => {
+    const ph = phaseOf(run, i);
+    return ph === 'running' ? 'running' : ph === 'waiting' ? 'queued' : run.steps[i]?.status === 'not-run' ? 'not run' : (run.steps[i]?.status ?? '');
+  };
   return (
-    <li className="wf-step" data-status={outcome}>
-      <Disclosure
-        defaultOpen={step.status === 'failed' || phase === 'running'}
-        summary={
-          <span className="wf-step-title">
-            <strong>
-              {index + 1}. {step.stepId}
-            </strong>
-            {def ? (
-              <span className="wf-small wf-muted">
-                {def.method} {def.path} · {def.operationId}
-              </span>
-            ) : null}
-            {word ? (
-              <span className="wf-result" data-result="running">
-                {word}
-              </span>
-            ) : (
-              <StepStatus status={outcome} attempts={step.attempts.length > 1 ? step.attempts.length : undefined} />
-            )}
-          </span>
-        }
-      >
-        <div className="wf-step-body">
-          {!finished ? (
-            <p className="wf-muted" role="note" style={{ margin: 0 }}>
-              {step.status === 'not-run' && phase === 'done' ? 'Not run: an earlier step ended the workflow.' : phase === 'running' ? 'Waiting for the response.' : 'Waiting for the previous steps.'}
-            </p>
-          ) : (
-            <>
-              {step.request ? (
-                <div className="wf-section">
-                  <h3 className="wf-h3">Request</h3>
-                  <p className="wf-row" style={{ margin: 0 }}>
-                    <code>{step.request.method}</code>
-                    <code className="wf-mono">{step.request.url}</code>
-                  </p>
-                  {Object.keys(step.request.params).length > 0 ? (
-                    <table className="table">
-                      <caption className="sr-only">Parameters of {step.stepId}</caption>
-                      <thead>
-                        <tr>
-                          <th scope="col">Parameter</th>
-                          <th scope="col">Value</th>
-                          <th scope="col">From</th>
-                        </tr>
-                      </thead>
-                      <tbody>
-                        {Object.entries(step.request.params).map(([name, value]) => {
-                          const p = def?.parameters.find((x) => x.name === name);
-                          return (
-                            <tr key={name}>
-                              <th scope="row">
-                                {name} {p ? <span className="wf-small wf-muted">{p.in}</span> : null}
-                              </th>
-                              <td>
-                                <code>{value}</code>
-                              </td>
-                              <td>
-                                <code>{p?.value ?? ''}</code>
-                              </td>
-                            </tr>
-                          );
-                        })}
-                      </tbody>
-                    </table>
-                  ) : null}
-                  {step.request.body ? <CodeBlock language="json" caption={`requestBody${def?.requestBody ? ` · template ${def.requestBody}` : ''}`} code={step.request.body} /> : null}
-                  {baggage ? (
-                    <p className="wf-small" style={{ margin: 0 }}>
-                      Baggage <code>{baggage}</code> · <PageLink to={`/traces?run=${run.id}`}>See in Live traces</PageLink>
-                    </p>
-                  ) : null}
-                </div>
-              ) : null}
-
-              {step.attempts.length > 1 ? (
-                <div className="wf-section">
-                  <h3 className="wf-h3">Attempts</h3>
-                  <ol className="wf-attempts">
-                    {step.attempts.map((a) => (
-                      <li key={a.n}>
-                        Attempt {a.n} · <strong>{a.httpStatus}</strong> · {formatDuration(a.ms)} · {a.when}
-                      </li>
-                    ))}
-                  </ol>
-                </div>
-              ) : null}
-
-              {step.response ? (
-                <div className="wf-section">
-                  <h3 className="wf-h3">Response</h3>
-                  <CodeBlock language="json" caption={step.response.meta} lines={step.response.lines} />
-                </div>
-              ) : null}
-
-              <StepChecks successCriteria={criteriaState} schemaValidation={schemaState} />
-              {step.criteria.length > 0 ? (
-                <table className="table">
-                  <caption className="sr-only">Success criteria of {step.stepId}</caption>
-                  <thead>
-                    <tr>
-                      <th scope="col">Criterion</th>
-                      <th scope="col">Evaluated</th>
-                      <th scope="col">Result</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {step.criteria.map((c) => (
-                      <tr key={c.condition}>
-                        <th scope="row">
-                          <code>{c.condition}</code> {c.kind === 'regex' ? <span className="wf-small wf-muted">regex</span> : null}
-                        </th>
-                        <td>{c.evaluation}</td>
-                        <td>{c.held ? 'Held' : 'Did not hold'}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : null}
-              {validated && step.schema.message ? (
-                <p className="wf-small" style={{ margin: 0 }}>
-                  <code>{step.schema.ref}</code> · {step.schema.message}
-                </p>
-              ) : null}
-
-              {coherence ? (
-                <Callout tone="warning" title="The mocks do not form a coherent scenario">
-                  {coherence.missing} is missing for <code>{coherence.operationId}</code>.
-                </Callout>
-              ) : null}
-
-              <p className="wf-small" style={{ margin: 0 }}>
-                <strong>Outputs</strong>{' '}
-                {Object.keys(step.outputs).length > 0 ? Object.entries(step.outputs).map(([k, v]) => `${k} = ${show(v)}`).join(' · ') : 'none'}
-              </p>
-              <p className="wf-small" style={{ margin: 0 }}>
-                <strong>{step.flow.title}</strong> {step.flow.text}
-              </p>
-            </>
-          )}
-        </div>
-      </Disclosure>
-    </li>
+    <section aria-label="Progress" className="wfr-card wfr-progress" aria-busy="true">
+      <div className="wfr-progress-head">
+        <p className="wfr-progress-count">
+          <span className="wfr-progress-big">{ended}</span>
+          <span className="wfr-progress-of">/{total}</span>
+          <span className="wfr-progress-word">steps ended</span>
+        </p>
+        <p className="wfr-progress-now">
+          <span className="wfr-progress-now-title">{nowTitle}</span>
+          <span className="wfr-progress-now-label">{nowLabel}</span>
+        </p>
+      </div>
+      <div className="wfr-segments" role="img" aria-label={`Progress: ${run.steps.map((s, i) => `${s.stepId} ${label(i)}`).join(', ')}`}>
+        {run.steps.map((s, i) => {
+          const ph = phaseOf(run, i);
+          return <span key={s.stepId} className="wfr-segment" data-status={ph === 'done' ? s.status : ph === 'running' ? 'running' : 'queued'} />;
+        })}
+      </div>
+      <p className="wfr-progress-note">
+        Steps run in list order. Each step resolves its runtime expressions, calls its operation, then checks its success criteria
+        {validated ? ' and validates its response against its OpenAPI schema' : ''}.
+      </p>
+    </section>
   );
+}
+
+/* ------------------------------------------------------------------------------------- summary */
+
+function Summary({ run, totals, workflow }: { run: WorkflowRun; totals: { calls: number; ms: number }; workflow?: Workflow }) {
+  const passed = run.status === 'SUCCESS';
+  const stopped = stoppedStep(run);
+  const outputs = Object.entries(run.outputs);
+  const workflowOutputs = new Map((workflow?.outputs ?? []).map((o) => [o.name, o.expression]));
+  return (
+    <section aria-label="Run summary" className="wfr-card wfr-summary" data-result={passed ? 'passed' : 'failed'}>
+      <div className="wfr-summary-head">
+        <div className="wfr-summary-text">
+          <h2 className="wfr-verdict-title">
+            <Icon name={passed ? 'check' : 'cross'} size={20} strokeWidth={2.6} />
+            {passed ? 'Run passed' : 'Run failed'}
+          </h2>
+          <span className="wfr-summary-end">{endLabel(run)}</span>
+          <span className="wfr-summary-explain">{verdictExplanation(run)}</span>
+        </div>
+        <dl className="run-facts wfr-summary-facts" data-layout="columns">
+          <div className="run-facts-row">
+            <dt>Duration</dt>
+            <dd className="wfr-stat">{formatDuration(totals.ms)}</dd>
+          </div>
+          <div className="run-facts-row">
+            <dt>Calls</dt>
+            <dd className="wfr-stat">{totals.calls}</dd>
+          </div>
+          <div className="run-facts-row">
+            <dt>Steps</dt>
+            <dd className="wfr-stat-text">{stepsTally(run)}</dd>
+          </div>
+        </dl>
+      </div>
+
+      <StepsBand run={run} />
+
+      <div className="wfr-block">
+        <h3 className="wfr-h3">Workflow outputs</h3>
+        {outputs.length > 0 ? (
+          <div className="wfr-table-wrap">
+            <table className="wfr-table">
+              <caption className="sr-only">Workflow outputs</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Output</th>
+                  <th scope="col">Runtime expression</th>
+                  <th scope="col">Value</th>
+                </tr>
+              </thead>
+              <tbody>
+                {outputs.map(([name, value]) => (
+                  <tr key={name}>
+                    <th scope="row" className="wfr-mono-strong">
+                      {name}
+                    </th>
+                    <td className="wfr-mono-secondary">{workflowOutputs.get(name) ?? ''}</td>
+                    <td className="wfr-mono-strong">{J(value)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        ) : (
+          <p className="wfr-muted">{passed ? 'None.' : `None: the workflow stopped at ${stopped?.stepId ?? 'a step'} and produced no outputs.`}</p>
+        )}
+      </div>
+
+      <div className="wfr-actions">
+        {run.relatedTestRunId ? (
+          <RouterLink to={`/tests/runner/${run.relatedTestRunId}`} className="wfr-action" data-tone="danger">
+            <Icon name="warning" size={14} strokeWidth={2.4} />
+            Same bug in test run #{run.relatedTestRunId}
+          </RouterLink>
+        ) : null}
+        {run.coherence[0] ? (
+          <RouterLink to={`/services/pastry2/copilot?op=get-name&hint=${encodeURIComponent(run.coherence[0].copilotHint)}`} className="wfr-action" data-tone="action">
+            <Icon name="sparkles" size={14} />
+            Generate the example with the AI Copilot
+          </RouterLink>
+        ) : null}
+        <OpenOperation run={run} workflow={workflow} />
+        <RouterLink to={workflowPath(run.documentId, run.workflowId, 'loom', { run: String(run.number), step: stopped?.stepId })} className="wfr-action">
+          Back to workflow
+        </RouterLink>
+      </div>
+    </section>
+  );
+}
+
+/** "Open operation PATCH /pastries/{name}": the operation of the step where the run stopped (else the last that ran). */
+function OpenOperation({ run, workflow }: { run: WorkflowRun; workflow?: Workflow }) {
+  const step = stoppedStep(run) ?? [...run.steps].reverse().find((s) => s.status !== 'not-run');
+  const def = workflow?.steps.find((s) => s.stepId === step?.stepId);
+  if (!def) return null;
+  return (
+    <RouterLink to="/services/pastry2" className="wfr-action">
+      Open operation
+      <span className="wfr-action-op">
+        {def.method} {def.path}
+      </span>
+    </RouterLink>
+  );
+}
+
+/** "apiPastry · /rest/API+Pastry/2.0": the mock endpoint of each source a mocks run calls. */
+function mockSources(run: WorkflowRun): string {
+  return [...new Set(run.steps.flatMap((s) => (s.request ? [s.request.url] : [])))]
+    .map((u) => u.match(/^https?:\/\/[^/]+(\/rest\/[^/]+\/[^/]+)/)?.[1])
+    .filter((x, i, all): x is string => !!x && all.indexOf(x) === i)
+    .map((p) => `apiPastry · ${p}`)
+    .join(' · ');
+}
+
+/** Upper bar = success criteria, lower bar = schema validation, one column per step. */
+function StepsBand({ run }: { run: WorkflowRun }) {
+  const band = run.steps.map((s) => {
+    const notRun = s.status === 'not-run';
+    const criteriaOk = s.criteria.every((c) => c.held);
+    const schema = s.schema.state;
+    const word = notRun
+      ? 'not run'
+      : `${criteriaOk ? 'criteria held' : 'criteria failed'} · ${schema === 'pass' ? 'schema passed' : schema === 'fail' ? 'schema failed' : schema === 'na' ? 'schema n/a' : 'schema off'}`;
+    return { id: s.stepId, status: s.status, word, criteria: notRun ? 'none' : criteriaOk ? 'pass' : 'fail', schema: notRun ? 'none' : schema };
+  });
+  return (
+    <div className="wfr-band-wrap">
+      <span className="wfr-band-legend">Steps band · upper bar = success criteria, lower bar = schema validation</span>
+      <div className="wfr-band" role="img" aria-label={`Steps band: ${band.map((b) => `${b.id} ${b.word}`).join('; ')}`}>
+        {band.map((b) => (
+          <div key={b.id} className="wfr-band-step" data-status={b.status}>
+            <span className="wfr-band-bar" data-part="criteria" data-state={b.criteria} />
+            <span className="wfr-band-bar" data-part="schema" data-state={b.schema} />
+            <span className="wfr-band-id">
+              <Icon
+                name={b.status === 'passed' ? 'check' : b.status === 'failed' ? 'cross' : 'circle'}
+                size={12}
+                strokeWidth={b.status === 'not-run' ? 2 : 2.8}
+                strokeDasharray={b.status === 'not-run' ? '3 3' : undefined}
+              />
+              <span className="wfr-mono">{b.id}</span>
+            </span>
+            <span className="wfr-band-word">{b.word}</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+/* ----------------------------------------------------------------------------- example judging */
+
+function ExampleJudging({ run, example }: { run: WorkflowRun; example: WorkflowExample }) {
+  const { rows, unmet, matches } = judgeExample(run, example);
+  return (
+    <section aria-labelledby="wfr-ex-h" className="wfr-card wfr-example" data-result={matches ? 'passed' : 'failed'}>
+      <div className="wfr-example-head">
+        <h2 id="wfr-ex-h" className="wfr-example-title">
+          Example <span className="wfr-example-name">{example.id}</span>
+        </h2>
+        <Verdict tone={matches ? 'success' : 'danger'} icon={matches ? 'check' : 'cross'} size={14}>
+          {matches ? 'Matches the example' : 'Does not match the example'}
+        </Verdict>
+      </div>
+      <div className="wfr-table-wrap">
+        <table className="wfr-table" data-min="560">
+          <caption className="sr-only">Expectations of the example {example.id}</caption>
+          <thead>
+            <tr>
+              <th scope="col">Expectation</th>
+              <th scope="col">Expected</th>
+              <th scope="col">This run</th>
+              <th scope="col">Result</th>
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r, i) => (
+              <tr key={i} data-met={r.met ? undefined : 'false'}>
+                <th scope="row" className="wfr-example-kind">
+                  {r.kind}
+                </th>
+                <td className="wfr-mono-sm">{r.expected}</td>
+                <td className="wfr-mono-sm" data-tone={r.met ? undefined : 'danger'}>
+                  {r.got}
+                </td>
+                <td>
+                  <Verdict tone={r.met ? 'success' : 'danger'} icon={r.met ? 'check' : 'cross'}>
+                    {r.met ? 'Met' : 'Not met'}
+                  </Verdict>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+      {unmet.length > 0 ? (
+        <ul aria-label="Unmet expectations" className="wfr-unmet">
+          {unmet.map((u) => (
+            <li key={u}>{u}</li>
+          ))}
+        </ul>
+      ) : null}
+    </section>
+  );
+}
+
+/* ---------------------------------------------------------------------------------- properties */
+
+function Properties({ run, detail, example }: { run: WorkflowRun; detail?: Detail; example?: WorkflowExample }) {
+  const onMocks = run.target.kind === 'mocks';
+  const firstBaggage = run.steps.find((s) => s.status !== 'not-run')?.baggage;
+  const outputs = Object.entries(run.outputs);
+  const verdict = example && run.status !== 'RUNNING' ? (judgeExample(run, example).matches ? 'Matches' : 'Does not match') : undefined;
+  const rows: { term: string; value: React.ReactNode }[] = [
+    {
+      term: 'Workflow',
+      value: (
+        <>
+          <RouterLink to={workflowPath(run.documentId, run.workflowId)} className="wfr-link-mono">
+            {run.workflowId}
+          </RouterLink>{' '}
+          in {detail ? `${detail.document.title} ${detail.document.version}` : run.documentId}
+        </>
+      ),
+    },
+    {
+      term: 'Target',
+      value: (
+        <span className="wfr-target">
+          <strong>{run.target.kind === 'mocks' ? 'Microcks mocks' : run.target.kind === 'implementations' ? 'Implementations' : 'Mixed'}</strong>
+          {run.target.kind === 'implementations' ? <span className="wfr-target-url">{implementationsText(run.target.baseUrls)}</span> : null}
+          {run.target.kind === 'mocks' ? <span className="wfr-target-url">{mockSources(run)}</span> : null}
+          {run.target.kind === 'mixed' ? <span className="wfr-proposed">Proposed · beyond POC</span> : null}
+        </span>
+      ),
+    },
+    { term: 'Secret', value: <span className="wfr-mono-sm">{!onMocks && run.options.secret ? run.options.secret : 'None'}</span> },
+    {
+      term: 'Inputs',
+      value: (
+        <span className="wfr-mono-sm">
+          {Object.entries(run.options.inputs)
+            .map(([k, v]) => `${k} = ${String(v)}`)
+            .join(' · ') || 'none'}
+        </span>
+      ),
+    },
+    { term: 'Schema validation', value: run.options.validateSchemas ? 'On' : 'Off' },
+    { term: 'Timeout per step', value: <span className="wfr-mono-sm">{run.options.timeoutMs} ms</span> },
+    ...(onMocks && firstBaggage
+      ? [
+          {
+            term: 'Baggage',
+            value: (
+              <span className="wfr-baggage-block">
+                <code className="wfr-baggage">{firstBaggage}</code>
+                <span className="wfr-note">Carried by each call to the mocks: Live traces show which run, step and attempt a mock call comes from.</span>
+                <RouterLink to={`/traces?run=${run.id}`} className="wfr-link">
+                  See in Live traces
+                </RouterLink>
+              </span>
+            ),
+          },
+        ]
+      : []),
+    ...(outputs.length > 0 ? [{ term: 'Outputs', value: <span className="wfr-mono-sm">{outputs.map(([k, v]) => `${k} = ${J(v)}`).join(' · ')}</span> }] : []),
+    ...(run.options.example
+      ? [
+          {
+            term: 'Example',
+            value: (
+              <>
+                <span className="wfr-mono-sm">{run.options.example}</span>
+                {verdict ? ` · ${verdict}` : ''}
+              </>
+            ),
+          },
+        ]
+      : []),
+    { term: 'Origin', value: originText(run) },
+  ];
+  return (
+    <section aria-labelledby="wfr-props-h" className="wfr-card wfr-props">
+      <h2 id="wfr-props-h" className="wfr-card-title">
+        Properties
+      </h2>
+      <dl className="run-facts" data-layout="inline">
+        {rows.map((r) => (
+          <div key={r.term} className="run-facts-row">
+            <dt>{r.term}</dt>
+            <dd>{r.value}</dd>
+          </div>
+        ))}
+      </dl>
+    </section>
+  );
+}
+
+function originText(run: WorkflowRun): string {
+  if (run.origin.kind === 'session') return `Session ${run.origin.sessionId}`;
+  if (run.origin.kind === 'ui') return 'UI · Run workflow';
+  if (run.origin.kind === 'api') return 'API';
+  return 'Mock URL';
 }

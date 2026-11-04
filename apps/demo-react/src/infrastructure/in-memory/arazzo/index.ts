@@ -18,6 +18,7 @@ import {
   SERVICES,
   WORKFLOWS,
   after,
+  scenarioRun,
   scenarioRuns,
   seedRuns,
   seedSessions,
@@ -98,7 +99,9 @@ export function createInMemoryArazzoAdapters(deps: InMemoryDeps = {}): ArazzoAda
             (!filter.origin || r.origin.kind === filter.origin),
         ),
       ),
-    get: (id) => after(() => state.runs.find((r) => r.id === id)),
+    // Runs #15 and #16 are reachable by id (the scenario links of the run page) before their scenario is launched,
+    // but stay out of the lists until then.
+    get: (id) => after(() => state.runs.find((r) => r.id === id) ?? scenarioRun(id)),
     save: (run) =>
       after(() => {
         const at = state.runs.findIndex((r) => r.id === run.id);
