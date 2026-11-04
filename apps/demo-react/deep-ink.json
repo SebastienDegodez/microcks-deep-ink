@@ -335,11 +335,10 @@
     "command-bar": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/command-bar.tsx": "3590e6a2b53dac0174506b24a90d0fc23bcbe3f842afd99bf17dd3e609b987e1",
-        "src/ui/components/ui/elements/command-bar.js": "0eb11b6d853eb5cac917cbaf69b41108e2c2ad3c33a055f857eb14e5d5aa84b1",
-        "src/ui/components/ui/elements/command-bar.d.ts": "049722ada8a79ff5fc2ca6f2cbd451c0e021dce46d684740412dc5fc3e86b0da"
+        "src/ui/components/ui/command-bar.tsx": "4495edb20d98863bcf4bdbd5c83b0015ffc9400f6c8b8e3e792899cdeafda4d3",
+        "src/ui/styles/command-bar.css": "1bb67966b9e52ab3d0e1a3fc24e66434bd7e5ed11d36ee98231227485ed52f0f"
       },
-      "hash": "d051d28da7a8839a"
+      "hash": "cd27f284a8acf405"
     },
     "plugin-slot": {
       "version": "0.2.0",
@@ -512,6 +511,6 @@
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "fca94ec920fde8faa6ec6c78b4005e8cbbbd227c047a18c56174ce7abe13990d"
+    "src/ui/styles/index.css": "002e6c3c3bd2c5303c7dc14e0c6c699ee8bf869c19c3b453a49ea8a04c407b36"
   }
 }
