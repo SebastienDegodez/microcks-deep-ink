@@ -42,7 +42,7 @@ export function AgentTasksTab({ serviceId, initial, onChanged }: { serviceId: st
           <LiveIndicator variant="inline" paused={live.paused} label="live" />
           <span className="agent-tasks-summary">{tasks.length} tasks in the last 24 h · {open} not terminal</span>
           {/* Updates every second: a pause control keeps it under the user's control (WCAG 2.2.2). */}
-          <Button variant="link" size="sm" aria-pressed={live.paused} onClick={live.toggle}>{live.paused ? 'Resume' : 'Pause'}</Button>
+          <Button variant="link" size="sm" onClick={live.toggle}>{live.paused ? 'Resume' : 'Pause'}</Button>
         </div>
         <span className="agent-tasks-kept">Kept 24 h · same list as <span className="ex-mono">ListTasks</span> on any transport</span>
       </div>
@@ -87,8 +87,8 @@ export function AgentTasksTab({ serviceId, initial, onChanged }: { serviceId: st
             </div>
             <div className="agent-task-actions">
               <div className="agent-task-buttons">
-                <Button variant="secondary" icon="arrow-to-end" className="agent-task-method" aria-expanded={showGet} onClick={() => setShowGet((v) => !v)}>GetTask</Button>
-                <Button variant="danger" icon="stop-circle" className="agent-task-method" disabled={terminal} aria-describedby="agent-cancel-note" onClick={cancel}>CancelTask</Button>
+                <Button variant="secondary" size="compact" icon="arrow-to-end" className="agent-task-method" aria-expanded={showGet} onClick={() => setShowGet((v) => !v)}>GetTask</Button>
+                <Button variant="danger" size="compact" icon="stop-circle" className="agent-task-method" disabled={terminal} aria-describedby="agent-cancel-note" onClick={cancel}>CancelTask</Button>
               </div>
               <span id="agent-cancel-note" className="agent-task-note">
                 {terminal ? `TaskNotCancelableError: ${task.id} is ${task.state}.` : 'Moves the task to canceled and notifies its webhook.'}
