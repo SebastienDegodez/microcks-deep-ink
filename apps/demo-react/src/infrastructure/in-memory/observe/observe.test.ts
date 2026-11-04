@@ -56,7 +56,7 @@ describe('observe use cases', () => {
       const run14: string[] = [];
       const stopAll = uc.subscribeTraces({}, (c) => seqs.push(c.seq));
       const stopRun = uc.subscribeTraces({ runId: RUN_IDS[14] }, (c) => run14.push(c.baggage ?? ''));
-      await vi.advanceTimersByTimeAsync(1200 * 14);
+      await vi.advanceTimersByTimeAsync(3200 * 14);
       stopAll();
       stopRun();
       expect(seqs.slice(0, 3)).toEqual([11, 12, 13]);
@@ -74,5 +74,29 @@ describe('observe use cases', () => {
     expect(first.callId).toBe('call-1001');
     expect(second.seq).toBeGreaterThan(first.seq);
     expect(first.path).toBe((await uc.getTrace('call-6'))?.path);
+  });
+
+  it('stamps a replay after the newest streamed call, so it sorts first by time', async () => {
+    vi.useFakeTimers();
+    try {
+      const uc = setup();
+      const seen: string[] = [];
+      const stop = uc.subscribeTraces({}, (c) => seen.push(c.at));
+      await vi.advanceTimersByTimeAsync(3200 * 5);
+      stop();
+      const replay = uc.replay('call-4');
+      await vi.advanceTimersByTimeAsync(1000);
+      const again = await replay;
+      expect(again.at > (seen.at(-1) ?? '')).toBe(true);
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it('filters MCP tool calls by their kind', async () => {
+    const topology = await setup().traceTopology();
+    const { matchesTraceFilter } = await import('@/domain/observe');
+    const mcp = topology.history.filter((c) => matchesTraceFilter(c, { kind: 'MCP' }));
+    expect(mcp.map((c) => c.mcpTool)).toEqual(['get_pastries_name']);
   });
 });

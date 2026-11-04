@@ -75,6 +75,13 @@ describe('Button', () => {
     expect(screen.getByRole('button', { name: 'Delete' }).getAttribute('data-tone')).toBe('danger');
   });
 
+  it('has a 36px tile size for card footers, with a 14px icon', () => {
+    render(<Button variant="primary" size="tile" icon="download">Install</Button>);
+    const install = screen.getByRole('button', { name: 'Install' });
+    expect(install.getAttribute('data-size')).toBe('tile');
+    expect(install.querySelector('svg')?.getAttribute('width')).toBe('14');
+  });
+
   it('has no axe violations', async () => {
     const { container } = render(
       <div>

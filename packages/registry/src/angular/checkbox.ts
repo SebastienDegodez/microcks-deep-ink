@@ -38,7 +38,7 @@ export class CheckboxComponent {
   /** Secondary text, linked with aria-describedby. */
   readonly description = input<string>();
   /** `card`: a bordered card label, selected fill when checked. */
-  readonly variant = input<'plain' | 'card'>('plain');
+  readonly variant = input<'plain' | 'card' | 'compact'>('plain');
   readonly checked = model(false);
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly required = input(false, { transform: booleanAttribute });
@@ -81,7 +81,7 @@ export class RadioComponent {
   readonly label = input.required<string>();
   readonly description = input<string>();
   /** `card`: a bordered card label, selected fill when checked. */
-  readonly variant = input<'plain' | 'card'>('plain');
+  readonly variant = input<'plain' | 'card' | 'compact'>('plain');
   readonly checked = model(false);
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly required = input(false, { transform: booleanAttribute });
@@ -151,7 +151,7 @@ export class RadioGroupComponent {
   readonly help = input<string>();
   readonly error = input<string>();
   /** `card`: each option is a bordered card label. */
-  readonly variant = input<'plain' | 'card'>('plain');
+  readonly variant = input<'plain' | 'card' | 'compact'>('plain');
 
   private readonly uid = uid('mk-radio-group');
   protected readonly helpId = `${this.uid}-help`;
