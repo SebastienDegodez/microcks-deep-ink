@@ -1,0 +1,5 @@
+# Svelte workspace: the Svelte flavour of @microcks/deep-ink. Not part of the root workspace.
+# It consumes the root's built CSS through a `link:` devDependency only: run `pnpm build` at the root first.
+packages:
+  - packages/*
+  - apps/*

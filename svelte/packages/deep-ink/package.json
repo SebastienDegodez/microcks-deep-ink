@@ -1,0 +1,24 @@
+{
+  "name": "@microcks/deep-ink",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "license": "Apache-2.0",
+  "description": "Deep Ink for Svelte: the stylesheet only, no components yet. Private, not published.",
+  "exports": {
+    "./styles.css": "./dist/styles.css",
+    "./styles.no-fonts.css": "./dist/styles.no-fonts.css",
+    "./package.json": "./package.json"
+  },
+  "files": ["dist"],
+  "sideEffects": ["*.css"],
+  "scripts": {
+    "build": "node scripts/build-css.mjs"
+  },
+  "peerDependencies": {
+    "svelte": "^5.0.0"
+  },
+  "devDependencies": {
+    "@microcks-deep-ink/registry": "link:../../../packages/registry"
+  }
+}
