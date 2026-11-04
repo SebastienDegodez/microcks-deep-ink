@@ -13,6 +13,8 @@ export interface DataTableColumn<T> {
   header: string;
   align?: 'start' | 'end';
   mono?: boolean;
+  /** Keeps the cells of this column on one line. Cells wrap by default. */
+  nowrap?: boolean;
   /** Custom cell content. Defaults to `String(row[key])`. */
   render?: (row: T) => ReactNode;
   /** Renders the header as a sort button. */
@@ -161,7 +163,7 @@ export function DataTable<T>({
                       );
                     }
                     return (
-                      <td key={c.key} data-align={c.align === 'end' ? 'end' : undefined} data-mono={c.mono ? '' : undefined}>
+                      <td key={c.key} data-align={c.align === 'end' ? 'end' : undefined} data-mono={c.mono ? '' : undefined} data-nowrap={c.nowrap ? '' : undefined}>
                         {inner}
                       </td>
                     );

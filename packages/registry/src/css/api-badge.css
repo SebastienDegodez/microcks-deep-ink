@@ -7,7 +7,7 @@
     overflow: hidden;
     font: var(--type-badge);
     white-space: nowrap;
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--border);
     border-radius: var(--radius-badge);
   }
   .api-badge[data-protocol="rest"] { --badge-proto: var(--proto-rest); }
@@ -18,8 +18,15 @@
   .api-badge[data-protocol="direct"] { --badge-proto: var(--proto-direct); }
   .api-badge[data-protocol="a2a"] { --badge-proto: var(--proto-a2a); }
 
-  .api-badge > span { display: inline-flex; align-items: center; padding: 5px 9px; }
+  .api-badge > span { display: inline-flex; align-items: center; padding: 4px 9px; }
   .api-badge[data-size="sm"] > span { padding: 2px 6px; font-size: 11px; }
+  /* Page headers: the name is set in the brand font. lg sits beside an h1, xl is the h1 itself. */
+  .api-badge[data-size="lg"] > .api-badge-type { padding: 0 9px; }
+  .api-badge[data-size="lg"] > .api-badge-name,
+  .api-badge[data-size="lg"] > .api-badge-version { padding-block: 4px; padding-inline: 10px; font: 700 17px/1.2 var(--font-brand); }
+  .api-badge[data-size="xl"] > .api-badge-type { padding: 0 12px; font-size: 14px; }
+  .api-badge[data-size="xl"] > .api-badge-name,
+  .api-badge[data-size="xl"] > .api-badge-version { padding-block: 8px; padding-inline: 14px; font: 800 30px/1 var(--font-brand); }
 
   /* Left segment: a protocol fills with its color; a metric label sits on raised. */
   .api-badge-type { background: var(--raised); color: var(--text-secondary); font-weight: 400; }
@@ -27,9 +34,13 @@
   /* Workflows are not a protocol: inverted segment, never a protocol color. */
   .api-badge[data-protocol="arazzo"] .api-badge-type { background: var(--text); color: var(--bg); font-weight: 600; }
 
-  .api-badge-name { background: var(--surface); color: var(--text); }
-  .api-badge-version { background: var(--surface); color: var(--text-secondary); padding-inline-start: 0; }
-  .api-badge-name:not(:last-child) { padding-inline-end: 6px; }
+  /* Name and version read as one segment: regular weight, the version muted. */
+  .api-badge-name { background: var(--surface); color: var(--text); font-weight: 400; }
+  .api-badge-version { background: var(--surface); color: var(--text-muted); font-weight: 400; }
+  .api-badge > .api-badge-name:has(+ .api-badge-version) { padding-inline-end: 0; }
+  .api-badge > .api-badge-name + .api-badge-version { padding-inline-start: 0.5ch; }
+  .api-badge[data-size="lg"] > .api-badge-name + .api-badge-version,
+  .api-badge[data-size="xl"] > .api-badge-name + .api-badge-version { padding-inline-start: 0.25em; }
 
   /* Proof fills: icon + word are always inside; color only speeds up scanning. */
   .api-badge[data-status="success"] .api-badge-name { background: var(--success); color: var(--on-status); font-weight: 600; }
@@ -37,4 +48,11 @@
   .api-badge[data-status="warning"] .api-badge-name { background: var(--warning); color: var(--on-status); font-weight: 600; }
   .api-badge[data-status="info"] .api-badge-name { background: var(--link); color: var(--on-action); font-weight: 600; }
   .api-badge-name > .icon { margin-inline-end: 4px; flex: none; }
+  /* Extra proof values ("samples │ 7 │ +1 AI") are further filled segments of the same badge. */
+  .api-badge-value { font-weight: 600; background: var(--surface); color: var(--text); }
+  .api-badge-value[data-status="success"] { background: var(--success); color: var(--on-status); }
+  .api-badge-value[data-status="danger"] { background: var(--danger); color: var(--on-status); }
+  .api-badge-value[data-status="warning"] { background: var(--warning); color: var(--on-status); }
+  .api-badge-value[data-status="info"] { background: var(--link); color: var(--on-action); }
+  .api-badge-value > .icon { margin-inline-end: 4px; flex: none; }
 }

@@ -22,8 +22,20 @@ describe('Icon', () => {
   });
 
   it('ships the names required by the contract', () => {
-    for (const n of ['spark', 'retry', 'end', 'branch', 'link-out', 'play', 'pause', 'trash', 'undo', 'check', 'cross', 'dash', 'warning', 'info', 'external', 'chevron-down', 'menu', 'search', 'close', 'copy', 'upload', 'tests', 'sun', 'moon']) {
+    for (const n of ['spark', 'retry', 'end', 'branch', 'link-out', 'play', 'pause', 'trash', 'undo', 'check', 'cross', 'dash', 'warning', 'info', 'external', 'chevron-down', 'menu', 'search', 'close', 'copy', 'upload', 'tests', 'sun', 'moon', 'download', 'check-circle', 'x-circle', 'never-tested', 'more-vertical', 'arrow-right', 'chevron-left', 'list', 'badge-wall', 'reset', 'skip', 'pencil', 'clock']) {
       expect(ICON_NAMES).toContain(n);
     }
+  });
+
+  it('draws the prototype paths', () => {
+    const { container } = render(<Icon name="check" />);
+    expect(container.querySelector('path')!.getAttribute('d')).toBe('M5 12l5 5 9-11');
+  });
+
+  it('dashes the ring of "never tested"', () => {
+    const { container } = render(<Icon name="never-tested" />);
+    const [ring, bar] = Array.from(container.querySelectorAll('path'));
+    expect(ring!.getAttribute('stroke-dasharray')).toBe('3 3');
+    expect(bar!.hasAttribute('stroke-dasharray')).toBe(false);
   });
 });
