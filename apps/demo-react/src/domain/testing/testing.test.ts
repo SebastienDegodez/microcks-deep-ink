@@ -131,7 +131,7 @@ describe('runner log', () => {
     expect(running[0]?.time).toBe('09:10:04.112');
     const done = buildRunnerLog(run, 2, true);
     expect(done.filter((l) => l.level === 'FAIL').map((l) => l.message)).toContain('  $.price raw message');
-    expect(done.at(-1)?.message).toBe('Result: FAILED');
+    expect(done.at(-1)).toMatchObject({ level: 'FAIL', message: 'Result: FAILED · GET /p broke its contract', tone: 'error' });
     expect(elapsedMs(run, 2)).toBe(140 + 2 * 90);
   });
 });

@@ -27,6 +27,7 @@ export const OPERATION_LABELS = [
   { id: 'patch-name', method: 'PATCH', path: '/pastries/{name}' },
 ];
 
+const CONTRACT_FILE = 'apipastry-2.0-openapi.yaml';
 const SCHEMA_REF = '#/components/schemas/Pastry';
 
 function step(n: number, operationId: string, name: string, method: string, path: string, ms: number, payload: unknown): TestStepResult {
@@ -133,6 +134,7 @@ function toRun(raw: RawRun): TestRun {
     id: String(raw.n), serviceId: 'pastry2', runner: raw.runner, environment: raw.env, endpoint: ENDPOINTS[raw.env], result: raw.res,
     startedAt: raw.at, durationMs: raw.ms, passed: steps.filter((s) => s.result === 'passed').length, total: steps.length, timeoutMs: 10_000,
     steps, reason: raw.reason, operations: [...raw.ops].map((c) => OUTCOME[c] ?? 'none'), operationLabels: OPERATION_LABELS, launchedBy: 'MA',
+    contractFile: CONTRACT_FILE,
   };
 }
 
@@ -143,7 +145,7 @@ export function seedTestRuns(): TestRun[] {
     id: '119', serviceId: 'pastry2', runner: 'OPEN_API_SCHEMA', environment: 'staging', endpoint: STAGING_BASE, result: 'failed',
     startedAt: '2026-11-03T09:10:04Z', durationMs: 825, passed: 6, total: 7, timeoutMs: 10_000, steps: failed, live: true,
     reason: 'PATCH /pastries/{name} · price returned as a string, a number is expected',
-    operations: ['pass', 'pass', 'fail'], operationLabels: OPERATION_LABELS, launchedBy: 'MA',
+    operations: ['pass', 'pass', 'fail'], operationLabels: OPERATION_LABELS, launchedBy: 'MA', contractFile: CONTRACT_FILE,
     relatedWorkflowRun: { runId: RUN_IDS[14], number: 14, workflowTitle: 'Restock a pastry', stepId: 'patchPastry' },
   };
   const orders: TestRun = {
