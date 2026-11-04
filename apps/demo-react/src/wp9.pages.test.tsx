@@ -68,7 +68,7 @@ describe('Test run (/tests/runner/:id)', () => {
     renderAt('/tests/runner/118');
     expect(await screen.findByRole('heading', { level: 1, name: 'Run #118' })).toBeTruthy();
     expect(screen.getByRole('navigation', { name: 'Breadcrumb' }).textContent).toContain('Tests');
-    expect(await screen.findByRole('log', { name: 'Runner log lines' })).toBeTruthy();
+    expect(await screen.findByRole('log', { name: 'Runner log' })).toBeTruthy();
     expect(screen.getByRole('region', { name: 'Verdict' }).textContent).toContain('Passed');
     expect(screen.queryByText('$.price')).toBeNull();
   });
