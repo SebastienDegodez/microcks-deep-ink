@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { membershipChanges, membershipKey, packageTotals, previewInstall, validateSecretForm, type HubPackage } from './index';
+import { membershipChanges, membershipKey, packageTotals, previewInstall, secretCredentials, validateSecretForm, type HubPackage } from './index';
 
 const pkg: HubPackage = {
   id: 'p', name: 'Pastry samples', category: 'Samples', description: '', versions: [], apiCount: 2, installed: false,
@@ -45,9 +45,14 @@ describe('secret form and memberships', () => {
   it('validates name and credential', () => {
     const ok = { name: 'my-token', kind: 'token' as const, description: '', secret: 'abc' };
     expect(validateSecretForm(ok, [])).toEqual({});
-    expect(validateSecretForm({ ...ok, name: 'Bad Name' }, []).name).toContain('lowercase');
-    expect(validateSecretForm(ok, ['my-token']).name).toBe('This name already exists.');
-    expect(validateSecretForm({ ...ok, secret: '' }, []).secret).toBe('A credential is required.');
+    expect(validateSecretForm({ ...ok, name: '' }, []).name).toBe('Name required');
+    expect(validateSecretForm({ ...ok, name: 'Bad Name' }, []).name).toBe('Lowercase letters, digits and dashes');
+    expect(validateSecretForm(ok, ['my-token']).name).toBe('This name already exists');
+    expect(validateSecretForm({ ...ok, secret: '' }, []).secret).toBe('Credential required');
+    // Editing: the name is fixed and an empty credential keeps the stored one.
+    expect(validateSecretForm({ ...ok, secret: '' }, ['my-token'], true)).toEqual({});
+    expect(secretCredentials({ kind: 'token', secret: 'x', user: 'PRIVATE-TOKEN' })).toBe('header PRIVATE-TOKEN · token ••••••••');
+    expect(secretCredentials({ kind: 'ca', secret: '-----BEGIN CERTIFICATE-----\n-----BEGIN CERTIFICATE-----' })).toBe('PEM · 2 certificates');
   });
 
   it('lists the added and removed memberships of a draft', () => {

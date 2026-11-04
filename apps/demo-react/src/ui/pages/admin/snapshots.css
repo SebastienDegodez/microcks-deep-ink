@@ -15,11 +15,11 @@
 
 .ad-snap-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px; margin: 0; padding: 0; border: 0; min-width: 0; }
 .ad-snap-service {
-  display: flex; align-items: center; gap: 10px; min-width: 0; padding: 8px 10px; cursor: pointer;
+  display: flex; align-items: center; gap: 10px; min-width: 0; padding: 9px 10px; cursor: pointer;
   border: 1px solid var(--border); border-radius: 6px; background: var(--surface);
 }
 .ad-snap-service[data-selected] { border-color: var(--action); background: var(--selected); }
-.ad-snap-service > input { flex: none; width: 16px; height: 16px; margin: 0; accent-color: var(--action); }
+.ad-snap-service > input { flex: none; width: 16px; height: 16px; margin: 0; accent-color: var(--action); color-scheme: light; }
 .ad-snap-badge { flex: 1; min-width: 0; }
 .ad-snap-ops { flex: none; font: 400 11px/normal var(--font-mono); color: var(--text-muted); }
 
@@ -29,19 +29,7 @@
 .ad-ok { flex: none; color: var(--success); }
 .ad-snap-file { font: 600 13px/normal var(--font-mono); color: var(--text); }
 
-/* Compact drop zone (the Import screen has the large one). */
-.ad-drop {
-  display: flex; flex-direction: column; align-items: center; gap: 10px; padding: 28px 16px; text-align: center;
-  border: 1.5px dashed var(--border-strong); border-radius: 12px; background: var(--surface);
-}
-.ad-drop[data-dragging] { border-color: var(--action); background: var(--selected); }
-.ad-drop-icon { color: var(--text-muted); }
-.ad-drop-heading { font-size: 14px; font-weight: 600; }
-.ad-drop-hint { font-size: 12px; color: var(--text-muted); }
-.ad-drop-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin-top: 4px; }
-.ad-drop-choose { min-height: 36px; padding-inline: 12px; cursor: pointer; }
 .ad-drop-sample { height: 36px; padding: 0 10px; }
-.ad-drop-input:focus-visible + .ad-drop-choose { outline: 2px solid var(--action); outline-offset: 2px; box-shadow: var(--shadow-focus); }
 
 .ad-snap-preview { display: flex; flex-direction: column; gap: 10px; }
 .ad-snap-filerow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
