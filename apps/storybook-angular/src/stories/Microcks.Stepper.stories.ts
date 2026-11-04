@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { StepperComponent } from '@microcks-deep-ink/registry/angular/stepper';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/Stepper',
@@ -32,3 +32,6 @@ export const Instructions: StoryObj = {
     template: `<div style="max-width: 360px"><ol mkStepper label="Before you paste" variant="list" [steps]="steps"></ol></div>`,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('stepper', 'StepperComponent', { label: 'Import steps', variant: 'progress', direction: 'horizontal', doneLabel: 'done', steps: [{ label: 'Upload', state: 'done' }, { label: 'Review', state: 'current' }, { label: 'Publish', state: 'upcoming' }] }, '');

@@ -1,7 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { TASK_STATES, TaskLanesComponent, TaskStateTagComponent, TaskTimelineComponent } from '@microcks-deep-ink/registry/angular/task-timeline';
 import { AGENT_LANES, AGENT_LIFECYCLE } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/TaskTimeline',
@@ -51,3 +51,6 @@ export const StateMachineDiff: StoryObj = {
     template: `<div mkTaskLanes [lanes]="lanes"></div>`,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('task-timeline', 'TaskTimelineComponent', { label: 'Task lifecycle', showUnreached: true, nodes: [{ state: 'submitted', at: '09:10:01' }, { state: 'working', at: '09:10:03', connector: '2 s' }, { state: 'completed', at: '09:10:09', connector: '6 s' }] }, '');

@@ -1,7 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { LiveIndicatorComponent } from '@microcks-deep-ink/registry/angular/live-indicator';
 import { RunnerLogComponent } from '@microcks-deep-ink/registry/angular/runner-log';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/RunnerLog',
@@ -33,3 +33,6 @@ export const Completed: StoryObj = {
     template: `<div style="max-width: 560px"><section mkRunnerLog [lines]="lines"><span mkRunnerLogStatus>6 lines · completed</span></section></div>`,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('runner-log', 'RunnerLogComponent', { title: 'Runner log', lines: [{ time: '09:10:01', level: 'INFO', text: 'Test started' }, { time: '09:10:02', level: 'WARN', text: 'Response slower than 500 ms' }, { time: '09:10:04', level: 'FAIL', text: 'price must be a number', error: true }] }, '');

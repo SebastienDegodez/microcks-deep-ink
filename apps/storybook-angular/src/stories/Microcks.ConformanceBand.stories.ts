@@ -1,7 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ConformanceBandComponent } from '@microcks-deep-ink/registry/angular/conformance-band';
 import { CONFORMANCE } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/ConformanceBand',
@@ -56,3 +56,6 @@ export const WithSummary: StoryObj = {
     template: `<mk-conformance-band [outcomes]="outcomes" [showSummary]="true" />`,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('conformance-band', 'ConformanceBandComponent', { outcomes: ['pass', 'pass', 'fail', 'pass', 'untested', 'pass'], size: 'full', unit: 'operation', showSummary: true }, '');

@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { SUMMARY_STRIP } from '@microcks-deep-ink/registry/angular/summary-strip';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/SummaryStrip',
@@ -39,3 +39,6 @@ export const FromContent: StoryObj = {
     template: `<div mkSummaryStrip style="max-width: 900px"><span class="summary-strip-label">Saved</span><span class="summary-strip-value">URI_PARTS · rule: name</span><span mkSummaryStripSep></span><span class="summary-strip-value">delay 0 ms fixed</span><span mkSummaryStripSep></span><a href="#/behavior">Edit the behaviour</a></div>`,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('summary-strip', 'SummaryStripComponent', { gap: 'normal', values: 'secondary', parts: [{ text: '12', kind: 'value' }, { text: 'operations', kind: 'label' }, { text: '', sep: true }, { text: '3', kind: 'value' }, { text: 'failing', kind: 'label' }] }, '');

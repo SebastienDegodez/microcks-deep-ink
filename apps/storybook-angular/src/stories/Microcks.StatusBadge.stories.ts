@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { StatusBadgeComponent } from '@microcks-deep-ink/registry/angular/status-badge';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/StatusBadge',
@@ -48,3 +48,6 @@ export const Bare: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('status-badge', 'StatusBadgeComponent', { status: 'conformant', size: 'md', shape: 'circled' }, '');

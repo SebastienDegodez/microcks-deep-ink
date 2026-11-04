@@ -2,7 +2,7 @@ import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ApiBadgeComponent } from '@microcks-deep-ink/registry/angular/api-badge';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
 import { TILE } from '@microcks-deep-ink/registry/angular/tile';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/Tile',
@@ -77,3 +77,6 @@ export const Static: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('tile', 'TileComponent', { title: 'API Pastry', headingLevel: 3, selectable: false, selected: false }, '<p style="margin:0">12 operations</p>');
