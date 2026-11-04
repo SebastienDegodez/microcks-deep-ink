@@ -1,6 +1,6 @@
 import { stoppedStep, type Session, type Step, type StepResult, type Workflow, type WorkflowRun } from '@/domain/arazzo';
 import { formatDuration } from '@/domain/shared/time';
-import { valueIn } from './loom-model';
+import { valueIn, wrongValue } from './loom-model';
 
 /** Where a run's results come from, in words: "Implementations", "Session", "Microcks mocks", "Mock URL". */
 export function originWord(run: Pick<WorkflowRun, 'origin' | 'target'>): string {
@@ -82,4 +82,39 @@ export function httpLine(step: Step, result: StepResult | undefined, run: Workfl
   if (last.when.startsWith('call #')) return `${last.when} · ${step.method} ${url} → ${last.httpStatus}`;
   if (result.attempts.length > 1) return `${step.method} ${url} → ${last.httpStatus}, on each of the ${result.attempts.length} attempts`;
   return `${step.method} ${url} → ${last.httpStatus} · ${formatDuration(last.ms)}`;
+}
+
+export type Tone = 'pass' | 'fail' | 'off';
+
+/** Status of a step in a run: tone and word ("Failed after 3 attempts", "Passed", "Not run"). */
+export function stepStatusOf(result: StepResult | undefined): { tone: Tone; word: string } {
+  if (!result) return { tone: 'off', word: 'Not part of the run' };
+  if (result.status === 'not-run') return { tone: 'off', word: 'Not run' };
+  if (result.status === 'passed') return { tone: 'pass', word: 'Passed' };
+  const n = result.attempts.length;
+  return { tone: 'fail', word: `Failed${n > 1 ? ` after ${n} attempts` : ''}` };
+}
+
+/** The checks of a step in a run: criteria and schema validation, or call / data passing / contract for a session. */
+export function stepChecksOf(result: StepResult | undefined, run: WorkflowRun): { label: string; tone: Tone; word: string }[] {
+  if (!result) return [];
+  const notRun = result.status === 'not-run';
+  if (run.origin.kind === 'session' && !notRun) {
+    const wrong = wrongValue(result);
+    return [
+      { label: result.attempts[0]?.when.replace(/^call/, 'Call') ?? 'Call', tone: 'pass', word: 'received' },
+      wrong ? { label: 'Data passing', tone: 'fail', word: 'not from an earlier step' } : { label: 'Data passing', tone: 'pass', word: 'as the workflow says' },
+      { label: 'Contract', tone: 'pass', word: 'conforms' },
+    ];
+  }
+  const held = result.criteria.every((c) => c.held);
+  const sc = result.schema.state;
+  return [
+    { label: 'Success criteria', tone: notRun ? 'off' : held ? 'pass' : 'fail', word: notRun ? 'not evaluated' : held ? 'held' : 'did not hold' },
+    {
+      label: 'Schema validation',
+      tone: notRun || sc === 'off' || sc === 'na' ? 'off' : sc === 'pass' ? 'pass' : 'fail',
+      word: notRun && run.options.validateSchemas ? 'not evaluated' : sc === 'pass' ? 'conforms' : sc === 'fail' ? 'failed' : 'off',
+    },
+  ];
 }

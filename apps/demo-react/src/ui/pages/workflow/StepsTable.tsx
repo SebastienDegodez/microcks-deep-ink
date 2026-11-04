@@ -1,16 +1,15 @@
-import type { ReactNode } from 'react';
-import { Link as RouterLink } from 'react-router';
-import { actionLabel, actionsOf, describeAction, type Workflow, type WorkflowRun } from '@/domain/arazzo';
+import { Link } from 'react-router';
+import { criteriaText, type ArazzoDocument, type Action, type Step, type Workflow, type WorkflowRun } from '@/domain/arazzo';
+import { Button } from '@/ui/components/ui/button';
+import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { MethodTag } from '@/ui/components/ui/method-tag';
-import { StepChecks, StepStatus } from '@/ui/components/ui/step-status';
 import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
-import { buildLoomProps, effectiveDependencies, expressionsOf, type LoomStep } from './loom-model';
-import type { ArazzoDocument } from '@/domain/arazzo';
+import { effectiveDependencies, stepResultLine } from './loom-model';
+import { stepChecksOf, stepStatusOf, type Tone } from './run-facts';
 
 interface Row {
   n: number;
-  step: Workflow['steps'][number];
-  loom: LoomStep;
+  step: Step;
   depends: string[];
 }
 
@@ -20,133 +19,115 @@ export interface StepsTableProps {
   run?: WorkflowRun;
   /** Link "On the loom" per row. */
   loomLink?: (stepId: string) => string;
-  /** Caption; the table is the text equivalent of the Loom. */
-  caption?: ReactNode;
+}
+
+const ICON: Record<Tone, IconName> = { pass: 'check-circle', fail: 'x-circle', off: 'minus-circle' };
+
+const describe = (a: Action) => (a.type === 'retry' ? `retry every ${a.retryAfter} s, up to ${a.retryLimit} ${a.retryLimit === 1 ? 'time' : 'times'}` : 'end the workflow');
+
+/** The actions of a step in words, as the Steps table writes them. */
+function actionTexts(step: Step): { text: string; muted?: boolean }[] {
+  const out = [
+    ...step.onSuccess.map((a) => ({ text: `On success: ${describe(a)}${a.criteria?.length ? ` when ${criteriaText(a.criteria)}` : ''}` })),
+    ...step.onFailure.map((a) => ({ text: `On failure: ${describe(a)}${a.criteria?.length ? ` when ${criteriaText(a.criteria)}` : ''}` })),
+  ];
+  return out.length ? out : [{ text: 'Next step · ends the run on failure', muted: true }];
 }
 
 /**
- * The Steps table: the accessible equivalent of the Loom. Same columns as the Loom's own table toggle
- * (#, Step, Source, Operation, Depends on, Status, Checks, Actions) plus the data each step reads and keeps.
+ * The Steps table: the accessible equivalent of the Loom (n°, stepId, Operation, Success criteria, Actions,
+ * Outputs, Result in the selected run, On the loom). dependsOn is shown only when a step declares it.
  */
 export function StepsTable({ workflow, document, run, loomLink }: StepsTableProps) {
-  const loom = buildLoomProps(workflow, document, run, undefined);
   const deps = effectiveDependencies(workflow.steps);
-  const rows: Row[] = workflow.steps.map((step, i) => ({ n: i + 1, step, loom: loom.steps[i] as LoomStep, depends: deps[i] ?? [] }));
   const declared = workflow.steps.some((s) => s.dependsOn?.length);
-  const sourceOf = (name: string) => {
-    const s = document.sources.find((x) => x.name === name);
-    return `${name} · ${s?.type ?? 'openapi'}${s?.link.status === 'not-linked' ? ' · not linked' : ''}`;
-  };
+  const rows: Row[] = workflow.steps.map((step, i) => ({ n: i + 1, step, depends: deps[i] ?? [] }));
+  const opRef = (step: Step) => `$sourceDescriptions.${step.sourceName}.${step.operationId}`;
 
   const columns: DataTableColumn<Row>[] = [
-    { key: 'n', header: '#', align: 'end' },
+    { key: 'n', header: 'n°', mono: true, render: ({ n }) => <span className="wf-st-strong">{n}</span> },
     {
       key: 'step',
-      header: 'Step',
-      render: ({ step }) => (
-        <span className="wf-cell-stack wf-cell-wide">
-          <code>{step.stepId}</code>
-          <span className="wf-small wf-muted">{step.description}</span>
+      header: 'stepId',
+      render: ({ step, depends }) => (
+        <span className="wf-st-stack">
+          <span className="wf-st-id">{step.stepId}</span>
+          <span className="wf-st-desc">{step.description}</span>
+          {declared ? <span className="wf-st-desc">dependsOn: {depends.length ? depends.join(', ') : 'none, starts at once'}</span> : null}
         </span>
       ),
     },
-    { key: 'source', header: 'Source', render: ({ step }) => <span className="wf-cell-stack">{sourceOf(step.sourceName)}</span> },
     {
       key: 'op',
       header: 'Operation',
-      render: ({ step }) => (
-        <span className="wf-cell-stack">
-          <span className="wf-row">
-            <MethodTag method={step.method} protocol={document.sources.find((s) => s.name === step.sourceName)?.type === 'asyncapi' ? 'EVENT' : 'REST'} />
-            <code>{step.path}</code>
+      render: ({ step }) => {
+        const src = document.sources.find((s) => s.name === step.sourceName);
+        const link = src?.link.status === 'linked' ? src.link : undefined;
+        return (
+          <span className="wf-st-stack">
+            <span className="wf-st-op">
+              <MethodTag method={step.method} protocol={link?.protocol ?? (src?.type === 'asyncapi' ? 'EVENT' : 'REST')} />
+              {link ? (
+                <Link to={`/services/${link.serviceId}`} className="wf-st-path">
+                  {step.path}
+                </Link>
+              ) : (
+                <span className="wf-st-path">{step.path}</span>
+              )}
+            </span>
+            <span className="wf-st-opref">{opRef(step)}</span>
           </span>
-          <span className="wf-small wf-muted">{step.operationId}</span>
-        </span>
-      ),
-    },
-    {
-      key: 'depends',
-      header: 'Depends on',
-      render: ({ depends }) => (
-        <span className="wf-cell-stack">{depends.length ? depends.join(', ') : declared ? 'none, starts at once' : 'none, first step'}</span>
-      ),
-    },
-    {
-      key: 'status',
-      header: run ? `Status in run #${run.number}` : 'Status',
-      render: ({ loom: l }) =>
-        l.status ? (
-          <StepStatus status={l.status} attempts={l.attempts} />
-        ) : (
-          <span className="wf-small wf-muted">No run selected</span>
-        ),
-    },
-    {
-      key: 'checks',
-      header: 'Checks',
-      render: ({ loom: l }) =>
-        l.checks ? <StepChecks successCriteria={l.checks.successCriteria} schemaValidation={l.checks.schemaValidation} /> : <span className="wf-small wf-muted">—</span>,
+        );
+      },
     },
     {
       key: 'criteria',
       header: 'Success criteria',
       render: ({ step }) => (
-        <ul className="wf-list wf-cell-wide">
+        <span className="wf-st-stack">
           {step.successCriteria.map((c) => (
-            <li key={c.condition}>
-              <code>{c.condition}</code> {c.type === 'regex' ? <span className="wf-small wf-muted">(regex on {c.context})</span> : null}
-            </li>
+            <span key={c.condition} className="wf-st-crit">
+              {c.condition}
+              {c.type === 'regex' ? <span className="wf-st-muted"> (regex on {c.context})</span> : null}
+            </span>
           ))}
-        </ul>
+        </span>
       ),
     },
     {
       key: 'actions',
       header: 'Actions',
-      render: ({ step, loom: l }) => {
-        const all = actionsOf(step);
-        if (all.length === 0) return <span className="wf-small wf-muted">none</span>;
-        return (
-          <ul className="wf-list wf-cell-wide">
-            {all.map(({ when, action }) => {
-              const state = l.actions?.find((a) => a.name === action.name);
-              const happened = state && ('taken' in state ? state.taken : (state as { applied?: boolean }).applied);
-              return (
-                <li key={`${when}-${action.name}`}>
-                  <span className="wf-small wf-muted">{when}</span> <code>{actionLabel(action)}</code>
-                  <span className="wf-small wf-muted"> · {describeAction(action)}</span>
-                  {happened ? <strong> · {action.type === 'retry' ? 'applied' : 'taken'}</strong> : null}
-                </li>
-              );
-            })}
-          </ul>
-        );
-      },
+      render: ({ step }) => (
+        <span className="wf-st-stack">
+          {actionTexts(step).map((a) => (
+            <span key={a.text} className="wf-st-act" data-muted={a.muted ? '' : undefined}>
+              {a.text}
+            </span>
+          ))}
+        </span>
+      ),
     },
+    { key: 'outputs', header: 'Outputs', render: ({ step }) => <span className="wf-st-outs">{step.outputs.length ? step.outputs.map((o) => o.name).join(', ') : '—'}</span> },
     {
-      key: 'data',
-      header: 'Data read and kept',
+      key: 'result',
+      header: run ? `Result in #${run.number}` : 'Result',
       render: ({ step }) => {
-        const reads = expressionsOf(step);
+        if (!run) return <span className="wf-st-muted">No run selected</span>;
+        const result = run.steps.find((r) => r.stepId === step.stepId);
+        const status = stepStatusOf(result);
         return (
-          <span className="wf-cell-stack wf-cell-wide">
-            {reads.length ? (
-              <span>
-                <span className="wf-small wf-muted">reads </span>
-                {reads.map((r) => (
-                  <code key={r} className="wf-expr">
-                    {r}
-                  </code>
-                ))}
+          <span className="wf-st-stack">
+            <span className="wf-st-status" data-tone={status.tone}>
+              <Icon name={ICON[status.tone]} size={13} strokeWidth={2.2} />
+              {status.word}
+            </span>
+            {stepChecksOf(result, run).map((c) => (
+              <span key={c.label} className="wf-st-check">
+                <Icon name={ICON[c.tone]} size={12} strokeWidth={2.2} data-tone={c.tone} />
+                {c.label} <span data-tone={c.tone}>{c.word}</span>
               </span>
-            ) : null}
-            {step.outputs.length ? (
-              <span>
-                <span className="wf-small wf-muted">keeps </span>
-                {step.outputs.map((o) => o.name).join(', ')}
-              </span>
-            ) : null}
-            {!reads.length && !step.outputs.length ? <span className="wf-small wf-muted">—</span> : null}
+            ))}
+            {result && result.status !== 'not-run' ? <span className="wf-st-res">{stepResultLine(result)}</span> : null}
           </span>
         );
       },
@@ -156,21 +137,27 @@ export function StepsTable({ workflow, document, run, loomLink }: StepsTableProp
     columns.push({
       key: 'inspect',
       header: 'Inspect',
+      headerHidden: true,
+      align: 'end',
       render: ({ step }) => (
-        <RouterLink className="link" to={loomLink(step.stepId)} aria-label={`Inspect ${step.stepId} on the loom`}>
-          On the loom
-        </RouterLink>
+        <Button asChild size="sm" className="wf-st-inspect">
+          <Link to={loomLink(step.stepId)} aria-label={`Show ${step.stepId} on the loom`}>
+            On the loom
+          </Link>
+        </Button>
       ),
     });
   }
 
   return (
-    <DataTable<Row>
-      caption={`${workflow.steps.length} steps of ${workflow.workflowId}${run ? `, results of run #${run.number}` : ', definition only'}`}
-      columns={columns}
-      rows={rows}
-      rowKey={(r) => r.step.stepId}
-    />
+    <div className="wf-st-scroll">
+      <DataTable<Row>
+        caption={`${workflow.steps.length} steps of ${workflow.workflowId}${run ? `, results of run #${run.number}` : ', definition only'}`}
+        captionHidden
+        columns={columns}
+        rows={rows}
+        rowKey={(r) => r.step.stepId}
+      />
+    </div>
   );
 }
-

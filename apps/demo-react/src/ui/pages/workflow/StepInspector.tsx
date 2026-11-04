@@ -6,7 +6,7 @@ import { Button } from '@/ui/components/ui/button';
 import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { bodyPointer, expressionsOf, formatValue, stepResultLine, threadsOf, valueIn, wrongValue } from './loom-model';
-import { httpLine, originWord, runNoun } from './run-facts';
+import { httpLine, originWord, runNoun, stepChecksOf, stepStatusOf, type Tone } from './run-facts';
 
 export interface StepInspectorProps {
   workflow: Workflow;
@@ -23,7 +23,6 @@ export interface StepInspectorProps {
   onClose: () => void;
 }
 
-type Tone = 'pass' | 'fail' | 'off';
 const ICON: Record<Tone, IconName> = { pass: 'check-circle', fail: 'x-circle', off: 'minus-circle' };
 
 /** A circled status icon and a word, coloured by tone (the word carries the state). */
@@ -176,26 +175,8 @@ export function StepInspector({ workflow, document, run, step, failedStepId, ser
   const box = result && run ? failureBox(step, result, run) : undefined;
   const threads = threadsOf(workflow, run);
   const attempts = result?.attempts ?? [];
-  const status: Tone = !result || notRun ? 'off' : result.status === 'passed' ? 'pass' : 'fail';
-  const statusWord = !result ? 'Not part of the run' : notRun ? 'Not run' : result.status === 'passed' ? 'Passed' : `Failed${attempts.length > 1 ? ` after ${attempts.length} attempts` : ''}`;
-
-  const checks: { label: string; tone: Tone; word: string }[] = [];
-  if (result) {
-    if (session && !notRun) {
-      checks.push({ label: attempts[0]?.when.replace(/^call/, 'Call') ?? 'Call', tone: 'pass', word: 'received' });
-      checks.push(wrong ? { label: 'Data passing', tone: 'fail', word: 'not from an earlier step' } : { label: 'Data passing', tone: 'pass', word: 'as the workflow says' });
-      checks.push({ label: 'Contract', tone: 'pass', word: 'conforms' });
-    } else {
-      const held = result.criteria.every((c) => c.held);
-      checks.push({ label: 'Success criteria', tone: notRun ? 'off' : held ? 'pass' : 'fail', word: notRun ? 'not evaluated' : held ? 'held' : 'did not hold' });
-      const sc = result.schema.state;
-      checks.push({
-        label: 'Schema validation',
-        tone: notRun || sc === 'off' || sc === 'na' ? 'off' : sc === 'pass' ? 'pass' : 'fail',
-        word: notRun && validate ? 'not evaluated' : sc === 'pass' ? 'conforms' : sc === 'fail' ? 'failed' : 'off',
-      });
-    }
-  }
+  const { tone: status, word: statusWord } = stepStatusOf(result);
+  const checks = run ? stepChecksOf(result, run) : [];
 
   const paramValue = (expr: string, name: string): { lead: string; text: string; tone?: 'bad' | 'idle' } => {
     if (!run || !result) return { lead: '', text: 'no run selected', tone: 'idle' };
