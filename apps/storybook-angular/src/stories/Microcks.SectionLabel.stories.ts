@@ -21,6 +21,8 @@ export const Uses: StoryObj = {
         </div>
         <h2 mkSectionLabel size="sm">1 · Operation</h2>
         <div mkSectionLabel size="sm" weight="regular" [split]="true"><span>3 operations</span><span>calls · 7 d</span></div>
+        <h4 mkSectionLabel lineHeight="normal">Request</h4>
+        <p mkSectionLabel size="sm" weight="regular" [split]="true" lineHeight="snug"><span>Skills</span><span>4 declared</span></p>
       </div>
     `,
   }),
