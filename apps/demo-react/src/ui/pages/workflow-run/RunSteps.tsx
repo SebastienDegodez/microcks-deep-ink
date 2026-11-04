@@ -2,6 +2,7 @@ import { useId, useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 import { formatDuration } from '@/domain/shared';
 import { handoversOf, runContext, stepOffsets, stoppedStep, type Step, type StepResult, type Workflow, type WorkflowRun } from '@/domain/arazzo';
+import { Chip } from '@/ui/components/ui/chip';
 import { CodeBlock } from '@/ui/components/ui/code-block';
 import { Icon } from '@/ui/components/ui/icon';
 import { StatusBadge } from '@/ui/components/ui/status-badge';
@@ -176,9 +177,9 @@ function StepCard({ index, step, def, look, run, offset, stop }: { index: number
         ) : null}
         {def ? <span className="wfr-step-opid">{def.operationId}</span> : null}
         {tags.map((t) => (
-          <span key={t.text} className="wfr-step-tag" data-tone={t.tone}>
+          <Chip key={t.text} size="sm" variant="outline" tone={t.tone === 'warning' || t.tone === 'success' ? t.tone : 'neutral'}>
             {t.text}
-          </span>
+          </Chip>
         ))}
       </span>
       {finished || look === 'run' ? <span className="wfr-step-at">at +{formatDuration(offset)}</span> : null}
