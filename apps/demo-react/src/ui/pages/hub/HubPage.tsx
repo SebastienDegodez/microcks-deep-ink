@@ -89,6 +89,7 @@ export default function HubPage() {
     <>
       <PageHeader
         title="Hub"
+        descriptionWidth={760}
         description="Community packages of API mocks and conformance tests. Install one to get its Services, examples and tests in this instance, once or kept in sync."
         actions={
           <span className="hb-connected">
