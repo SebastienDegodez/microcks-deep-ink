@@ -6,6 +6,12 @@ export interface TabItem {
   label: string;
   /** Shown after the label. Read as "Operations, 4". */
   count?: number;
+  /** Warning pill after the count. Read as "Users, 2 pending changes" with `alertLabel`. */
+  alert?: number;
+  /** Words read after the alert number (default "need attention"). */
+  alertLabel?: string;
+  /** Live dot before the label. Read as "Tasks, live". */
+  live?: boolean;
   disabled?: boolean;
 }
 
@@ -101,11 +107,20 @@ export function Tabs({ label, items, value, onChange, activation = 'automatic', 
                 onClick={() => onChange(t.id)}
                 onKeyDown={(e) => onKeyDown(e, i)}
               >
+                {t.live ? <span className="tab-live" aria-hidden="true" /> : null}
                 {t.label}
+                {t.live ? <span className="sr-only">, live</span> : null}
                 {t.count !== undefined ? (
                   <span className="tab-count">
                     <span className="sr-only">, </span>
                     {t.count}
+                  </span>
+                ) : null}
+                {t.alert ? (
+                  <span className="tab-alert">
+                    <span className="sr-only">, </span>
+                    {t.alert}
+                    <span className="sr-only"> {t.alertLabel ?? 'need attention'}</span>
                   </span>
                 ) : null}
               </button>

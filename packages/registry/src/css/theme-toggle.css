@@ -1,8 +1,19 @@
 @layer deep-ink.components {
-  /* Pressed (light theme on) is visible beyond color: filled background and a solid border. */
-  .theme-toggle[aria-pressed="true"] {
-    background: var(--selected);
-    border-color: var(--action);
+  /*
+   * A bordered 40px square with the moon icon, the same look in both themes. The state is given by
+   * aria-pressed (and by the theme itself), so the button keeps no pressed fill.
+   */
+  .button.theme-toggle,
+  .button.theme-toggle[aria-pressed] {
+    min-width: 40px;
+    min-height: 40px;
+    background: var(--surface);
+    border-color: var(--border);
+    box-shadow: none;
     color: var(--text);
+    font-weight: inherit;
+  }
+  .button.theme-toggle:hover {
+    background: var(--raised);
   }
 }

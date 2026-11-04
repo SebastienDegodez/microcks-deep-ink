@@ -1,10 +1,19 @@
 <!--
   Segmented filter recipe: a group of toggle buttons, one pressed at a time.
   Update aria-pressed in your click handler and announce the new result count in a live region.
+  data-variant="track" (default, padded track, pressed raised) | "joined" (bordered cells).
+  Options may start with a decorative dot (<span class="segmented-dot" data-dot="success|danger|warning|muted|neutral|ring">)
+  or a decorative icon.
 -->
-<div role="group" aria-label="Result" class="segmented">
-  <button type="button" aria-pressed="true">All<span class="segmented-count"><span class="sr-only">, </span>12</span></button>
-  <button type="button" aria-pressed="false">Passed<span class="segmented-count"><span class="sr-only">, </span>9</span></button>
-  <button type="button" aria-pressed="false">Failed<span class="segmented-count"><span class="sr-only">, </span>3</span></button>
+<div role="group" aria-label="Result" class="segmented" data-variant="track">
+  <button type="button" aria-pressed="true"><span class="segmented-dot" data-dot="neutral" aria-hidden="true"></span>All<span class="segmented-count"><span class="sr-only">, </span>12</span></button>
+  <button type="button" aria-pressed="false"><span class="segmented-dot" data-dot="success" aria-hidden="true"></span>Passed<span class="segmented-count"><span class="sr-only">, </span>9</span></button>
+  <button type="button" aria-pressed="false"><span class="segmented-dot" data-dot="danger" aria-hidden="true"></span>Failed<span class="segmented-count"><span class="sr-only">, </span>3</span></button>
 </div>
 <p role="status" aria-live="polite" class="sr-only">12 results</p>
+
+<!-- Joined -->
+<div role="group" aria-label="Script language" class="segmented" data-variant="joined">
+  <button type="button" aria-pressed="true">Groovy</button>
+  <button type="button" aria-pressed="false">JavaScript</button>
+</div>

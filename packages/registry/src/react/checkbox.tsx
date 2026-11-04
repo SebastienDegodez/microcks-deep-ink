@@ -9,18 +9,20 @@ interface ChoiceProps extends Omit<InputHTMLAttributes<HTMLInputElement>, 'type'
   label: ReactNode;
   /** Secondary text, linked with aria-describedby. */
   description?: ReactNode;
+  /** `card`: a bordered card label, selected fill when checked. */
+  variant?: 'plain' | 'card';
   ref?: Ref<HTMLInputElement>;
 }
 
 export type CheckboxProps = ChoiceProps;
 export type RadioProps = ChoiceProps;
 
-function Choice({ kind, label, description, className, ref, ...rest }: ChoiceProps & { kind: 'checkbox' | 'radio' }) {
+function Choice({ kind, label, description, variant = 'plain', className, ref, ...rest }: ChoiceProps & { kind: 'checkbox' | 'radio' }) {
   const uid = useId();
   const descId = description ? `${uid}-desc` : undefined;
   const labelId = `${uid}-label`;
   return (
-    <label className="choice">
+    <label className="choice" data-variant={variant}>
       <input
         ref={ref}
         {...rest}
@@ -71,13 +73,15 @@ export interface RadioGroupProps {
   required?: boolean;
   help?: ReactNode;
   error?: ReactNode;
+  /** `card`: each option is a bordered card label. */
+  variant?: 'plain' | 'card';
   className?: string;
 }
 
 /**
  * `fieldset` + `legend` + native radios. Arrow keys move the selection (native behavior).
  */
-export function RadioGroup({ legend, options, value, onChange, name, required, help, error, className }: RadioGroupProps) {
+export function RadioGroup({ legend, options, value, onChange, name, required, help, error, variant = 'plain', className }: RadioGroupProps) {
   const uid = useId();
   const groupName = name ?? `${uid}-group`;
   const helpId = help ? `${uid}-help` : undefined;
@@ -88,6 +92,7 @@ export function RadioGroup({ legend, options, value, onChange, name, required, h
       aria-describedby={cx(helpId, errorId) || undefined}
       aria-invalid={error ? true : undefined}
       data-invalid={error ? '' : undefined}
+      data-variant={variant}
     >
       <legend>
         {legend}
@@ -105,6 +110,7 @@ export function RadioGroup({ legend, options, value, onChange, name, required, h
           value={o.value}
           label={o.label}
           description={o.description}
+          variant={variant}
           disabled={o.disabled}
           required={required}
           checked={value === o.value}

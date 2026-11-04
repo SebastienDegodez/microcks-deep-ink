@@ -28,3 +28,23 @@ export const WithError: StoryObj = {
     return <RadioGroup legend="Run against" required options={OPTIONS} value={v} onChange={setV} error="Choose what the workflow runs against." />;
   },
 };
+
+export const Cards: StoryObj = {
+  render: function Render() {
+    const [mode, setMode] = useState('sync');
+    return (
+      <div style={{ maxWidth: 420 }}>
+        <RadioGroup
+          legend="Install mode"
+          variant="card"
+          value={mode}
+          onChange={setMode}
+          options={[
+            { value: 'sync', label: 'Keep in sync', description: 'Microcks re-imports the package when the Hub publishes a new version.' },
+            { value: 'once', label: 'Import once', description: 'A one-time copy; later versions are not imported.' },
+          ]}
+        />
+      </div>
+    );
+  },
+};

@@ -35,7 +35,7 @@ export default function UsagePage() {
 
   return (
     <>
-      <PageHeader title="Usage & conformance" eyebrow="Observe" />
+      <PageHeader title="Usage & conformance" />
       <div className="stack">
         <div className="demo-actions-row" role="group" aria-label="View options">
           <Field label="Service">

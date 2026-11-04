@@ -21,3 +21,22 @@
     <span><span class="choice-label">Implementations</span></span>
   </label>
 </fieldset>
+
+<!-- Card variant: data-variant="card" on the fieldset and on each label. Checked = action border + selected fill. -->
+<fieldset class="fieldset" data-variant="card">
+  <legend>Install mode</legend>
+  <label class="choice" data-variant="card">
+    <input type="radio" class="radio" name="mode" value="sync" checked aria-describedby="mode-sync-desc" />
+    <span>
+      <span class="choice-label">Keep in sync</span>
+      <span class="choice-description" id="mode-sync-desc">Microcks re-imports the package when the Hub publishes a new version.</span>
+    </span>
+  </label>
+  <label class="choice" data-variant="card">
+    <input type="radio" class="radio" name="mode" value="once" aria-describedby="mode-once-desc" />
+    <span>
+      <span class="choice-label">Import once</span>
+      <span class="choice-description" id="mode-once-desc">A one-time copy; later versions are not imported.</span>
+    </span>
+  </label>
+</fieldset>

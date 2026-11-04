@@ -139,7 +139,7 @@ function ApiServicePage() {
     <>
       <PageHeader
         title={`${svc.name} ${svc.version}`}
-        eyebrow={<span role="group" aria-label="Breadcrumb"><RouterLink to="/services">APIs &amp; Services</RouterLink> / <span aria-current="page">{svc.name} {svc.version}</span></span>}
+        breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}` }]}
         badge={<ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} />}
         actions={
           <>

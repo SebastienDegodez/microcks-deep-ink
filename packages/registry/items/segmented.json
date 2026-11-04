@@ -4,7 +4,7 @@
   "title": "Segmented filter",
   "tier": "natural",
   "description": "Compact one-of-many filter built from toggle buttons.",
-  "registryDependencies": ["base"],
+  "registryDependencies": ["base", "icon"],
   "npmDependencies": { "react": [], "angular": [] },
   "a11y": {
     "pattern": "role=group of <button aria-pressed>",
@@ -15,7 +15,7 @@
     "aria": ["role=\"group\" with aria-label", "aria-pressed on each button", "Counts are read as \"Failed, 3\""],
     "rgaa": ["3.1", "7.1", "7.5", "11.9"],
     "wcag": ["1.4.1", "4.1.2", "4.1.3"],
-    "notes": "Announce the number of results after filtering in a role=status region. The pressed button also gets a check mark and bold text. For panels that change, use Tabs instead."
+    "notes": "Announce the number of results after filtering in a role=status region. The pressed button also gets a raised fill and bold text (weight is the non-colour cue; Highlight border in forced colours). For panels that change, use Tabs instead."
   },
   "stories": ["Components/Segmented"]
 }

@@ -50,7 +50,7 @@ export default function WorkflowPage() {
   if (detail.status === 'error') {
     return (
       <>
-        <PageHeader title="Workflow" eyebrow="Workflows" />
+        <PageHeader title="Workflow" />
         <ErrorBlock error={detail.error} onRetry={detail.reload} title="This workflow could not be loaded" />
       </>
     );
@@ -58,7 +58,7 @@ export default function WorkflowPage() {
   if (loadingAny || !detail.data) {
     return (
       <>
-        <PageHeader title={titleOf(workflowId)} eyebrow="Workflows" />
+        <PageHeader title={titleOf(workflowId)} />
         <LoadingBlock label="Loading the workflow" rows={5} />
       </>
     );
@@ -100,7 +100,7 @@ export default function WorkflowPage() {
     <>
       <PageHeader
         title={workflow.workflowId}
-        eyebrow={`Workflows · ${document.file}`}
+        breadcrumb={[{ label: 'Workflows', to: '/workflows' }, { label: document.file }]}
         badge={<ApiBadge arazzo name="workflow" />}
         actions={
           <>

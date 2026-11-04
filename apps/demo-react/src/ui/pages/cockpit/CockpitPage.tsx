@@ -123,7 +123,8 @@ export default function CockpitPage() {
     <div className="ex-stack">
       <PageHeader
         title="Cockpit"
-        eyebrow={
+        size="lg"
+        description={
           <>
             <span className="ex-mono">microcks.local:8080</span> · Monday, Nov 2, 2026 · 11:20 ·{' '}
             {empty ? 'fresh install, nothing imported yet' : `${live.length} mocks live, ${attention.length} items need attention`}

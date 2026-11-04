@@ -10,7 +10,6 @@ export { usePageTitle, PAGE_TITLE_ID } from './usePageTitle';
 export { useAnnounce, LiveAnnouncerProvider } from './announcer';
 export { PageHeader } from './PageHeader';
 export type { PageHeaderProps } from './PageHeader';
-export { DemoBanner } from './DemoBanner';
 export { AppLayout } from './AppLayout';
 export { NAV_ITEMS } from './nav';
 export type { NavId, NavItem } from './nav';

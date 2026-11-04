@@ -28,3 +28,14 @@ export const Flush: StoryObj = {
     </div>
   ),
 };
+
+export const LabelTitle: StoryObj = {
+  name: 'Label title, large padding',
+  render: () => (
+    <div style={{ maxWidth: 560 }}>
+      <Panel title="Runner log" titleStyle="label" padding="lg">
+        <p style={{ margin: 0 }}>An uppercase 12px title and a 20px padding.</p>
+      </Panel>
+    </div>
+  ),
+};

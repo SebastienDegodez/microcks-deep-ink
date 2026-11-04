@@ -16,7 +16,7 @@ export type { Theme } from './theme-toggle.theme';
   host: {
     type: 'button',
     class: 'button theme-toggle',
-    'data-variant': 'ghost',
+    'data-variant': 'secondary',
     'data-size': 'md',
     'data-icon-only': '',
     'aria-label': 'Light theme',
@@ -24,7 +24,7 @@ export type { Theme } from './theme-toggle.theme';
     '(click)': 'toggle()',
     '(document:microcks-theme-change)': 'light.set(isLight())',
   },
-  template: `<svg mkIcon name="sun" [size]="18"></svg>`,
+  template: `<svg mkIcon name="moon" [size]="18"></svg>`,
 })
 export class ThemeToggleComponent {
   protected readonly light = signal(this.isLight());
