@@ -26,6 +26,8 @@ export interface PageHeaderProps {
   leading?: ReactNode;
   /** Lead paragraph under the title row (14px, max 720px). */
   description?: ReactNode;
+  /** Maximum width of the description in px (default 720; the prototype uses 680–780 depending on the screen). */
+  descriptionWidth?: number;
   /** `muted` (default) or `secondary` text colour for the description. */
   descriptionTone?: 'muted' | 'secondary';
   /** Page-level actions (buttons, a Menu). The primary action of the page goes first. */
@@ -47,7 +49,7 @@ export interface PageHeaderProps {
  * focus to it when the route changes. Section headings below it are `<h2>`.
  * The wrapper is a `div`, not a `header`, so the page has exactly one banner landmark (the top bar).
  */
-export function PageHeader({ title, breadcrumb, breadcrumbSeparator = '›', notice, meta, badge, leading, description, descriptionTone = 'muted', actions, size = 'md', variant = 'brand', align = 'end' }: PageHeaderProps) {
+export function PageHeader({ title, breadcrumb, breadcrumbSeparator = '›', notice, meta, badge, leading, description, descriptionWidth, descriptionTone = 'muted', actions, size = 'md', variant = 'brand', align = 'end' }: PageHeaderProps) {
   return (
     <div className="demo-page-header" data-align={align}>
       {breadcrumb && breadcrumb.length > 0 ? (
@@ -81,7 +83,7 @@ export function PageHeader({ title, breadcrumb, breadcrumbSeparator = '›', not
             {badge}
           </div>
           {description ? (
-            <p className="demo-page-description" data-tone={descriptionTone}>
+            <p className="demo-page-description" data-tone={descriptionTone} style={descriptionWidth ? { maxWidth: descriptionWidth } : undefined}>
               {description}
             </p>
           ) : null}
