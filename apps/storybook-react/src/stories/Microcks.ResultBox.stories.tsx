@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/ResultBox',
+  component: ResultBox,
   parameters: itemParams(['result-box', 'button'], 'A framed result line in a role="status" box. Keep it mounted before the result arrives so the text is announced; the tone icon is decorative.'),
-} satisfies Meta;
+} satisfies Meta<typeof ResultBox>;
 
 export const Tones: StoryObj = {
   render: () => {
@@ -25,5 +26,16 @@ export const Tones: StoryObj = {
         <ResultBox tone="danger">Export failed · the repository is read-only.</ResultBox>
       </div>
     );
+  },
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof ResultBox> = {
+  args: { tone: 'success', size: 'md', title: 'Test passed', children: 'All 12 operations match the contract.', icon: undefined, dismissLabel: 'Dismiss', live: 'status' },
+  argTypes: {
+    tone: { control: 'select', options: ['success', 'warning', 'danger', 'neutral', 'info'] },
+    size: { control: 'inline-radio', options: ['sm', 'md'] },
+    live: { control: 'inline-radio', options: ['status', 'off'] },
+    onDismiss: { table: { disable: true } },
   },
 };
