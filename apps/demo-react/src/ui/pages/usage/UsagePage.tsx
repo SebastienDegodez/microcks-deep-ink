@@ -16,6 +16,7 @@ import { Icon } from '@/ui/components/ui/icon';
 import { Meter } from '@/ui/components/ui/progress';
 import { Panel } from '@/ui/components/ui/panel';
 import { Segmented } from '@/ui/components/ui/segmented';
+import { UsageKpis } from './UsageKpis';
 import { Select } from '@/ui/components/ui/select';
 import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
 import { useRovingSelection } from '../tests/roving';
@@ -35,7 +36,7 @@ export default function UsagePage() {
 
   return (
     <>
-      <PageHeader title="Usage & conformance" />
+      <PageHeader title="Usage & conformance" description={view?.scopeLine} />
       <div className="stack">
         <div className="demo-actions-row" role="group" aria-label="View options">
           <Field label="Service">
@@ -56,7 +57,7 @@ export default function UsagePage() {
         {usage.status === 'error' ? <ErrorBlock error={usage.error} what="Usage" onRetry={usage.reload} /> : null}
         {view ? (
           <div className="stack" aria-busy={usage.status === 'loading'}>
-            <Kpis view={view} />
+            <UsageKpis view={view} />
             <Bars key={`${view.scope}-${view.period}`} view={view} />
             <Heatmap key={`h-${view.scope}`} view={view} />
             <Table view={view} />
@@ -118,28 +119,6 @@ export default function UsagePage() {
         ) : null}
       </div>
     </>
-  );
-}
-
-function Kpis({ view }: { view: UsageView }) {
-  return (
-    <Panel title={`${view.label} · ${view.periodLabel}`}>
-      <p className="demo-muted">{view.scopeLine}</p>
-      <ul className="us-kpis">
-        <li>
-          <div className="us-kpi-value">{formatCount(view.kpis.total)}</div>
-          <div>Invocations, {formatTrend(view.kpis.growth)} vs previous period</div>
-        </li>
-        <li>
-          <div className="us-kpi-value">{formatCount(view.kpis.peak)}</div>
-          <div>{view.kpis.peakTitle}: {view.kpis.peakWhen}</div>
-        </li>
-        <li>
-          <div className="us-kpi-value demo-mono" style={{ fontSize: '0.9375rem' }}>{view.kpis.lastCall}</div>
-          <div>Last call</div>
-        </li>
-      </ul>
-    </Panel>
   );
 }
 
