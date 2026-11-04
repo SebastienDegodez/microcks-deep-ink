@@ -20,12 +20,14 @@ import { PROTOCOL_ORDER, fmt, operationUnit, pluralize } from '../explore-kit/fo
 
 const bandOf = (s: ServiceSummary): OperationResult[] =>
   s.lastResults ? s.lastResults.map((r) => (r === 'pass' ? 'pass' : 'fail')) : Array.from({ length: s.operationCount }, () => 'untested');
+const TEST_WORD = { passed: 'Conformant', failed: 'Failing', never: 'Never tested' } as const;
+const levelOf = (c: number | null) => (c === null ? 'neutral' : c >= 90 ? 'success' : c >= 60 ? 'warning' : 'danger');
 const outcomeOf = (s: ServiceSummary) => (s.testStatus === 'passed' ? 'conformant' : s.testStatus === 'failed' ? 'failed' : 'never');
 const callsText = (s: ServiceSummary) => `${fmt(s.calls24h)} ${s.protocol === 'EVENT' ? 'msg' : 'req'}`;
 /** The label chips of the filter panel (the prototype shows a curated set, not every label). */
 const FEATURED_LABELS = ['domain=pastry', 'domain=movies', 'status=GA', 'status=beta', 'team=platform'];
 
-const lastTestText = (s: ServiceSummary, relative: (d: string) => string) => (s.lastTest ? `#${s.lastTest.runId} · ${relative(s.lastTest.when)}` : 'no test run yet');
+const lastTestText = (s: ServiceSummary, relative: (d: string) => string) => (s.lastTest ? [`#${s.lastTest.runId}`, s.lastTest.checks ? `${s.lastTest.checks.passed}/${s.lastTest.checks.total}` : null, relative(s.lastTest.when)].filter(Boolean).join(' · ') : 'no test run yet');
 
 export default function CataloguePage() {
   usePageTitle('APIs & Services · Microcks');
@@ -69,30 +71,71 @@ export default function CataloguePage() {
 
   const known = new Set((labels$.data ?? []).map((l) => labelToString(l.label)));
   const labelNames = FEATURED_LABELS.filter((l) => known.has(l));
+  const testsHref = (s: ServiceSummary) => (s.lastTest ? (s.protocol === 'A2A' ? `/tests/agent/${s.lastTest.runId}` : `/tests/runner/${s.lastTest.runId}`) : '/tests');
+  const labelChips = (s: ServiceSummary) => (
+    <span className="catalogue-labels">
+      {s.labels.map((l) => (
+        <Chip key={labelToString(l)} size="sm" labelKey={l.key}>
+          {l.value}
+        </Chip>
+      ))}
+    </span>
+  );
   const columns: DataTableColumn<ServiceSummary>[] = [
     {
       key: 'name', header: 'API / service',
       render: (s) => (
-        <span className="ex-stack" style={{ gap: 2 }}>
-          <span className="ex-row"><ApiBadge protocol={s.protocol} size="sm" /> <strong>{s.name}</strong> <span className="ex-muted">{s.version}</span></span>
-          <span className="ex-small ex-secondary">{s.format}</span>
+        <span className="catalogue-service">
+          <RouterLink to={`/services/${s.id}`} className="catalogue-badge-link">
+            <ApiBadge protocol={s.protocol} name={s.name} version={s.version} />
+          </RouterLink>
+          <span className="catalogue-format">{s.format}</span>
         </span>
       ),
     },
-    { key: 'ops', header: 'Ops', render: (s) => s.operationCount },
-    { key: 'labels', header: 'Labels', render: (s) => <span className="ex-row">{s.labels.map((l) => <Chip key={labelToString(l)} variant="outline" labelKey={l.key}>{l.value}</Chip>)}</span> },
+    { key: 'ops', header: 'Ops', align: 'end', mono: true, render: (s) => s.operationCount },
+    { key: 'labels', header: 'Labels', render: labelChips },
     {
-      key: 'test', header: 'Last test',
+      key: 'test', header: 'Last test', nowrap: true,
+      render: (s) => {
+        const word = TEST_WORD[s.testStatus];
+        const meta = lastTestText(s, relative);
+        return (
+          <RouterLink to={testsHref(s)} className="catalogue-test">
+            <span className="sr-only">Tests of {s.name} {s.version}: </span>
+            <StatusBadge status={outcomeOf(s)} label={word} />
+            <span className="sr-only">, </span>
+            <span className="catalogue-test-meta">{meta}</span>
+          </RouterLink>
+        );
+      },
+    },
+    {
+      key: 'conformance', header: 'Conformance',
       render: (s) => (
-        <span className="ex-stack" style={{ gap: 2 }}>
-          <StatusBadge size="sm" status={outcomeOf(s)} />
-          {s.lastTest ? <RouterLink to={s.protocol === 'A2A' ? `/tests/agent/${s.lastTest.runId}` : `/tests/runner/${s.lastTest.runId}`} className="ex-small">{lastTestText(s, relative)}</RouterLink> : <span className="ex-small ex-muted">no test run yet</span>}
+        <span className="catalogue-conformance">
+          <span className="catalogue-score" data-level={levelOf(s.conformance)}>{s.conformance === null ? '—' : `${s.conformance}%`}</span>
+          <ConformanceBand size="mini" outcomes={bandOf(s)} unit={operationUnit(s.protocol)} />
         </span>
       ),
     },
-    { key: 'conformance', header: 'Conformance', render: (s) => <span className="ex-row"><span>{s.conformance === null ? '—' : `${s.conformance}%`}</span><ConformanceBand size="mini" outcomes={bandOf(s)} unit={operationUnit(s.protocol)} /></span> },
-    { key: 'calls', header: 'Mock 24 h', render: callsText },
-    { key: 'updated', header: 'Updated', render: (s) => relative(s.updatedAt) },
+    { key: 'calls', header: 'Mock 24 h', align: 'end', mono: true, nowrap: true, render: callsText },
+    { key: 'updated', header: 'Updated', nowrap: true, render: (s) => <span className="ex-muted">{relative(s.updatedAt)}</span> },
+    {
+      key: 'open', header: 'Open', align: 'end',
+      render: (s) => (
+        <RouterLink to={`/services/${s.id}`} className="catalogue-open" aria-label={`Open ${s.name} ${s.version}`}>
+          <Icon name="chevron" size={14} />
+        </RouterLink>
+      ),
+    },
+  ];
+
+  const activeDesc = [
+    ...(filter.query?.trim() ? [`“${filter.query.trim()}”`] : []),
+    ...(filter.protocols ?? []),
+    ...(filter.labels ?? []),
+    ...(filter.testStatus && filter.testStatus !== 'all' ? [TEST_WORD[filter.testStatus]] : []),
   ];
 
   return (
@@ -169,41 +212,55 @@ export default function CataloguePage() {
       </div>
 
       {data.services.length === 0 ? (
-        <EmptyState title="No API matches these filters" headingLevel={2} actions={<Button onClick={reset}>Reset filters</Button>}>
-          <p>None of the {data.total} services matches the selection. Remove a filter or reset the selection.</p>
+        <EmptyState
+          title="No API matches these filters"
+          headingLevel={2}
+          icon="search-x"
+          actions={
+            <Button variant="primary" icon="reset" onClick={reset}>
+              Reset filters
+            </Button>
+          }
+        >
+          <p>None of the {data.total} services matches: {activeDesc.join(' · ')}. Remove a filter or reset the selection.</p>
         </EmptyState>
       ) : view === 'table' ? (
-        <DataTable<ServiceSummary>
-          caption="APIs and services"
-          captionHidden
-          columns={columns}
-          rows={data.services}
-          rowKey="id"
-          rowHref={(s) => `/services/${s.id}`}
-          renderRowLink={(_s, props) => (
-            <RouterLink to={props.href} className={props.className} aria-current={props['aria-current']}>
-              {props.children}
-            </RouterLink>
-          )}
-        />
+        <DataTable<ServiceSummary> className="catalogue-table" caption="APIs and services" captionHidden columns={columns} rows={data.services} rowKey="id" />
       ) : (
-        <div className="ex-tiles">
+        <div className="catalogue-wall">
           {data.services.map((s) => (
-            <article key={s.id} className="ex-tile">
-              <span className="ex-row"><ApiBadge protocol={s.protocol} name={s.name} version={s.version} /></span>
-              <span className="ex-small ex-secondary">{s.format} · {pluralize(s.operationCount, operationUnit(s.protocol))}</span>
-              <span className="ex-row">
-                <ApiBadge label="conformance" value={s.conformance === null ? 'untested' : `${s.conformance}%`} status={s.conformance === null ? 'neutral' : s.conformance >= 90 ? 'success' : s.conformance >= 60 ? 'warning' : 'danger'} size="sm" />
-                <ApiBadge label="mcp" value={s.mcp ? 'agent-ready' : 'not exposed'} status={s.mcp ? 'info' : 'neutral'} size="sm" />
-              </span>
-              <span className="ex-row">{s.labels.map((l) => <Chip key={labelToString(l)} variant="outline" labelKey={l.key}>{l.value}</Chip>)}</span>
-              <span className="ex-small ex-secondary">{callsText(s)} / 24 h · {relative(s.updatedAt)}</span>
-              <RouterLink to={`/services/${s.id}`}>Open service<span className="sr-only"> {s.name} {s.version}</span></RouterLink>
+            <article key={s.id} className="catalogue-card">
+              <div className="catalogue-card-head">
+                <ApiBadge protocol={s.protocol} name={s.name} version={s.version} />
+                <span className="catalogue-format">{s.format} · {pluralize(s.operationCount, operationUnit(s.protocol))}</span>
+              </div>
+              <div className="catalogue-shields">
+                <ApiBadge label="conformance" value={s.conformance === null ? 'untested' : `${s.conformance}%`} status={s.conformance === null ? 'neutral' : levelOf(s.conformance)} />
+                <ApiBadge label="mcp" value={s.mcp ? 'agent-ready' : 'not exposed'} status={s.mcp ? 'info' : 'neutral'} />
+              </div>
+              {labelChips(s)}
+              <div className="catalogue-card-foot">
+                <span>{callsText(s)} / 24 h · {relative(s.updatedAt)}</span>
+                <Button asChild size="sm" variant="secondary">
+                  <RouterLink to={`/services/${s.id}`}>
+                    Open service<span className="sr-only"> {s.name} {s.version}</span>
+                    <Icon name="chevron" size={14} />
+                  </RouterLink>
+                </Button>
+              </div>
             </article>
           ))}
         </div>
       )}
-      <p className="ex-small ex-muted">{data.services.length} of {data.total} · page 1 of 1</p>
+      <footer className="catalogue-pager">
+        <span>{data.services.length} of {data.total} · page 1 of 1</span>
+        <nav aria-label="Pagination" className="catalogue-pager-nav">
+          <span className="catalogue-pager-size">20 per page</span>
+          <Button size="sm" variant="secondary" icon="chevron-left" iconOnly aria-label="Previous page" disabled />
+          <span className="catalogue-pager-page" aria-current="page">1</span>
+          <Button size="sm" variant="secondary" icon="chevron" iconOnly aria-label="Next page" disabled />
+        </nav>
+      </footer>
     </div>
   );
 }
