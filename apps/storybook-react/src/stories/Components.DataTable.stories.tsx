@@ -58,15 +58,15 @@ const RUN_ROWS: RunRow[] = [
 ];
 
 export const SentenceCase: StoryObj = {
-  name: 'Sentence-case headers and row tones',
+  name: 'Sentence-case headers, row headers and row tones',
   render: () => (
     <DataTable<RunRow>
       caption="Workflow runs"
       headerCase="sentence"
-      columns={[{ key: 'run', header: 'Run', mono: true }, { key: 'result', header: 'Result' }, { key: 'duration', header: 'Duration', align: 'end' }]}
+      columns={[{ key: 'run', header: 'Run', mono: true, rowHeader: true }, { key: 'result', header: 'Result' }, { key: 'duration', header: 'Duration', align: 'end' }]}
       rows={RUN_ROWS}
       rowKey="id"
-      rowTone={(r) => (r.result.startsWith('Failed') ? 'failed' : r.result.startsWith('Idle') ? 'idle' : undefined)}
+      rowTone={(r) => (r.result.startsWith('Failed') ? 'danger' : r.result.startsWith('Idle') ? 'idle' : undefined)}
     />
   ),
 };

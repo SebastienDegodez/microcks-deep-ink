@@ -72,6 +72,7 @@
   /* Row tones: a failed row on the surface fill; an idle row dimmed with the muted text colour (never opacity,
      which would break 4.5:1). The row still writes its state in words. */
   .table tbody tr[data-tone="failed"] { background: var(--surface); }
+  .table tbody tr[data-tone="danger"] { background: var(--danger-tint); }
   .table tbody tr[data-tone="idle"] { color: var(--text-muted); }
 
   .table [data-align="end"] {
