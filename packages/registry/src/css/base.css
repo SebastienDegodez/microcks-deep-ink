@@ -21,7 +21,7 @@
 
   /*
    * Links: the link colour, no underline, underline on hover (prototype). Zero specificity, so any
-   * component class wins. Inside running text (a paragraph) a link keeps its underline, so it is not
+   * component class wins. Inside running text (p, li, dd...) a link keeps its underline, so it is not
    * told apart by colour alone (RGAA 10.6, WCAG 1.4.1).
    */
   :where(a),
@@ -32,9 +32,16 @@
   :where(a:hover) {
     text-decoration: underline;
   }
-  :where(p) :where(a:not([class])) {
+  :where(p, li, dd, figcaption, blockquote) :where(a:not([class])) {
     text-decoration: underline;
     text-underline-offset: 2px;
+  }
+  /* Navigation lists (breadcrumbs, menus) are not running text. */
+  :where(nav) :where(a:not([class])) {
+    text-decoration: none;
+  }
+  :where(nav) :where(a:not([class]):hover) {
+    text-decoration: underline;
   }
 
   /* One visible focus indicator for the whole system (WCAG 2.4.7, RGAA 10.7). */
