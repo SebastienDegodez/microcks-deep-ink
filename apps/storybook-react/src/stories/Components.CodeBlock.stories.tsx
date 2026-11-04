@@ -92,3 +92,17 @@ export const ChangedLines: StoryObj = {
     </div>
   ),
 };
+
+export const SchemaMismatch: StoryObj = {
+  name: 'Narrow gutter, danger frame (schema mismatch)',
+  render: () => (
+    <CodeBlock
+      variant="plain"
+      caption="Response body"
+      lineNumbers
+      gutter="narrow"
+      tone="danger"
+      lines={[{ text: '{' }, { text: '  "name": "Eclair Cafe",' }, { text: '  "price": "3.9"', bad: true, note: 'schema: number' }, { text: '}' }]}
+    />
+  ),
+};

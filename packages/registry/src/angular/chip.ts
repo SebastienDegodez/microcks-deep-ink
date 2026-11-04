@@ -31,8 +31,8 @@ export class ChipComponent {
   readonly labelKey = input<string>();
   readonly tone = input<ChipTone>('neutral');
   readonly variant = input<ChipVariant>('solid');
-  /** `sm`: 11px, padding 1px 8px (row labels). */
-  readonly size = input<'md' | 'sm'>('md');
+  /** `sm`: 11px, padding 1px 8px (row labels). `lg`: a 30px category pill in the UI font, 600 when pressed. */
+  readonly size = input<'md' | 'sm' | 'lg'>('md');
   /** Protocol filter: square corners and a colour swatch; pressed fills with the protocol colour. */
   readonly protocol = input<Protocol>();
   /** Count after the text, read as "REST 4". A zero count dims the chip. */

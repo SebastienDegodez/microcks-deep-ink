@@ -43,6 +43,7 @@ export const Sizes: StoryObj = {
     <div className="inline">
       <Button size="lg">Large (44px)</Button>
       <Button size="md">Medium (40px)</Button>
+      <Button size="tile">Tile (36px)</Button>
       <Button size="compact">Compact (34px)</Button>
       <Button size="sm">Small (32px)</Button>
     </div>
@@ -75,4 +76,14 @@ export const States: StoryObj = {
 export const AsLink: StoryObj = {
   name: 'As a link',
   render: () => <ButtonLink href="#service" variant="primary">Open service</ButtonLink>,
+};
+
+export const CardFooter: StoryObj = {
+  name: 'Card footer (tile, 36px)',
+  render: () => (
+    <div className="inline">
+      <Button variant="primary" size="tile" icon="download">Install</Button>
+      <ButtonLink size="tile" href="#">View in catalogue</ButtonLink>
+    </div>
+  ),
 };

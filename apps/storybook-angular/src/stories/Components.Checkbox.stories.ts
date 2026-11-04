@@ -36,3 +36,17 @@ export const Disabled: StoryObj = {
     `,
   }),
 };
+
+export const CompactCards: StoryObj = {
+  name: 'Compact cards (dense list)',
+  render: () => ({
+    props: { a: true, b: true, c: false },
+    template: `
+<div style="display: flex; flex-direction: column; gap: 6px; max-width: 360px">
+  <mk-checkbox variant="compact" label="GET /pastries" [(checked)]="a" />
+  <mk-checkbox variant="compact" label="GET /pastries/&#123;name&#125;" [(checked)]="b" />
+  <mk-checkbox variant="compact" label="PATCH /pastries/&#123;name&#125;" [(checked)]="c" />
+</div>
+    `,
+  }),
+};
