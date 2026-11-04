@@ -169,7 +169,7 @@ function StepCard({ index, step, def, look, run, offset, stop }: { index: number
         <span className="wfr-step-id">{step.stepId}</span>
         {def ? (
           <span className="wfr-step-op">
-            <MethodTag method={def.method} />
+            <MethodTag method={def.method} size="sm" />
             {def.path}
           </span>
         ) : null}
