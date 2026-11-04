@@ -1,6 +1,5 @@
 // Deep Ink · api-badge@0.2.0 · copied from packages/registry. You own this file.
 import { Fragment, type HTMLAttributes } from 'react';
-import { Icon } from './icon';
 
 export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 export type ProofStatus = 'success' | 'danger' | 'warning' | 'info' | 'action' | 'neutral';
@@ -24,7 +23,6 @@ export interface ApiBadgeProps extends HTMLAttributes<HTMLSpanElement> {
 }
 
 const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
-const STATUS_ICON = { success: 'check', danger: 'cross', warning: 'warning' } as const;
 const STATUS_WORD = { success: 'success', danger: 'error', warning: 'warning' } as const;
 
 /**
@@ -52,7 +50,6 @@ export function ApiBadge({ protocol, arazzo, name, version, label, value, status
       <span className="api-badge-type">{type}</span>{' '}
       {main ? (
         <span className="api-badge-name">
-          {proofIcon ? <Icon name={STATUS_ICON[proofIcon]} size={12} /> : null}
           {main}
           {proofIcon ? (
             <>
@@ -70,7 +67,6 @@ export function ApiBadge({ protocol, arazzo, name, version, label, value, status
               <Fragment key={i}>
                 {' '}
                 <span className="api-badge-value" data-status={v.status ?? 'neutral'}>
-                  {icon ? <Icon name={STATUS_ICON[icon]} size={12} /> : null}
                   {v.value}
                   {icon ? (
                     <>

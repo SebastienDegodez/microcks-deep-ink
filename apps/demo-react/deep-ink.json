@@ -45,10 +45,10 @@
     "api-badge": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/api-badge.tsx": "8d475a4a438949befdc5ac6076b784563043cb09f01808550b0a1900c9313167",
-        "src/ui/styles/api-badge.css": "3e5f1840085bccafc612d8f0a3b77d5ed9dc64a5c9ad5475769b7376db56bc33"
+        "src/ui/components/ui/api-badge.tsx": "cdd67888d29c0f9f1c3cbe1c75708783030e2fc73f14f548423be55a82af8a16",
+        "src/ui/styles/api-badge.css": "ee711815918ee43780ffb06107658a1ba852985e5bad127fa25f4fd044332620"
       },
-      "hash": "ab0dd3e5372a566d"
+      "hash": "63e3858c2297d525"
     },
     "app-shell": {
       "version": "0.2.0",
@@ -101,10 +101,10 @@
     "code-block": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/code-block.tsx": "b58b38522058a9cb09c5c16b96c271913006dff96fd6e2062930d4618efb1485",
-        "src/ui/styles/code-block.css": "c53151f79ad3742d60a6cac344182cd6f109195c8d295adcc557b41eeb4bd419"
+        "src/ui/components/ui/code-block.tsx": "64b311babb6170622c8a76e6ee079389e11095529f0ebf859e1f1da3771ab067",
+        "src/ui/styles/code-block.css": "d3a5c87e9b23f6cc1a5b7ad8b4605f30317ea902c19a71eec724ed04df2261f3"
       },
-      "hash": "3d00c86771e28616"
+      "hash": "2a5e4cae28b6b4dc"
     },
     "conformance-band": {
       "version": "0.2.0",
@@ -142,9 +142,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/drop-zone.tsx": "aa3a7475887fdb4b6a712d8f4eeaf86341ac492c21fa24bec7098892686a2569",
-        "src/ui/styles/drop-zone.css": "f5e1faddff225974a22b69c31ea1c85f74acfcf81a542c45b0644e105e2d6856"
+        "src/ui/styles/drop-zone.css": "ed9af01d794688c1cc793b5fdc83cf7fd474da5b4a2abdca3f7fbd2f33e4de37"
       },
-      "hash": "08682580ede9fdbf"
+      "hash": "1eb4a1dec22b5b74"
     },
     "empty-state": {
       "version": "0.2.0",
@@ -182,17 +182,17 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/live-indicator.tsx": "edb5099853e945036078031fef5a1cad71c222ef94827cbaa7437d8a29560ffd",
-        "src/ui/styles/live-indicator.css": "63ba5b045a60de9fb56f9054188be1ddc006be50206ce12ce0762b4e7015ad52"
+        "src/ui/styles/live-indicator.css": "98b839948a2ce8a4acb66ddd309cbeccf5f2e908936434afe18bae221062af22"
       },
-      "hash": "6f2e6571fcd64e07"
+      "hash": "6f61d996201991ab"
     },
     "menu": {
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/menu.tsx": "95b31aab2fe6da4e334599a0ab4e2f8252e26778698fc528b1f5bc5791021593",
-        "src/ui/styles/menu.css": "b8aea726f6bbaac6d362e839bc96482e74f77ffd5f1f9499c2115d8428d7f76a"
+        "src/ui/styles/menu.css": "5d1751c52dcb0d03fffd449190948518c548ce97ccdae8f49d86b2eceb9a9f7f"
       },
-      "hash": "353f831ed7eae9d2"
+      "hash": "9f96c21494695285"
     },
     "method-tag": {
       "version": "0.2.0",
@@ -386,9 +386,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/stat-card.tsx": "ee00939604a72965f8ff998a8b8d85e698426348bcaafdef418578058b260c07",
-        "src/ui/styles/stat-card.css": "f262171b273ad3ec4628c13b8b8a75e0845c365f31f282a351b1b3f4b143edab"
+        "src/ui/styles/stat-card.css": "a0ce7c7b5a6b83c1f646f02de1dbd369c6aa0ccf57bad8fec2eaf9539de3c33d"
       },
-      "hash": "31b496118528abac"
+      "hash": "e0623f5adcc8d45d"
     },
     "filter-bar": {
       "version": "0.2.0",

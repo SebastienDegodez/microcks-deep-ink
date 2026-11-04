@@ -1,11 +1,9 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
-import { IconComponent } from './icon';
 
 export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 export type ProofStatus = 'success' | 'danger' | 'warning' | 'info' | 'action' | 'neutral';
 
 const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
-const STATUS_ICON = { success: 'check', danger: 'cross', warning: 'warning' } as const;
 const STATUS_WORD = { success: 'success', danger: 'error', warning: 'warning' } as const;
 
 /**
@@ -15,14 +13,13 @@ const STATUS_WORD = { success: 'success', danger: 'error', warning: 'warning' } 
 @Component({
   selector: 'span[mkApiBadge]',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [IconComponent],
   host: {
     class: 'api-badge',
     '[attr.data-protocol]': 'dataProtocol()',
     '[attr.data-status]': 'isProof() ? status() : null',
     '[attr.data-size]': 'size()',
   },
-  template: `<span class="api-badge-type">{{ type() }}</span>&ngsp;@if (main()) {<span class="api-badge-name">@if (proofIcon(); as p) {<svg mkIcon [name]="iconFor(p)" [size]="12"></svg>}{{ main() }}@if (proofIcon(); as p) {&ngsp;<span class="sr-only">({{ wordFor(p) }})</span>}</span>}&ngsp;@if (!isProof() && version()) {<span class="api-badge-version">{{ version() }}</span>}@if (isProof()) {@for (v of values(); track $index) {&ngsp;<span class="api-badge-value" [attr.data-status]="v.status ?? 'neutral'">@if (filledFor(v.status); as p) {<svg mkIcon [name]="iconFor(p)" [size]="12"></svg>}{{ v.value }}@if (filledFor(v.status); as p) {&ngsp;<span class="sr-only">({{ wordFor(p) }})</span>}</span>}}`,
+  template: `<span class="api-badge-type">{{ type() }}</span>&ngsp;@if (main()) {<span class="api-badge-name">{{ main() }}@if (proofIcon(); as p) {&ngsp;<span class="sr-only">({{ wordFor(p) }})</span>}</span>}&ngsp;@if (!isProof() && version()) {<span class="api-badge-version">{{ version() }}</span>}@if (isProof()) {@for (v of values(); track $index) {&ngsp;<span class="api-badge-value" [attr.data-status]="v.status ?? 'neutral'">{{ v.value }}@if (filledFor(v.status); as p) {&ngsp;<span class="sr-only">({{ wordFor(p) }})</span>}</span>}}`,
 })
 export class ApiBadgeComponent {
   /** Left segment for an API badge. Ignored when `label` or `arazzo` is set. */
@@ -59,9 +56,6 @@ export class ApiBadgeComponent {
   }
   protected filledFor(s: ProofStatus | undefined): 'success' | 'danger' | 'warning' | undefined {
     return s === 'success' || s === 'danger' || s === 'warning' ? s : undefined;
-  }
-  protected iconFor(s: 'success' | 'danger' | 'warning') {
-    return STATUS_ICON[s];
   }
   protected wordFor(s: 'success' | 'danger' | 'warning') {
     return STATUS_WORD[s];
