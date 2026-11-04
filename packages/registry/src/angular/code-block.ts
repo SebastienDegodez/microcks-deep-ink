@@ -65,6 +65,11 @@ export class CodeBlockComponent {
   readonly lines = input<CodeLine[]>();
   readonly language = input<string>();
   readonly caption = input<string>();
+  /**
+   * Accessible name of the code region when the caption alone is not unique. It must contain the visible
+   * caption (RGAA 6.1): write it as caption + suffix, "SendMessage · curl, JSON-RPC binding".
+   */
+  readonly label = input<string>();
   /** Show the copy button. */
   readonly copy = input(true, { transform: booleanAttribute });
   readonly maxHeight = input<string>();
@@ -103,6 +108,6 @@ export class CodeBlockComponent {
   }
   protected name(): string {
     const tabLabel = this.tabs()?.find((t) => t.id === this.tab())?.label;
-    return this.caption() ?? (tabLabel ? `${tabLabel} code` : this.language() ? `${this.language()} code` : 'Code');
+    return this.label() ?? this.caption() ?? (tabLabel ? `${tabLabel} code` : this.language() ? `${this.language()} code` : 'Code');
   }
 }
