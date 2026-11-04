@@ -40,6 +40,7 @@
   .runner-log-line[data-level="SEND"] .runner-log-level { color: var(--link); }
   .runner-log-line[data-level="PASS"] .runner-log-level { color: var(--success); }
   .runner-log-line[data-level="FAIL"] .runner-log-level { color: var(--danger); }
+  .runner-log-line[data-level="WARN"] .runner-log-level { color: var(--warning); }
   .runner-log-line[data-level="WAIT"] .runner-log-level { color: var(--text-muted); }
   .runner-log-line[data-emphasis] .runner-log-text { color: var(--text); }
   .runner-log-line[data-error] .runner-log-text { color: var(--danger); }
