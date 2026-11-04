@@ -1,5 +1,5 @@
 import { useEffect, useLayoutEffect, useRef } from 'react';
-import type { DetailedHTMLProps, HTMLAttributes, Ref } from 'react';
+import type { HTMLAttributes, Ref } from 'react';
 import './elements/workflow-loom.js';
 
 /* Types mirror packages/core/src/utils/types.ts (a parity test keeps them identical). */
@@ -144,7 +144,7 @@ declare module 'react' {
   // eslint-disable-next-line @typescript-eslint/no-namespace
   namespace JSX {
     interface IntrinsicElements {
-      'workflow-loom': DetailedHTMLProps<HTMLAttributes<WorkflowLoomElement>, WorkflowLoomElement>;
+      'workflow-loom': import('react').DetailedHTMLProps<import('react').HTMLAttributes<WorkflowLoomElement>, WorkflowLoomElement>;
     }
   }
 }

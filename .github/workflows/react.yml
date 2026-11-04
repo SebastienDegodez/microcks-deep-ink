@@ -1,7 +1,7 @@
 name: React package
 
 # The React workspace (react/): the @microcks/deep-ink package. It has its own lockfile.
-# Nothing is published: the package is private.
+# Nothing is published: the package is private, and the publish job only runs by hand, as a dry run by default.
 on:
   push:
     branches: [main]
@@ -9,24 +9,35 @@ on:
       - "react/**"
       - "packages/tokens/**"
       - "packages/core/**"
+      - "packages/plugin-sdk/**"
       - "packages/registry/src/css/**"
       - "packages/registry/items/**"
       - "packages/registry/scripts/**"
       - "packages/registry/css-order.json"
-      - "packages/plugin-sdk/**"
+      - "packages/registry/css-order.json"
       - ".github/workflows/react.yml"
   pull_request:
     paths:
       - "react/**"
       - "packages/tokens/**"
       - "packages/core/**"
+      - "packages/plugin-sdk/**"
       - "packages/registry/src/css/**"
       - "packages/registry/items/**"
       - "packages/registry/scripts/**"
       - "packages/registry/css-order.json"
-      - "packages/plugin-sdk/**"
+      - "packages/registry/css-order.json"
       - ".github/workflows/react.yml"
   workflow_dispatch:
+    inputs:
+      publish:
+        description: "Run the publish job (dry run unless dry-run is unticked; the package is private, so npm refuses a real publish)"
+        type: boolean
+        default: false
+      dry-run:
+        description: "Dry run only"
+        type: boolean
+        default: true
 
 permissions:
   contents: read
@@ -49,13 +60,49 @@ jobs:
             pnpm-lock.yaml
             react/pnpm-lock.yaml
 
-      # Common inputs from the root workspace: tokens, the element bundles (core) and the registry build,
-      # which syncs the bundles into react/packages/deep-ink/src/elements.
+      # Common inputs from the root workspace: tokens, the element bundles (core) and the registry CSS.
       - run: pnpm install --frozen-lockfile --filter "@microcks-deep-ink/registry..."
       - run: pnpm --filter "@microcks-deep-ink/registry..." build
 
       - run: pnpm -C react install --frozen-lockfile
+      - run: pnpm -C react build
       - run: pnpm -C react lint
       - run: pnpm -C react typecheck
       - run: pnpm -C react test
-      - run: pnpm -C react build
+
+      # Publishing readiness (nothing is published).
+      - run: pnpm -C react/packages/deep-ink publint
+      - run: pnpm -C react/packages/deep-ink attw
+      - run: pnpm -C react/packages/deep-ink pack:check
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deep-ink-dist
+          path: react/packages/deep-ink/dist
+          if-no-files-found: error
+
+  # Manual only. npm trusted publishing (OIDC, provenance): no token. Dry run by default; the package is
+  # `private: true`, so a real publish fails until the maintainers decide to publish.
+  publish:
+    if: github.event_name == 'workflow_dispatch' && inputs.publish
+    needs: react
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          registry-url: https://registry.npmjs.org
+      - uses: actions/download-artifact@v4
+        with:
+          name: deep-ink-dist
+          path: react/packages/deep-ink/dist
+      - if: inputs.dry-run
+        run: pnpm -C react/packages/deep-ink pack --dry-run
+      - if: ${{ !inputs.dry-run }}
+        working-directory: react/packages/deep-ink
+        run: npm publish --provenance --access public
