@@ -105,13 +105,13 @@ export default function AgentPage() {
           </span>
         </div>
         <div className="agent-head-row" data-gap="badges">
-          <ApiBadge label="skills" value={String(a.skills.length)} status="info" />
+          <ApiBadge label="skills" value={String(a.skills.length)} status="protocol" protocol="A2A" />
           <ApiBadge label="conversations" value={String(conversations)} status="action" />
           <RouterLink className="agent-badge-link" to={`/tests/agent/${a.lastTest.runId}`} title={runTitle}>
-            <ApiBadge label="last test" value={score} status={a.lastTest.result === 'failed' ? 'danger' : 'success'} />
+            <ApiBadge label="last test" value={score} status={a.lastTest.result === 'failed' ? 'danger' : 'success'} icon={a.lastTest.result === 'failed' ? 'close-sm' : 'check'} />
           </RouterLink>
-          <ApiBadge label="streaming" value={streams ? 'yes' : 'no'} status={streams ? 'success' : 'neutral'} />
-          <ApiBadge label="push" value={push ? 'yes' : 'no'} status={push ? 'success' : 'neutral'} />
+          {streams ? <ApiBadge label="streaming" status="success" icon="check" iconLabel="supported" /> : <ApiBadge label="streaming" value="no" />}
+          {push ? <ApiBadge label="push" status="success" icon="check" iconLabel="supported" /> : <ApiBadge label="push" value="no" />}
         </div>
       </PageHeader>
       <Tabs
