@@ -18,6 +18,7 @@ import {
 import { formatClock, formatDuration } from '@/domain/shared';
 import { RUN_SCENARIOS, type RunScenario } from '@/application/arazzo';
 import { PageHeader, useQuery, useRelativeTime, useSubscription, useUseCases, usePageTitle } from '@/ui/app';
+import { Chip } from '@/ui/components/ui/chip';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Facts } from '@/ui/components/ui/facts';
@@ -647,7 +648,7 @@ function Properties({ run, detail, example }: { run: WorkflowRun; detail?: Detai
           <strong>{run.target.kind === 'mocks' ? 'Microcks mocks' : run.target.kind === 'implementations' ? 'Implementations' : 'Mixed'}</strong>
           {run.target.kind === 'implementations' ? <span className="wfr-target-url">{implementationsText(run.target.baseUrls)}</span> : null}
           {run.target.kind === 'mocks' ? <span className="wfr-target-url">{mockSources(run)}</span> : null}
-          {run.target.kind === 'mixed' ? <span className="wfr-proposed">Proposed · beyond POC</span> : null}
+          {run.target.kind === 'mixed' ? <Chip size="sm" variant="dashed" tone="warning" className="wfr-proposed">Proposed · beyond POC</Chip> : null}
         </span>
       ),
     },
