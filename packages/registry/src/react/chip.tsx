@@ -1,9 +1,11 @@
 import type { ButtonHTMLAttributes, HTMLAttributes, ReactNode, Ref } from 'react';
 import { Icon } from './icon';
+import { PROTOCOL_ATTR, type Protocol } from './method-tag';
+
+export type { Protocol } from './method-tag';
 
 export type ChipTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger';
 export type ChipVariant = 'solid' | 'outline' | 'dashed';
-export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 
 interface ChipOwnProps {
   /** Key rendered before the text for `key=value` labels. */
@@ -41,7 +43,6 @@ function textOf(node: ReactNode): string {
  * Small label. Static chips are a `<span>`; with `pressed` they become a toggle button;
  * with `onRemove` they get a remove button named "Remove <text>".
  */
-const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
 
 export function Chip({ labelKey, tone = 'neutral', variant = 'solid', size = 'md', protocol, count, pressed, onRemove, removeLabel, className, children, ref, onClick, ...rest }: ChipProps) {
   const cls = ['chip', className].filter(Boolean).join(' ');

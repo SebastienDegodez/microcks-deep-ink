@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { DescriptionListComponent } from '@microcks-deep-ink/registry/angular/description-list';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/DescriptionList',
+  argTypes: argTypesFor('description-list', ['DescriptionListComponent']),
   decorators: [moduleMetadata({ imports: [DescriptionListComponent] })],
   parameters: itemParams(['description-list'], "A native `<dl>`: terms and values are paired for assistive technology."),
 };

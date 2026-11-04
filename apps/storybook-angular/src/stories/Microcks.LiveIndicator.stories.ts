@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { LiveIndicatorComponent } from '@microcks-deep-ink/registry/angular/live-indicator';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/LiveIndicator',
+  argTypes: argTypesFor('live-indicator', ['LiveIndicatorComponent']),
   decorators: [moduleMetadata({ imports: [LiveIndicatorComponent] })],
   parameters: itemParams(['live-indicator'], "Marks a real-time stream only. It is not a status and not a live region: pair it with a Pause control (RGAA 13.8) and announce stream changes elsewhere. The dot is static under reduced motion."),
 };
@@ -35,12 +36,13 @@ export const CustomLabel: StoryObj = {
 };
 
 export const SizesAndPausedLabel: StoryObj = {
-  name: "Small, inline and paused label",
+  name: "Small, inline, dot and paused label",
   render: () => ({
     template: `
       <div class="inline">
         <span mkLiveIndicator size="sm"></span>
         <span mkLiveIndicator variant="inline"></span>
+        <span mkLiveIndicator variant="dot" label="live task"></span>
         <span mkLiveIndicator paused pausedLabel="paused · 2 new calls"></span>
       </div>
     `,

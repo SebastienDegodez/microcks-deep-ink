@@ -1,18 +1,16 @@
 import { Link as RouterLink } from 'react-router';
 import { runConformance, type TestRunSummary } from '@/domain/testing';
 import { BarChart, type BarTone } from '@/ui/components/ui/bar-chart';
-import { Icon, type IconName } from '@/ui/components/ui/icon';
+import { TEST_RESULT_ICON, TEST_RESULT_WORD, type TestResult } from '@/ui/app/outcomes';
+import { Icon } from '@/ui/components/ui/icon';
 import { MethodTag } from '@/ui/components/ui/method-tag';
-import { testRunHref } from '../explore-kit/format';
+import { testRunHref } from '@/ui/app/format';
 
 /** Bars taller than this duration are capped at 88% and labelled with their duration. */
 const CAP_MS = 3000;
 const WINDOW = 20;
 
-type Result = TestRunSummary['result'];
-const WORD: Record<Result, string> = { passed: 'Passed', failed: 'Failed', timeout: 'Timed out', running: 'Running' };
-const ICON: Record<Result, IconName> = { passed: 'check', failed: 'cross', timeout: 'clock', running: 'running' };
-const TONE: Record<Result, BarTone> = { passed: 'success', failed: 'danger', timeout: 'warning', running: 'running' };
+const TONE: Record<TestResult, BarTone> = { passed: 'success', failed: 'danger', timeout: 'warning', running: 'running' };
 const OP_WORD = { pass: 'passed', fail: 'failed', none: 'no result' } as const;
 
 const DATE = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', timeZone: 'UTC' });
@@ -62,7 +60,7 @@ export function TestTimeline({ runs, operations, selectedId, onSelect, matches, 
     .map((r, i) => `${((i + 0.5) * (200 / n)).toFixed(1)},${Math.min(100, Math.max(0, ((100 - pct(r)) / 50) * 100)).toFixed(1)}`)
     .join(' ');
   const aria = (r: TestRunSummary) =>
-    `Run #${r.id}, ${WORD[r.result].toLowerCase()}, ${fmtDuration(r.durationMs)}, ${samples(r)} samples passed, ${shortDate(r.startedAt)}${filtered && !matches(r) ? ', outside the filters' : ''}`;
+    `Run #${r.id}, ${TEST_RESULT_WORD[r.result].toLowerCase()}, ${fmtDuration(r.durationMs)}, ${samples(r)} samples passed, ${shortDate(r.startedAt)}${filtered && !matches(r) ? ', outside the filters' : ''}`;
 
   const opStats = operations.map((op, i) => {
     const outcome = (r: TestRunSummary) => r.operations?.[i] ?? 'none';
@@ -128,7 +126,7 @@ export function TestTimeline({ runs, operations, selectedId, onSelect, matches, 
           rows: chrono.map((r) => [
             `#${r.id}`,
             shortDate(r.startedAt),
-            WORD[r.result],
+            TEST_RESULT_WORD[r.result],
             fmtDuration(r.durationMs),
             samples(r),
             `${pct(r)}%`,
@@ -141,8 +139,8 @@ export function TestTimeline({ runs, operations, selectedId, onSelect, matches, 
         <div className="test-timeline-strip" aria-live="polite" data-tone={selected.result}>
           <span className="test-timeline-id">#{selected.id}</span>
           <span className="test-timeline-result">
-            <Icon name={ICON[selected.result]} size={14} strokeWidth={selected.result === 'timeout' ? 2.2 : 2.6} />
-            {WORD[selected.result]}
+            <Icon name={TEST_RESULT_ICON[selected.result]} size={14} strokeWidth={selected.result === 'timeout' ? 2.2 : 2.6} />
+            {TEST_RESULT_WORD[selected.result]}
           </span>
           <span className="test-timeline-when">
             {relative(selected.startedAt)} · {shortDate(selected.startedAt)}, {new Date(selected.startedAt).getUTCFullYear()}

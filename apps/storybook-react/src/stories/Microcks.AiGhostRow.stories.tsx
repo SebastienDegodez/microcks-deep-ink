@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/AiGhostRow',
+  component: AiGhostRow,
   parameters: itemParams(['ai-ghost-row', 'button', 'icon', 'method-tag'], 'A suggestion that is not saved until accepted. The group is named "AI suggestion: <name>" and each button repeats the name for screen readers ("Accept getPastry example").'),
-} satisfies Meta;
+} satisfies Meta<typeof AiGhostRow>;
 
 export const Default: StoryObj = {
   render: () => {
@@ -31,4 +32,9 @@ export const Busy: StoryObj = {
       </AiGhostRow>
     </div>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof AiGhostRow> = {
+  args: { name: 'listPastries', busy: false, children: <><MethodTag method="GET" /> /pastries: suggested operation</> },
 };

@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { OpPickListComponent } from '@microcks-deep-ink/registry/angular/op-pick';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/OpPick',
+  argTypes: argTypesFor('op-pick', ['OpPickListComponent']),
   decorators: [moduleMetadata({ imports: [OpPickListComponent] })],
   parameters: itemParams(['op-pick', 'method-tag'], 'Operation picker cards. Toggle mode is a list of aria-pressed buttons (Service rail); radio mode is a radiogroup with arrow keys (Copilot).'),
 };

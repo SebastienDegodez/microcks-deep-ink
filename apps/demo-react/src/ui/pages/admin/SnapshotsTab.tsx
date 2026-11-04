@@ -6,7 +6,7 @@ import { ApiBadge, type Protocol } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { DropZone } from '@/ui/components/ui/drop-zone';
 import { Icon } from '@/ui/components/ui/icon';
-import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
 import './snapshots.css';
 

@@ -2,10 +2,11 @@ import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
 import { CI_PANEL } from '@microcks-deep-ink/registry/angular/ci-panel';
 import { ProjectionPillComponent } from '@microcks-deep-ink/registry/angular/projection-pill';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/CiPanel',
+  argTypes: argTypesFor('ci-panel'),
   decorators: [moduleMetadata({ imports: [ButtonDirective, ...CI_PANEL, ProjectionPillComponent] })],
   parameters: itemParams(['ci-panel', 'copy-button', 'button'], '"Run it from CI": a region named by its title, shown by a toggle button with `aria-expanded` and `aria-controls`. Copy announces its result; the command wraps.'),
 };

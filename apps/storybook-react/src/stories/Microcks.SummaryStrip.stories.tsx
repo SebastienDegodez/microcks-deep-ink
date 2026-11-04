@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/SummaryStrip',
+  component: SummaryStrip,
   parameters: itemParams(['summary-strip'], 'Key facts in one bordered row, separated by decorative 1px rules. The words carry the meaning; add role="note" for a page summary.'),
-} satisfies Meta;
+} satisfies Meta<typeof SummaryStrip>;
 
 export const Saved: StoryObj = {
   render: () => (
@@ -32,6 +33,15 @@ export const Dispatcher: StoryObj = {
       <a href="#/behavior">Edit the behaviour</a>
     </SummaryStrip>
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof SummaryStrip> = {
+  args: {
+    gap: 'normal', values: 'secondary',
+    parts: [{ text: '12', kind: 'value' }, { text: 'operations', kind: 'label' }, { text: '', sep: true }, { text: '3', kind: 'value' }, { text: 'failing', kind: 'label' }],
+  },
+  argTypes: { gap: { control: 'inline-radio', options: ['normal', 'roomy'] }, values: { control: 'inline-radio', options: ['secondary', 'text'] } },
 };
 
 export const FromContent: StoryObj = {

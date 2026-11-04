@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { CheckboxComponent, RadioComponent, RadioGroupComponent } from '@microcks-deep-ink/registry/angular/checkbox';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Checkbox',
+  argTypes: argTypesFor('checkbox', ['CheckboxComponent', 'RadioComponent', 'RadioGroupComponent']),
   decorators: [moduleMetadata({ imports: [CheckboxComponent, RadioComponent, RadioGroupComponent] })],
   parameters: itemParams(['checkbox'], "A native checkbox inside its label. The description is linked with `aria-describedby`."),
 };

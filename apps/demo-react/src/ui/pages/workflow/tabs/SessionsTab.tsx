@@ -2,12 +2,14 @@ import { useState, type ReactNode } from 'react';
 import { Link } from 'react-router';
 import type { Session, SessionCall, WorkflowRun } from '@/domain/arazzo';
 import type { WorkflowDetail } from '@/application/arazzo';
+import { MONTHS } from '@/ui/app/format';
 import { useClock, useRelativeTime } from '@/ui/app';
+import { STATUS_ICON } from '@/ui/app/outcomes';
 import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
 import { Checkbox } from '@/ui/components/ui/checkbox';
 import { Field } from '@/ui/components/ui/field';
-import { Icon, type IconName } from '@/ui/components/ui/icon';
+import { Icon } from '@/ui/components/ui/icon';
 import { Input } from '@/ui/components/ui/input';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { Select } from '@/ui/components/ui/select';
@@ -24,7 +26,6 @@ const FAILURE_EXAMPLES: Record<string, { value: string; code: number }[]> = {
 
 const MICROCKS = 'http://microcks.local:8080';
 const SESSION_TTL_S = 3600;
-const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 const clockOf = (iso: string) => {
   const d = new Date(iso);
   const two = (n: number) => String(n).padStart(2, '0');
@@ -32,12 +33,11 @@ const clockOf = (iso: string) => {
 };
 
 type Tone = 'pass' | 'fail' | 'off' | 'pending';
-const ICON: Record<Tone, IconName> = { pass: 'check-circle', fail: 'x-circle', off: 'minus-circle', pending: 'pending-circle' };
 
 function Mark({ tone, children, size = 12 }: { tone: Tone; children: ReactNode; size?: number }) {
   return (
     <span className="wf-se-mark" data-tone={tone}>
-      <Icon name={ICON[tone]} size={size} strokeWidth={2.4} />
+      <Icon name={STATUS_ICON[tone]} size={size} strokeWidth={2.4} />
       {children}
     </span>
   );

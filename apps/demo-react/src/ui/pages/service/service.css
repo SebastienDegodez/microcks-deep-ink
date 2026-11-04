@@ -1,5 +1,5 @@
 /* Service screen (05). Colors come from the design tokens only. Class names follow the registry items they may become. */
-.service-page { gap: 22px; }
+.ex-stack.service-page { gap: 22px; }
 
 /* Header rows under the description: labels + dates, then the proof badges. */
 .service-head-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }

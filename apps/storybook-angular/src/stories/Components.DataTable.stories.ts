@@ -1,13 +1,14 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
-import { DataTableComponent, CellDirective } from '@microcks-deep-ink/registry/angular/table';
+import { DataTableComponent, CellDirective, TableDirective } from '@microcks-deep-ink/registry/angular/table';
 import { IconComponent } from '@microcks-deep-ink/registry/angular/icon';
 import { type CatalogueRow, CATALOGUE_COLUMNS, CATALOGUE_ROWS } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { type SortState, sortRows } from '@microcks-deep-ink/registry/angular/table';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Data table',
-  decorators: [moduleMetadata({ imports: [DataTableComponent, CellDirective, IconComponent] })],
+  argTypes: argTypesFor('table', ['DataTableComponent', 'CellDirective', 'TableDirective']),
+  decorators: [moduleMetadata({ imports: [TableDirective, DataTableComponent, CellDirective, IconComponent] })],
   parameters: itemParams(['table', 'icon'], "A native `<table>` with a caption, `th scope=\"col\"`, `aria-sort` on sortable headers (a real button inside) and a focusable scroll region. With `rowHref` the first cell holds a link stretched over the row: no clickable `<tr>`."),
 };
 export default meta;
@@ -17,6 +18,25 @@ export const Default: StoryObj = {
     props: { columns: CATALOGUE_COLUMNS, rows: CATALOGUE_ROWS },
     template: `
 <mk-data-table caption="Services" [columns]="columns" [rows]="rows" rowKey="id" />
+    `,
+  }),
+};
+
+/** The native table: `table[mkTable]` with `density` and `headerCase`, and rich cells with `ng-template[mkCell]`. */
+export const NativeTable: StoryObj = {
+  name: 'Native table (mkTable)',
+  render: () => ({
+    props: { rows: CATALOGUE_ROWS.slice(0, 3) },
+    template: `
+      <table mkTable density="compact" headerCase="sentence">
+        <caption>Services, native table</caption>
+        <thead><tr><th scope="col">Name</th><th scope="col">Version</th></tr></thead>
+        <tbody>
+          @for (r of rows; track r.id) {
+            <tr><th scope="row">{{ r.name }}</th><td>{{ r.version }}</td></tr>
+          }
+        </tbody>
+      </table>
     `,
   }),
 };

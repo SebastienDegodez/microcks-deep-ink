@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { StatusBadgeComponent } from '@microcks-deep-ink/registry/angular/status-badge';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/StatusBadge',
+  argTypes: argTypesFor('status-badge', ['StatusBadgeComponent']),
   decorators: [moduleMetadata({ imports: [StatusBadgeComponent] })],
   parameters: itemParams(['status-badge', 'icon'], "An icon and a word, always. The icon shapes differ (check, cross, triangle, arc, circle), so the status is readable without color."),
 };

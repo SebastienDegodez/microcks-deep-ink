@@ -1,5 +1,5 @@
 import { Component, lazy, Suspense, type ComponentType, type ErrorInfo, type ReactNode } from 'react';
-import { LoadingBlock } from '../workflows/shared';
+import { LoadingBlock } from '@/ui/app/states';
 import type { LoomProps } from './loom-model';
 
 /**
@@ -61,7 +61,7 @@ export function LoomHost({ onSelectStep, onSelectLens, fallback, ...props }: Loo
   if (!RemoteLoom) return <>{fallback}</>;
   return (
     <LoomBoundary fallback={fallback}>
-      <Suspense fallback={<LoadingBlock label="Loading the loom" rows={1} />}>
+      <Suspense fallback={<LoadingBlock label="the loom" rows={1} />}>
         <RemoteLoom
           {...props}
           onStepSelect={(event) => onSelectStep(stepIdOf(event))}

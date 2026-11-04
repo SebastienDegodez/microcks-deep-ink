@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { RunMetaComponent } from '@microcks-deep-ink/registry/angular/run-meta';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/RunMeta',
+  argTypes: argTypesFor('run-meta', ['RunMetaComponent']),
   decorators: [moduleMetadata({ imports: [RunMetaComponent] })],
   parameters: itemParams(['run-meta'], 'The meta line under a run header (TestRun, AgentTestRun, WorkflowRun): muted keys and their values in a native `<dl>`, wrapping on narrow screens.'),
 };

@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Tabs',
+  component: Tabs,
   parameters: itemParams(['tabs'], 'WAI-ARIA tabs. Use them to switch views of one page, not to navigate between pages. The count is read with the label ("Operations, 4").'),
-} satisfies Meta;
+} satisfies Meta<typeof Tabs>;
 
 function Demo({ activation }: { activation: 'automatic' | 'manual' }) {
   const [v, setV] = useState('operations');
@@ -23,6 +24,25 @@ function Demo({ activation }: { activation: 'automatic' | 'manual' }) {
 }
 
 export const Default: StoryObj = { render: () => <Demo activation="automatic" /> };
+
+/** `idPrefix` keeps tab and panel ids unique when two tab lists share a page. */
+export const IdPrefix: StoryObj = {
+  name: 'Two lists on a page (idPrefix)',
+  render: () => {
+    const [a, setA] = useState('operations');
+    const [b, setB] = useState('operations');
+    return (
+      <div className="sb-col">
+        <Tabs label="Service A" idPrefix="a" items={SERVICE_TABS} value={a} onChange={setA}>
+          <TabPanel id={a} value={a} idPrefix="a"><p style={{ margin: 0 }}>Service A, {a}.</p></TabPanel>
+        </Tabs>
+        <Tabs label="Service B" idPrefix="b" variant="card" items={SERVICE_TABS} value={b} onChange={setB}>
+          <TabPanel id={b} value={b} idPrefix="b"><p style={{ margin: 0 }}>Service B, {b}.</p></TabPanel>
+        </Tabs>
+      </div>
+    );
+  },
+};
 
 export const ManualActivation: StoryObj = {
   name: 'Manual activation',
@@ -86,6 +106,28 @@ export const CardWithIcons: StoryObj = {
           ))}
         </Tabs>
       </div>
+    );
+  },
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Tabs> = {
+  args: {
+    label: 'Service sections', value: 'operations', activation: 'automatic', variant: 'line', idPrefix: 'pg',
+    items: [{ id: 'operations', label: 'Operations', count: 8 }, { id: 'tests', label: 'Tests', alert: 1, alertLabel: 'failing' }, { id: 'contract', label: 'Contract' }],
+  },
+  argTypes: {
+    activation: { control: 'inline-radio', options: ['automatic', 'manual'] },
+    variant: { control: 'inline-radio', options: ['line', 'card'] },
+    onChange: { table: { disable: true } },
+  },
+  render: (args) => {
+    const [value, setValue] = useState(args.value);
+    return (
+      <>
+        <Tabs {...args} value={value} onChange={setValue} />
+        {args.items.map((i) => <TabPanel key={i.id} id={i.id} value={value} idPrefix={args.idPrefix}><p>{i.label} panel</p></TabPanel>)}
+      </>
     );
   },
 };

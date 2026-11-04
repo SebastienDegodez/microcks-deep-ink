@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { SectionLabelDirective } from '@microcks-deep-ink/registry/angular/section-label';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/SectionLabel',
+  argTypes: argTypesFor('section-label', ['SectionLabelDirective']),
   decorators: [moduleMetadata({ imports: [SectionLabelDirective] })],
   parameters: itemParams(['section-label'], 'A small uppercase muted label. Use a heading for a section, a label for a field, a span for a caption. The text stays in normal case in the DOM.'),
 };
@@ -20,6 +21,8 @@ export const Uses: StoryObj = {
         </div>
         <h2 mkSectionLabel size="sm">1 · Operation</h2>
         <div mkSectionLabel size="sm" weight="regular" [split]="true"><span>3 operations</span><span>calls · 7 d</span></div>
+        <h4 mkSectionLabel lineHeight="normal">Request</h4>
+        <p mkSectionLabel size="sm" weight="regular" [split]="true" lineHeight="snug"><span>Skills</span><span>4 declared</span></p>
       </div>
     `,
   }),

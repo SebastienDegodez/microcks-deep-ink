@@ -6,6 +6,15 @@ export const PROTOCOL_ORDER: readonly Protocol[] = ['REST', 'SOAP', 'EVENT', 'gR
 
 export const pluralize = (n: number, one: string, many = `${one}s`) => `${fmt(n)} ${n === 1 ? one : many}`;
 
+/** Unformatted count with its noun: `1 run`, `3 runs`. */
+export const plural = (n: number, one: string, many = `${one}s`) => `${n} ${n === 1 ? one : many}`;
+
+/** Short elapsed time since an event, from seconds: `just now`, `12 s ago`, `4 min ago`, `2 h ago`. */
+export const ago = (s: number): string => (s < 3 ? 'just now' : s < 60 ? `${s} s ago` : s < 3600 ? `${Math.floor(s / 60)} min ago` : `${Math.floor(s / 3600)} h ago`);
+
+/** English month abbreviations, indexed like `Date#getUTCMonth`. */
+export const MONTHS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] as const;
+
 /** Hash-router href for an in-app path. */
 export const href = (path: string) => `#${path}`;
 

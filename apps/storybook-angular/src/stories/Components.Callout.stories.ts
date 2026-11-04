@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { CalloutComponent, CalloutActionsDirective } from '@microcks-deep-ink/registry/angular/callout';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Callout',
+  argTypes: argTypesFor('callout', ['CalloutComponent']),
   decorators: [moduleMetadata({ imports: [CalloutComponent, CalloutActionsDirective, ButtonDirective] })],
   parameters: itemParams(['callout', 'button'], "Tone is carried by an icon and a title as well as color. Use `live` only for a message that appears after an action; a static callout is not announced."),
 };
@@ -18,6 +19,19 @@ export const Default: StoryObj = {
         <mk-callout tone="success" title="Test passed">All 12 operations conform.</mk-callout>
         <mk-callout tone="warning" title="Schema drift">The response has a field the contract does not declare.</mk-callout>
         <mk-callout tone="danger" title="Test failed">patchPastry returned price as a string.</mk-callout>
+      </div>
+    `,
+  }),
+};
+
+/** `live="polite"` announces the callout when it appears. Use it for a message that follows an action. */
+export const LivePolite: StoryObj = {
+  name: 'Announced (polite and assertive)',
+  render: () => ({
+    template: `
+      <div class="stack" style="max-width:640px">
+        <mk-callout tone="success" title="Saved" live="polite">The service settings were saved.</mk-callout>
+        <mk-callout tone="danger" title="Import failed" live="assertive">The file is not a valid OpenAPI document.</mk-callout>
       </div>
     `,
   }),

@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Segmented',
+  component: Segmented,
   parameters: itemParams(['segmented'], 'A group of toggle buttons with `aria-pressed`, for filters such as All, Passed and Failed. Announce the result count elsewhere with a live region.'),
-} satisfies Meta;
+} satisfies Meta<typeof Segmented>;
 
 export const Default: StoryObj = {
   render: () => {
@@ -118,5 +119,26 @@ export const Compact: StoryObj = {
         <Segmented label="Period" spacing="wide" value={period} onChange={setPeriod} options={[{ id: 'today', label: 'Today' }, { id: '7d', label: '7 days' }, { id: '30d', label: '30 days' }]} />
       </div>
     );
+  },
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Segmented> = {
+  args: {
+    label: 'Status filter', value: 'all', variant: 'track', tone: 'neutral', pressedFill: 'raised', iconSize: 15, size: 'md', spacing: 'normal',
+    options: [{ id: 'all', label: 'All', count: 12 }, { id: 'passed', label: 'Passed', count: 9, dot: 'success' }, { id: 'failed', label: 'Failed', count: 3, dot: 'danger' }],
+  },
+  argTypes: {
+    variant: { control: 'inline-radio', options: ['track', 'joined'] },
+    tone: { control: 'inline-radio', options: ['neutral', 'primary'] },
+    pressedFill: { control: 'inline-radio', options: ['raised', 'selected'] },
+    iconSize: { control: 'inline-radio', options: [13, 15] },
+    size: { control: 'inline-radio', options: ['md', 'sm'] },
+    spacing: { control: 'inline-radio', options: ['normal', 'wide'] },
+    onChange: { table: { disable: true } },
+  },
+  render: (args) => {
+    const [value, setValue] = useState(args.value);
+    return <Segmented {...args} value={value} onChange={setValue} />;
   },
 };

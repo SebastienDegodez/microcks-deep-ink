@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { RunOriginComponent } from '@microcks-deep-ink/registry/angular/run-origin';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/RunOrigin',
+  argTypes: argTypesFor('run-origin', ['RunOriginComponent']),
   decorators: [moduleMetadata({ imports: [RunOriginComponent] })],
   parameters: itemParams(['run-origin'], "Where a run was started from: UI, API, Mock URL or a session."),
 };

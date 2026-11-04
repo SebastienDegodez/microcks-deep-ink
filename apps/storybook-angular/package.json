@@ -4,7 +4,8 @@
   "private": true,
   "scripts": {
     "storybook": "ng run storybook-angular:storybook",
-    "build-storybook": "ng run storybook-angular:build-storybook"
+    "build-storybook": "ng run storybook-angular:build-storybook",
+    "gen:argtypes": "node scripts/gen-argtypes.mjs"
   },
   "dependencies": {
     "@angular/animations": "^22.2.0",

@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { InputDirective } from '@microcks-deep-ink/registry/angular/input';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Input',
+  argTypes: argTypesFor('input', ['InputDirective']),
   decorators: [moduleMetadata({ imports: [InputDirective] })],
   parameters: itemParams(['input'], "Native `<input>` and `<textarea>`. The border uses `--border-control` (3:1 against every ground). Always pair with a visible label, see Field."),
 };
@@ -15,6 +16,19 @@ export const Default: StoryObj = {
       <div class="stack" style="max-width:420px">
         <label class="label" for="in-1">Search services</label>
         <input mkInput id="in-1" placeholder="API Pastry" />
+      </div>
+    `,
+  }),
+};
+
+/** `size="sm"` for dense toolbars; `surface="bg"` on a field that sits on a panel. */
+export const Small: StoryObj = {
+  render: () => ({
+    template: `
+      <div class="stack" style="max-width:360px">
+        <input mkInput size="sm" aria-label="Filter, small" placeholder="Small input" />
+        <input mkInput surface="bg" aria-label="Filter, page background" placeholder="Background surface" />
+        <textarea mkInput size="sm" surface="bg" aria-label="Notes, small" placeholder="Small textarea" rows="3"></textarea>
       </div>
     `,
   }),

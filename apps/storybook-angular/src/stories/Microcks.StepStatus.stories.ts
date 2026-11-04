@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { StepStatusComponent, StepChecksComponent } from '@microcks-deep-ink/registry/angular/step-status';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/StepStatus',
+  argTypes: argTypesFor('step-status', ['StepStatusComponent', 'StepChecksComponent']),
   decorators: [moduleMetadata({ imports: [StepStatusComponent, StepChecksComponent] })],
   parameters: itemParams(['step-status', 'icon'], "Outcome of an Arazzo step: \"\u2713 Passed\", \"\u2715 Failed \u00b7 3 attempts\", \"\u2013 Not run\". Not run is muted text on a dashed outline, never reduced opacity. `StepChecks` lists the two checks the POC evaluates: **Success criteria** and **Schema validation**."),
 };

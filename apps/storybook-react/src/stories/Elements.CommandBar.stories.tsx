@@ -7,8 +7,9 @@ import { detailOf, itemParams } from './_meta';
 
 export default {
   title: 'Elements/CommandBar',
+  component: CommandBar,
   parameters: itemParams(['command-bar', 'button', 'kbd'], 'An ARIA 1.2 combobox with a listbox: the input keeps focus and `aria-activedescendant` follows the highlighted option. Results are grouped by kind and the count is announced ("5 results"). The modal mode uses a native `<dialog>` and returns focus to the opener. `<command-bar>` is a Web Component.'),
-} satisfies Meta;
+} satisfies Meta<typeof CommandBar>;
 
 export const Default: StoryObj = {
   name: 'Inline',
@@ -23,6 +24,12 @@ export const Default: StoryObj = {
   },
 };
 
+/** `globalShortcut={false}` turns Ctrl/\u2318K off, for a page that has its own shortcut. */
+export const NoShortcut: StoryObj = {
+  name: 'Without the global shortcut',
+  render: () => <CommandBar inline globalShortcut={false} items={COMMANDS} label="Local commands" placeholder="Type a command" />,
+};
+
 export const Modal: StoryObj = {
   render: () => {
     const [open, setOpen] = useState(false);
@@ -34,6 +41,12 @@ export const Modal: StoryObj = {
       </div>
     );
   },
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof CommandBar> = {
+  args: { items: COMMANDS, inline: true, label: 'Command bar', placeholder: 'Type a command or a service', globalShortcut: false },
+  decorators: [(Story) => <div style={{ maxWidth: 560 }}><Story /></div>],
 };
 
 export const Inline: StoryObj = {

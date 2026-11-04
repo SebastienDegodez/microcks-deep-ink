@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { CheckboxComponent, RadioComponent, RadioGroupComponent } from '@microcks-deep-ink/registry/angular/checkbox';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const OPTIONS = [
   { value: 'mocks', label: 'Mocks', description: 'Call the Microcks mock endpoints.' },
@@ -10,6 +10,7 @@ const OPTIONS = [
 
 const meta: Meta = {
   title: 'Components/Radio group',
+  argTypes: argTypesFor('checkbox', ['CheckboxComponent', 'RadioComponent', 'RadioGroupComponent']),
   decorators: [moduleMetadata({ imports: [CheckboxComponent, RadioComponent, RadioGroupComponent] })],
   parameters: itemParams(['checkbox'], "A `<fieldset>` with a `<legend>`: the group name is read before each option. Arrow keys move and select, as native radios do."),
 };
