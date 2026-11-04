@@ -405,7 +405,7 @@ export function seedSessions(): Session[] {
   return [
     {
       id: SESSION_ID, app: 'checkout-web · saga tests', documentId: 'pastry', workflowId: 'restock-pastry', state: 'closed',
-      openedAt: '2026-11-03T07:05:04Z', inputs: { size: 'M', newPrice: 3.9 },
+      openedAt: '2026-11-03T07:05:04Z', closedAt: '2026-11-03T07:05:45Z', inputs: { size: 'M', newPrice: 3.9 },
       calls: [
         call(1, 'GET', '/pastries?size=M', 200, 'listPastries', 'size from the inputs'),
         call(2, 'GET', '/pastries/Eclair%20Cafe', 200, 'getPastry', 'name from listPastries'),
@@ -436,7 +436,7 @@ export function seedSessions(): Session[] {
     },
     {
       id: 's-c4d07a18', app: 'checkout-web · saga tests', documentId: 'pastry', workflowId: 'restock-pastry', state: 'closed',
-      openedAt: '2026-11-02T11:20:04Z', inputs: { size: 'M', newPrice: 3.9 },
+      openedAt: '2026-11-02T11:20:04Z', closedAt: '2026-11-02T11:20:42Z', inputs: { size: 'M', newPrice: 3.9 },
       calls: [
         call(1, 'GET', '/pastries?size=M', 200, 'listPastries', 'size from the inputs'),
         call(2, 'GET', '/pastries/Eclair%20Cafe', 200, 'getPastry', 'name from listPastries'),

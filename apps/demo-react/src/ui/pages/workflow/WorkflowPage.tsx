@@ -87,10 +87,6 @@ export default function WorkflowPage() {
     navigate(workflowPath(docId, workflowId, id, query));
   };
   const onPickRun = (n: number) => setQuery({ run: String(n) });
-  const reloadAll = () => {
-    runs.reload();
-    sessions.reload();
-  };
 
   const asyncBlock = !workflow.runnability.runnable ? workflow.runnability : undefined;
   const services = catalog.data ?? [];
@@ -133,7 +129,7 @@ export default function WorkflowPage() {
           {sessions.status === 'error' ? (
             <ErrorBlock error={sessions.error} onRetry={sessions.reload} />
           ) : sessions.data ? (
-            <SessionsTab detail={detail.data} sessions={sessions.data} runs={runList} onChanged={reloadAll} />
+            <SessionsTab detail={detail.data} sessions={sessions.data} runs={runList} />
           ) : (
             <LoadingBlock label="Loading the sessions" />
           )}

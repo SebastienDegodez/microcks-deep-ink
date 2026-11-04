@@ -139,6 +139,7 @@ export function createInMemoryArazzoAdapters(deps: InMemoryDeps = {}): ArazzoAda
           verificationRun(found, workflow, verdict, { runId: state.newRunId(), number, baseUrl: MOCK_BASE, startedAt: clock.now().toISOString() }),
         );
         found.state = 'closed';
+        found.closedAt = clock.now().toISOString();
         found.verification = { result: verdict.result, runNumber: number, problems: verdict.problems };
         return found;
       }),
