@@ -48,7 +48,7 @@
   .api-badge[data-size="lg"] > .api-badge-name + .api-badge-version,
   .api-badge[data-size="xl"] > .api-badge-name + .api-badge-version { padding-inline-start: 0.25em; }
 
-  /* Proof fills: icon + word are always inside; color only speeds up scanning. */
+  /* Proof fills: a hidden status word is always inside; color only speeds up scanning. */
   .api-badge[data-status="success"] .api-badge-name { background: var(--success); color: var(--on-status); font-weight: 600; }
   .api-badge[data-status="danger"] .api-badge-name { background: var(--danger); color: var(--on-status); font-weight: 600; }
   .api-badge[data-status="warning"] .api-badge-name { background: var(--warning); color: var(--on-status); font-weight: 600; }
