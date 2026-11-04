@@ -70,9 +70,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/field.tsx": "b068fc2d3887fa4e0f65dccd79650dba2831f977746e5aa7b232f027d2c04629",
-        "src/ui/styles/field.css": "9dff6a533c78f77316227dbbf489ad4fc1aefb147c53869d70df21a222318cf3"
+        "src/ui/styles/field.css": "1941bd0b795c47146aa3628321d66b204b74175a18b4eba6527908cfcd743491"
       },
-      "hash": "88d1f64fda9fee8b"
+      "hash": "fd05b0bc48f21aad"
     },
     "checkbox": {
       "version": "0.2.0",
@@ -141,10 +141,10 @@
     "drop-zone": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/drop-zone.tsx": "aa3a7475887fdb4b6a712d8f4eeaf86341ac492c21fa24bec7098892686a2569",
-        "src/ui/styles/drop-zone.css": "ed9af01d794688c1cc793b5fdc83cf7fd474da5b4a2abdca3f7fbd2f33e4de37"
+        "src/ui/components/ui/drop-zone.tsx": "747513a3b45164185e215bc983a2de4b8ab1d44c312a7e8ac2c3485807aa7665",
+        "src/ui/styles/drop-zone.css": "a3e17955601762c2925b8b3123c47dfd2dabea107ba925108a2a5e74eb28b449"
       },
-      "hash": "1eb4a1dec22b5b74"
+      "hash": "9553aa5550e73f32"
     },
     "empty-state": {
       "version": "0.2.0",
@@ -157,10 +157,10 @@
     "input": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/input.tsx": "29e75ef53248eb9ba0184699edf15913cdbb8e3021ea0c423dab7bb8b4114f7d",
-        "src/ui/styles/input.css": "cb153ee8d4416c89763d9e75e5e9e757d59f906e468c8c0fe3303ab1ec6a2129"
+        "src/ui/components/ui/input.tsx": "40e8091dac675bf856ff28559130da993b078997b894b16bfd35d28a5d941849",
+        "src/ui/styles/input.css": "e77bfd9a53187ddfe8c055c437c335db2f1be4a15021906c30828dc9b6d3abe9"
       },
-      "hash": "b19ce17c97c15526"
+      "hash": "7353fe8053ff696e"
     },
     "kbd": {
       "version": "0.2.0",
@@ -197,10 +197,10 @@
     "method-tag": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/method-tag.tsx": "8c7dfaceeba8c91d848560b76bbaafbcc63a288473a8c37874dbbedb727e98f3",
-        "src/ui/styles/method-tag.css": "5414b5250427dfed46c2ddbfefd13aff43ee91d2ead6b7db107f24388742542b"
+        "src/ui/components/ui/method-tag.tsx": "9e38968065112eb9657673a21d87191d52b783e887714582cffe723e765a05f0",
+        "src/ui/styles/method-tag.css": "180c4fa23ac9a3b33220c7d2c1786819ce378cffa6ef311a62880e39e57e8c73"
       },
-      "hash": "187a57f6387d9641"
+      "hash": "e983ae6cdd62c3cb"
     },
     "segmented": {
       "version": "0.2.0",

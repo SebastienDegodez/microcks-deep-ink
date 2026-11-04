@@ -55,3 +55,13 @@ export const Disabled: StoryObj = {
     </div>
   ),
 };
+
+export const OnPageBackground: StoryObj = {
+  name: 'On the page background',
+  render: () => (
+    <div className="stack" style={{ maxWidth: 420 }}>
+      <label className="label" htmlFor="in-bg">Repository URL</label>
+      <Input id="in-bg" mono surface="bg" defaultValue="https://gitlab.acme.io/bakery/pastry-api.git" />
+    </div>
+  ),
+};
