@@ -121,6 +121,17 @@ describe('Test history (/tests/service/:id)', () => {
 });
 
 describe('Usage (/metrics/:serviceId?)', () => {
+  it('shows the four key figures', async () => {
+    renderAt('/metrics/pastry2');
+    await screen.findByRole('heading', { level: 1 });
+    const figures = await screen.findByRole('region', { name: 'Key figures' }, { timeout: 3000 });
+    const cards = within(figures).getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
+    expect(cards).toEqual(['Mock invocations · today', 'Peak hour', 'Last request', 'Conformance']);
+    expect(within(figures).getByRole('region', { name: 'Last request' }).textContent).toContain('12 s ago');
+    expect(within(figures).getByRole('link', { name: 'GET /rest/API+Pastry/2.0/pastries/Millefeuille' }).getAttribute('href')).toContain('/traces?service=pastry2');
+    expect(within(figures).getByRole('region', { name: 'Conformance' }).textContent).toContain('92%');
+  });
+
   it('selects a bar with the keyboard and offers the data table', async () => {
     renderAt('/metrics/pastry2');
     await screen.findByRole('heading', { level: 1, name: 'Usage & conformance' });

@@ -70,6 +70,7 @@ export function usageDataFor(scope: string): UsageData {
     hourly,
     previous: detailed ? { today: 264, '7d': 1519, '30d': 5310 } : { today: 529, '7d': 3170, '30d': 10950 },
     lastCall: 'GET /rest/API+Pastry/2.0/pastries/Millefeuille',
+    lastCallAgo: '12 s ago',
     rows: detailed ? OPERATION_ROWS : SERVICE_ROWS,
     tableNote: detailed
       ? 'Counted when the mock answers a request, whatever the example served. Dispatcher misses still count and show up as 404 in Live traces.'
