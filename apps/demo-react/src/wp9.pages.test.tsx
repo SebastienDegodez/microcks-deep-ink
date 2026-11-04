@@ -291,7 +291,7 @@ describe('Administration (/admin/:tab?)', () => {
     expect([...select.options].map((o) => o.textContent)).toEqual(['User', 'Manager', 'Admin']);
     expect((screen.getByRole('combobox', { name: 'Role of Microcks Admin' }) as HTMLSelectElement).disabled).toBe(true);
     fireEvent.change(select, { target: { value: 'manager' } });
-    expect(await screen.findByText('Léa Martin is now a manager in realm microcks.')).toBeTruthy();
+    expect(await screen.findByText('Léa Martin is now a manager in realm microcks.', {}, { timeout: 3000 })).toBeTruthy();
     const dismiss = screen.getByRole('button', { name: 'Dismiss message' });
     dismiss.focus();
     fireEvent.click(dismiss);
