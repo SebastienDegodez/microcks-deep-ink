@@ -166,6 +166,21 @@ export const LOOM_RESTOCK_RUN14: LoomScenario = {
   ],
 };
 
+/** Run #13 (session): every step shows the session's own checks instead of the two run checks. */
+export const LOOM_SESSION_RUN13: LoomScenario = {
+  ...LOOM_RESTOCK_RUN14,
+  label: 'restock-pastry, session run #13',
+  validatesSchemas: false,
+  steps: LOOM_RESTOCK_RUN14.steps.map((step, i) => ({
+    ...step,
+    checks: [
+      { label: `Call #${i + 1}`, state: step.status === 'not-run' ? 'idle' : 'pass' },
+      { label: 'Data passing', state: step.stepId === 'patchPastry' ? 'fail' : step.status === 'not-run' ? 'idle' : 'pass' },
+      { label: 'Contract', state: step.status === 'not-run' ? 'skip' : 'pass' },
+    ],
+  })),
+};
+
 /** The failing response of `patchPastry` in run #14: price is a string, the schema wants a number. */
 export const RUN14_FAILURE = {
   request: 'PATCH /pastries/Millefeuille',

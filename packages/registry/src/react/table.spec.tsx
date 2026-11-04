@@ -86,6 +86,15 @@ describe('DataTable', () => {
     expect(trs[1]!.getAttribute('data-tone')).toBe('idle');
   });
 
+  it('row header columns and the danger row tone', async () => {
+    const { container } = render(
+      <DataTable caption="Example parameters" headerCase="sentence" columns={[{ ...columns[0]!, sortable: false, rowHeader: true }, columns[1]!]} rows={rows} rowKey="id" rowTone={(r) => (r.id === 'orders' ? 'danger' : undefined)} />,
+    );
+    expect(screen.getByRole('rowheader', { name: 'API Pastry' })).toBeTruthy();
+    expect(container.querySelectorAll('tbody tr')[1]!.getAttribute('data-tone')).toBe('danger');
+    expect(await axeViolations(container)).toEqual([]);
+  });
+
   it('has no axe violations', async () => {
     const { container } = render(
       <DataTable caption="Services" columns={columns} rows={rows} rowKey="id" rowHref={(r) => `/s/${r.id}`} selectedKey="orders" sort={{ key: 'name', direction: 'ascending' }} />,

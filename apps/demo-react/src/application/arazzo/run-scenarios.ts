@@ -21,11 +21,13 @@ export interface RunFormDefaults {
  * - impl14: implementations (staging), schema validation on, run #14 (fails at patchPastry);
  * - mocksEnd: mocks, example `already-available`, run #15 (ends early at getPastry);
  * - mocksMissing: mocks, no example, size S, run #16 (missing example for Tarte Tatin).
+ * Each keeps the id of its run, so the run page links the three of them (the reviewer "Scenario" bar).
  */
-export const RUN_SCENARIOS: Record<RunScenario, { label: string; runNumber: number; defaults: RunFormDefaults }> = {
+export const RUN_SCENARIOS: Record<RunScenario, { label: string; runNumber: number; runId: string; defaults: RunFormDefaults }> = {
   impl14: {
     label: 'Implementations #14',
     runNumber: 14,
+    runId: '6729a1d27e4c0b5f93a8c214',
     defaults: {
       target: 'implementations',
       baseUrls: { apiPastry: EXAMPLE_BASE_URL },
@@ -41,6 +43,7 @@ export const RUN_SCENARIOS: Record<RunScenario, { label: string; runNumber: numb
   mocksEnd: {
     label: 'Mocks · ended early',
     runNumber: 15,
+    runId: '6729a3f08b1d6e2c45f7a930',
     defaults: {
       target: 'mocks',
       baseUrls: { apiPastry: EXAMPLE_BASE_URL },
@@ -56,6 +59,7 @@ export const RUN_SCENARIOS: Record<RunScenario, { label: string; runNumber: numb
   mocksMissing: {
     label: 'Mocks · missing example',
     runNumber: 16,
+    runId: '6729a4b15c9e7d3a28b0f6e1',
     defaults: {
       target: 'mocks',
       baseUrls: { apiPastry: EXAMPLE_BASE_URL },
