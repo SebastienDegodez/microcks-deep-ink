@@ -23,11 +23,12 @@ export const CustomLabel: StoryObj = {
 };
 
 export const SizesAndPausedLabel: StoryObj = {
-  name: 'Small, inline and paused label',
+  name: 'Small, inline, dot and paused label',
   render: () => (
     <div className="inline">
       <LiveIndicator size="sm" />
       <LiveIndicator variant="inline" />
+      <LiveIndicator variant="dot" label="live task" />
       <LiveIndicator paused pausedLabel="paused · 2 new calls" />
     </div>
   ),
@@ -46,5 +47,5 @@ export const Box: StoryObj = {
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof LiveIndicator> = {
   args: { label: 'live', paused: false, pausedLabel: 'paused', size: 'md', variant: 'pill' },
-  argTypes: { size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] }, variant: { control: 'inline-radio', options: ['pill', 'inline', 'box'] } },
+  argTypes: { size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] }, variant: { control: 'inline-radio', options: ['pill', 'inline', 'box', 'dot'] } },
 };

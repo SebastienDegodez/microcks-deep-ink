@@ -12,6 +12,7 @@ import { Directive, input } from '@angular/core';
     '[attr.data-size]': "size() === 'md' ? null : size()",
     '[attr.data-weight]': "weight() === 'semibold' ? null : weight()",
     '[attr.data-split]': "split() ? '' : null",
+    '[attr.data-line-height]': "lineHeight() === 'fixed' ? null : lineHeight()",
   },
 })
 export class SectionLabelDirective {
@@ -21,4 +22,6 @@ export class SectionLabelDirective {
   readonly weight = input<'semibold' | 'regular'>('semibold');
   /** Spreads the children to both ends of the line. */
   readonly split = input(false);
+  /** `fixed` (default): 16px. `normal`: the font's own line height (Agent test setup strip and detail titles, TestRun score label). `snug`: 1.4 (Agent skills rail head). */
+  readonly lineHeight = input<'fixed' | 'normal' | 'snug'>('fixed');
 }

@@ -63,6 +63,15 @@ describe('LiveIndicator', () => {
     expect(container.textContent).toBe('live · paused');
     expect(container.querySelector('.live')?.getAttribute('data-size')).toBe('sm');
   });
+
+  it('dot: keeps the dot and moves the label into a visually hidden span', () => {
+    const { container } = render(<LiveIndicator variant="dot" label="live task" />);
+    const live = container.querySelector('.live')!;
+    expect(live.getAttribute('data-variant')).toBe('dot');
+    expect(live.querySelector('.live-dot')?.getAttribute('aria-hidden')).toBe('true');
+    expect(live.querySelector('.sr-only')?.textContent).toBe('live task');
+    expect(live.textContent).toBe('live task');
+  });
 });
 
 describe('CodeBlock changed lines', () => {

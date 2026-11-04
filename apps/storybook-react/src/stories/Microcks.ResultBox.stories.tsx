@@ -44,13 +44,26 @@ export const WarningDismissible: StoryObj = {
   },
 };
 
+/** `bordered={false}` and `surface="raised"`: a flat note on the raised fill, as the Agent test verdict. */
+export const FlatRaised: StoryObj = {
+  name: 'Not bordered, raised (verdict)',
+  render: () => (
+    <div style={{ maxWidth: 720 }}>
+      <ResultBox tone="danger" icon="cross" title="The agent answered a canceled task" bordered={false} surface="raised" live="off">
+        tasks/cancel returned 200, then message/send on the same task id returned a new artifact. A canceled task must stay terminal.
+      </ResultBox>
+    </div>
+  ),
+};
+
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof ResultBox> = {
-  args: { tone: 'success', size: 'md', title: 'Test passed', children: 'All 12 operations match the contract.', icon: undefined, dismissLabel: 'Dismiss', live: 'status' },
+  args: { tone: 'success', size: 'md', title: 'Test passed', children: 'All 12 operations match the contract.', icon: undefined, dismissLabel: 'Dismiss', live: 'status', bordered: true, surface: 'surface' },
   argTypes: {
     tone: { control: 'select', options: ['success', 'warning', 'danger', 'neutral', 'info'] },
     size: { control: 'inline-radio', options: ['sm', 'md'] },
     live: { control: 'inline-radio', options: ['status', 'off'] },
+    surface: { control: 'inline-radio', options: ['surface', 'raised'] },
     onDismiss: { table: { disable: true } },
   },
 };

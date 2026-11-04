@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, Directive, input, output } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, computed, Directive, input, output } from '@angular/core';
 import { IconComponent, type IconName } from './icon';
 
 export type ResultBoxTone = 'success' | 'warning' | 'danger' | 'neutral' | 'info';
@@ -28,6 +28,8 @@ export class ResultBoxActionDirective {}
     '[attr.role]': "live() === 'status' ? 'status' : null",
     '[attr.data-tone]': "tone() === 'success' ? null : tone()",
     '[attr.data-size]': "size() === 'md' ? 'md' : null",
+    '[attr.data-bordered]': "bordered() ? null : 'false'",
+    '[attr.data-surface]': "surface() === 'surface' ? null : surface()",
     // `title` is an input here: do not leave it on the element as a tooltip.
     '[attr.title]': 'null',
   },
@@ -57,6 +59,10 @@ export class ResultBoxComponent {
   readonly dismissLabel = input('Dismiss message');
   /** `status` (default) is a polite live region; `off` for static content. */
   readonly live = input<'status' | 'off'>('status');
+  /** Default `true`. `false`: no frame, a top-aligned note layout (gap 10, 15px icon offset 3px with a 2.6 stroke, title in normal line height, 13px/1.55 text up to 80ch), as the Agent test verdict. */
+  readonly bordered = input(true, { transform: booleanAttribute });
+  /** Default `surface`. `raised`: the --raised fill instead of --surface (Agent test verdict). */
+  readonly surface = input<'surface' | 'raised'>('surface');
   readonly dismiss = output<void>();
 
   protected readonly iconName = computed(() => {

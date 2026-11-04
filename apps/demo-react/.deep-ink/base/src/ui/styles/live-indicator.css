@@ -22,6 +22,8 @@
     border-style: dashed;
     border-radius: var(--radius-control);
   }
+  /* Dot: the dot alone, the label is visually hidden (Agent tasks table, live task row). */
+  .live[data-variant="dot"] { gap: 0; padding: 0; border: 0; }
   .live[data-variant="box"][data-size="lg"] { min-height: 44px; padding: 0 14px; font-size: 13px; }
   .live-dot {
     flex: none;
@@ -32,7 +34,8 @@
     animation: live-pulse 1.6s ease-in-out infinite;
   }
   .live[data-size="sm"] .live-dot,
-  .live[data-variant="inline"] .live-dot { width: 7px; height: 7px; }
+  .live[data-variant="inline"] .live-dot,
+  .live[data-variant="dot"] .live-dot { width: 7px; height: 7px; }
   @keyframes live-pulse { 50% { opacity: 0.35; } }
   /* Paused: neutral colours and a pause glyph instead of the dot; the word "paused" is also written. */
   .live[data-paused] { border-color: var(--border-strong); color: var(--text-secondary); }
