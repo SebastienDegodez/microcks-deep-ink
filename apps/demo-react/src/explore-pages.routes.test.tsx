@@ -71,7 +71,9 @@ describe('WP7 pages', () => {
 
   it('Service: operations tab with the AI proposal, then properties and tests tabs', async () => {
     renderAt('/services/pastry2/operations');
-    await h1('API Pastry 2.0');
+    // The h1 is the api-badge: "REST API Pastry 2.0".
+    await h1(/^REST\s+API Pastry 2\.0$/);
+    expect(screen.getByRole('heading', { level: 3, name: 'Used in 4 workflows' })).toBeTruthy();
     await screen.findByRole('button', { name: /Accept Tartelette Framboise/ });
     expect(screen.getByRole('button', { name: /Accept Tartelette Framboise/ })).toBeTruthy();
     fireEvent.click(screen.getByRole('tab', { name: /Tests/ }));
