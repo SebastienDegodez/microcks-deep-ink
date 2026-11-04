@@ -168,7 +168,11 @@
 }
 .demo-breadcrumb li {
   display: inline-flex;
+  align-items: center;
   gap: 8px;
+}
+.demo-breadcrumb-sep {
+  display: inline-flex;
 }
 .demo-breadcrumb a {
   color: var(--link);
