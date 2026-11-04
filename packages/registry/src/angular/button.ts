@@ -2,7 +2,7 @@ import { afterNextRender, booleanAttribute, Directive, effect, ElementRef, injec
 import { createIconElement } from './icon';
 import type { IconName } from './icon';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'link' | 'danger';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'link' | 'dashed' | 'danger';
 export type ButtonSize = 'md' | 'sm';
 
 /**
@@ -45,7 +45,7 @@ export class ButtonDirective {
     let iconEl: SVGSVGElement | null = null;
     effect(() => {
       const name = this.icon();
-      const size = this.size() === 'sm' || this.variant() === 'link' ? 14 : 16;
+      const size = this.size() === 'sm' || this.variant() === 'link' || this.variant() === 'dashed' ? 14 : 16;
       iconEl?.remove();
       iconEl = null;
       if (name) {

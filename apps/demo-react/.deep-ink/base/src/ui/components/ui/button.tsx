@@ -4,11 +4,11 @@ import type { AnchorHTMLAttributes, ButtonHTMLAttributes, ReactElement, ReactNod
 import { Icon } from './icon';
 import type { IconName } from './icon';
 
-export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'link' | 'danger';
+export type ButtonVariant = 'primary' | 'secondary' | 'ghost' | 'link' | 'dashed' | 'danger';
 export type ButtonSize = 'md' | 'sm';
 
 interface ButtonOwnProps {
-  /** One primary per task region. `link` is a small text button (Copy, Clear list). */
+  /** One primary per task region. `link` is a small text button (Copy, Clear list); `dashed` an add / try action. */
   variant?: ButtonVariant;
   /** `md` is 40px high. `sm` is 32px and is never used for the primary action of a page. */
   size?: ButtonSize;
@@ -47,7 +47,7 @@ function requireName(component: string, iconOnly: boolean | undefined, props: Re
 function contents(icon: IconName | undefined, size: ButtonSize, variant: ButtonVariant, children: ReactNode) {
   return (
     <>
-      {icon ? <Icon name={icon} size={size === 'sm' || variant === 'link' ? 14 : 16} /> : null}
+      {icon ? <Icon name={icon} size={size === 'sm' || variant === 'link' || variant === 'dashed' ? 14 : 16} /> : null}
       {children}
     </>
   );
