@@ -1,5 +1,8 @@
-<!-- LiveIndicator. Marks a real-time stream only. Not a status, not a live region. -->
-<span class="live"><span class="live-dot" aria-hidden="true"></span>live</span>
+<!-- LiveIndicator. Marks a real-time stream only. Not a status, not a live region.
+     data-size="md | sm"; data-variant="pill | inline" (inline: no border, for KPI cards). The dot pulses (1.4s), not under reduced motion. -->
+<span class="live" data-size="md" data-variant="pill"><span class="live-dot" aria-hidden="true"></span>live · ~19 calls/min</span>
+<span class="live" data-size="sm" data-variant="pill"><span class="live-dot" aria-hidden="true"></span>live</span>
+<span class="live" data-variant="inline"><span class="live-dot" aria-hidden="true"></span>live</span>
 
-<!-- Paused: add data-paused and write the word. -->
-<span class="live" data-paused><span class="live-dot" aria-hidden="true"></span>live<span class="live-paused"> · paused</span></span>
+<!-- Paused: add data-paused, swap the dot for a pause glyph and write the word. -->
+<span class="live" data-paused data-size="md" data-variant="pill"><svg class="icon" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M8 5v14M16 5v14"/></svg>paused · 2 new calls</span>
