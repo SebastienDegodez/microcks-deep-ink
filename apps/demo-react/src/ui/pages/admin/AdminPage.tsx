@@ -60,6 +60,7 @@ export default function AdminPage() {
         title="Administration"
         description="Assign Microcks roles and manager groups, keep the Secrets used by importers and tests, and export or restore repository Snapshots."
         descriptionTone="secondary"
+        descriptionWidth={760}
         align="start"
         actions={
           <>
