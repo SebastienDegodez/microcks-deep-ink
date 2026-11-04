@@ -75,26 +75,36 @@ export default function BehaviorPage() {
 
   return (
     <div className="behavior-page">
-      <PageHeader
-        title={operation.path}
-        breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}`, to: `/services/${svc.id}` }, { label: `${operation.method} ${operation.path}` }]}
-        badge={<span className="ex-row"><MethodTag method={operation.method} protocol={svc.protocol} /><ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} size="sm" /></span>}
-        actions={
-          <>
-            {dirty ? <span className="ex-row"><Icon name="warning" size={14} /> Unsaved changes <Button size="sm" variant="ghost" onClick={() => { setEdits(undefined); setSwitched(false); }}>Reset</Button></span> : null}
-            <Button asChild variant="secondary"><RouterLink to={`/services/${svc.id}`}>Cancel</RouterLink></Button>
-            <Button icon="check" disabled={!dirty} onClick={() => void save()}>Save behavior</Button>
-          </>
-        }
-      />
-      <p className="ex-secondary" style={{ margin: 0 }}>Mock behavior: how Microcks picks a response for each incoming call, how long it waits, which parameters it checks and whether it keeps state. Try every change in the simulator before saving.</p>
-      <div role="note" className="ex-row ex-small">
-        <strong>Saved</strong>
-        <span>{saved.data?.dispatcher} · rule: {saved.data?.rule || '(none)'}</span> <span aria-hidden="true">•</span>
-        <span>delay {saved.data?.delayMs} ms {saved.data?.delayStrategy ?? 'fixed'}</span> <span aria-hidden="true">•</span>
-        <span>{saved.data?.constraints.length} constraints</span> <span aria-hidden="true">•</span>
-        <span>{exs.length} examples · dispatcher inferred from the OpenAPI path parameter</span>
-        {savedAt ? <span role="status"><Icon name="check" size={14} /> Behavior saved</span> : null}
+      <div className="behavior-head">
+        <PageHeader
+          title={operation.path}
+          variant="mono"
+          align="start"
+          breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}`, to: `/services/${svc.id}` }, { label: <span className="ex-mono">{`${operation.method} ${operation.path}`}</span> }]}
+          leading={<MethodTag method={operation.method} protocol={svc.protocol} />}
+          badge={<RouterLink to={`/services/${svc.id}`} className="behavior-api-link"><ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} size="sm" /></RouterLink>}
+          description="Mock behavior: how Microcks picks a response for each incoming call, how long it waits, which parameters it checks and whether it keeps state. Try every change in the simulator before saving."
+          descriptionTone="secondary"
+          actions={
+            <>
+              {dirty ? <span className="behavior-unsaved"><Icon name="alert-circle" size={14} />Unsaved changes</span> : null}
+              <Button variant="ghost" onClick={() => { setEdits(undefined); setSwitched(false); }}>Reset</Button>
+              <Button asChild variant="secondary"><RouterLink to={`/services/${svc.id}`}>Cancel</RouterLink></Button>
+              <Button variant="primary" icon="check" onClick={() => void save()}>Save behavior</Button>
+            </>
+          }
+        />
+        <div role="note" aria-label="Saved behavior" className="summary-strip">
+          <span className="summary-strip-label">Saved</span>
+          <span className="summary-strip-value">{saved.data?.dispatcher} · rule: {saved.data?.rule || '(none)'}</span>
+          <span aria-hidden="true" className="summary-strip-sep" />
+          <span className="summary-strip-value">delay {saved.data?.delayMs} ms {saved.data?.delayStrategy ?? 'fixed'}</span>
+          <span aria-hidden="true" className="summary-strip-sep" />
+          <span className="summary-strip-value">{saved.data?.constraints.length} constraints</span>
+          <span aria-hidden="true" className="summary-strip-sep" />
+          <span className="summary-strip-label">{exs.length} examples · dispatcher inferred from the OpenAPI path parameter</span>
+          {savedAt ? <span role="status" className="behavior-saved"><Icon name="check" size={14} />Behavior saved</span> : null}
+        </div>
       </div>
 
       <div className="behavior-layout">
