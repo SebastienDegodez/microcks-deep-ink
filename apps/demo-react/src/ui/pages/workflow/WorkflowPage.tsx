@@ -144,7 +144,7 @@ export default function WorkflowPage() {
           )}
         </TabPanel>
         <TabPanel id="runs" value={tab}>
-          {runs.status === 'error' ? <ErrorBlock error={runs.error} onRetry={runs.reload} /> : <RunsTab detail={detail.data} runs={runList} initialFilter={search.get('filter') ?? undefined} />}
+          {runs.status === 'error' ? <ErrorBlock error={runs.error} onRetry={runs.reload} /> : <RunsTab detail={detail.data} runs={runList} sessions={sessions.data} initialFilter={search.get('filter') ?? undefined} />}
         </TabPanel>
       </Tabs>
     </div>
