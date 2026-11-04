@@ -4,6 +4,7 @@
 @import './icon.css';
 @import './button.css';
 @import './ai-ghost-row.css';
+@import './method-tag.css';
 @import './api-badge.css';
 @import './app-shell.css';
 @import './callout.css';
@@ -23,7 +24,6 @@
 @import './link.css';
 @import './live-indicator.css';
 @import './menu.css';
-@import './method-tag.css';
 @import './segmented.css';
 @import './mock-url.css';
 @import './operation-row.css';
