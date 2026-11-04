@@ -92,14 +92,26 @@ function ImportCard({ notify }: { notify: Notify }) {
   const [dragging, setDragging] = useState(false);
   const [preview, setPreview] = useState<SnapshotImportPreviewItem[] | null>(null);
   const [result, setResult] = useState<{ created: number; replaced: number } | null>(null);
+  // Each step removes the control that had focus: move it to the control that replaces it.
+  const focusRef = useRef('');
+  useEffect(() => {
+    if (!focusRef.current) return;
+    const el = document.getElementById(focusRef.current);
+    if (el) {
+      el.focus();
+      focusRef.current = '';
+    }
+  });
 
   const pick = async (name: string) => {
+    focusRef.current = `${inputId}-change`;
     setFileName(name);
     setResult(null);
     setDragging(false);
     setPreview(name ? await uc.govern.previewSnapshotImport(name) : null);
   };
   const clear = () => {
+    focusRef.current = inputId;
     setFileName('');
     setPreview(null);
     setResult(null);
@@ -139,6 +151,7 @@ function ImportCard({ notify }: { notify: Notify }) {
   }, [fileName]);
   const doImport = async () => {
     const r = await uc.govern.importSnapshot(fileName);
+    focusRef.current = `${inputId}-open`;
     setResult(r);
     notify(`Snapshot ${fileName} imported: ${plural(r.created, 'Service')} created, ${r.replaced} replaced.`);
   };
@@ -168,7 +181,7 @@ function ImportCard({ notify }: { notify: Notify }) {
           <div className="ad-snap-filerow">
             <Icon name="file-plain" size={15} />
             <span className="ad-snap-filename">{fileName}</span>
-            {result ? null : <button type="button" className="ad-link-button" aria-label={`Change file ${fileName}`} onClick={clear}>Change</button>}
+            {result ? null : <button type="button" id={`${inputId}-change`} className="ad-link-button" aria-label={`Change file ${fileName}`} onClick={clear}>Change</button>}
           </div>
           {preview ? (
             <>
@@ -189,7 +202,7 @@ function ImportCard({ notify }: { notify: Notify }) {
             <div role="status" className="ad-snap-done">
               <Icon name="check" size={14} className="ad-ok" />
               <span className="ad-snap-done-text">Imported · {result.created} created, {result.replaced} replaced</span>
-              <Link to="/services" className="ad-snap-done-link">Open APIs &amp; Services</Link>
+              <Link to="/services" id={`${inputId}-open`} className="ad-snap-done-link">Open APIs &amp; Services</Link>
               <button type="button" className="ad-link-button" onClick={clear}>Import another</button>
             </div>
           ) : (
