@@ -182,9 +182,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/live-indicator.tsx": "edb5099853e945036078031fef5a1cad71c222ef94827cbaa7437d8a29560ffd",
-        "src/ui/styles/live-indicator.css": "63ba5b045a60de9fb56f9054188be1ddc006be50206ce12ce0762b4e7015ad52"
+        "src/ui/styles/live-indicator.css": "98b839948a2ce8a4acb66ddd309cbeccf5f2e908936434afe18bae221062af22"
       },
-      "hash": "6f2e6571fcd64e07"
+      "hash": "6f61d996201991ab"
     },
     "menu": {
       "version": "0.2.0",
