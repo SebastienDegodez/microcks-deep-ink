@@ -17,7 +17,7 @@
     "keyboard": [],
     "aria": [
       "Icon is aria-hidden; the word carries the meaning",
-      "Shapes differ: check, cross, triangle, arc, circle",
+      "Shapes differ: check, cross, triangle, arc, circle (circled shape: ringed check, ringed cross, dashed ring)",
       "Spin of the running icon stops under reduced motion",
       "Not a live region: announce changes elsewhere if needed"
     ],

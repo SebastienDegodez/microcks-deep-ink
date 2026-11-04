@@ -6,16 +6,24 @@
     align-items: center;
     gap: 6px;
     color: var(--status-color);
-    font: 600 14px/20px var(--font-ui);
+    font: 600 13px/18px var(--font-ui);
   }
   .status[data-size="sm"] { gap: 4px; font-size: 12px; line-height: 16px; }
+  /* Summary rows (catalogue, service tests list) keep a 13px word next to the ring. */
+  .status[data-size="sm"][data-shape="circled"] { gap: 6px; font-size: 13px; line-height: 18px; }
+  /* Stroke weights of the prototype: rings 2.2, bare check and cross 2.6, running arc 2.4. */
+  .status > .icon { stroke-width: 2.2; }
+  .status[data-shape="bare"][data-status="conformant"] > .icon,
+  .status[data-shape="bare"][data-status="failed"] > .icon { stroke-width: 2.6; }
+  .status[data-status="running"] > .icon { stroke-width: 2.4; }
+  .status[data-shape="bare"][data-status="never"] > .icon { stroke-width: 2; }
   .status[data-status="conformant"] { --status-color: var(--success); }
   .status[data-status="failed"] { --status-color: var(--danger); }
   .status[data-status="partial"] { --status-color: var(--warning); }
   .status[data-status="running"] { --status-color: var(--running); }
   .status[data-status="never"] { --status-color: var(--text-muted); }
   .status > .icon { flex: none; }
-  .status[data-status="running"] > .icon { animation: status-spin 1s linear infinite; }
+  .status[data-status="running"] > .icon { animation: status-spin 0.9s linear infinite; }
   @keyframes status-spin { to { transform: rotate(360deg); } }
   @media (prefers-reduced-motion: reduce) {
     .status[data-status="running"] > .icon { animation: none; }
