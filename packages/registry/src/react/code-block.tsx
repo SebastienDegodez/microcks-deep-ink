@@ -28,6 +28,11 @@ export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLElement>, 'child
   lines?: CodeLine[];
   language?: string;
   caption?: string;
+  /**
+   * Accessible name of the code region when the caption alone is not unique. It must contain the visible
+   * caption (RGAA 6.1): write it as caption + suffix, "SendMessage · curl, JSON-RPC binding".
+   */
+  label?: string;
   /** Show the copy button. */
   copy?: boolean;
   /** `plain`: just the bordered code, no header (no caption, tabs or copy). */
@@ -54,6 +59,7 @@ export function CodeBlock({
   lines,
   language,
   caption,
+  label: regionLabel,
   copy = true,
   variant = 'framed',
   tabs,
@@ -72,7 +78,7 @@ export function CodeBlock({
   const rows: CodeLine[] | undefined = lines ?? (lineNumbers && code !== undefined ? code.split('\n').map((text) => ({ text })) : undefined);
   const value = code ?? (lines ?? []).map((l) => l.text).join('\n');
   const tabLabel = tabs?.find((t) => t.id === tab)?.label;
-  const label = caption ?? (tabLabel ? `${tabLabel} code` : language ? `${language} code` : 'Code');
+  const label = regionLabel ?? caption ?? (tabLabel ? `${tabLabel} code` : language ? `${language} code` : 'Code');
   const diff = rows?.some((l) => l.changed) ?? false;
   const header = variant !== 'plain' && (caption || copy || tabs?.length);
   return (
