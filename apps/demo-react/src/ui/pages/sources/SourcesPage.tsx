@@ -165,6 +165,7 @@ export default function SourcesPage() {
           title="Sources"
           description="Everything Microcks imports is a source: files you upload once and URLs or repositories it keeps in sync."
           descriptionTone="secondary"
+          descriptionWidth={760}
           actions={<Button asChild variant="primary" icon="plus"><RouterLink to="/sources/new">Add source</RouterLink></Button>}
         />
 

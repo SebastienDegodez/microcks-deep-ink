@@ -53,6 +53,7 @@ export default function TestsPage() {
             </RouterLink>
           ) : null
         }
+        descriptionWidth={760}
         description={
           service
             ? `Conformance tests run against the implementations of this contract, on every endpoint. Each run replays the ${examples ?? ''}${examples ? ' ' : ''}contract examples and checks responses against the ${service.format.split(' ')[0]} schemas.`
