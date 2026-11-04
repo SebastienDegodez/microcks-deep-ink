@@ -4,6 +4,7 @@ import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { CopyButton } from '@/ui/components/ui/copy-button';
 import { Icon } from '@/ui/components/ui/icon';
+import { ProjectionPill } from '@/ui/components/ui/projection-pill';
 
 interface ImportDoneProps {
   result: ImportResult;
@@ -55,7 +56,7 @@ export function ImportDone({ result, onReset, nextScanMinutes }: ImportDoneProps
             <ApiBadge protocol="A2A" name={result.name} version={result.version} />
             <ApiBadge label="skills" value={String(result.agent.skills)} status="success" />
             <ApiBadge label="conversations" value={`${result.agent.conversations} · add APIExamples`} status="warning" />
-            <span className="projection-pill">Projection · v2 module</span>
+            <ProjectionPill />
           </div>
           <div className="done-field">
             <span id="mock-endpoints-label" className="done-label">Mock endpoints · the {result.endpoints?.length ?? 0} transports are served at once</span>
