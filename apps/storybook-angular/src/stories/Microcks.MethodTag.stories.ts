@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { MethodTagComponent } from '@microcks-deep-ink/registry/angular/method-tag';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/MethodTag',
@@ -53,3 +53,6 @@ export const Small: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('method-tag', 'MethodTagComponent', { method: 'GET', protocol: 'REST', size: 'md' }, '');

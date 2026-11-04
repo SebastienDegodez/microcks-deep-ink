@@ -1,7 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { MockUrlComponent } from '@microcks-deep-ink/registry/angular/mock-url';
 import { MOCK_BASE } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/MockUrl',
@@ -38,3 +38,6 @@ export const Bare: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('mock-url', 'MockUrlComponent', { url: 'http://localhost:8080/rest/API+Pastry/2.0.0/pastries', method: 'GET', bare: false }, '');

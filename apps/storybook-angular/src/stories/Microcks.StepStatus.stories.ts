@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { StepStatusComponent, StepChecksComponent } from '@microcks-deep-ink/registry/angular/step-status';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/StepStatus',
@@ -42,3 +42,6 @@ export const Checks: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('step-status', 'StepStatusComponent', { status: 'failed', attempts: 2 }, '');

@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { RunOriginComponent } from '@microcks-deep-ink/registry/angular/run-origin';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/RunOrigin',
@@ -22,3 +22,6 @@ export const Default: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('run-origin', 'RunOriginComponent', { origin: 'ui' }, '');

@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { SectionLabelDirective } from '@microcks-deep-ink/registry/angular/section-label';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/SectionLabel',
@@ -27,3 +27,6 @@ export const Uses: StoryObj = {
     `,
   }),
 };
+
+/** Interactive: every input is a control in the Controls panel. */
+export const Playground: StoryObj = playground('section-label', 'SectionLabelDirective', { size: 'md', weight: 'semibold', split: false }, 'Operations');
