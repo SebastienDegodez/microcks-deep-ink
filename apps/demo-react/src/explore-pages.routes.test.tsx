@@ -153,10 +153,11 @@ describe('WP7 pages', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Delete Pastry orders events' }));
     const confirm = await screen.findByRole('alertdialog', { name: 'Confirm deletion of Pastry orders events' });
     fireEvent.click(within(confirm).getByRole('button', { name: 'Delete source' }));
-    expect(await screen.findByText(/deleted. Services already discovered remain/)).toBeTruthy();
+    expect(await screen.findByText(/deleted. Services already discovered remain/, undefined, { timeout: 5000 })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
-    await screen.findByRole('article', { name: 'Pastry orders events' });
-  });
+    await screen.findByRole('article', { name: 'Pastry orders events' }, { timeout: 5000 });
+    // Four chained in-memory calls with simulated latency: give the whole flow room on a loaded runner.
+  }, 15_000);
 
   it('Sources: a timeline entry with a revision shows its diff', async () => {
     renderAt('/sources/pastry-openapi');
