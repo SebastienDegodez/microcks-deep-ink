@@ -29,10 +29,10 @@
     "button": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/button.tsx": "ddfccddd50affae23dffd421cb4fd8237596c16a5c135dc821b232c9d45dcbc5",
-        "src/ui/styles/button.css": "e9396382f7aec80cc866c590f32a8da1a25f34e762a9ef674dcf247e5a3e8829"
+        "src/ui/components/ui/button.tsx": "82d21eb240ad6bb0230a71deb89de8004207327e9911b341f7b137b826b8aba1",
+        "src/ui/styles/button.css": "200c9b128e5ddcf91c60599a0b000b4cef93f2052efd654d5deb571ab4e542d4"
       },
-      "hash": "f9ce3e58789b0c5b"
+      "hash": "b94a39ec878b4fc3"
     },
     "ai-ghost-row": {
       "version": "0.2.0",
