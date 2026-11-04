@@ -1,0 +1,31 @@
+import type { Meta, StoryObj } from '@storybook/react-vite';
+import React from 'react';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks-deep-ink/registry/react/split-pane';
+import { itemParams } from './_meta';
+
+export default {
+  title: 'Microcks/SplitPane',
+  parameters: itemParams(['split-pane'], 'List + detail layout. The side pane grows to a cap, the main pane takes the rest and wraps under the list on narrow screens. The DOM order is the reading order.'),
+} satisfies Meta;
+
+const box: React.CSSProperties = { padding: 16, border: '1px solid var(--border)', borderRadius: 8, background: 'var(--canvas)' };
+
+export const ListAndDetail: StoryObj = {
+  name: 'List and detail',
+  render: () => (
+    <SplitPane>
+      <SplitPaneSide as="nav" aria-label="Operations" style={box}>GET /pastries · GET /pastries/{'{name}'} · PATCH /pastries/{'{name}'}</SplitPaneSide>
+      <SplitPaneMain as="section" aria-label="Operation detail" style={box}>Examples, request and response of the selected operation.</SplitPaneMain>
+    </SplitPane>
+  ),
+};
+
+export const DetailFirst: StoryObj = {
+  name: 'Wide list, detail on the right (Traces, Hub)',
+  render: () => (
+    <SplitPane sideWidth="400px" sideMax="560px" mainWidth="560px">
+      <SplitPaneMain as="section" aria-label="Calls" style={box}>The list of calls takes the rest of the row.</SplitPaneMain>
+      <SplitPaneSide as="aside" aria-label="Call detail" style={box}>The detail of the selected call.</SplitPaneSide>
+    </SplitPane>
+  ),
+};
