@@ -28,3 +28,19 @@ export const IconOnly: StoryObj = {
     <Menu label="More actions" icon="more" iconOnly variant="ghost" size="sm" items={[{ id: 'a', label: 'Duplicate' }, { id: 'b', label: 'Archive', disabled: true }]} />
   ),
 };
+
+export const SeparatorAndDescription: StoryObj = {
+  name: 'Separator and description',
+  render: () => (
+    <Menu
+      label="More actions"
+      icon="more-vertical"
+      iconOnly
+      items={[
+        { id: 'copy', label: 'Copy workflowId' },
+        { id: 'dl', label: 'Download Arazzo document' },
+        { id: 'del', label: 'Delete workflow', danger: true, disabled: true, separatorBefore: true, description: 'Workflows are removed with their Arazzo document.' },
+      ]}
+    />
+  ),
+};

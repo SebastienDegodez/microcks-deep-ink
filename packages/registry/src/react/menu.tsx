@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef, useState } from 'react';
+import { Fragment, useEffect, useId, useRef, useState } from 'react';
 import type { ReactNode, SyntheticEvent } from 'react';
 import { Button } from './button';
 import type { ButtonSize, ButtonVariant } from './button';
@@ -12,6 +12,10 @@ export interface MenuItem {
   href?: string;
   danger?: boolean;
   disabled?: boolean;
+  /** Draws a separator line before this item (before "Delete"). */
+  separatorBefore?: boolean;
+  /** One line under the item, linked with aria-describedby ("Workflows are removed with their Arazzo document."). */
+  description?: string;
 }
 
 export interface MenuProps {
@@ -140,37 +144,46 @@ export function Menu({ label, icon, iconOnly, items, variant = 'secondary', size
         aria-label={label}
         onToggle={onToggle}
       >
-        {items.map((item) =>
-          item.href !== undefined ? (
-            <a
-              key={item.id}
-              className="menu-item"
-              href={item.href}
-              data-tone={item.danger ? 'danger' : undefined}
-              aria-disabled={item.disabled ? true : undefined}
-              onClick={() => {
-                item.onSelect?.();
-                close();
-              }}
-            >
-              {item.label}
-            </a>
-          ) : (
-            <button
-              key={item.id}
-              type="button"
-              className="menu-item"
-              data-tone={item.danger ? 'danger' : undefined}
-              disabled={item.disabled}
-              onClick={() => {
-                item.onSelect?.();
-                close();
-              }}
-            >
-              {item.label}
-            </button>
-          ),
-        )}
+        {items.map((item) => {
+          const descId = item.description ? `${menuId}-${item.id}-desc` : undefined;
+          const select = () => {
+            item.onSelect?.();
+            close();
+          };
+          return (
+            <Fragment key={item.id}>
+              {item.separatorBefore ? <hr className="menu-separator" /> : null}
+              {item.href !== undefined ? (
+                <a
+                  className="menu-item"
+                  href={item.href}
+                  data-tone={item.danger ? 'danger' : undefined}
+                  aria-disabled={item.disabled ? true : undefined}
+                  aria-describedby={descId}
+                  onClick={select}
+                >
+                  {item.label}
+                </a>
+              ) : (
+                <button
+                  type="button"
+                  className="menu-item"
+                  data-tone={item.danger ? 'danger' : undefined}
+                  disabled={item.disabled}
+                  aria-describedby={descId}
+                  onClick={select}
+                >
+                  {item.label}
+                </button>
+              )}
+              {item.description ? (
+                <span className="menu-item-description" id={descId}>
+                  {item.description}
+                </span>
+              ) : null}
+            </Fragment>
+          );
+        })}
         {children}
       </div>
     </>

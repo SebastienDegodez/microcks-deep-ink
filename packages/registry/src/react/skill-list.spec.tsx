@@ -31,4 +31,12 @@ describe('SkillList', () => {
     expect(onSelectSkill).toHaveBeenCalledWith('recommend-pastry');
     expect(await axeViolations(container)).toEqual([]);
   });
+
+  it('leads the fallback entry with its name, never its internal id', () => {
+    render(<SkillList label="Skills" skills={[{ id: '__fallback', name: 'No skill matched', calls: 3, fallback: true, tags: ['fallback', 'out-of-scope'] }]} />);
+    const list = screen.getByRole('list', { name: 'Skills' });
+    expect(list.textContent).not.toContain('__fallback');
+    expect(list.textContent).toContain('No skill matched');
+    expect(list.textContent).toContain('fallback · out-of-scope');
+  });
 });

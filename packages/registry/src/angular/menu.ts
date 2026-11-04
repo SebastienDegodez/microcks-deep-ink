@@ -11,6 +11,10 @@ export interface MenuItem {
   href?: string;
   danger?: boolean;
   disabled?: boolean;
+  /** Draws a separator line before this item (before "Delete"). */
+  separatorBefore?: boolean;
+  /** One line under the item, linked with aria-describedby ("Workflows are removed with their Arazzo document."). */
+  description?: string;
 }
 
 let nextId = 0;
@@ -42,11 +46,13 @@ let nextId = 0;
     >{{ iconOnly() ? '' : label() }}</button>
     <div #menu [id]="menuId" class="menu" popover="auto" role="group" [attr.aria-label]="label()" (toggle)="onToggle($event)">
       @for (item of items(); track item.id) {
+        @if (item.separatorBefore) {<hr class="menu-separator" />}
         @if (item.href !== undefined) {
-          <a class="menu-item" [attr.href]="item.href" [attr.data-tone]="item.danger ? 'danger' : null" [attr.aria-disabled]="item.disabled ? 'true' : null" (click)="choose(item)">{{ item.label }}</a>
+          <a class="menu-item" [attr.href]="item.href" [attr.data-tone]="item.danger ? 'danger' : null" [attr.aria-disabled]="item.disabled ? 'true' : null" [attr.aria-describedby]="item.description ? menuId + '-' + item.id + '-desc' : null" (click)="choose(item)">{{ item.label }}</a>
         } @else {
-          <button type="button" class="menu-item" [attr.data-tone]="item.danger ? 'danger' : null" [disabled]="!!item.disabled" (click)="choose(item)">{{ item.label }}</button>
+          <button type="button" class="menu-item" [attr.data-tone]="item.danger ? 'danger' : null" [disabled]="!!item.disabled" [attr.aria-describedby]="item.description ? menuId + '-' + item.id + '-desc' : null" (click)="choose(item)">{{ item.label }}</button>
         }
+        @if (item.description) {<span class="menu-item-description" [id]="menuId + '-' + item.id + '-desc'">{{ item.description }}</span>}
       }
       <ng-content />
     </div>

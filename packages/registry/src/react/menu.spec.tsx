@@ -89,4 +89,21 @@ describe('Menu', () => {
     open(menu);
     expect(await axeViolations(container)).toEqual([]);
   });
+
+  it('draws a separator and links an item description', () => {
+    const { container } = render(
+      <Menu
+        label="More actions"
+        icon="more-vertical"
+        iconOnly
+        items={[
+          { id: 'copy', label: 'Copy workflowId' },
+          { id: 'del', label: 'Delete workflow', danger: true, disabled: true, separatorBefore: true, description: 'Workflows are removed with their Arazzo document.' },
+        ]}
+      />,
+    );
+    expect(container.querySelector('hr.menu-separator')).toBeTruthy();
+    const del = container.querySelector('button.menu-item[data-tone="danger"]')!;
+    expect(document.getElementById(del.getAttribute('aria-describedby')!)?.textContent).toBe('Workflows are removed with their Arazzo document.');
+  });
 });

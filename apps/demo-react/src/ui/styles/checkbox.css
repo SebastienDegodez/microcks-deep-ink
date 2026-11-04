@@ -21,6 +21,27 @@
     font: var(--type-small);
     color: var(--text-muted);
   }
+  /* Card: a bordered label; checked = action border and selected fill (the control itself shows the state). */
+  .choice[data-variant="card"] {
+    gap: 10px;
+    padding: 9px 10px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius-badge);
+  }
+  .choice[data-variant="card"]:hover { border-color: var(--border-strong); }
+  .choice[data-variant="card"]:has(input:checked) {
+    background: var(--selected);
+    border-color: var(--action);
+  }
+  .choice[data-variant="card"] .choice-label { font: 600 13px/18px var(--font-ui); }
+  .choice[data-variant="card"] .choice-description { font: 400 12px/1.45 var(--font-ui); }
+  .choice[data-variant="card"] > .checkbox,
+  .choice[data-variant="card"] > .radio { width: 18px; height: 18px; }
+  .choice[data-variant="card"] > .radio::before { width: 8px; height: 8px; }
+  .choice[data-variant="card"] > .checkbox::before { width: 10px; height: 10px; }
+  .fieldset[data-variant="card"] { gap: 8px; }
+
   .choice:has(input:disabled) {
     color: var(--text-muted);
     cursor: not-allowed;
@@ -116,9 +137,9 @@
   .fieldset > legend {
     padding: 0;
     margin-block-end: var(--space-2);
-    font: var(--type-label);
-    letter-spacing: var(--type-label-tracking);
-    text-transform: uppercase;
+    font: 600 13px/18px var(--font-ui);
+    letter-spacing: normal;
+    text-transform: none;
     color: var(--text-secondary);
   }
 

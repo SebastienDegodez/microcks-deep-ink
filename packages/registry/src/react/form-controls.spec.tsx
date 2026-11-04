@@ -85,6 +85,21 @@ describe('RadioGroup', () => {
     const { container } = render(<Harness onPick={() => {}} />);
     expect(await axeViolations(container)).toEqual([]);
   });
+
+  it('renders card labels that keep the native radios', async () => {
+    const { container } = render(
+      <RadioGroup
+        legend="Install mode"
+        variant="card"
+        value="sync"
+        onChange={() => {}}
+        options={[{ value: 'sync', label: 'Keep in sync', description: 'Re-import new versions.' }, { value: 'once', label: 'Import once' }]}
+      />,
+    );
+    expect(container.querySelectorAll('label.choice[data-variant="card"]')).toHaveLength(2);
+    expect((screen.getByRole('radio', { name: 'Keep in sync' }) as HTMLInputElement).checked).toBe(true);
+    expect(await axeViolations(container)).toEqual([]);
+  });
 });
 
 describe('Switch', () => {
