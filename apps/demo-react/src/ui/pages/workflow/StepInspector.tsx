@@ -1,11 +1,12 @@
-import { actionLabel, actionsOf, describeAction, type ArazzoDocument, type Step, type Workflow, type WorkflowRun } from '@/domain/arazzo';
+import type { ReactNode } from 'react';
+import { Link } from 'react-router';
+import { criteriaText, stoppedStep, type Action, type ArazzoDocument, type Step, type StepResult, type Workflow, type WorkflowRun } from '@/domain/arazzo';
+import { formatDuration } from '@/domain/shared/time';
 import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
+import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { MethodTag } from '@/ui/components/ui/method-tag';
-import { Panel } from '@/ui/components/ui/panel';
-import { StepChecks, StepStatus } from '@/ui/components/ui/step-status';
-import { PageLink } from '../workflows/shared';
-import { lensOf } from './loom-model';
+import { bodyPointer, expressionsOf, formatValue, stepResultLine, threadsOf, valueIn, wrongValue } from './loom-model';
+import { httpLine, originWord, runNoun } from './run-facts';
 
 export interface StepInspectorProps {
   workflow: Workflow;
@@ -13,231 +14,433 @@ export interface StepInspectorProps {
   run?: WorkflowRun;
   step?: Step;
   failedStepId?: string;
+  /** Service names by id ("pastry2" → "API Pastry 2.0"). */
+  serviceLabel?: (serviceId: string) => string | undefined;
+  /** Thread currently traced by the lens. */
+  lens?: string;
   onTrace: (expression: string) => void;
   onSelectFailed: () => void;
   onClose: () => void;
 }
 
-/** Side panel of the Loom: operation, result in the selected run, parameters, criteria, actions, outputs. */
-export function StepInspector({ workflow, document, run, step, failedStepId, onTrace, onSelectFailed, onClose }: StepInspectorProps) {
+type Tone = 'pass' | 'fail' | 'off';
+const ICON: Record<Tone, IconName> = { pass: 'check-circle', fail: 'x-circle', off: 'minus-circle' };
+
+/** A circled status icon and a word, coloured by tone (the word carries the state). */
+function Verdict({ tone, children, size = 13 }: { tone: Tone; children: ReactNode; size?: number }) {
+  return (
+    <span className="wf-ins-verdict" data-tone={tone}>
+      <Icon name={ICON[tone]} size={size} strokeWidth={2.2} />
+      {children}
+    </span>
+  );
+}
+
+const pretty = (json: string) => {
+  try {
+    return JSON.stringify(JSON.parse(json), null, 2);
+  } catch {
+    return json;
+  }
+};
+
+/** "PatchPastry · 200 · application/json · Pastry" → "Pastry". */
+const schemaName = (ref: string) => {
+  const parts = ref.split(' · ');
+  return parts.length > 3 ? parts[parts.length - 1] : undefined;
+};
+
+/** Title, detail and note of the failure box of a step. */
+function failureBox(step: Step, result: StepResult, run: WorkflowRun): { title: string; detail: string; note: string } | undefined {
+  if (result.status !== 'failed') return undefined;
+  const last = result.attempts[result.attempts.length - 1];
+  if (result.schema.state === 'fail') {
+    const bad = result.response?.lines.find((l) => l.bad);
+    const field = bad ? /"([^"]+)":\s*(.+?),?$/.exec(bad.text.trim()) : null;
+    const expected = bad?.note?.replace(/^schema:\s*/, '');
+    const name = schemaName(result.schema.ref);
+    return {
+      title: `Response ${last?.httpStatus ?? ''} of ${step.operationId} does not conform to its schema`,
+      detail:
+        field && expected && name
+          ? `/${field[1]} does not match the ${name} schema: ${field[2]?.startsWith('"') ? `string ${field[2]}` : field[2]} found, ${expected} expected`
+          : result.schema.message,
+      note: 'A response that does not conform to its schema fails the step, even when its criteria hold.',
+    };
+  }
+  if (run.origin.kind === 'session') {
+    return {
+      title: result.flow.title,
+      detail: result.flow.text,
+      note: 'A verification checks that each call carries the values the workflow passes from earlier steps and from its inputs.',
+    };
+  }
+  const unheld = result.criteria.find((c) => !c.held);
+  return unheld
+    ? { title: 'A success criterion did not hold', detail: `${unheld.condition}: ${unheld.evaluation}`, note: 'A step passes only when all its success criteria hold.' }
+    : { title: result.flow.title, detail: result.flow.text, note: '' };
+}
+
+/** Why a step was not run, from the step where the run stopped. */
+function notRunText(run: WorkflowRun): string {
+  const stopped = stoppedStep(run);
+  if (!stopped) return 'Not run: the run ended before this step.';
+  if (stopped.status === 'passed') return `Not run: the end action of ${stopped.stepId} ended the run.`;
+  const retries = stopped.attempts.length - 1;
+  return retries > 0
+    ? `Not run: ${stopped.stepId} still failed after its ${retries} ${retries === 1 ? 'retry' : 'retries'}, so the run ended there.`
+    : `Not run: ${stopped.stepId} failed, so the run ended there.`;
+}
+
+interface ActionRow {
+  when: 'On success' | 'On failure';
+  type: string;
+  text: string;
+  crit?: string;
+  note?: string;
+  noteTone?: 'danger' | 'secondary';
+}
+
+function describe(a: Action): string {
+  return a.type === 'retry' ? `retry every ${a.retryAfter} s, up to ${a.retryLimit} ${a.retryLimit === 1 ? 'time' : 'times'}` : 'end the workflow';
+}
+
+function actionRows(workflow: Workflow, step: Step, result: StepResult | undefined, run: WorkflowRun | undefined): ActionRow[] {
+  const ran = result !== undefined && result.status !== 'not-run' && run !== undefined;
+  const label = run ? `#${run.number}` : '';
+  const index = workflow.steps.indexOf(step);
+  const next = workflow.steps[index + 1];
+  const rows: ActionRow[] = [];
+  if (step.onSuccess.length === 0) {
+    rows.push({ when: 'On success', type: 'default', text: next ? 'go on to the next step' : 'the workflow ends and returns its outputs' });
+  }
+  for (const a of step.onSuccess) {
+    let note: string | undefined;
+    if (ran && a.type === 'end') {
+      if (result.flow.kind === 'end') note = `Applied in ${label}: the run ended here, with success.`;
+      else {
+        const field = /\$response\.body#\/([A-Za-z0-9_-]+)/.exec(criteriaText(a.criteria))?.[1];
+        const v = field ? result.outputs[field] : undefined;
+        note = `Not applied in ${label}: ${field && v !== undefined ? `${field} was '${String(v)}', so ` : ''}the run went on to ${next?.stepId ?? 'its end'}.`;
+      }
+    }
+    rows.push({ when: 'On success', type: a.type, text: describe(a), crit: criteriaText(a.criteria) || undefined, note, noteTone: 'secondary' });
+  }
+  if (step.onFailure.length === 0) {
+    rows.push({ when: 'On failure', type: 'default', text: 'end the run; the later steps are not run' });
+  }
+  for (const a of step.onFailure) {
+    let note: string | undefined;
+    let noteTone: ActionRow['noteTone'] = 'secondary';
+    if (ran && a.type === 'retry') {
+      if (run.origin.kind === 'session') note = 'A verification checks the calls received; it does not retry.';
+      else if (result.attempts.length > 1) {
+        const later = result.attempts.slice(1).map((x) => x.n);
+        note = `Applied in ${label}: ${later.length === 1 ? `attempt ${later[0]}` : `attempts ${later.slice(0, -1).join(', ')} and ${later[later.length - 1]}`} ${result.status === 'failed' ? 'failed the same way, then the run ended' : 'passed'}.`;
+        noteTone = result.status === 'failed' ? 'danger' : 'secondary';
+      } else note = `Not needed in ${label}: the step passed at its first attempt.`;
+    }
+    rows.push({ when: 'On failure', type: a.type, text: describe(a), crit: criteriaText(a.criteria) || undefined, note, noteTone });
+  }
+  return rows;
+}
+
+/** Side panel of the Loom: operation, result in the selected run, parameters, body, criteria, actions, outputs. */
+export function StepInspector({ workflow, document, run, step, failedStepId, serviceLabel, lens, onTrace, onSelectFailed, onClose }: StepInspectorProps) {
   if (!step) {
     return (
-      <Panel title="Step inspector" headingLevel={2}>
-        <div className="wf-inspector">
-          <p>
-            No step selected. Select a step on the loom to inspect its operation, parameters, criteria, actions and outputs
-            {run ? `, with the values resolved in run #${run.number}` : ''}.
-          </p>
-          {failedStepId ? (
-            <div>
-              <Button size="sm" onClick={onSelectFailed}>
-                Inspect the failed step of #{run?.number}
-              </Button>
-            </div>
-          ) : null}
-        </div>
-      </Panel>
+      <aside aria-label="Step inspector" className="wf-inspector-empty">
+        <span className="wf-inspector-empty-title">No step selected</span>
+        <span>
+          Select a step on the loom to inspect its operation, parameters, criteria, actions and outputs
+          {run ? `, with the values resolved in run #${run.number}` : ''}.
+        </span>
+        {failedStepId && run ? (
+          <Button size="sm" onClick={onSelectFailed}>
+            Inspect the failed step of #{run.number}
+          </Button>
+        ) : null}
+      </aside>
     );
   }
 
   const index = workflow.steps.indexOf(step) + 1;
   const result = run?.steps.find((r) => r.stepId === step.stepId);
   const source = document.sources.find((s) => s.name === step.sourceName);
+  const linked = source?.link.status === 'linked' ? source.link : undefined;
+  const service = linked ? serviceLabel?.(linked.serviceId) : undefined;
   const validate = run?.options.validateSchemas === true;
-  const last = result?.attempts[result.attempts.length - 1];
-  const used = (expression: string) => lensOf(expression, workflow, run).uses.length > 0;
+  const notRun = result?.status === 'not-run';
+  const session = run?.origin.kind === 'session';
+  const wrong = wrongValue(result);
+  const box = result && run ? failureBox(step, result, run) : undefined;
+  const threads = threadsOf(workflow, run);
+  const attempts = result?.attempts ?? [];
+  const status: Tone = !result || notRun ? 'off' : result.status === 'passed' ? 'pass' : 'fail';
+  const statusWord = !result ? 'Not part of the run' : notRun ? 'Not run' : result.status === 'passed' ? 'Passed' : `Failed${attempts.length > 1 ? ` after ${attempts.length} attempts` : ''}`;
+
+  const checks: { label: string; tone: Tone; word: string }[] = [];
+  if (result) {
+    if (session && !notRun) {
+      checks.push({ label: attempts[0]?.when.replace(/^call/, 'Call') ?? 'Call', tone: 'pass', word: 'received' });
+      checks.push(wrong ? { label: 'Data passing', tone: 'fail', word: 'not from an earlier step' } : { label: 'Data passing', tone: 'pass', word: 'as the workflow says' });
+      checks.push({ label: 'Contract', tone: 'pass', word: 'conforms' });
+    } else {
+      const held = result.criteria.every((c) => c.held);
+      checks.push({ label: 'Success criteria', tone: notRun ? 'off' : held ? 'pass' : 'fail', word: notRun ? 'not evaluated' : held ? 'held' : 'did not hold' });
+      const sc = result.schema.state;
+      checks.push({
+        label: 'Schema validation',
+        tone: notRun || sc === 'off' || sc === 'na' ? 'off' : sc === 'pass' ? 'pass' : 'fail',
+        word: notRun && validate ? 'not evaluated' : sc === 'pass' ? 'conforms' : sc === 'fail' ? 'failed' : 'off',
+      });
+    }
+  }
+
+  const paramValue = (expr: string, name: string): { lead: string; text: string; tone?: 'bad' | 'idle' } => {
+    if (!run || !result) return { lead: '', text: 'no run selected', tone: 'idle' };
+    if (notRun) return { lead: '', text: 'not resolved: step not run', tone: 'idle' };
+    const v = valueIn(expr, run);
+    const shown = v === undefined ? (expr.startsWith('$') ? 'not resolved' : expr) : formatValue(v);
+    if (wrong && wrong.param === name && wrong.expression === expr) return { lead: 'received', text: `"${wrong.got}" · expected ${shown}`, tone: 'bad' };
+    return { lead: session ? 'received' : 'resolved', text: shown };
+  };
+
+  const bodyExprs = step.requestBody ? expressionsOf({ ...step, parameters: [] }) : [];
+  const sent = result?.request?.body
+    ? pretty(result.request.body)
+    : step.requestBody && run && !notRun
+      ? pretty(step.requestBody.replace(/"\{(\$[^}]+)\}"/g, (_, e: string) => JSON.stringify(valueIn(e, run) ?? null)))
+      : undefined;
+  const producedWhy = result?.status === 'failed' ? `not produced: ${step.stepId} failed${session ? ' the verification' : ''}` : notRun ? 'not run' : '';
 
   return (
-    <Panel
-      title={`Step ${index}, ${step.stepId}`}
-      headingLevel={2}
-      actions={
-        <Button size="sm" variant="ghost" onClick={onClose}>
-          Close inspector
-        </Button>
-      }
-    >
-      <div className="wf-inspector">
-        <div className="wf-section">
-          <p style={{ margin: 0 }}>{step.description}</p>
-          <div className="wf-row">
-            <MethodTag method={step.method} protocol={source?.type === 'asyncapi' ? 'EVENT' : 'REST'} />
-            {source?.link.status === 'linked' ? (
-              <PageLink to={`/services/${source.link.serviceId}`}>
-                <code>{step.path}</code>
-              </PageLink>
-            ) : (
-              <code>{step.path}</code>
-            )}
-          </div>
-          <span className="wf-small wf-muted">
-            operationId: <code>{step.operationId}</code> · source {step.sourceName}
+    <aside aria-label="Step inspector" className="wf-inspector">
+      <div className="wf-ins-head">
+        <div className="wf-ins-title">
+          <span className="wf-ins-n" aria-hidden="true">
+            {index}
           </span>
+          <h2>
+            <span className="sr-only">Step {index}, </span>
+            {step.stepId}
+          </h2>
+          <Button size="sm" iconOnly icon="close" aria-label="Close step inspector" className="wf-ins-close" onClick={onClose} />
         </div>
+        <p className="wf-ins-desc">{step.description}</p>
+        {linked ? (
+          <Link to={`/services/${linked.serviceId}`} className="wf-ins-op">
+            <MethodTag method={step.method} protocol={linked.protocol} />
+            <span className="wf-ins-path">{step.path}</span>
+            {service ? <span className="wf-ins-service">{service}</span> : null}
+          </Link>
+        ) : (
+          <span className="wf-ins-op">
+            <MethodTag method={step.method} protocol={source?.type === 'asyncapi' ? 'EVENT' : 'REST'} />
+            <span className="wf-ins-path">{step.path}</span>
+          </span>
+        )}
+        <span className="wf-ins-opref">
+          operationId: $sourceDescriptions.{step.sourceName}.{step.operationId}
+        </span>
+      </div>
 
-        <div className="wf-section">
-          <h3 className="wf-h3">Result{run ? <span className="wf-muted"> · run #{run.number}</span> : null}</h3>
-          {!run ? (
-            <p className="wf-muted" style={{ margin: 0 }}>
-              No run selected: the loom shows the definition only.
-            </p>
-          ) : result && result.status !== 'not-run' ? (
-            <>
-              <div className="wf-row">
-                <StepStatus status={result.status} attempts={result.attempts.length} />
-                {last ? (
-                  <span className="wf-small wf-muted">
-                    {last.httpStatus} · {last.ms} ms
+      <section className="wf-ins-section" aria-labelledby="wf-ins-result">
+        <h3 id="wf-ins-result">
+          Result{run ? <span className="wf-ins-meta"> · {runNoun(run)} · {originWord(run)}</span> : null}
+        </h3>
+        {!run ? (
+          <p className="wf-ins-text">No run selected: the loom shows the definition only.</p>
+        ) : (
+          <>
+            <span className="wf-ins-status">
+              <Verdict tone={status} size={16}>
+                {statusWord}
+              </Verdict>
+              {result && !notRun ? <span className="wf-ins-res">{stepResultLine(result)}</span> : null}
+            </span>
+            {checks.length ? (
+              <div className="wf-ins-checks">
+                {checks.map((c) => (
+                  <span key={c.label} className="wf-ins-check">
+                    <Icon name={ICON[c.tone]} size={15} strokeWidth={2.2} data-tone={c.tone} />
+                    <span>{c.label}</span>
+                    <strong data-tone={c.tone}>{c.word}</strong>
                   </span>
-                ) : null}
+                ))}
               </div>
-              <StepChecks
-                successCriteria={result.criteria.every((c) => c.held) ? 'passed' : 'failed'}
-                schemaValidation={validate ? (result.schema.state === 'pass' ? 'passed' : result.schema.state === 'fail' ? 'failed' : 'not-evaluated') : undefined}
-              />
-              {result.schema.state === 'fail' ? (
-                <Callout tone="danger" title="Schema validation failed">
-                  <span className="wf-mono">{result.schema.message}</span>
-                  <br />
-                  Its success criteria held, but a response that breaks its schema fails the step.
-                </Callout>
-              ) : null}
-              {result.attempts.length > 1 ? (
-                <ol className="wf-attempts" aria-label="Attempts">
-                  {result.attempts.map((a) => (
-                    <li key={a.n}>
-                      <strong>
-                        attempt {a.n} of {result.attempts.length}
-                      </strong>
-                      <span className="wf-muted">{a.when}</span>
-                      <span>{a.httpStatus}</span>
-                      <span className="wf-muted">{a.ms} ms</span>
-                    </li>
-                  ))}
-                </ol>
-              ) : null}
-            </>
-          ) : (
-            <p className="wf-muted" style={{ margin: 0 }}>
-              Not run: {result ? 'the run ended before this step.' : 'this step is not part of the run.'}
-            </p>
-          )}
-        </div>
+            ) : null}
+            {box ? (
+              <div className="wf-ins-alert">
+                <span className="wf-ins-alert-title">{box.title}</span>
+                <span className="wf-ins-alert-detail">{box.detail}</span>
+                {box.note ? <span className="wf-ins-alert-note">{box.note}</span> : null}
+              </div>
+            ) : null}
+            {attempts.length > 1 ? (
+              <ol aria-label="Attempts" className="wf-ins-attempts">
+                {attempts.map((a) => (
+                  <li key={a.n}>
+                    <span className="wf-ins-attempt-n">
+                      attempt {a.n} of {attempts.length}
+                    </span>
+                    <span className="wf-ins-attempt-when">{a.when}</span>
+                    <span className="wf-ins-attempt-http">
+                      {a.httpStatus} · {formatDuration(a.ms)}
+                    </span>
+                    {result?.status === 'failed' && result.schema.state === 'fail' ? (
+                      <span className="wf-ins-attempt-verdict">
+                        <Verdict tone="fail" size={12}>
+                          criteria held · schema failed
+                        </Verdict>
+                      </span>
+                    ) : null}
+                  </li>
+                ))}
+              </ol>
+            ) : null}
+            {notRun ? <p className="wf-ins-text">{notRunText(run)}</p> : null}
+            {result ? <span className="wf-ins-http">{httpLine(step, result, run, wrong ? { [wrong.param]: wrong.got } : undefined)}</span> : null}
+          </>
+        )}
+      </section>
 
-        {step.parameters.length ? (
-          <div className="wf-section">
-            <h3 className="wf-h3">Parameters</h3>
-            <ul className="wf-list">
-              {step.parameters.map((p) => (
-                <li key={p.name}>
-                  <div className="wf-row">
-                    <code>{p.name}</code>
-                    <span className="wf-small wf-muted">in: {p.in}</span>
-                  </div>
-                  {p.value.startsWith('$') ? (
-                    <Button size="sm" variant="ghost" onClick={() => onTrace(p.value)} aria-label={`Trace ${p.value}`}>
-                      <code>{p.value}</code>
-                    </Button>
-                  ) : (
-                    <code className="wf-expr">{p.value}</code>
-                  )}
-                  {result?.request?.params[p.name] ? <span className="wf-small wf-muted"> = {result.request.params[p.name]}</span> : null}
-                </li>
-              ))}
-            </ul>
-          </div>
-        ) : null}
+      <section className="wf-ins-section" aria-labelledby="wf-ins-params">
+        <h3 id="wf-ins-params" className="wf-ins-code-h">
+          parameters <span className="wf-ins-count">{step.parameters.length}</span>
+        </h3>
+        {step.parameters.map((p) => {
+          const v = paramValue(p.value, p.name);
+          return (
+            <div key={p.name} className="wf-ins-param">
+              <span className="wf-ins-param-name">
+                <span className="wf-ins-name">{p.name}</span>
+                <span className="wf-ins-tag">in: {p.in}</span>
+              </span>
+              {p.value.startsWith('$') ? (
+                <button type="button" className="wf-ins-expr" aria-pressed={lens === p.value} onClick={() => onTrace(p.value)} aria-label={`Trace ${p.value}`}>
+                  {p.value}
+                </button>
+              ) : null}
+              <span className="wf-ins-value" data-tone={v.tone}>
+                {v.lead ? <span className="wf-ins-lead">{v.lead} </span> : null}
+                {v.text}
+              </span>
+            </div>
+          );
+        })}
+      </section>
 
-        {step.requestBody ? (
-          <div className="wf-section">
-            <h3 className="wf-h3">
-              requestBody <span className="wf-small wf-muted">application/json</span>
-            </h3>
-            <pre className="wf-pre" aria-label="Payload template">
-              {step.requestBody}
-            </pre>
-            {result?.request?.body ? (
-              <pre className="wf-pre" aria-label={`Sent in run ${run?.number}`}>
-                {result.request.body}
+      {step.requestBody ? (
+        <section className="wf-ins-section" aria-labelledby="wf-ins-body">
+          <h3 id="wf-ins-body" className="wf-ins-code-h">
+            requestBody <span className="wf-ins-count">application/json</span>
+          </h3>
+          <div className="wf-ins-bodies">
+            <div>
+              <span className="wf-ins-lead">payload</span>
+              <pre className="wf-ins-pre" data-tone="template">
+                {pretty(step.requestBody)}
               </pre>
+            </div>
+            {sent && run ? (
+              <div>
+                <span className="wf-ins-lead">{session ? `sent by ${run.origin.kind === 'session' ? run.origin.app : ''} in ${attempts[0]?.when ?? 'its call'}` : `sent in run #${run.number}`}</span>
+                <pre className="wf-ins-pre">{sent}</pre>
+              </div>
             ) : null}
           </div>
+          {bodyExprs.map((e) => (
+            <span key={e} className="wf-ins-replace">
+              <span className="wf-ins-lead">replacement</span>
+              <span className="wf-ins-mono">{bodyPointer(step, e) ?? 'requestBody'}</span>
+              <span className="wf-ins-lead">replaced by</span>
+              <button type="button" className="wf-ins-expr" aria-pressed={lens === e} onClick={() => onTrace(e)} aria-label={`Trace ${e}`}>
+                {e}
+              </button>
+            </span>
+          ))}
+        </section>
+      ) : null}
+
+      <section className="wf-ins-section" aria-labelledby="wf-ins-criteria">
+        <h3 id="wf-ins-criteria" className="wf-ins-code-h">
+          successCriteria <span className="wf-ins-count">{step.successCriteria.length}</span>
+        </h3>
+        {step.successCriteria.map((c) => {
+          const ev = result?.criteria.find((x) => x.condition === c.condition);
+          const tone: Tone = !ev ? 'off' : ev.held ? 'pass' : 'fail';
+          return (
+            <div key={c.condition} className="wf-ins-criterion">
+              <span className="wf-ins-type">{c.type}</span>
+              <span className="wf-ins-cond">{c.condition}</span>
+              {run ? (
+                <Verdict tone={tone} size={13}>
+                  {!ev ? 'not evaluated' : ev.held ? 'held' : 'did not hold'}
+                </Verdict>
+              ) : null}
+              {c.type === 'regex' ? <span className="wf-ins-context">context: {c.context}</span> : null}
+            </div>
+          );
+        })}
+        {validate && result?.status === 'failed' && result.schema.state === 'fail' && result.criteria.every((c) => c.held) ? (
+          <span className="wf-ins-note">Every criterion held. The step failed on schema validation, which run #{run?.number} turned on.</span>
         ) : null}
+      </section>
 
-        <div className="wf-section">
-          <h3 className="wf-h3">Success criteria</h3>
-          <ul className="wf-list">
-            {step.successCriteria.map((c) => {
-              const ev = result?.criteria.find((x) => x.condition === c.condition);
-              return (
-                <li key={c.condition}>
-                  <span className="wf-small wf-muted">{c.type}</span> <code>{c.condition}</code>
-                  {c.type === 'regex' ? <span className="wf-small wf-muted"> on {c.context}</span> : null}
-                  {ev ? (
-                    <strong className="wf-small">
-                      {' '}
-                      · {ev.held ? 'held' : 'did not hold'} ({ev.evaluation})
-                    </strong>
-                  ) : null}
-                </li>
-              );
-            })}
-          </ul>
-        </div>
+      <section className="wf-ins-section" aria-labelledby="wf-ins-actions">
+        <h3 id="wf-ins-actions" className="wf-ins-code-h">
+          onSuccess · onFailure
+        </h3>
+        {actionRows(workflow, step, result, run).map((a, i) => (
+          <div key={i} className="wf-ins-action">
+            <span className="wf-ins-action-line">
+              <span className="wf-ins-lead">{a.when}</span>
+              <span className="wf-ins-kind">{a.type}</span>
+              <span>{a.text}</span>
+            </span>
+            {a.crit ? <span className="wf-ins-context">when {a.crit}</span> : null}
+            {a.note ? (
+              <span className="wf-ins-action-note" data-tone={a.noteTone}>
+                {a.note}
+              </span>
+            ) : null}
+          </div>
+        ))}
+      </section>
 
-        <div className="wf-section">
-          <h3 className="wf-h3">onSuccess · onFailure</h3>
-          {actionsOf(step).length === 0 ? (
-            <p className="wf-muted" style={{ margin: 0 }}>
-              No action: a failure ends the run here.
-            </p>
-          ) : (
-            <ul className="wf-list">
-              {actionsOf(step).map(({ when, action }) => (
-                <li key={`${when}-${action.name}`}>
-                  <span className="wf-small wf-muted">{when}</span> <code>{actionLabel(action)}</code>
-                  <br />
-                  <span className="wf-small">{describeAction(action)}</span>
-                </li>
-              ))}
-            </ul>
-          )}
-        </div>
-
-        <div className="wf-section">
-          <h3 className="wf-h3">Outputs</h3>
-          {step.outputs.length === 0 ? (
-            <p className="wf-muted" style={{ margin: 0 }}>
-              No output declared.
-            </p>
-          ) : (
-            <ul className="wf-list">
-              {step.outputs.map((o) => {
-                const expr = `$steps.${step.stepId}.outputs.${o.name}`;
-                const value = result?.outputs[o.name];
-                return (
-                  <li key={o.name}>
-                    <div className="wf-row">
-                      <strong>{o.name}</strong>
-                      <code className="wf-expr">{o.expression}</code>
-                    </div>
-                    <div className="wf-row">
-                      <span className="wf-small">resolved {value === undefined ? '—' : JSON.stringify(value)}</span>
-                      {used(expr) ? (
-                        <Button size="sm" variant="ghost" onClick={() => onTrace(expr)}>
-                          Trace where it goes
-                        </Button>
-                      ) : (
-                        <span className="wf-small wf-muted">Not consumed by another step or output.</span>
-                      )}
-                    </div>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-      </div>
-    </Panel>
+      <section className="wf-ins-section" aria-labelledby="wf-ins-outputs">
+        <h3 id="wf-ins-outputs" className="wf-ins-code-h">
+          outputs
+        </h3>
+        {step.outputs.length === 0 ? <span className="wf-ins-note">No output declared.</span> : null}
+        {step.outputs.map((o) => {
+          const expr = `$steps.${step.stepId}.outputs.${o.name}`;
+          const value = result?.outputs[o.name];
+          const missing = run !== undefined && value === undefined;
+          const traced = threads.some((t) => t.expression === expr);
+          return (
+            <div key={o.name} className="wf-ins-output">
+              <span className="wf-ins-name">{o.name}</span>
+              <span className="wf-ins-oexpr">{o.expression}</span>
+              <span className="wf-ins-output-row">
+                <span className="wf-ins-value" data-tone={missing ? 'bad' : undefined}>
+                  <span className="wf-ins-lead">resolved </span>
+                  {!run ? 'no run selected' : missing ? `— ${producedWhy || 'not resolved'}` : formatValue(value)}
+                </span>
+                {traced ? (
+                  <button type="button" className="wf-ins-trace" aria-pressed={lens === expr} onClick={() => onTrace(expr)}>
+                    <Icon name="search" size={12} />
+                    {lens === expr ? 'Tracing' : 'Trace on the loom'}
+                  </button>
+                ) : (
+                  <span className="wf-ins-note">Not consumed by another step or output.</span>
+                )}
+              </span>
+            </div>
+          );
+        })}
+      </section>
+    </aside>
   );
 }

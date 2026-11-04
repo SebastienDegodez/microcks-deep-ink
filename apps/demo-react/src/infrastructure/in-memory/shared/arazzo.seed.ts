@@ -298,11 +298,12 @@ function sessionRun13(): WorkflowRun {
     number: 13, id, startedAt: '2026-11-03T07:08:04Z', origin: { kind: 'session', sessionId: SESSION_ID, app: 'checkout-web' },
     target: { kind: 'mocks' }, options: { inputs: { size: 'M', newPrice: 3.9 }, timeoutMs: 10_000, validateSchemas: false },
     status: 'FAILURE',
+    // A verification judges the calls the application made: each step carries the number of its call.
     steps: [
-      passedStep(id, 'restock-pastry', LIST, MOCK_BASE, 0, { firstName: 'Eclair Cafe' }),
-      passedStep(id, 'restock-pastry', GET, MOCK_BASE, 0, { oldPrice: 2.4, status: 'unknown' }),
+      { ...passedStep(id, 'restock-pastry', LIST, MOCK_BASE, 0, { firstName: 'Eclair Cafe' }), attempts: [attempt(1, 0, 'call #1')] },
+      { ...passedStep(id, 'restock-pastry', GET, MOCK_BASE, 0, { oldPrice: 2.4, status: 'unknown' }), attempts: [attempt(1, 0, 'call #2')] },
       patch,
-      passedStep(id, 'restock-pastry', VERIFY, MOCK_BASE, 0),
+      { ...passedStep(id, 'restock-pastry', VERIFY, MOCK_BASE, 0), attempts: [attempt(1, 0, 'call #5')] },
     ],
   });
 }

@@ -117,7 +117,7 @@ export default function WorkflowPage() {
 
       <Tabs label="Workflow views" items={WORKFLOW_TABS.map((id) => ({ id, label: TAB_LABELS[id], count: counts[id] }))} value={tab} onChange={goTab}>
         <TabPanel id="loom" value={tab}>
-          <LoomTab detail={detail.data} runs={runList} run={selectedRun} step={step} onPickRun={onPickRun} onSelectStep={(s) => setQuery({ step: s })} inspectLink={inspectLink} />
+          <LoomTab detail={detail.data} runs={runList} run={selectedRun} step={step} sessions={sessions.data} serviceLabel={serviceLabel} onPickRun={onPickRun} onSelectStep={(s) => setQuery({ step: s })} inspectLink={inspectLink} />
         </TabPanel>
         <TabPanel id="steps" value={tab}>
           <StepsTab detail={detail.data} runs={runList} run={selectedRun} onPickRun={onPickRun} inspectLink={inspectLink} />
