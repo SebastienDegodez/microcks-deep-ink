@@ -195,6 +195,7 @@ function ApiServicePage() {
       align="start"
       title={<ApiBadge protocol={svc.protocol} name={`${svc.name} ${svc.version}`} size="xl" />}
       breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}` }]}
+      breadcrumbSeparator="/"
       badge={<LiveIndicator label={`mock live · last call ${relative(det.lastCallAt)}`} />}
       description={det.description}
       descriptionTone="secondary"
@@ -228,7 +229,7 @@ function ApiServicePage() {
         <ApiBadge
           label="samples"
           value={String(svc.exampleCount ?? 0)}
-          status="info"
+          status="action"
           values={pendingTotal > 0 ? [{ value: `+${pendingTotal} AI`, status: 'warning' }] : undefined}
           className="service-samples"
         />

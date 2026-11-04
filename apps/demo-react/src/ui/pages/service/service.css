@@ -6,8 +6,6 @@
 .service-head-dates { font-size: 12px; color: var(--text-muted); }
 .service-head-proofs { display: flex; flex-wrap: wrap; gap: 10px; }
 .service-ai-action .icon { color: var(--warning); }
-/* Samples count on the action colour (api-badge has no action status yet, requested from R2). */
-.service-samples .api-badge-name { background: var(--action); color: var(--on-action); }
 
 .section-label {
   margin: 0;
@@ -161,7 +159,7 @@
   text-align: start;
   cursor: pointer;
 }
-.example-pick[data-ghost] > button { opacity: 0.8; }
+/* The prototype dims the ghost row to .8 opacity; that drops its text below 4.5:1 in light, so the dashed border alone marks it. */
 .example-pick-status {
   flex: none;
   padding: 1px 5px;
