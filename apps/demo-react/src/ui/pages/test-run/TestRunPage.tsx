@@ -88,6 +88,9 @@ function RunView({ base }: { base: TestRun }) {
   /** `null` follows the run (latest finished step while running, the first failed one when done); '' = all closed. */
   const [sel, setSel] = useState<string | null>(null);
   const [ciOpen, setCiOpen] = useState(false);
+  /** The control the user pressed disappears when the run ends (Skip to result, Step forward): focus then moves to the verdict. */
+  const focusVerdict = useRef(false);
+  const verdictRef = useRef<HTMLElement>(null);
   const running = phase === 'running';
   const done = !running;
   const finished = done ? total : tick;
@@ -108,7 +111,18 @@ function RunView({ base }: { base: TestRun }) {
     setSel(null);
     setCiOpen(false);
   };
+  useEffect(() => {
+    if (phase === 'done' && focusVerdict.current) {
+      focusVerdict.current = false;
+      verdictRef.current?.focus();
+    }
+  }, [phase]);
+  const stepForward = () => {
+    if (tick >= total) focusVerdict.current = true;
+    advance();
+  };
   const skip = () => {
+    focusVerdict.current = true;
     setPlay({ phase: 'done', tick: total });
     setSel(null);
   };
@@ -271,14 +285,14 @@ function RunView({ base }: { base: TestRun }) {
               { kind: 'pending', text: `${queuedCount} queued` },
             ]}
             action={
-              <Button size="sm" icon="chevron" className="tr-step-forward" onClick={advance}>
+              <Button size="sm" icon="chevron" className="tr-step-forward" onClick={stepForward}>
                 Step forward
               </Button>
             }
             note="Microcks replays every example of the contract against the endpoint, then validates each response body with the OpenAPI schema of the operation."
           />
         ) : (
-          <section aria-label="Verdict" className="tr-verdict">
+          <section aria-label="Verdict" className="tr-verdict" ref={verdictRef} tabIndex={-1}>
             <div className="tr-verdict-head">
               <div className="tr-score">
                 <span className="tr-score-label">Conformance score</span>

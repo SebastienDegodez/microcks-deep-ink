@@ -35,6 +35,8 @@
 
 /* Verdict */
 .tr-verdict { gap: 18px; line-height: normal; }
+.tr-verdict:focus { outline: none; }
+.tr-verdict:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
 .tr-verdict-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 32px; }
 .tr-score { display: flex; flex-direction: column; gap: 4px; }
 .tr-score-label { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }

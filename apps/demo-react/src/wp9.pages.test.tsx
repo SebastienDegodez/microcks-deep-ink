@@ -87,6 +87,7 @@ describe('Test run (/tests/runner/:id)', () => {
     });
     await waitFor(() => expect(screen.queryByRole('button', { name: 'Skip to result' })).toBeNull());
     expect(screen.getByRole('region', { name: 'Verdict' }).textContent).toContain('86%');
+    expect(screen.getByRole('region', { name: 'Verdict' }).textContent).toContain('6 pts vs run #118');
     const diff = screen.getByRole('region', { name: /Contract versus actual response for Eclair Chocolat · price/ });
     expect(diff.textContent).toContain('$.price');
     expect(diff.textContent).toContain('$.status');
