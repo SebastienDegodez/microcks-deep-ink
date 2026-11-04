@@ -10,10 +10,13 @@ import { booleanAttribute, Directive, input } from '@angular/core';
     class: 'input',
     '[attr.data-mono]': "mono() ? '' : null",
     '[attr.data-size]': 'size()',
+    '[attr.data-surface]': "surface() === 'bg' ? 'bg' : null",
   },
 })
 export class InputDirective {
   /** Monospaced text for paths, URLs and identifiers. */
   readonly mono = input(false, { transform: booleanAttribute });
   readonly size = input<'md' | 'sm'>('md');
+  /** `bg`: on the page background instead of the surface (Import). */
+  readonly surface = input<'surface' | 'bg'>('surface');
 }

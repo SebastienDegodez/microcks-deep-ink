@@ -14,10 +14,20 @@
   .drop-zone[data-dragging] { background: var(--selected); border-style: solid; border-color: var(--action); color: var(--text); }
   /* The upload glyph sits in a 52px selected circle. */
   .drop-zone-icon { display: grid; place-content: center; width: 52px; height: 52px; border-radius: var(--radius-pill); background: var(--selected); color: var(--action); }
-  .drop-zone-heading { margin: 0; color: var(--text); font: 600 19px/26px var(--font-ui); }
-  .drop-zone-hint { max-width: 480px; margin: 0; color: var(--text-secondary); font: 400 14px/20px var(--font-ui); }
+  .drop-zone-heading { margin: 0; color: var(--text); font: 600 19px/normal var(--font-ui); }
+  .drop-zone-hint { max-width: 480px; margin: 0; color: var(--text-secondary); font: 400 14px/normal var(--font-ui); }
   .drop-zone-choose { padding-inline: 20px; }
-  .drop-zone-status { margin: 0; min-height: 1.25em; color: var(--text); font: var(--type-small); font-weight: 600; }
+  .drop-zone-status { margin: 0; color: var(--text); font: var(--type-small); font-weight: 600; }
+  .drop-zone { position: relative; }
+  /* An empty status takes no room (no gap, no line) but stays in the accessibility tree, so the next text is announced. */
+  .drop-zone-status:is(:empty, [data-empty]) {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
   /* The input is visually hidden (.sr-only) but focusable: its label shows the focus. */
   .drop-zone-input:focus-visible + .drop-zone-choose {
     outline: 2px solid var(--action);

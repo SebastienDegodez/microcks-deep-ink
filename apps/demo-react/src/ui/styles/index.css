@@ -48,4 +48,5 @@
 @import './run-progress.css';
 @import './runner-log.css';
 @import './section-label.css';
-@import './op-pick.css';
+@import './bar-chart.css';
+@import './facts.css';

@@ -5,20 +5,24 @@ export interface ArazzoState {
   runs: WorkflowRun[];
   sessions: Session[];
   workflows: Workflow[];
-  /** Next run number of a workflow (max of its runs + 1). */
+  /** Next run number of a workflow (max of its runs and of its reserved scenario runs + 1). */
   nextNumber(documentId: string, workflowId: string): number;
   /** Deterministic 24-hex id for the runs created during the session. */
   newRunId(): string;
   newSessionId(): string;
 }
 
-export function createArazzoState(init: { runs: WorkflowRun[]; sessions: Session[]; workflows: Workflow[] }): ArazzoState {
+type RunKey = Pick<WorkflowRun, 'documentId' | 'workflowId' | 'number'>;
+
+/** `reserved`: runs that only exist once their scenario is launched (#15, #16); their numbers are never reused. */
+export function createArazzoState(init: { runs: WorkflowRun[]; sessions: Session[]; workflows: Workflow[]; reserved?: readonly RunKey[] }): ArazzoState {
   let runCounter = 0;
   let sessionCounter = 0;
+  const { reserved = [], ...rest } = init;
   const state: ArazzoState = {
-    ...init,
+    ...rest,
     nextNumber(documentId, workflowId) {
-      const numbers = state.runs.filter((r) => r.documentId === documentId && r.workflowId === workflowId).map((r) => r.number);
+      const numbers = [...state.runs, ...reserved].filter((r) => r.documentId === documentId && r.workflowId === workflowId).map((r) => r.number);
       return (numbers.length ? Math.max(...numbers) : 0) + 1;
     },
     newRunId() {

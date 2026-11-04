@@ -1,0 +1,46 @@
+/* Manager groups matrix: groups × managers. */
+.ad-matrix { width: 100%; border-collapse: collapse; table-layout: fixed; }
+/* Prototype grid: minmax(230px, 1.6fr) repeat(n, minmax(92px, 1fr)) 120px; the group width is set inline. */
+.ad-matrix-coverage { width: 136px; }
+.ad-matrix th, .ad-matrix td { padding: 6px 0; border-bottom: 1px solid var(--border); text-align: start; vertical-align: middle; font-weight: 400; }
+.ad-matrix tr > :first-child { padding-inline-start: 16px; padding-inline-end: 12px; }
+.ad-matrix tr > :last-child { padding-inline-end: 16px; }
+.ad-matrix thead th {
+  padding-block: 10px 8px; vertical-align: bottom; background: var(--surface);
+  font-size: 11px; font-weight: 600; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted);
+}
+.ad-matrix thead th.ad-matrix-head { text-transform: none; letter-spacing: 0; padding-inline: 4px; }
+.ad-matrix thead th.ad-matrix-head { text-align: center; }
+.ad-matrix-head > .ad-avatar { display: flex; margin: 0 auto 4px; }
+.ad-matrix-id { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; font: 400 11px/1.3 var(--font-mono); color: var(--text-secondary); }
+.ad-matrix .ad-matrix-end { text-align: end; }
+.ad-matrix tbody tr:last-child > * { border-bottom: 0; }
+.ad-matrix tbody th { display: table-cell; }
+.ad-matrix-path { display: block; font: 400 13px/normal var(--font-mono); color: var(--text); overflow-wrap: anywhere; }
+.ad-matrix-sub { display: block; margin-top: 2px; font-size: 12px; color: var(--text-muted); }
+.ad-matrix td.ad-matrix-cell { text-align: center; }
+
+.ad-cell {
+  display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 36px; padding: 0;
+  border: 1px solid var(--border); border-radius: var(--radius-control); background: transparent; color: var(--success); cursor: pointer;
+}
+.ad-cell > .icon { stroke-width: 2.8; }
+.ad-cell[data-state="member"] { border-color: var(--success); background: var(--surface); }
+.ad-cell[data-state="add"] { border: 1px dashed var(--action); background: var(--selected); color: var(--action); }
+.ad-cell[data-state="remove"] { border: 1px dashed var(--danger); color: var(--danger); }
+.ad-cell[data-state="remove"] > .icon { stroke-width: 2.6; }
+.ad-cell:hover { background: var(--raised); }
+.ad-cell-dot { width: 5px; height: 5px; border-radius: var(--radius-pill); background: var(--border); }
+
+.ad-coverage { display: inline-flex; align-items: center; justify-content: flex-end; gap: 6px; font-size: 12px; font-weight: 600; color: var(--warning); }
+.ad-coverage[data-ok] { color: var(--success); }
+
+.ad-pending { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; padding: 12px 16px; border-top: 1px solid var(--border); background: var(--surface); }
+.ad-pending-count { display: inline-flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--warning); }
+.ad-pending-list { flex: 1 1 260px; min-width: 0; font: 400 12px/1.5 var(--font-mono); color: var(--text-secondary); overflow-wrap: anywhere; }
+.ad-pending > .button { min-height: 36px; }
+
+.ad-swatch-item { display: inline-flex; align-items: center; gap: 6px; }
+.ad-swatch { width: 18px; height: 16px; box-sizing: border-box; border: 1px solid var(--success); border-radius: var(--radius-control); background: var(--surface); }
+.ad-swatch[data-state="add"] { border: 1px dashed var(--action); background: var(--selected); }
+.ad-swatch[data-state="remove"] { border: 1px dashed var(--danger); background: transparent; }

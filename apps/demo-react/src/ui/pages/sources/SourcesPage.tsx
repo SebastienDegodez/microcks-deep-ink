@@ -1,29 +1,34 @@
 import '../explore-kit/explore.css';
 import './sources.css';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import {
-  defaultDiffEntry, diffStats, filterImporters, formatHourMinute, formatShortClock, importerStatus, originCounts, splitRevision, statusCounts, SOURCE_ORIGINS,
+  defaultDiffEntry, diffStats, filterImporters, formatDay, formatHourMinute, formatShortClock, importerStatus, originCounts, splitRevision, statusCounts, SOURCE_ORIGINS,
   type Importer, type SourceOrigin, type SourceStatus, type SyncEntry,
 } from '@/domain/importing';
-import { PageHeader, useAnnounce, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
+import { PageHeader, useAnnounce, useClock, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { Chip } from '@/ui/components/ui/chip';
-import { CodeBlock, type CodeLine } from '@/ui/components/ui/code-block';
 import { CopyButton } from '@/ui/components/ui/copy-button';
 import { Icon } from '@/ui/components/ui/icon';
-import { Input } from '@/ui/components/ui/input';
+import { FilterRow, FilterSearch } from '@/ui/components/ui/filter-bar';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { Panel } from '@/ui/components/ui/panel';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { Switch } from '@/ui/components/ui/switch';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
 
 const STATUS_WORD: Record<SourceStatus, string> = { imported: 'Imported', warning: 'Imported · 1 warning', failed: 'Failed', inactive: 'Inactive', running: 'Importing' };
-const STATUS_ICON: Record<SourceStatus, 'check' | 'warning' | 'cross' | 'pause' | 'running'> = { imported: 'check', warning: 'warning', failed: 'cross', inactive: 'pause', running: 'running' };
+const STATUS_ICON: Record<SourceStatus, 'check' | 'warning' | 'cross' | 'pause-narrow' | 'running'> = { imported: 'check', warning: 'warning', failed: 'cross', inactive: 'pause-narrow', running: 'running' };
 const RESULT_WORD = { imported: 'Imported', warning: 'Warning', failed: 'Failed', paused: 'Paused' } as const;
+/** The "last import" shield of the detail pane: the word and fill come from the source status, not from the last outcome. */
+const SHIELD: Record<Exclude<SourceStatus, 'running'>, { word: string; status: 'success' | 'warning' | 'danger' | 'neutral' }> = {
+  imported: { word: 'imported', status: 'success' },
+  warning: { word: '1 warning', status: 'warning' },
+  failed: { word: 'failed', status: 'danger' },
+  inactive: { word: 'inactive', status: 'neutral' },
+};
+const DIFF_SIGN = { added: '+', removed: '−', skipped: '!', hunk: '', context: '' } as const;
+const DIFF_WORD = { added: 'added', removed: 'removed', skipped: 'skipped' } as const;
 
 function ServiceLinks({ importer, className = 'ex-row' }: { importer: Importer; className?: string }) {
   return (
@@ -49,6 +54,7 @@ export default function SourcesPage() {
   const uc = useUseCases();
   const announce = useAnnounce();
   const relative = useRelativeTime();
+  const clock = useClock();
   const list = useQuery(() => uc.importing.listImporters(), [uc]);
   const schedule = uc.importing.getScanSchedule();
   const [status, setStatus] = useState<SourceStatus | 'all'>('all');
@@ -56,17 +62,38 @@ export default function SourcesPage() {
   const [query, setQuery] = useState('');
   const [progress, setProgress] = useState<Record<string, number>>({});
   const [confirm, setConfirm] = useState<string | undefined>();
-  const [undoing, setUndoing] = useState<Importer | undefined>();
+  const [undoing, setUndoing] = useState<{ importer: Importer; wasSelected: boolean } | undefined>();
+  /** Card whose name takes focus once the list has reloaded (after an undo). */
+  const focusId = useRef<string | undefined>(undefined);
+  const undoRef = useRef<HTMLButtonElement>(null);
+  const autoRuns = useRef(new Map<string, () => void>());
   const [entryId, setEntryId] = useState<string | undefined>();
   // The inline confirmation takes focus once, when it opens.
   const focusOnOpen = useCallback((el: HTMLButtonElement | null) => el?.focus(), []);
 
-  // Importers that are mid-import when the page opens finish on their own.
+  // Importers that are mid-import when the page opens finish on their own, once: a later reload
+  // (after a delete or an undo) must not restart them nor announce "Import started." again.
   useEffect(() => {
     if (!list.data) return;
-    const unsubs = list.data.filter((i) => i.state === 'running').map((i) => run(i.id));
-    return () => unsubs.forEach((u) => u());
+    for (const i of list.data) {
+      if (i.state === 'running' && !autoRuns.current.has(i.id)) autoRuns.current.set(i.id, run(i.id));
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [list.data]);
+  useEffect(() => {
+    const runs = autoRuns.current;
+    return () => runs.forEach((u) => u());
+  }, []);
+
+  // After a delete, focus moves to Undo; after an undo, to the restored card's name.
+  useEffect(() => {
+    if (undoing) undoRef.current?.focus();
+  }, [undoing]);
+  useEffect(() => {
+    const id = focusId.current;
+    if (!id || !list.data?.some((i) => i.id === id)) return;
+    document.getElementById(`source-name-${id}`)?.focus();
+    focusId.current = undefined;
   }, [list.data]);
 
   function run(id: string) {
@@ -109,28 +136,27 @@ export default function SourcesPage() {
   const doDelete = async (gone: Importer) => {
     await uc.importing.deleteImporter(gone.id);
     setConfirm(undefined);
-    setUndoing(gone);
+    setUndoing({ importer: gone, wasSelected: selected?.id === gone.id });
     list.reload();
     if (importerId === gone.id) navigate('/sources', { replace: true });
     announce(`${gone.name} deleted. Undo is available.`);
   };
   const undo = async () => {
     if (!undoing) return;
-    await uc.importing.undoDeleteImporter(undoing.id);
-    announce(`${undoing.name} restored.`);
+    const { importer: back, wasSelected } = undoing;
+    await uc.importing.undoDeleteImporter(back.id);
+    announce(`${back.name} restored.`);
     setUndoing(undefined);
+    if (wasSelected) navigate(`/sources/${back.id}`, { replace: true });
+    focusId.current = back.id;
     list.reload();
   };
 
-  const diffLines: CodeLine[] = (diff.data?.lines ?? []).map((l) =>
-    l.kind === 'added' ? { text: `+ ${l.text}` }
-    : l.kind === 'removed' ? { text: `− ${l.text}`, bad: true, note: 'removed' }
-    : l.kind === 'skipped' ? { text: `! ${l.text}`, bad: true, note: 'skipped' }
-    : l.kind === 'hunk' ? { text: l.text }
-    : { text: `  ${l.text}` },
-  );
   const stats = diff.data ? diffStats(diff.data.lines) : undefined;
   const failing = counts.failed;
+  const selectedStatus = selected ? importerStatus(selected) : 'imported';
+  /** Relative time for the last week, the day after that ("Jul 14"). */
+  const when = (at: string) => (clock.now().getTime() - new Date(at).getTime() > 7 * 86_400_000 ? formatShortClock(at).split(' · ')[0] ?? '' : relative(at));
 
   return (
     <div className="sources-page">
@@ -160,35 +186,40 @@ export default function SourcesPage() {
         </div>
       </div>
 
-      <section aria-label="Filter sources" className="ex-row">
-        <Input type="search" aria-label="Filter sources by name, URL, secret or Service" autoComplete="off" placeholder="Filter by name, URL, secret, Service…" value={query} onChange={(e) => setQuery(e.target.value)} />
-        <Segmented
-          label="Status"
-          value={status}
-          onChange={(id) => setStatus(id as SourceStatus | 'all')}
-          options={[
-            { id: 'all', label: 'All', count: counts.all },
-            { id: 'imported', label: 'Imported', count: counts.imported },
-            { id: 'warning', label: 'Warning', count: counts.warning },
-            { id: 'failed', label: 'Failed', count: counts.failed },
-            { id: 'inactive', label: 'Inactive', count: counts.inactive },
-          ]}
-        />
-        <Segmented
-          label="Origin"
-          value={origin}
-          onChange={(id) => setOrigin(id as SourceOrigin | 'all')}
-          options={[{ id: 'all', label: 'All', count: originTotals.all }, ...SOURCE_ORIGINS.map((o) => ({ id: o.id, label: o.label, count: originTotals[o.id] }))]}
-        />
-        <span role="status" className="ex-small ex-secondary">{shown.length} of {counts.all} sources</span>
+      <section aria-label="Filter sources">
+        <FilterRow>
+          <FilterSearch label="Filter sources by name, URL, secret or Service" placeholder="Filter by name, URL, secret, Service…" autoComplete="off" value={query} onChange={(e) => setQuery(e.target.value)} />
+          <Segmented
+            label="Status"
+            pressedFill="selected"
+            iconSize={13}
+            value={status}
+            onChange={(id) => setStatus(id as SourceStatus | 'all')}
+            options={[
+              { id: 'all', label: 'All', count: counts.all },
+              { id: 'imported', label: 'Imported', icon: 'check', iconTone: 'success', count: counts.imported },
+              { id: 'warning', label: 'Warnings', icon: 'warning', iconTone: 'warning', count: counts.warning },
+              { id: 'failed', label: 'Failing', icon: 'cross', iconTone: 'danger', count: counts.failed },
+              { id: 'inactive', label: 'Inactive', icon: 'pause-narrow', iconTone: 'muted', count: counts.inactive },
+            ]}
+          />
+          <Segmented
+            label="Origin"
+            pressedFill="selected"
+            value={origin}
+            onChange={(id) => setOrigin(id as SourceOrigin | 'all')}
+            options={[{ id: 'all', label: 'All', count: originTotals.all }, ...SOURCE_ORIGINS.map((o) => ({ id: o.id, label: o.label, count: originTotals[o.id] }))]}
+          />
+          <span role="status" className="filter-bar-end sources-shown">{shown.length} of {counts.all} sources</span>
+        </FilterRow>
       </section>
 
       <div className="sources-split">
         <section aria-label="Sources" className="sources-list">
           {undoing ? (
             <div role="status" className="undo-banner">
-              <span className="undo-banner-text"><strong>{undoing.name}</strong> deleted. Services already discovered remain but are no longer updated.</span>
-              <button type="button" className="undo-banner-action" onClick={() => void undo()}>Undo</button>
+              <span className="undo-banner-text"><strong>{undoing.importer.name}</strong> deleted. Services already discovered remain but are no longer updated.</span>
+              <button type="button" ref={undoRef} className="undo-banner-action" onClick={() => void undo()}>Undo</button>
             </div>
           ) : null}
           {shown.map((j) => {
@@ -204,7 +235,7 @@ export default function SourcesPage() {
                   {upload ? (
                     <span className="source-card-upload" aria-hidden="true" title="Uploaded file, no schedule"><Icon name="upload" size={16} /></span>
                   ) : <Switch label={<span className="sr-only">{`Scan ${j.name} on schedule`}</span>} checked={j.active} onChange={(v) => void toggleActive(j, v)} />}
-                  <button type="button" className="source-card-name" aria-pressed={isSel} onClick={() => navigate(`/sources/${j.id}`)}>{j.name}</button>
+                  <button type="button" id={`source-name-${j.id}`} className="source-card-name" aria-pressed={isSel} onClick={() => navigate(`/sources/${j.id}`)}>{j.name}</button>
                   {running ? <LiveIndicator label="live · importing" variant="inline" /> : (
                     <span className="source-status" data-status={st}><Icon name={STATUS_ICON[st]} size={14} />{STATUS_WORD[st]}</span>
                   )}
@@ -228,10 +259,12 @@ export default function SourcesPage() {
                   <div className="source-notice" data-tone="warning"><Icon name="warning" size={14} /><span>{j.warning}</span></div>
                 ) : null}
                 {confirm === j.id ? (
-                  <div role="alertdialog" aria-label={`Confirm deletion of ${j.name}`} className="delete-confirm">
+                  // Escape cancels, as in a dialog, and gives focus back to the card's Delete button.
+                  // eslint-disable-next-line jsx-a11y/no-noninteractive-element-interactions
+                  <div role="alertdialog" aria-label={`Confirm deletion of ${j.name}`} className="delete-confirm" onKeyDown={(e) => { if (e.key === 'Escape') { setConfirm(undefined); document.getElementById(`source-delete-${j.id}`)?.focus(); } }}>
                     <span className="delete-confirm-text">Delete this source? Services already discovered remain but will no longer be updated.</span>
                     <Button size="sm" variant="danger" confirm ref={focusOnOpen} onClick={() => void doDelete(j)}>Delete source</Button>
-                    <Button size="sm" variant="secondary" className="delete-confirm-cancel" onClick={() => setConfirm(undefined)}>Cancel</Button>
+                    <Button size="sm" variant="secondary" className="delete-confirm-cancel" onClick={() => { setConfirm(undefined); document.getElementById(`source-delete-${j.id}`)?.focus(); }}>Cancel</Button>
                   </div>
                 ) : null}
                 <div className="source-card-actions">
@@ -243,7 +276,7 @@ export default function SourcesPage() {
                       <Button asChild size="sm" variant="ghost" icon="edit" className="source-edit"><RouterLink to="/sources/new" aria-label={`Edit ${j.name}`}>Edit</RouterLink></Button>
                     </>
                   )}
-                  <Button size="sm" variant="ghost" icon="trash" className="source-delete" aria-label={`Delete ${j.name}`} onClick={() => setConfirm(j.id)}>Delete</Button>
+                  <Button size="sm" variant="ghost" icon="trash-plain" id={`source-delete-${j.id}`} className="source-delete" aria-label={`Delete ${j.name}`} onClick={() => setConfirm(j.id)}>Delete</Button>
                 </div>
               </article>
             );
@@ -257,65 +290,110 @@ export default function SourcesPage() {
         </section>
 
         {selected ? (
-          <section aria-label="Source detail" className="sources-detail ex-stack">
-            <Panel
-              title={selected.name}
-              actions={importerStatus(selected) === 'running' ? <LiveIndicator label="live · importing" /> : <span className="ex-row"><span className="ex-small ex-secondary">last import</span><Chip tone={selected.health === 'failed' ? 'danger' : selected.health === 'warning' ? 'warning' : 'success'}>{STATUS_WORD[importerStatus(selected)]}</Chip></span>}
-            >
-              <p className="ex-row"><code className="ex-url-line">{selected.url}</code><CopyButton value={selected.url} label="Copy URL" /></p>
-              {selected.error ? (
-                <Callout tone="danger" title={selected.error.message}>
-                  <p style={{ margin: 0 }}>{selected.error.detail} Mocks keep serving the version imported {selected.error.servedSince}.</p>
-                  <p style={{ marginBottom: 0 }}><RouterLink to="/admin/secrets">Update secret in Administration</RouterLink> <span className="ex-small ex-secondary">Secrets are managed by admins; this source only references the name.</span></p>
-                </Callout>
-              ) : null}
-              <dl className="ex-stack" style={{ margin: 0 }}>
-                {[
-                  ['Origin', SOURCE_ORIGINS.find((o) => o.id === selected.origin)?.fact ?? selected.origin, undefined],
-                  ['Role', selected.role === 'primary' ? 'Primary artifact' : 'Secondary artifact', selected.artifactNote],
-                  ['Artifact type', selected.artifactLabel, undefined],
-                  ['Secret', selected.secretName ? selected.secretName : 'None', selected.secretType],
-                  ['SSL validation', selected.sslValidation ? 'On' : 'Off', undefined],
-                  ['Labels', selected.labels.map((l) => `${l.key}=${l.value}`).join(' · ') || 'None', undefined],
-                  ['Created', `${formatShortClock(selected.createdAt)} by ${selected.createdBy}`, undefined],
-                ].map(([k, v, sub]) => (
-                  <div key={k as string}><dt className="ex-small ex-secondary">{k}</dt><dd style={{ margin: 0 }}>{v}{sub ? <><br /><span className="ex-small ex-secondary">{sub}</span></> : null}</dd></div>
-                ))}
-                <div><dt className="ex-small ex-secondary">{selected.producedLabel ?? 'Services produced'}</dt><dd style={{ margin: 0 }}><ServiceLinks importer={selected} /></dd></div>
-              </dl>
-            </Panel>
+          <section aria-label="Source detail" className="sources-detail source-detail">
+            <div className="source-detail-head">
+              <div className="source-detail-title">
+                <h2>{selected.name}</h2>
+                {selectedStatus === 'running' ? <LiveIndicator label="live · importing" /> : (
+                  <ApiBadge label="last import" value={SHIELD[selectedStatus].word} status={SHIELD[selectedStatus].status} />
+                )}
+              </div>
+              <div className="source-detail-url">
+                <span className="source-detail-url-text">{selected.url}</span>
+                <CopyButton value={selected.url} label="Copy URL" size="sm" />
+              </div>
+            </div>
 
-            <Panel title="Sync timeline" headingLevel={3}>
-              <p className="ex-small ex-secondary" style={{ marginTop: 0 }}>Each import, newest first. Pick a change to diff it.</p>
-              <ol className="ex-timeline" aria-label={`Imports of ${selected.name}`}>
-                {importerStatus(selected) === 'running' ? <li><span className="ex-row"><strong>now</strong> Forced by MA <LiveIndicator label="live · fetching and parsing" /></span></li> : null}
+            {selected.error ? (
+              <div role="note" className="source-failure">
+                <span className="source-failure-title"><Icon name="cross" size={14} />{selected.error.message.replace(' — ', ', ')}</span>
+                <span>{monoTokens(selected.error.detail, [selected.secretName, selected.secretType?.split(' ').pop()])} Mocks keep serving the version imported <span className="mono">{selected.error.servedSince}</span>.</span>
+                <span className="source-failure-actions">
+                  <Button asChild size="sm" icon="lock" className="source-failure-link"><RouterLink to="/admin/secrets">Update secret in Administration</RouterLink></Button>
+                  <span className="source-failure-help">Secrets are managed by admins; this source only references the name.</span>
+                </span>
+              </div>
+            ) : null}
+
+            <dl className="facts">
+              {facts(selected, schedule.nextScanAt).map((f) => (
+                <div key={f.term} className="facts-row">
+                  <dt className="facts-term">{f.term}</dt>
+                  <dd className="facts-value">
+                    <span className={f.mono ? 'mono' : undefined}>{f.value}</span>
+                    {f.sub ? <span className="facts-sub">{f.sub}</span> : null}
+                  </dd>
+                </div>
+              ))}
+              <div className="facts-row">
+                <dt className="facts-term">{selected.producedLabel ?? (selected.workflows ? 'Workflows produced' : 'Services produced')}</dt>
+                <dd className="facts-value"><ServiceLinks importer={selected} className="source-detail-services" /></dd>
+              </div>
+            </dl>
+
+            <div className="source-detail-block">
+              <div className="source-detail-block-head">
+                <h3>Sync timeline</h3>
+                <span className="muted source-detail-help">Each import, newest first. Pick a change to diff it.</span>
+              </div>
+              <ol className="sync-timeline" aria-label={`Imports of ${selected.name}`}>
+                {selectedStatus === 'running' ? (
+                  <li data-result="live" data-filled="">
+                    <div className="sync-timeline-running">
+                      <span className="mono sync-live">now</span>
+                      <span className="secondary">Forced by MA</span>
+                      <LiveIndicator label="live · fetching and parsing" variant="inline" />
+                    </div>
+                  </li>
+                ) : null}
                 {selected.timeline.map((e) =>
                   e.kind === 'group' ? (
-                    <li key={e.id} className="ex-small ex-muted">{e.text}</li>
+                    <li key={e.id} data-result="group"><div className="sync-timeline-group">··· {e.text}</div></li>
                   ) : (
-                    <li key={e.id}>
+                    <li key={e.id} data-result={e.result} data-filled={e.revision ? '' : undefined}>
                       {e.revision ? (
-                        <Button variant={activeEntry?.id === e.id ? 'secondary' : 'ghost'} aria-pressed={activeEntry?.id === e.id} onClick={() => setEntryId(e.id)} style={{ height: 'auto', justifyContent: 'flex-start', textAlign: 'start' }}>
-                          <TimelineLine entry={e} />
-                        </Button>
-                      ) : <TimelineLine entry={e} />}
+                        <button type="button" className="sync-entry" aria-pressed={activeEntry?.id === e.id} onClick={() => setEntryId(e.id)}>
+                          <TimelineLine entry={e} when={when(e.at)} />
+                        </button>
+                      ) : <div className="sync-entry"><TimelineLine entry={e} when={when(e.at)} /></div>}
                     </li>
                   ),
                 )}
               </ol>
-            </Panel>
+            </div>
 
-            <Panel title="Contract diff" headingLevel={3} actions={stats ? <span className="ex-small"><span>+{stats.adds}</span> <span>−{stats.dels}</span> lines</span> : undefined}>
+            <div className="source-detail-block">
+              <div className="source-detail-block-head">
+                <h3>Contract diff</h3>
+                {stats && diff.data ? (
+                  <span className="diff-stats"><span data-kind="added">+{stats.adds}</span><span data-kind="removed">−{stats.dels}</span><span className="muted">lines</span></span>
+                ) : null}
+              </div>
               {diff.data ? (
-                <div role="region" aria-label="Unified diff">
-                  <CodeBlock lines={diffLines} caption={`${diff.data.file ?? 'contract'} · ${diff.data.from} → ${diff.data.to}`} maxHeight={320} />
+                <div className="diff-view">
+                  <div className="diff-view-head"><span className="diff-view-file">{diff.data.file ?? 'contract'}</span><span className="muted diff-view-rev">{diff.data.from} → {diff.data.to}</span></div>
+                  {/* Scrolls horizontally: focusable so keyboard users can scroll it (RGAA 7.3). */}
+                  {/* eslint-disable-next-line jsx-a11y/no-noninteractive-tabindex */}
+                  <div role="region" aria-label="Unified diff" className="diff-view-body" tabIndex={0}>
+                    {diff.data.lines.map((l, i) => (
+                      <div key={i} className="diff-line" data-kind={l.kind}>
+                        <span className="diff-line-sign" aria-hidden="true">{DIFF_SIGN[l.kind]}</span>
+                        <span className="diff-line-text">{l.kind === 'added' || l.kind === 'removed' || l.kind === 'skipped' ? <span className="sr-only">{DIFF_WORD[l.kind]} </span> : null}{l.text}</span>
+                      </div>
+                    ))}
+                  </div>
                 </div>
-              ) : <p className="ex-muted" style={{ margin: 0 }}>{activeEntry ? 'Loading the diff…' : 'No contract change to diff: every scan found the same revision.'}</p>}
-            </Panel>
+              ) : activeEntry ? <p className="muted" style={{ margin: 0 }}>Loading the diff…</p> : (
+                <div className="diff-empty">
+                  {selected.origin === 'upload'
+                    ? `Uploaded once on ${formatDay(selected.createdAt)}. Re-upload a new version of the file and the change will appear here as a diff.`
+                    : `The contract has not changed since its initial import (${formatDay(selected.createdAt)}). Nothing to compare yet: the next change will appear here as a diff.`}
+                </div>
+              )}
+            </div>
           </section>
         ) : null}
       </div>
-
     </div>
   );
 }
@@ -324,19 +402,52 @@ function originLabel(origin: SourceOrigin): string {
   return SOURCE_ORIGINS.find((o) => o.id === origin)?.label ?? origin;
 }
 
-function TimelineLine({ entry }: { entry: Extract<SyncEntry, { kind: 'run' }> }) {
+/** Wraps each token (secret name, header) of a sentence in a mono span. */
+function monoTokens(text: string, tokens: readonly (string | undefined)[]): ReactNode {
+  const list = tokens.filter((t): t is string => Boolean(t));
+  if (!list.length) return text;
+  const re = new RegExp(`(${list.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`);
+  return text.split(re).map((part, i) => (list.includes(part) ? <span key={i} className={i === 1 ? 'mono source-failure-secret' : 'mono'}>{part}</span> : part));
+}
+
+interface Fact { term: string; value: string; sub?: string | undefined; mono?: boolean }
+
+function facts(s: Importer, nextScanAt: Date | string): Fact[] {
+  const up = s.origin === 'upload';
+  return [
+    { term: 'Origin', value: SOURCE_ORIGINS.find((o) => o.id === s.origin)?.fact ?? s.origin, sub: up ? 'Re-upload a new version to update its Services' : undefined },
+    { term: 'Artifact', value: `${s.role === 'primary' ? 'Primary' : 'Secondary'} · ${s.artifactLabel}`, mono: true,
+      sub: s.artifactNote ?? (s.role === 'primary' ? 'Creates or updates Services from this contract' : 'Merges examples into existing Services only') },
+    { term: 'Secret', value: up ? 'None, uploaded file' : s.secretName ?? 'None, public resource', sub: s.secretName ? s.secretType : undefined, mono: Boolean(s.secretName) },
+    { term: 'TLS validation', value: up ? 'Not applicable' : s.sslValidation ? 'Enabled' : 'Disabled for this source' },
+    up ? { term: 'Schedule', value: 'None · one-off upload' }
+      : s.active ? { term: 'Schedule', value: `Global hourly scan · next ${formatHourMinute(nextScanAt)}`, sub: 'Also on demand with Import now' }
+      : { term: 'Schedule', value: 'Paused, not scanned', sub: 'Turn the switch on to resume' },
+    { term: 'Labels', value: s.labels.map((l) => `${l.key}=${l.value}`).join(' · ') || 'None', mono: true },
+    { term: 'Created', value: `${formatDay(s.createdAt)} by ${s.createdBy}` },
+  ];
+}
+
+const RESULT_ICON = { imported: 'check', warning: 'warning', failed: 'cross', paused: 'pause-narrow' } as const;
+
+function TimelineLine({ entry, when }: { entry: Extract<SyncEntry, { kind: 'run' }>; when: string }) {
   return (
-    <span className="ex-stack" style={{ gap: 2 }}>
-      <span className="ex-row ex-small">
-        <strong>{formatShortClock(entry.at)}</strong> <span className="ex-secondary">{entry.trigger}</span>
-        <Chip tone={entry.result === 'failed' ? 'danger' : entry.result === 'warning' ? 'warning' : entry.result === 'paused' ? 'neutral' : 'success'}>
-          <Icon name={entry.result === 'failed' ? 'cross' : entry.result === 'warning' ? 'warning' : entry.result === 'paused' ? 'dash' : 'check'} size={12} /> {RESULT_WORD[entry.result]}
-        </Chip>
+    <>
+      <span className="sync-entry-line">
+        <span className="mono sync-entry-clock">{formatShortClock(entry.at)}</span>
+        <span className="muted sync-entry-when">{when}</span>
+        <span className="secondary">{entry.trigger}</span>
+        <span className="sync-entry-result" data-result={entry.result}><Icon name={RESULT_ICON[entry.result]} size={12} />{RESULT_WORD[entry.result]}</span>
       </span>
-      <span className="ex-small ex-secondary">
-        {entry.changes.length ? entry.changes.map((c) => `${c.sign} ${c.text}`).join(' · ') : entry.note ?? 'no contract change'}
-        {entry.revision ? <> · <code>{entry.revision}</code></> : null}
+      <span className="sync-entry-change">
+        {entry.changes.length ? (
+          <>
+            <span className="muted">contract changed:</span>
+            {entry.changes.map((c) => <span key={c.sign + c.text} className="sync-part" data-sign={c.sign}>{c.sign === '!' ? '' : c.sign === '-' ? '−' : c.sign}{c.text}</span>)}
+          </>
+        ) : <span className="sync-entry-plain" data-result={entry.result}>{entry.note ?? 'no contract change'}</span>}
+        {entry.revision ? <span className="muted sync-entry-rev">{entry.revision}</span> : null}
       </span>
-    </span>
+    </>
   );
 }
