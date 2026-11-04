@@ -437,9 +437,17 @@
         "src/ui/styles/facts.css": "ce9c494aacc238f8774bacb88c0fe78b4c44455d8343a5b52b7c32139dcf405a"
       },
       "hash": "a020e5122c541a54"
+    },
+    "op-pick": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/op-pick.tsx": "28b8662b16fbcd977a07920388f02d7cb826b32980e07a76276443a9a6074acd",
+        "src/ui/styles/op-pick.css": "3fc01579deeaed0172ec4765f09162666e798360599b985eb24b87c6695ecb2c"
+      },
+      "hash": "feec68807f6c5654"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "e6cca92f96d101c3c4e0b6c709723983c56dfccc65b2a75995ca7b2299f4b07a"
+    "src/ui/styles/index.css": "2278885a2d05314348308fb2abd9a110e559503d9c825f0333d3bc0bce761a34"
   }
 }
