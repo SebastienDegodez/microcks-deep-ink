@@ -11,7 +11,7 @@
     "keyboard": [["Tab", "Focuses the log"], ["Arrow keys", "Scroll the log when it has focus"]],
     "aria": [
       "role=\"log\" announces new lines politely without moving focus",
-      "Every level is written (INFO, SEND, PASS, FAIL, WAIT); colour only speeds up scanning",
+      "Every level is written (INFO, SEND, PASS, FAIL, WARN, WAIT); colour only speeds up scanning",
       "The status (live · streaming, N lines · completed) is written text"
     ],
     "rgaa": ["3.1", "7.5", "12.8"],

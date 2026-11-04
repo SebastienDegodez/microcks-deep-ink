@@ -409,10 +409,10 @@
     "runner-log": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/runner-log.tsx": "9747d30c0e46f743735c1e41e7b7607c2e969c2a0512636a2d5375c139471b81",
-        "src/ui/styles/runner-log.css": "6492310d27c28260304e63f2cd06e5e8f24e7d18617780ff70a280657b24b968"
+        "src/ui/components/ui/runner-log.tsx": "5a2a0c8b430cb0d8d4c733b87c2d00801bda7edf3728e53f7bd6b15c7703ca4b",
+        "src/ui/styles/runner-log.css": "a0bee178c5762f7482aa832a8bf83b576cbab663ae456bd78a35ecf574ea8f4a"
       },
-      "hash": "c0ceb32097c0e335"
+      "hash": "7e08b9aac10cddbe"
     },
     "section-label": {
       "version": "0.2.0",
