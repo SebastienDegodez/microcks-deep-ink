@@ -9,12 +9,14 @@ export interface SectionLabelProps extends HTMLAttributes<HTMLElement> {
   weight?: 'semibold' | 'regular';
   /** Spreads the children to both ends of the line ("3 operations" · "calls · 7 d"). */
   split?: boolean;
+  /** `fixed` (default): 16px. `normal`: the font's own line height (Agent test setup strip and detail titles, TestRun score label). `snug`: 1.4 (Agent skills rail head). */
+  lineHeight?: 'fixed' | 'normal' | 'snug';
   /** With `as="label"`: id of the field. */
   htmlFor?: LabelHTMLAttributes<HTMLLabelElement>['htmlFor'];
 }
 
 /** Small uppercase muted label. The text stays in normal case in the DOM; CSS sets the case. */
-export function SectionLabel({ as = 'span', size = 'md', weight = 'semibold', split, className, ...rest }: SectionLabelProps) {
+export function SectionLabel({ as = 'span', size = 'md', weight = 'semibold', split, lineHeight = 'fixed', className, ...rest }: SectionLabelProps) {
   const Tag = as as ElementType;
   return (
     <Tag
@@ -23,6 +25,7 @@ export function SectionLabel({ as = 'span', size = 'md', weight = 'semibold', sp
       data-size={size === 'md' ? undefined : size}
       data-weight={weight === 'semibold' ? undefined : weight}
       data-split={split ? '' : undefined}
+      data-line-height={lineHeight === 'fixed' ? undefined : lineHeight}
     />
   );
 }
