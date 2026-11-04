@@ -127,7 +127,7 @@ export default function WorkflowPage() {
           <SourceTab detail={detail.data} step={step ?? (selectedRun?.status === 'FAILURE' ? stoppedStep(selectedRun)?.stepId : undefined)} onSelectStep={(s) => setQuery({ step: s })} serviceLabel={serviceLabel} />
         </TabPanel>
         <TabPanel id="mock-url" value={tab}>
-          <MockUrlTab detail={detail.data} runs={runList} />
+          <MockUrlTab detail={detail.data} runs={runList} onShowRuns={() => navigate(workflowPath(docId, workflowId, 'runs', { filter: 'mock-url' }))} />
         </TabPanel>
         <TabPanel id="sessions" value={tab}>
           {sessions.status === 'error' ? (

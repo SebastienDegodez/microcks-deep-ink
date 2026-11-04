@@ -308,14 +308,15 @@ function sessionRun13(): WorkflowRun {
   });
 }
 
-function mocksSuccess(number: number, id: string, startedAt: string, origin: RunOrigin, example: string): WorkflowRun {
+/** A passing run on the mocks; `ms` are the durations of its 4 calls (the prototype's: #12 41/38/52/36, #11 44/35/49/33). */
+function mocksSuccess(number: number, id: string, startedAt: string, origin: RunOrigin, example: string, ms: readonly [number, number, number, number]): WorkflowRun {
   return restockRun({
     number, id, startedAt, origin, target: { kind: 'mocks' }, options: MOCK_OPTS(example, { size: 'M', newPrice: 3.9 }), status: 'SUCCESS',
     steps: [
-      passedStep(id, 'restock-pastry', LIST, MOCK_BASE, 6, { firstName: 'Eclair Cafe' }),
-      passedStep(id, 'restock-pastry', GET, MOCK_BASE, 5, { oldPrice: 2.4, status: 'unknown' }),
-      passedStep(id, 'restock-pastry', PATCH, MOCK_BASE, 7, { newPrice: 3.9 }),
-      passedStep(id, 'restock-pastry', VERIFY, MOCK_BASE, 5),
+      passedStep(id, 'restock-pastry', LIST, MOCK_BASE, ms[0], { firstName: 'Eclair Cafe' }),
+      passedStep(id, 'restock-pastry', GET, MOCK_BASE, ms[1], { oldPrice: 2.4, status: 'unknown' }),
+      passedStep(id, 'restock-pastry', PATCH, MOCK_BASE, ms[2], { newPrice: 3.9 }),
+      passedStep(id, 'restock-pastry', VERIFY, MOCK_BASE, ms[3]),
     ],
     outputs: { pastryName: 'Eclair Cafe', oldPrice: 2.4, newPrice: 3.9 },
   });
@@ -372,8 +373,8 @@ export function seedRuns(): WorkflowRun[] {
   return [
     run14(),
     sessionRun13(),
-    mocksSuccess(12, RUN_IDS[12], '2026-11-02T16:42:04Z', { kind: 'ui' }, 'restock-eclair'),
-    mocksSuccess(11, RUN_IDS[11], '2026-11-01T08:42:04Z', { kind: 'mock-url' }, 'restock-eclair'),
+    mocksSuccess(12, RUN_IDS[12], '2026-11-02T16:42:04Z', { kind: 'ui' }, 'restock-eclair', [41, 38, 52, 36]),
+    mocksSuccess(11, RUN_IDS[11], '2026-11-01T08:42:04Z', { kind: 'mock-url' }, 'restock-eclair', [44, 35, 49, 33]),
     checkMenuRun(),
   ];
 }
