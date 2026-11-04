@@ -421,9 +421,17 @@
         "src/ui/styles/section-label.css": "17215c6135327222fcb6f6c72591ca8c6821cfffe54b0bb71863665aea23264c"
       },
       "hash": "45dd753bd200c6b9"
+    },
+    "bar-chart": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/bar-chart.tsx": "ec437077389b30298219dc412c44c83580fc5b36d793f600daefad6cc4d10ead",
+        "src/ui/styles/bar-chart.css": "d75c62f8012a737ee75ad7fec196d2b6da817a8f941bf3aa3fff73bf2b014d3d"
+      },
+      "hash": "0d9d7f0453cbad22"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "72826b4a4eb01789632b037a8539699dddf10537015287b80c82c42f449b0077"
+    "src/ui/styles/index.css": "cd84cf578f3c1f040b30cfcbd4a1502e4b8ab70b7e9ef32e83bafd42366b148e"
   }
 }
