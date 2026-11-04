@@ -96,15 +96,15 @@
         "src/ui/components/ui/copy-button.tsx": "9009f1e9639e58d9a0a3a93ec1e67e49150e48d11d51eced3d01c1a9aa50c98f",
         "src/ui/styles/copy-button.css": "5ddb1d42d4d0898870b3278b332f59693c0b88ac038f392b404a2786f3cf44b3"
       },
-      "hash": "a4aca23ffb7a48da"
+      "hash": "4aef64e2ff094490"
     },
     "code-block": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/code-block.tsx": "1b72e780495e06e9937b0c4b0e6248687e6d6c581fe858201e15d579db072826",
-        "src/ui/styles/code-block.css": "d1c25933263068b3b504a6ad12764ff083de60940a18d46a913730321fa2de59"
+        "src/ui/components/ui/code-block.tsx": "b58b38522058a9cb09c5c16b96c271913006dff96fd6e2062930d4618efb1485",
+        "src/ui/styles/code-block.css": "c53151f79ad3742d60a6cac344182cd6f109195c8d295adcc557b41eeb4bd419"
       },
-      "hash": "47151cbd7d579e17"
+      "hash": "3d00c86771e28616"
     },
     "conformance-band": {
       "version": "0.2.0",
@@ -181,10 +181,10 @@
     "live-indicator": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/live-indicator.tsx": "593ffa25b8b72d52ca2e33678ce9561a7f6d46d7fbb35432cb775a562eff9f8a",
-        "src/ui/styles/live-indicator.css": "fa68b94542202f956e46af5ecc1ea4ee98db3df4f7f2d27bac787ac0cc7afa82"
+        "src/ui/components/ui/live-indicator.tsx": "edb5099853e945036078031fef5a1cad71c222ef94827cbaa7437d8a29560ffd",
+        "src/ui/styles/live-indicator.css": "63ba5b045a60de9fb56f9054188be1ddc006be50206ce12ce0762b4e7015ad52"
       },
-      "hash": "3a7183a605f38b26"
+      "hash": "6f2e6571fcd64e07"
     },
     "menu": {
       "version": "0.2.0",

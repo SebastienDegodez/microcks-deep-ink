@@ -33,3 +33,16 @@ export const CustomLabel: StoryObj = {
     `,
   }),
 };
+
+export const SizesAndPausedLabel: StoryObj = {
+  name: "Small, inline and paused label",
+  render: () => ({
+    template: `
+      <div class="inline">
+        <span mkLiveIndicator size="sm"></span>
+        <span mkLiveIndicator variant="inline"></span>
+        <span mkLiveIndicator paused pausedLabel="paused · 2 new calls"></span>
+      </div>
+    `,
+  }),
+};

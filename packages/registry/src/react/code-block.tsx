@@ -5,7 +5,15 @@ export interface CodeLine {
   text: string;
   /** Marks the line with a visible ✕ and a visible note. */
   bad?: boolean;
+  /** Inline note written after the text, on the same row ("schema: number"). */
   note?: string;
+  /** Highlights the line (selected block). */
+  selected?: boolean;
+}
+
+export interface CodeTab {
+  id: string;
+  label: string;
 }
 
 export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLElement>, 'children'> {
@@ -16,39 +24,89 @@ export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLElement>, 'child
   caption?: string;
   /** Show the copy button. */
   copy?: boolean;
+  /** `plain`: just the bordered code, no header (no caption, tabs or copy). */
+  variant?: 'framed' | 'plain';
+  /** Format switch in the header (curl, HTTPie, MCP tool call): toggle buttons with aria-pressed. */
+  tabs?: CodeTab[];
+  tab?: string;
+  onTabChange?: (id: string) => void;
+  /** Accessible name of the tab group. */
+  tabsLabel?: string;
+  /** Numbers the lines in a gutter (with `lines`, or `code` split on newlines). */
+  lineNumbers?: boolean;
+  /** Number of the first line. */
+  startLine?: number;
   maxHeight?: string | number;
 }
 
-export function CodeBlock({ code, lines, language, caption, copy = true, maxHeight, className, ...rest }: CodeBlockProps) {
+export function CodeBlock({
+  code,
+  lines,
+  language,
+  caption,
+  copy = true,
+  variant = 'framed',
+  tabs,
+  tab,
+  onTabChange,
+  tabsLabel = 'Format',
+  lineNumbers,
+  startLine = 1,
+  maxHeight,
+  className,
+  ...rest
+}: CodeBlockProps) {
   const captionId = useId();
+  const rows: CodeLine[] | undefined = lines ?? (lineNumbers && code !== undefined ? code.split('\n').map((text) => ({ text })) : undefined);
   const value = code ?? (lines ?? []).map((l) => l.text).join('\n');
-  const label = caption ?? (language ? `${language} code` : 'Code');
+  const tabLabel = tabs?.find((t) => t.id === tab)?.label;
+  const label = caption ?? (tabLabel ? `${tabLabel} code` : language ? `${language} code` : 'Code');
+  const header = variant !== 'plain' && (caption || copy || tabs?.length);
   return (
-    <figure {...rest} className={['code', className].filter(Boolean).join(' ')} data-language={language}>
-      {caption || copy ? (
+    <figure
+      {...rest}
+      className={['code', className].filter(Boolean).join(' ')}
+      data-language={language}
+      data-variant={variant}
+      data-numbered={lineNumbers ? '' : undefined}
+    >
+      {header ? (
         <figcaption>
+          {tabs?.length ? (
+            <span className="code-tabs" role="group" aria-label={tabsLabel}>
+              {tabs.map((t) => (
+                <button key={t.id} type="button" aria-pressed={t.id === tab} onClick={() => onTabChange?.(t.id)}>
+                  {t.label}
+                </button>
+              ))}
+            </span>
+          ) : null}
           <span className="code-caption" id={captionId}>
             {caption ?? ''}
           </span>
-          {copy ? <CopyButton value={value} /> : null}
+          {copy ? <CopyButton value={value} className="code-copy" /> : null}
         </figcaption>
       ) : null}
       {/* The scroll container must be keyboard reachable (WCAG 2.1.1), so it is focusable and named. */}
       <pre tabIndex={0} role="region" aria-label={label} style={maxHeight !== undefined ? { maxHeight } : undefined}>
         <code className={language ? `language-${language}` : undefined}>
-          {lines
-            ? lines.map((line, i) => (
-                <span className="code-line" data-bad={line.bad ? '' : undefined} key={i}>
+          {rows
+            ? rows.map((line, i) => (
+                <span className="code-line" data-bad={line.bad ? '' : undefined} data-selected={line.selected ? '' : undefined} key={i}>
+                  {lineNumbers ? (
+                    <span className="code-ln" aria-hidden="true">
+                      {startLine + i}
+                    </span>
+                  ) : null}
                   {line.bad ? (
                     <>
                       <span className="code-mark" aria-hidden="true">
                         ✕
                       </span>
-                      <span className="sr-only">Problem:</span>
-                      {' '}
+                      <span className="sr-only">Problem: </span>
                     </>
                   ) : null}
-                  {line.text}
+                  <span className="code-text">{line.text}</span>
                   {line.note ? <span className="code-note">{line.note}</span> : null}
                 </span>
               ))
