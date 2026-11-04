@@ -1,7 +1,9 @@
 import '../explore-kit/explore.css';
 import './agent.css';
+import './agent-header.css';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
-import { formatDay } from '@/domain/importing';
+import { totalsOf } from '@/domain/agents';
+import { formatDay, formatHourMinute } from '@/domain/importing';
 import { PageHeader, useAnnounce, useQuery, usePageTitle, useUseCases } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
@@ -18,6 +20,8 @@ import { AgentTasksTab } from './AgentTasksTab';
 type TabId = 'skills' | 'card' | 'mock' | 'tasks';
 const TAB_IDS: TabId[] = ['skills', 'card', 'mock', 'tasks'];
 
+const ago = (s: number): string => (s < 3 ? 'just now' : s < 60 ? `${s} s ago` : s < 3600 ? `${Math.floor(s / 60)} min ago` : `${Math.floor(s / 3600)} h ago`);
+
 /** Screen 18: an A2A agent imported from its Agent Card. Rendered by the service route when the protocol is A2A. */
 export default function AgentPage() {
   const { serviceId = '', tab } = useParams();
@@ -27,6 +31,8 @@ export default function AgentPage() {
   const tabId: TabId = TAB_IDS.includes(tab as TabId) ? (tab as TabId) : 'skills';
   const agent = useQuery(() => uc.agents.getAgent(serviceId), [uc, serviceId]);
   const tasks = useQuery(() => uc.agents.listTasks(serviceId), [uc, serviceId]);
+  const runId = agent.data?.lastTest.runId;
+  const run = useQuery(() => (runId ? uc.agents.getTestRun(runId) : Promise.resolve(undefined)), [uc, runId]);
   usePageTitle(agent.data ? `${agent.data.name} ${agent.data.version} · Microcks` : 'Agent · Microcks');
 
   if (agent.status === 'error' && !agent.data) {
@@ -51,19 +57,33 @@ export default function AgentPage() {
   const streams = a.card.capabilities.streaming;
   const push = a.card.capabilities.pushNotifications;
   const conversations = a.conversations.length;
+  const lastMessage = ago(Math.min(...(tasks.data ?? []).map((t) => t.updatedSecondsAgo), 999999));
+  const checks = run.data?.checks ?? [];
+  const totals = totalsOf(checks);
+  const score = run.data ? `${totals.conversationPassed}/${totals.conversationTotal}` : `#${a.lastTest.runId} ${a.lastTest.result}`;
+  const runTitle = run.data ? `Run #${run.data.id} · A2A_CONFORMANCE · ${run.data.setup.transports.length} transports` : `Run #${a.lastTest.runId}`;
 
   return (
-    <div className="ex-stack">
+    <div className="ex-stack agent-page">
       <PageHeader
-        title={`${a.name} ${a.version}`}
+        variant="badge"
+        align="start"
+        title={<ApiBadge protocol="A2A" name={`${a.name} ${a.version}`} size="xl" />}
         breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${a.name} ${a.version}` }]}
-        badge={<ApiBadge protocol="A2A" name={a.name} version={a.version} />}
+        badge={
+          <>
+            <span className="agent-projection" title="A2A support is a proposed protocol module for Microcks v2">Projection · v2 module</span>
+            <LiveIndicator label={`mock live · ${openTasks} open ${openTasks === 1 ? 'task' : 'tasks'} · last message ${lastMessage}`} />
+          </>
+        }
+        description={a.description}
+        descriptionTone="secondary"
         actions={
           <>
-            <Button asChild icon="play"><RouterLink to={`/tests/agent?service=${serviceId}`}>Test the agent</RouterLink></Button>
+            <Button asChild variant="primary" icon="play"><RouterLink to={`/tests/agent?service=${serviceId}`}>Run a test</RouterLink></Button>
             <Menu
               label="More actions"
-              icon="more"
+              icon="more-vertical"
               iconOnly
               variant="secondary"
               align="end"
@@ -72,32 +92,28 @@ export default function AgentPage() {
                 { id: 'card', label: 'View the Agent Card', onSelect: () => goTab('card') },
                 { id: 'download', label: 'Download conversations (APIExamples)', onSelect: () => announce('Download is not part of this demo.') },
                 { id: 'refetch', label: 'Re-fetch the card from staging', onSelect: () => announce('The card is fetched again in the real product.') },
-                { id: 'delete', label: 'Delete Service', danger: true, onSelect: () => announce('Delete is disabled in the demo.') },
+                { id: 'delete', label: 'Delete Service', danger: true, separatorBefore: true, onSelect: () => announce('Delete is disabled in the demo.') },
               ]}
             />
           </>
         }
-      />
-      <div className="ex-stack" style={{ gap: 8 }}>
-        <p className="ex-row ex-secondary" style={{ margin: 0 }}>
-          <Chip variant="outline">Projection · v2 module</Chip>
-          <LiveIndicator label={`mock live · ${openTasks} open ${openTasks === 1 ? 'task' : 'tasks'}`} />
-        </p>
-        <p style={{ margin: 0 }}>{a.description}</p>
-        <div className="ex-row">
+      >
+        <div className="agent-head-row">
           {a.labels.map((l) => <Chip key={l} variant="outline">{l}</Chip>)}
-          <span className="ex-small ex-muted">
-            A2A spec {a.specVersion} · imported {formatDay(a.importedAt)} from <span className="ex-mono">{a.importedFrom.replace(/^https?:\/\//, '')}</span>
+          <span className="agent-import-line">
+            A2A spec {a.specVersion} · imported {formatDay(a.importedAt)} at {formatHourMinute(a.importedAt)} from <span className="ex-mono">{a.importedFrom.replace(/^https?:\/\//, '')}</span>
           </span>
         </div>
-        <div className="ex-row">
-          <ApiBadge label="skills" value={String(a.skills.length)} size="sm" />
-          <ApiBadge label="conversations" value={String(conversations)} size="sm" />
-          <ApiBadge label="last test" value={a.lastTest.result === 'failed' ? `#${a.lastTest.runId} failed` : `#${a.lastTest.runId} passed`} status={a.lastTest.result === 'failed' ? 'danger' : 'success'} size="sm" />
-          <ApiBadge label="streaming" value={streams ? 'yes' : 'no'} size="sm" />
-          <ApiBadge label="push" value={push ? 'yes' : 'no'} size="sm" />
+        <div className="agent-head-row" data-gap="badges">
+          <ApiBadge label="skills" value={String(a.skills.length)} status="info" />
+          <ApiBadge label="conversations" value={String(conversations)} status="action" />
+          <RouterLink className="agent-badge-link" to={`/tests/agent/${a.lastTest.runId}`} title={runTitle}>
+            <ApiBadge label="last test" value={score} status={a.lastTest.result === 'failed' ? 'danger' : 'success'} />
+          </RouterLink>
+          <ApiBadge label="streaming" value={streams ? 'yes' : 'no'} status={streams ? 'success' : 'neutral'} />
+          <ApiBadge label="push" value={push ? 'yes' : 'no'} status={push ? 'success' : 'neutral'} />
         </div>
-      </div>
+      </PageHeader>
       <Tabs
         label="Agent sections"
         idPrefix="agent"
@@ -107,7 +123,7 @@ export default function AgentPage() {
           { id: 'skills', label: 'Skills', count: a.skills.length },
           { id: 'card', label: 'Agent Card' },
           { id: 'mock', label: 'Mock endpoints', count: a.transports.length },
-          { id: 'tasks', label: 'Tasks', count: tasks.data?.length },
+          { id: 'tasks', label: 'Tasks', count: tasks.data?.length, live: true },
         ]}
       >
         <TabPanel id="skills" idPrefix="agent" value={tabId}>

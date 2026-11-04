@@ -105,4 +105,13 @@ describe('WorkflowLoom element', () => {
     expect(root.querySelectorAll('li.thr')).toHaveLength(2);
     expect(root.querySelectorAll('.drop')).toHaveLength(3);
   });
+
+  it('gives a row with a bad drop room for the wrapped "got" label', async () => {
+    const { root } = await mount({
+      threads: [{ id: 'firstName', from: 'listPastries', expression: '$steps.listPastries.outputs.firstName', drops: [{ to: 'patchPastry', label: 'name · path', bad: 'Millefeuille' }] }],
+    });
+    const bad = root.querySelector('.drop.bad');
+    expect(bad?.textContent).toContain('name · path · got Millefeuille');
+    expect(bad?.closest('li')?.classList.contains('tall')).toBe(true);
+  });
 });
