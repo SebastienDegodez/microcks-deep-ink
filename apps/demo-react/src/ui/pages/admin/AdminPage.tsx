@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { membershipChanges, membershipKey } from '@/domain/govern';
 import { PageHeader, usePageTitle, useQuery, useUseCases } from '@/ui/app';
@@ -35,11 +35,18 @@ export default function AdminPage() {
   const pending = membershipChanges(saved, draft ?? saved).length;
 
   const [toast, setToast] = useState('');
+  const toastRef = useRef<HTMLDivElement>(null);
+  // Closing the toast removes its × button: focus goes back to the selected tab instead of the page body.
+  const hideToast = useCallback(() => {
+    const hadFocus = toastRef.current?.contains(document.activeElement) ?? false;
+    setToast('');
+    if (hadFocus) document.getElementById(`admin-tab-${tab}`)?.focus();
+  }, [tab]);
   useEffect(() => {
     if (!toast) return;
-    const timer = setTimeout(() => setToast(''), TOAST_MS);
+    const timer = setTimeout(hideToast, TOAST_MS);
     return () => clearTimeout(timer);
-  }, [toast]);
+  }, [toast, hideToast]);
   const notify: Notify = useCallback((message) => setToast(message), []);
 
   const reloadUsers = () => {
@@ -74,12 +81,12 @@ export default function AdminPage() {
           { id: 'configuration', label: 'Configuration' },
         ]}
       >
-        <div role="status" className="ad-toast-region">
+        <div role="status" className="ad-toast-region" ref={toastRef}>
           {toast ? (
             <div className="ad-toast">
               <Icon name="check" size={15} className="ad-toast-icon" />
               <span className="ad-toast-text">{toast}</span>
-              <button type="button" className="ad-toast-close" aria-label="Dismiss message" onClick={() => setToast('')}>
+              <button type="button" className="ad-toast-close" aria-label="Dismiss message" onClick={hideToast}>
                 <Icon name="close" size={12} />
               </button>
             </div>

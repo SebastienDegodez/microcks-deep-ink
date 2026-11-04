@@ -292,6 +292,10 @@ describe('Administration (/admin/:tab?)', () => {
     expect((screen.getByRole('combobox', { name: 'Role of Microcks Admin' }) as HTMLSelectElement).disabled).toBe(true);
     fireEvent.change(select, { target: { value: 'manager' } });
     expect(await screen.findByText('Léa Martin is now a manager in realm microcks.')).toBeTruthy();
+    const dismiss = screen.getByRole('button', { name: 'Dismiss message' });
+    dismiss.focus();
+    fireEvent.click(dismiss);
+    expect(document.activeElement).toBe(screen.getByRole('tab', { name: /^Users/ }));
     fireEvent.change(screen.getByRole('searchbox', { name: 'Filter users' }), { target: { value: 'nobody' } });
     expect(screen.getByText('No user matches “nobody”.')).toBeTruthy();
   });
@@ -306,6 +310,7 @@ describe('Administration (/admin/:tab?)', () => {
     expect(screen.getByRole('tab', { name: /Groups/ }).textContent).toBe('Groups, 6, 1 pending change');
     fireEvent.click(screen.getByRole('button', { name: 'Discard' }));
     expect(screen.queryByRole('button', { name: 'Apply to Keycloak' })).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 2, name: 'Manager groups' }));
     fireEvent.click(screen.getByRole('button', { name: 'Tom Keller in /microcks/manager/pets, member' }));
     fireEvent.click(screen.getByRole('button', { name: 'Apply to Keycloak' }));
     expect(await screen.findByText('1 membership change applied in Keycloak realm microcks.', {}, { timeout: 3000 })).toBeTruthy();
