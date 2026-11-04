@@ -1,11 +1,12 @@
 import { Link } from 'react-router';
 import { criteriaText, type ArazzoDocument, type Action, type Step, type Workflow, type WorkflowRun } from '@/domain/arazzo';
+import { STATUS_ICON } from '@/ui/app/outcomes';
 import { Button } from '@/ui/components/ui/button';
-import { Icon, type IconName } from '@/ui/components/ui/icon';
+import { Icon } from '@/ui/components/ui/icon';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
 import { effectiveDependencies, stepResultLine } from './loom-model';
-import { stepChecksOf, stepStatusOf, type Tone } from './run-facts';
+import { stepChecksOf, stepStatusOf } from './run-facts';
 
 interface Row {
   n: number;
@@ -21,7 +22,6 @@ export interface StepsTableProps {
   loomLink?: (stepId: string) => string;
 }
 
-const ICON: Record<Tone, IconName> = { pass: 'check-circle', fail: 'x-circle', off: 'minus-circle' };
 
 const describe = (a: Action) => (a.type === 'retry' ? `retry every ${a.retryAfter} s, up to ${a.retryLimit} ${a.retryLimit === 1 ? 'time' : 'times'}` : 'end the workflow');
 
@@ -118,12 +118,12 @@ export function StepsTable({ workflow, document, run, loomLink }: StepsTableProp
         return (
           <span className="wf-st-stack">
             <span className="wf-st-status" data-tone={status.tone}>
-              <Icon name={ICON[status.tone]} size={13} strokeWidth={2.2} />
+              <Icon name={STATUS_ICON[status.tone]} size={13} strokeWidth={2.2} />
               {status.word}
             </span>
             {stepChecksOf(result, run).map((c) => (
               <span key={c.label} className="wf-st-check">
-                <Icon name={ICON[c.tone]} size={12} strokeWidth={2.2} data-tone={c.tone} />
+                <Icon name={STATUS_ICON[c.tone]} size={12} strokeWidth={2.2} data-tone={c.tone} />
                 {c.label} <span data-tone={c.tone}>{c.word}</span>
               </span>
             ))}

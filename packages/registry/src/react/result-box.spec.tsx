@@ -25,5 +25,22 @@ describe('ResultBox', () => {
     expect(onDismiss).toHaveBeenCalledOnce();
     expect(screen.getByText('Static note').closest('.result-box')?.querySelector('.result-box-icon')).toBeNull();
     expect(await axeViolations(container)).toEqual([]);
+    for (const box of boxes) {
+      expect(box.hasAttribute('data-bordered')).toBe(false);
+      expect(box.hasAttribute('data-surface')).toBe(false);
+    }
+  });
+
+  it('bordered={false} and surface="raised" expose the flat raised note layout', async () => {
+    const { container } = render(
+      <ResultBox tone="danger" icon="cross" title="The agent answered a canceled task" bordered={false} surface="raised" live="off">
+        A canceled task must stay terminal.
+      </ResultBox>,
+    );
+    const box = container.querySelector('.result-box')!;
+    expect(box.getAttribute('data-bordered')).toBe('false');
+    expect(box.getAttribute('data-surface')).toBe('raised');
+    expect(box.getAttribute('role')).toBeNull();
+    expect(await axeViolations(container)).toEqual([]);
   });
 });

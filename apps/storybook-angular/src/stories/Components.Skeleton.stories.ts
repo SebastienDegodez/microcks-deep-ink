@@ -21,5 +21,17 @@ export const Default: StoryObj = {
   }),
 };
 
+/** `width` sets the width of the last line or of a single block. */
+export const Widths: StoryObj = {
+  render: () => ({
+    template: `
+      <div class="stack" aria-busy="true" style="max-width:480px">
+        <span mkSkeleton width="120px"></span>
+        <span mkSkeleton [lines]="3" width="70%"></span>
+      </div>
+    `,
+  }),
+};
+
 /** Interactive: every input is a control in the Controls panel. */
 export const Playground: StoryObj = playground('skeleton', 'SkeletonComponent', { lines: 3, width: '60%' }, '');

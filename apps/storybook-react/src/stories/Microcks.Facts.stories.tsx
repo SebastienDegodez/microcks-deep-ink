@@ -27,6 +27,19 @@ export const Rows: StoryObj = {
   ),
 };
 
+/** Row-level options: `sub` text, `mono` values and a `tone` on `FactRow`, plus the `muted` and `success` tones on `items`. */
+export const RowOptions: StoryObj = {
+  name: 'Row options (sub, mono, tone)',
+  render: () => (
+    <div className="sb-col" style={{ maxWidth: 520 }}>
+      <Facts items={[{ term: 'Checks', value: 'Passed', tone: 'success' }, { term: 'Last sync', value: 'Never', tone: 'muted' }]} />
+      <Facts>
+        <FactRow term="Endpoint" sub="Mock URL" mono tone="success">/rest/API+Pastry/2.0.0</FactRow>
+      </Facts>
+    </div>
+  ),
+};
+
 export const Inline: StoryObj = {
   render: () => (
     <Facts

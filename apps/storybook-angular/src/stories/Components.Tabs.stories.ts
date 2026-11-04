@@ -24,6 +24,20 @@ export const Default: StoryObj = {
   }),
 };
 
+/** `idPrefix` keeps tab and panel ids unique when two tab lists share a page. */
+export const IdPrefix: StoryObj = {
+  name: 'Two lists on a page (idPrefix)',
+  render: () => ({
+    props: { items: SERVICE_TABS, a: 'operations', b: 'operations' },
+    template: `
+      <div class="stack">
+        <mk-tabs label="Service A" idPrefix="a" [items]="items" [(value)]="a">@for (t of items; track t.id) { <div mkTabPanel [tab]="t.id" idPrefix="a"><p style="margin:0">Service A, {{ t.label }}.</p></div> }</mk-tabs>
+        <mk-tabs label="Service B" idPrefix="b" variant="card" [items]="items" [(value)]="b">@for (t of items; track t.id) { <div mkTabPanel [tab]="t.id" idPrefix="b"><p style="margin:0">Service B, {{ t.label }}.</p></div> }</mk-tabs>
+      </div>
+    `,
+  }),
+};
+
 export const ManualActivation: StoryObj = {
   name: "Manual activation",
   parameters: { docs: { description: { story: "Arrow keys only move focus; Enter or Space selects. Use it when a panel is expensive to load." } } },
@@ -100,4 +114,4 @@ export const CardWithIcons: StoryObj = {
 };
 
 /** Interactive: every input is a control in the Controls panel. */
-export const Playground: StoryObj = playground('tabs', 'TabsComponent', { label: 'Service sections', value: 'operations', activation: 'automatic', variant: 'line', idPrefix: 'pg', items: [{ id: 'operations', label: 'Operations', count: 8 }, { id: 'tests', label: 'Tests' }, { id: 'contract', label: 'Contract' }] }, '');
+export const Playground: StoryObj = playground('tabs', 'TabsComponent', { label: 'Service sections', value: 'operations', activation: 'automatic', variant: 'line', idPrefix: 'pg', items: [{ id: 'operations', label: 'Operations', count: 8 }, { id: 'tests', label: 'Tests' }, { id: 'contract', label: 'Contract' }] }, '<div mkTabPanel tab="operations" idPrefix="pg"><p style="margin:0">Operations panel</p></div><div mkTabPanel tab="tests" idPrefix="pg"><p style="margin:0">Tests panel</p></div><div mkTabPanel tab="contract" idPrefix="pg"><p style="margin:0">Contract panel</p></div>');

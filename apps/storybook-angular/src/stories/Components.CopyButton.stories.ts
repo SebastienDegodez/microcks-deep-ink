@@ -18,6 +18,20 @@ export const Default: StoryObj = {
   }),
 };
 
+/** `size` and `variant` come from the button; `copiedLabel` is the label after a successful copy. */
+export const SizesAndVariants: StoryObj = {
+  name: 'Sizes and variants',
+  render: () => ({
+    template: `
+      <div class="inline">
+        <mk-copy-button value="microcks test" size="sm" variant="ghost" />
+        <mk-copy-button value="microcks test" size="compact" variant="outline" label="Copy command" copiedLabel="Command copied" />
+        <mk-copy-button value="microcks test" size="lg" variant="primary" />
+      </div>
+    `,
+  }),
+};
+
 export const IconOnly: StoryObj = {
   name: "Icon only",
   render: () => ({

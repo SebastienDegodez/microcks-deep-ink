@@ -13,7 +13,8 @@ import { Field } from '@/ui/components/ui/field';
 import { Input } from '@/ui/components/ui/input';
 import { RunMeta } from '@/ui/components/ui/run-meta';
 import { Select } from '@/ui/components/ui/select';
-import { ButtonRouterLink, ErrorBlock, LoadingBlock, workflowPath, runPath, runSetupPath } from '../workflows/shared';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
+import { ButtonRouterLink, workflowPath, runPath, runSetupPath } from '../workflows/shared';
 import { RunApiPanel, RunBadges, runBreadcrumb } from './run-parts';
 import '../workflows/workflows.css';
 import './workflow-run.css';
@@ -42,7 +43,7 @@ export default function RunSetupPage() {
     return (
       <>
         <PageHeader title="Run workflow" />
-        <LoadingBlock label="Loading the run form" rows={6} />
+        <LoadingBlock label="the run form" rows={6} />
       </>
     );
   }

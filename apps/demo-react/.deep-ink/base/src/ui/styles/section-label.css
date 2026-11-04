@@ -16,6 +16,9 @@
   }
   /* regular: weight 400 (Service rail head, Import, Tests, Agent). */
   .section-label[data-weight="regular"] { font-weight: 400; }
+  /* Line height: normal (Agent test setup strip and detail titles, TestRun score label), snug 1.4 (Agent skills rail head). */
+  .section-label[data-line-height="normal"] { line-height: normal; }
+  .section-label[data-line-height="snug"] { line-height: 1.4; }
   /* Two ends on one line: "3 operations" · "calls · 7 d". */
   .section-label[data-split] {
     display: flex;

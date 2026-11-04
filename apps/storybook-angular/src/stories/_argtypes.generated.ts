@@ -37,6 +37,14 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"busy","type":"boolean","control":"boolean","required":false,"default":"false","model":false,"description":""},
     ] },
   ],
+  "method-tag": [
+    { className: "MethodTagComponent", selector: "span[mkMethodTag]", inputs: [
+      {"name":"method","type":"string","control":"text","required":true,"model":false,"description":"GET/POST... for REST, SUBSCRIBE/PUBLISH for EVENT, the RPC name for gRPC, QUERY/MUTATION for GraphQL."},
+      {"name":"protocol","type":"Protocol","control":"select","options":["REST","SOAP","EVENT","gRPC","GRAPHQL","DIRECT","A2A"],"required":false,"default":"'REST'","model":false,"description":""},
+      {"name":"minWidth","type":"number | undefined","control":"number","required":false,"model":false,"description":"Fixed minimum width in px, so tags line up in a list (Import 52, Service 48, Usage 46, Traces 44)."},
+      {"name":"size","type":"\"sm\" | \"md\" | \"xs\"","control":"select","options":["sm","md","xs"],"required":false,"default":"'md'","model":false,"description":"`sm`: 11px 600, padding 1px 5px, 44px wide unless `minWidth` is set (step lists). `xs`: 10px 600, no minimum width (dense tables)."},
+    ] },
+  ],
   "api-badge": [
     { className: "ApiBadgeComponent", selector: "span[mkApiBadge]", inputs: [
       {"name":"protocol","type":"Protocol | undefined","control":"select","options":["REST","SOAP","EVENT","gRPC","GRAPHQL","DIRECT","A2A"],"required":false,"model":false,"description":"Left segment for an API badge. Ignored when `label` or `arazzo` is set."},
@@ -314,7 +322,7 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"paused","type":"boolean","control":"boolean","required":false,"default":"false","model":false,"description":"The stream is paused: a pause glyph replaces the dot and \"paused\" is written."},
       {"name":"pausedLabel","type":"string | undefined","control":"text","required":false,"model":false,"description":"Text shown while paused, instead of \"<label> · paused\": \"paused · 2 new calls\". Write the word \"paused\"."},
       {"name":"size","type":"\"sm\" | \"md\" | \"lg\"","control":"select","options":["sm","md","lg"],"required":false,"default":"'md'","model":false,"description":"`sm`: 11px, padding 2px 8px. `lg` (box only): 44px, 13px."},
-      {"name":"variant","type":"\"inline\" | \"pill\" | \"box\"","control":"select","options":["inline","pill","box"],"required":false,"default":"'pill'","model":false,"description":"`inline`: no pill border, for KPI cards. `box`: a dashed 36px (lg 44px) frame in place of a busy button."},
+      {"name":"variant","type":"\"inline\" | \"pill\" | \"box\" | \"dot\"","control":"select","options":["inline","pill","box","dot"],"required":false,"default":"'pill'","model":false,"description":"`inline`: no pill border, for KPI cards. `box`: a dashed 36px (lg 44px) frame in place of a busy button. `dot`: the 7px dot only, the label is visually hidden but still read (Agent tasks table, live task row)."},
     ] },
   ],
   "menu": [
@@ -326,14 +334,6 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"variant","type":"ButtonVariant","control":"select","options":["link","primary","secondary","outline","ghost","dashed","danger"],"required":false,"default":"'secondary'","model":false,"description":""},
       {"name":"size","type":"ButtonSize","control":"select","options":["sm","compact","tile","md","lg"],"required":false,"default":"'md'","model":false,"description":""},
       {"name":"align","type":"\"end\" | \"start\"","control":"select","options":["end","start"],"required":false,"default":"'start'","model":false,"description":"Which edge of the trigger the menu lines up with."},
-    ] },
-  ],
-  "method-tag": [
-    { className: "MethodTagComponent", selector: "span[mkMethodTag]", inputs: [
-      {"name":"method","type":"string","control":"text","required":true,"model":false,"description":"GET/POST... for REST, SUBSCRIBE/PUBLISH for EVENT, the RPC name for gRPC, QUERY/MUTATION for GraphQL."},
-      {"name":"protocol","type":"Protocol","control":"select","options":["REST","SOAP","EVENT","gRPC","GRAPHQL","DIRECT","A2A"],"required":false,"default":"'REST'","model":false,"description":""},
-      {"name":"minWidth","type":"number | undefined","control":"number","required":false,"model":false,"description":"Fixed minimum width in px, so tags line up in a list (Import 52, Service 48, Usage 46, Traces 44)."},
-      {"name":"size","type":"\"sm\" | \"md\" | \"xs\"","control":"select","options":["sm","md","xs"],"required":false,"default":"'md'","model":false,"description":"`sm`: 11px 600, padding 1px 5px, 44px wide unless `minWidth` is set (step lists). `xs`: 10px 600, no minimum width (dense tables)."},
     ] },
   ],
   "segmented": [
@@ -423,6 +423,8 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"dismissible","type":"boolean","control":"boolean","required":false,"default":"false","model":false,"description":"Shows a 28px dismiss button that emits `dismiss`."},
       {"name":"dismissLabel","type":"string","control":"text","required":false,"default":"'Dismiss message'","model":false,"description":""},
       {"name":"live","type":"\"status\" | \"off\"","control":"select","options":["status","off"],"required":false,"default":"'status'","model":false,"description":"`status` (default) is a polite live region; `off` for static content."},
+      {"name":"bordered","type":"boolean","control":"boolean","required":false,"default":"true","model":false,"description":"Default `true`. `false`: no frame, a top-aligned note layout (gap 10, 15px icon offset 3px with a 2.6 stroke, title in normal line height, 13px/1.55 text up to 80ch), as the Agent test verdict."},
+      {"name":"surface","type":"\"surface\" | \"raised\"","control":"select","options":["surface","raised"],"required":false,"default":"'surface'","model":false,"description":"Default `surface`. `raised`: the --raised fill instead of --surface (Agent test verdict)."},
     ] },
   ],
   "run-meta": [
@@ -466,6 +468,7 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"size","type":"\"sm\" | \"md\"","control":"select","options":["sm","md"],"required":false,"default":"'md'","model":false,"description":"`md` (default): 12px, tracking .04em. `sm`: 11px, tracking .06em."},
       {"name":"weight","type":"\"semibold\" | \"regular\"","control":"select","options":["semibold","regular"],"required":false,"default":"'semibold'","model":false,"description":"`regular`: weight 400 instead of 600."},
       {"name":"split","type":"boolean","control":"boolean","required":false,"default":"false","model":false,"description":"Spreads the children to both ends of the line."},
+      {"name":"lineHeight","type":"\"fixed\" | \"normal\" | \"snug\"","control":"select","options":["fixed","normal","snug"],"required":false,"default":"'fixed'","model":false,"description":"`fixed` (default): 16px. `normal`: the font's own line height (Agent test setup strip and detail titles, TestRun score label). `snug`: 1.4 (Agent skills rail head)."},
     ] },
   ],
   "select": [

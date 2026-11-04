@@ -1,11 +1,12 @@
 import { afterEveryRender, booleanAttribute, ChangeDetectionStrategy, Component, ElementRef, inject, input, output, signal } from '@angular/core';
 import { IconComponent } from './icon';
+import { PROTOCOL_ATTR, type Protocol } from './method-tag';
+
+export type { Protocol } from './method-tag';
 
 export type ChipTone = 'neutral' | 'info' | 'success' | 'warning' | 'danger';
 export type ChipVariant = 'solid' | 'outline' | 'dashed';
-export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
 
-const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
 
 /**
  * Small label. `<span mkChip>` is static; `<button mkChip [pressed]="on">` is a toggle (filters);

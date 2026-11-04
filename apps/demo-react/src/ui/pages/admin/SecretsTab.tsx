@@ -14,7 +14,7 @@ import { Field } from '@/ui/components/ui/field';
 import { Icon } from '@/ui/components/ui/icon';
 import { Input, Textarea } from '@/ui/components/ui/input';
 import { Segmented } from '@/ui/components/ui/segmented';
-import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
 import './secrets.css';
 

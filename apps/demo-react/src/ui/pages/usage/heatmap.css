@@ -29,3 +29,4 @@
 .us-heat-swatch[data-level='none'] { background: var(--surface); }
 
 .us-heat-facts { padding-top: 10px; border-top: 1px solid var(--border); }
+.us-heat-facts > .facts-row > dd { line-height: 1.4; }

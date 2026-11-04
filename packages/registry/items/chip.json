@@ -4,7 +4,7 @@
   "title": "Chip",
   "tier": "natural",
   "description": "Label chip. Static, a toggle filter, or removable.",
-  "registryDependencies": ["base", "icon"],
+  "registryDependencies": ["base", "icon", "method-tag"],
   "npmDependencies": { "react": [], "angular": [] },
   "a11y": {
     "pattern": "<span> (static), <button aria-pressed> (toggle), nested <button aria-label> (remove)",

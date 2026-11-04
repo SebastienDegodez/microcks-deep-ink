@@ -1,7 +1,9 @@
 import { Fragment, type HTMLAttributes } from 'react';
 import { Icon, type IconName } from './icon';
+import { PROTOCOL_ATTR, type Protocol } from './method-tag';
 
-export type Protocol = 'REST' | 'SOAP' | 'EVENT' | 'gRPC' | 'GRAPHQL' | 'DIRECT' | 'A2A';
+export type { Protocol } from './method-tag';
+
 /** `text` / `plain`: unfilled value in --text at 600 / 400; `positive`: unfilled value in --success (the word says it). */
 export type ProofStatus = 'success' | 'danger' | 'warning' | 'info' | 'action' | 'neutral' | 'muted' | 'text' | 'plain' | 'positive' | 'protocol';
 
@@ -38,7 +40,6 @@ export interface ApiBadgeProps extends HTMLAttributes<HTMLSpanElement> {
   size?: 'sm' | 'compact' | 'md' | 'card' | 'lg' | 'xl';
 }
 
-const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
 const STATUS_WORD = { success: 'success', danger: 'error', warning: 'warning' } as const;
 
 /**

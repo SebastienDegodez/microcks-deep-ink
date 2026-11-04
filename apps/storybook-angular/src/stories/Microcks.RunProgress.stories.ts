@@ -27,5 +27,14 @@ export const Running: StoryObj = {
   }),
 };
 
+/** A custom `label` for the progress bar and a `gap` between the segments. */
+export const LabelAndGap: StoryObj = {
+  name: 'Label and gap',
+  render: () => ({
+    props: { segments: ['done', 'done', 'done', 'current', 'queued', 'queued'] },
+    template: `<div style="max-width:560px"><section mkRunProgress label="Run #120 progress" [done]="3" [total]="6" caption="3 of 6 steps" [gap]="4" [segments]="segments"></section></div>`,
+  }),
+};
+
 /** Interactive: every input is a control in the Controls panel. */
 export const Playground: StoryObj = playground('run-progress', 'RunProgressComponent', { label: 'Progress', done: 7, total: 12, caption: '7 of 12 operations', nowLabel: 'Now', now: 'PATCH /pastries/{name}', segments: ['done','done','done','failed','done','warn','done','current','queued','queued','queued','queued'], counts: [{ kind: 'pass', text: '5 passed' }, { kind: 'fail', text: '1 failed' }], note: 'Started 09:10.' }, '');

@@ -19,6 +19,18 @@ describe('SectionLabel', () => {
     expect(caption.getAttribute('data-size')).toBe('sm');
     expect(caption.getAttribute('data-weight')).toBe('regular');
     expect(caption.hasAttribute('data-split')).toBe(true);
+    expect(caption.hasAttribute('data-line-height')).toBe(false);
     expect(await axeViolations(container)).toEqual([]);
+  });
+
+  it('exposes the line height option only when it is not the 16px default', () => {
+    render(
+      <div>
+        <SectionLabel as="h4" lineHeight="normal">Request</SectionLabel>
+        <SectionLabel size="sm" lineHeight="snug">Skills</SectionLabel>
+      </div>,
+    );
+    expect(screen.getByRole('heading', { level: 4, name: 'Request' }).getAttribute('data-line-height')).toBe('normal');
+    expect(screen.getByText('Skills').getAttribute('data-line-height')).toBe('snug');
   });
 });

@@ -4,6 +4,7 @@ import './agent-header.css';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import { totalsOf } from '@/domain/agents';
 import { formatDay, formatHourMinute } from '@/domain/importing';
+import { ago } from '@/ui/app/format';
 import { PageHeader, useAnnounce, useQuery, usePageTitle, useUseCases } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
@@ -12,7 +13,7 @@ import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { Menu } from '@/ui/components/ui/menu';
 import { ProjectionPill } from '@/ui/components/ui/projection-pill';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
-import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { AgentCardTab } from './AgentCardTab';
 import { AgentMockTab } from './AgentMockTab';
 import { AgentSkillsTab } from './AgentSkillsTab';
@@ -21,7 +22,6 @@ import { AgentTasksTab } from './AgentTasksTab';
 type TabId = 'skills' | 'card' | 'mock' | 'tasks';
 const TAB_IDS: TabId[] = ['skills', 'card', 'mock', 'tasks'];
 
-const ago = (s: number): string => (s < 3 ? 'just now' : s < 60 ? `${s} s ago` : s < 3600 ? `${Math.floor(s / 60)} min ago` : `${Math.floor(s / 3600)} h ago`);
 
 /** Screen 18: an A2A agent imported from its Agent Card. Rendered by the service route when the protocol is A2A. */
 export default function AgentPage() {
