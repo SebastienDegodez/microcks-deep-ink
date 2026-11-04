@@ -327,10 +327,10 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/workflow-loom.tsx": "4693d2a967d04afac46ee88568df8f919a00f35a9577624ed77703bd5ce84e68",
-        "src/ui/components/ui/elements/workflow-loom.js": "96a7fb50615a84d0dfe35b05639ac2047f253d8c7f49b65a2b251b81ef12d07e",
+        "src/ui/components/ui/elements/workflow-loom.js": "3f2a2996b794f0640b3b8af6b99d22c6dc5607b9e582da13b716ee3030a9e09b",
         "src/ui/components/ui/elements/workflow-loom.d.ts": "cebdd92f3a03c970f2889e640899fbe6a00429ce8c074345bc92f5181d7bbe80"
       },
-      "hash": "7d8fa9c49b928fe9"
+      "hash": "e4607b91c165d0f6"
     },
     "command-bar": {
       "version": "0.2.0",
