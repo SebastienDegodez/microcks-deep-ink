@@ -7,64 +7,95 @@
     align-items: center;
     gap: 6px;
     box-sizing: border-box;
-    min-height: 28px;
     margin: 0;
-    padding: 2px 10px;
+    padding: 2px 8px;
     color: var(--state-color);
     background: var(--canvas);
-    border: 1px solid var(--border-control);
-    border-radius: var(--radius-pill);
-    font: 600 13px/18px var(--font-ui);
+    border: 1px solid var(--state-color);
+    border-radius: var(--radius-badge);
+    font: 600 12px/16px var(--font-mono);
+    white-space: nowrap;
   }
-  .task-state > .icon { flex: none; }
+  .task-state > .icon { flex: none; width: 13px; height: 13px; }
   .task-state[data-state="working"] { --state-color: var(--running); }
   .task-state[data-state="input-required"], .task-state[data-state="auth-required"] { --state-color: var(--warning); }
   .task-state[data-state="completed"] { --state-color: var(--success); }
   .task-state[data-state="failed"] { --state-color: var(--danger); }
   /* Rejected and canceled are terminal but neutral: the secondary text color keeps 4.5:1. */
-  .task-state[data-ghost] { background: transparent; border-style: dashed; font-weight: 400; }
+  /* Ghost: a state the task did not reach. Dashed and muted, never coloured. */
+  .task-state[data-ghost] { --state-color: var(--text-muted); min-height: 24px; background: transparent; border-color: var(--border-strong); border-style: dashed; font-weight: 400; }
   button.task-state { cursor: pointer; }
   button.task-state:hover { background: var(--raised); }
-  button.task-state[aria-pressed="true"] { background: var(--selected); border-color: var(--action); border-width: 2px; padding: 1px 9px; }
+  button.task-state[aria-pressed="true"] { background: var(--selected); border-color: var(--action); }
+  @media (forced-colors: active) {
+    button.task-state[aria-pressed="true"] { border-width: 2px; border-color: Highlight; }
+  }
 
+  /* Lifecycle strip: one row that scrolls; each node has its time under it. */
   .task-timeline {
     list-style: none;
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     align-items: flex-start;
-    gap: var(--space-3) 0;
+    gap: 0;
     margin: 0;
-    padding: 0;
+    padding: 0 0 4px;
+    overflow-x: auto;
   }
-  .task-timeline-node, .task-timeline-unreached { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
-  .task-timeline-node { flex-direction: row; }
-  .task-timeline-at { font: var(--type-code); font-size: 12px; color: var(--text-secondary); margin-inline-end: var(--space-2); }
+  .task-timeline-node {
+    flex: none;
+    display: grid;
+    grid-template-columns: auto auto;
+    grid-template-rows: auto auto;
+    row-gap: 4px;
+    justify-items: start;
+  }
+  .task-timeline-node > .task-state { grid-column: -2; grid-row: 1; min-height: 30px; padding: 0 10px; border-radius: var(--radius-node); }
+  .task-timeline-node > .task-state > .icon { width: 14px; height: 14px; }
+  .task-timeline-at { grid-column: -2; grid-row: 2; padding-inline-start: 2px; font: 400 11px/16px var(--font-mono); color: var(--text-muted); }
 
-  /* The link between two nodes: a short rule, with a chevron. Text on it (a reply) is written. */
+  /* The link between two nodes: a 28px rule with an arrow head; text on it (a reply) is written under it. */
   .task-timeline-link {
-    display: inline-flex;
+    grid-column: 1;
+    grid-row: 1 / span 2;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    margin-inline: 6px;
+    padding-top: 10px;
+    color: var(--text-muted);
+    font: 400 10px/14px var(--font-mono);
+    white-space: nowrap;
+  }
+  .task-timeline-link::before {
+    content: "";
+    width: 36px;
+    height: 10px;
+    background: currentColor;
+    clip-path: polygon(0 4px, 28px 4px, 28px 0, 36px 5px, 28px 10px, 28px 6px, 0 6px);
+  }
+  .task-timeline-link[data-text] { color: var(--warning); }
+  .task-timeline-unreached {
+    flex: none;
+    display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: 6px;
-    margin-inline: var(--space-2);
-    color: var(--border-control);
+    min-height: 30px;
+    margin-inline-start: 18px;
+    padding-inline-start: 14px;
+    border-inline-start: 1px dashed var(--border-strong);
+    font: 400 12px/16px var(--font-ui);
+    color: var(--text-muted);
   }
-  .task-timeline-link::before { content: ""; width: 18px; border-top: 2px solid currentColor; }
-  .task-timeline-link::after {
-    content: "";
-    width: 7px;
-    height: 7px;
-    margin-inline-start: -9px;
-    border-top: 2px solid currentColor;
-    border-right: 2px solid currentColor;
-    transform: rotate(45deg);
-  }
-  .task-timeline-link[data-text] { color: var(--warning); font: 600 12px/16px var(--font-ui); }
-  .task-timeline-unreached { margin-inline-start: var(--space-4); padding-inline-start: var(--space-4); border-inline-start: 1px solid var(--border); font: var(--type-small); color: var(--text-secondary); }
 
   /* State-machine diff */
   .task-lanes { display: flex; flex-direction: column; gap: var(--space-3); overflow-x: auto; }
-  .task-lane { display: flex; flex-direction: column; gap: var(--space-2); }
-  .task-lane-title { display: flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); margin: 0; font: var(--type-small); color: var(--text-secondary); }
+  /* A lane: its label in a left column, the nodes on the right. */
+  .task-lane { display: flex; align-items: center; gap: var(--space-3); }
+  .task-lane-title { flex: 0 0 112px; display: flex; flex-direction: column; gap: 2px; margin: 0; font: 400 12px/16px var(--font-ui); color: var(--text-muted); }
+  .task-lane-title strong { font-weight: 600; }
   .task-lane-title strong { color: var(--text); }
   .task-lane[data-tone="ok"] .task-lane-title strong { color: var(--success); }
   .task-lane[data-tone="bad"] .task-lane-title strong { color: var(--danger); }
@@ -97,8 +128,7 @@
   .task-lane-node[data-tone="ok"] { background: var(--success-tint); border-color: var(--success); }
   .task-lane-node[data-tone="bad"] { background: var(--danger-tint); border-color: var(--danger); border-width: 2px; }
   .task-lane-node[data-absent] { background: transparent; border-style: dashed; color: var(--text-secondary); align-items: center; justify-content: center; }
-  .task-lane-label { display: inline-flex; align-items: center; gap: 4px; font: 600 13px/18px var(--font-ui); }
+  .task-lane-label { display: inline-flex; align-items: center; gap: 4px; font: 600 11px/16px var(--font-mono); }
   .task-lane-node[data-tone="bad"] .task-lane-label, .task-lane-node[data-tone="bad"] .task-lane-task { color: var(--danger); }
-  .task-lane-task, .task-lane-at { font: var(--type-small); color: var(--text-secondary); }
-  .task-lane-at { font-family: var(--font-mono); font-size: 12px; }
+  .task-lane-task, .task-lane-at { font: 400 11px/16px var(--font-mono); color: var(--text-secondary); }
 }

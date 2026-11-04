@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
-import { Chip } from '@microcks-deep-ink/registry/react/chip';
+import { Chip, type Protocol } from '@microcks-deep-ink/registry/react/chip';
 import { itemParams } from './_meta';
 
 export default {
@@ -47,6 +47,33 @@ export const Removable: StoryObj = {
           <Chip key={t} onRemove={() => setTags(tags.filter((x) => x !== t))}>{t}</Chip>
         ))}
         {tags.length === 0 ? <span className="sb-note">No tags left.</span> : null}
+      </div>
+    );
+  },
+};
+
+export const Filters: StoryObj = {
+  name: 'Filters (labels and protocols)',
+  render: () => {
+    const [label, setLabel] = useState('domain=pastry');
+    const [proto, setProto] = useState<string | null>('REST');
+    const protos: Array<[Protocol, number]> = [['REST', 4], ['SOAP', 1], ['EVENT', 2], ['GRAPHQL', 0]];
+    return (
+      <div className="stack">
+        <div className="inline">
+          {protos.map(([p, n]) => (
+            <Chip key={p} protocol={p} count={n} pressed={proto === p} onClick={() => setProto(proto === p ? null : p)}>{p}</Chip>
+          ))}
+        </div>
+        <div className="inline">
+          {[['domain', 'pastry', 4], ['domain', 'movies', 1], ['status', 'GA', 4]].map(([k, v, n]) => (
+            <Chip key={`${k}=${v}`} labelKey={String(k)} count={Number(n)} pressed={label === `${k}=${v}`} onClick={() => setLabel(`${k}=${v}`)}>{v}</Chip>
+          ))}
+        </div>
+        <div className="inline">
+          <Chip size="sm" labelKey="domain">pastry</Chip>
+          <Chip size="sm" labelKey="team">bakery</Chip>
+        </div>
       </div>
     );
   },

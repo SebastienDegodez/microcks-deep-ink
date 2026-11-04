@@ -2,7 +2,7 @@
 @layer deep-ink.components {
   .shell {
     display: grid;
-    grid-template-columns: 240px minmax(0, 1fr);
+    grid-template-columns: 221px minmax(0, 1fr);
     grid-template-rows: auto auto 1fr;
     grid-template-areas: "top top" "banner banner" "nav main";
     min-height: 100vh;
@@ -21,13 +21,19 @@
     flex-wrap: wrap;
     align-items: center;
     gap: var(--space-2) var(--space-4);
-    min-height: 56px;
-    padding: var(--space-2) var(--space-4);
+    box-sizing: border-box;
+    min-height: 61px;
+    padding: 10px 20px;
     background: var(--canvas);
     border-bottom: 1px solid var(--border);
   }
   .topbar-brand { display: flex; align-items: center; gap: var(--space-2); min-width: 0; font: 800 22px/1 var(--font-brand); color: var(--text); }
   .topbar-actions { margin-inline-start: auto; display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
+  /* Optional centre slot (search): grows up to 560px and stays centred between the brand and the actions. */
+  .topbar-center { flex: 1 1 280px; max-width: 560px; min-width: 0; margin-inline: auto; display: flex; }
+  .topbar-center:empty { display: none; }
+  .topbar-center > * { flex: 1 1 auto; min-width: 0; }
+  .topbar-center:not(:empty) + .topbar-actions { margin-inline-start: 0; }
   .shell-menu { display: none; }
 
   .shell-banner { grid-area: banner; min-width: 0; }
@@ -35,38 +41,37 @@
   .sidenav {
     grid-area: nav;
     background: var(--canvas);
+    box-sizing: border-box;
     border-inline-end: 1px solid var(--border);
-    padding: var(--space-3) var(--space-2);
+    padding: 16px 12px;
     min-width: 0;
   }
   .sidenav > ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
   .sidenav-link {
     display: flex;
     align-items: center;
-    gap: var(--space-3);
-    min-height: 44px;
-    padding: 0 var(--space-3);
-    border-radius: var(--radius-control);
+    gap: 10px;
+    padding: 9px 12px;
+    border-radius: 6px;
     color: var(--text-secondary);
     text-decoration: none;
-    font: 500 14px/20px var(--font-ui);
+    font: 400 14px/17px var(--font-ui);
   }
   .sidenav-link:hover { background: var(--raised); color: var(--text); }
   .sidenav-link[aria-current="page"] {
     background: var(--selected);
     color: var(--text);
     font-weight: 600;
-    box-shadow: inset 3px 0 0 var(--action);
   }
   .sidenav-badge { margin-inline-start: auto; font: 400 11px/16px var(--font-mono); color: var(--text-secondary); }
 
   .main {
     grid-area: main;
     min-width: 0;
-    padding: var(--space-6) var(--space-8);
+    padding: 24px 32px 40px;
     display: flex;
     flex-direction: column;
-    gap: var(--space-6);
+    gap: 20px;
   }
   /* Focus lands here from the skip link: keep the base focus ring, drawn inside the box. */
   .main:focus-visible { outline-offset: -2px; }
@@ -79,6 +84,8 @@
       grid-template-rows: auto auto auto 1fr;
     }
     .shell-menu { display: inline-flex; }
+    .topbar { padding: var(--space-2) var(--space-4); }
+    .topbar-center { order: 3; flex-basis: 100%; max-width: none; }
     .sidenav { border-inline-end: 0; border-bottom: 1px solid var(--border); }
     .sidenav:not([data-open="true"]) { display: none; }
     .main { padding: var(--space-4); }

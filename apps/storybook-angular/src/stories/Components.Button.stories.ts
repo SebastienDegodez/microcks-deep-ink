@@ -16,6 +16,7 @@ export const Default: StoryObj = {
         <button mkButton variant="primary">Run test</button>
         <button mkButton>Cancel</button>
         <button mkButton variant="ghost">Skip</button>
+        <button mkButton variant="link" icon="copy">Copy</button>
         <button mkButton variant="danger">Delete service</button>
       </div>
     `,

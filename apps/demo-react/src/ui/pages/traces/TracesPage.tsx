@@ -42,7 +42,7 @@ export default function TracesPage() {
   const services = useQuery(() => uc.catalog.listServices(), []);
   return (
     <>
-      <PageHeader title="Live traces" eyebrow="Observe" />
+      <PageHeader title="Live traces" />
       {topology.status === 'loading' && !topology.data ? <LoadingBlock label="live traces" /> : null}
       {topology.status === 'error' ? <ErrorBlock error={topology.error} what="Live traces" onRetry={topology.reload} /> : null}
       {topology.data ? <Live topology={topology.data} services={services.data ?? []} /> : null}

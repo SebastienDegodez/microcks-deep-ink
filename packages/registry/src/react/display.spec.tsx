@@ -37,6 +37,16 @@ describe('Chip', () => {
     fireEvent.click(screen.getByRole('button', { name: 'Remove team payments' }));
     expect(onRemove).toHaveBeenCalled();
   });
+
+  it('reads a protocol filter as its text and count, with no check mark', () => {
+    render(
+      <Chip protocol="REST" count={4} pressed>
+        REST
+      </Chip>,
+    );
+    const b = screen.getByRole('button', { name: 'REST 4', pressed: true });
+    expect(b.getAttribute('data-protocol')).toBe('rest');
+  });
 });
 
 describe('Panel', () => {
@@ -77,5 +87,14 @@ describe('Segmented', () => {
     expect(failed.getAttribute('aria-pressed')).toBe('false');
     fireEvent.click(failed);
     expect(onChange).toHaveBeenCalledWith('failed');
+  });
+
+  it('keeps dots and icons decorative', () => {
+    const { container } = render(
+      <Segmented label="View" value="table" onChange={() => {}} variant="joined" options={[{ id: 'table', label: 'Table', icon: 'list', dot: 'success' }]} />,
+    );
+    expect(screen.getByRole('button', { name: 'Table' })).toBeTruthy();
+    expect(container.querySelector('.segmented')?.getAttribute('data-variant')).toBe('joined');
+    expect(container.querySelector('.segmented-dot')?.getAttribute('aria-hidden')).toBe('true');
   });
 });

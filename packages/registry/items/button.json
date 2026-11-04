@@ -20,7 +20,7 @@
     ],
     "rgaa": ["3.3", "7.1", "10.7", "11.9", "11.10"],
     "wcag": ["1.4.11", "2.1.1", "2.4.7", "4.1.2"],
-    "notes": "Never use a <div> with a click handler. Medium buttons are 44px high, small ones 32px; a page's primary action is always medium."
+    "notes": "Never use a <div> with a click handler. Medium buttons are 40px high, small ones 32px, link-style ones 28px (still above the 24px of WCAG 2.5.8); a page's primary action is always medium."
   },
   "stories": ["Components/Button"]
 }

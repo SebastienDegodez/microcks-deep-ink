@@ -33,3 +33,16 @@ export const WithError: StoryObj = {
     `,
   }),
 };
+
+export const Cards: StoryObj = {
+  render: () => ({
+    props: {
+      mode: 'sync',
+      options: [
+        { value: 'sync', label: 'Keep in sync', description: 'Microcks re-imports the package when the Hub publishes a new version.' },
+        { value: 'once', label: 'Import once', description: 'A one-time copy; later versions are not imported.' },
+      ],
+    },
+    template: `<div style="max-width: 420px"><fieldset mkRadioGroup legend="Install mode" variant="card" [options]="options" [(value)]="mode"></fieldset></div>`,
+  }),
+};

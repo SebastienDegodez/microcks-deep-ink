@@ -185,7 +185,8 @@ export default function WorkflowsPage() {
     <div className="wf-page">
       <PageHeader
         title="Workflows"
-        eyebrow={countLine}
+        meta={countLine}
+        size="lg"
         actions={
           <>
             <ButtonRouterLink to="/sources">Sources</ButtonRouterLink>

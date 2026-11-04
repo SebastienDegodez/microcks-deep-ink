@@ -2,17 +2,24 @@
   Chip recipe.
   Static label: a span. Filter toggle: a button with aria-pressed. Removable: a real button with a name.
   Tone: data-tone="neutral | info | success | warning | danger". Variant: data-variant="solid | outline | dashed".
+  Size: data-size="md | sm". Protocol filter: data-protocol="rest | soap | event | grpc | graphql | direct | a2a".
+  Content: <span class="chip-label">[<span class="chip-key">k</span><span class="chip-eq">=</span>]<span class="chip-value">v</span></span>
+  then an optional <span class="chip-count">; data-empty dims a zero count.
 -->
-<span class="chip" data-tone="neutral" data-variant="solid"><span class="chip-key">domain=</span>pastry</span>
+<span class="chip" data-tone="neutral" data-variant="solid" data-size="sm"><span class="chip-label"><span class="chip-key">domain</span><span class="chip-eq">=</span><span class="chip-value">pastry</span></span></span>
 
 <span class="chip" data-tone="warning" data-variant="dashed">Proposed · beyond POC</span>
 
-<!-- Toggle (filter) -->
-<button type="button" class="chip" data-tone="neutral" data-variant="solid" aria-pressed="true">REST</button>
+<!-- Toggle (filter): "domain = pastry 4". aria-pressed carries the state. -->
+<button type="button" class="chip" data-tone="neutral" data-variant="solid" aria-pressed="true"><span class="chip-label"><span class="chip-key">domain</span><span class="chip-eq">=</span><span class="chip-value">pastry</span></span> <span class="chip-count">4</span></button>
+
+<!-- Protocol filter: square, with a swatch; pressed fills with the protocol colour. -->
+<button type="button" class="chip" data-tone="neutral" data-variant="solid" data-protocol="rest" aria-pressed="false"><span class="chip-label"><span class="chip-value">REST</span></span> <span class="chip-count">4</span></button>
+<button type="button" class="chip" data-tone="neutral" data-variant="solid" data-protocol="event" aria-pressed="true"><span class="chip-label"><span class="chip-value">EVENT</span></span> <span class="chip-count">2</span></button>
 
 <!-- Removable -->
 <span class="chip" data-tone="info" data-variant="solid">
-  team=payments
+  <span class="chip-label"><span class="chip-key">team</span><span class="chip-eq">=</span><span class="chip-value">payments</span></span>
   <button type="button" class="chip-remove" aria-label="Remove team=payments">
     <svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor"
          stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">

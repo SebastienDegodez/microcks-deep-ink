@@ -122,11 +122,7 @@ export default function BehaviorPage() {
     <div className="ex-stack">
       <PageHeader
         title={operation.path}
-        eyebrow={
-          <span role="group" aria-label="Breadcrumb">
-            <RouterLink to="/services">APIs &amp; Services</RouterLink> › <RouterLink to={`/services/${svc.id}`}>{svc.name} {svc.version}</RouterLink> › <span aria-current="page">{operation.method} {operation.path}</span>
-          </span>
-        }
+        breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}`, to: `/services/${svc.id}` }, { label: `${operation.method} ${operation.path}` }]}
         badge={<span className="ex-row"><MethodTag method={operation.method} protocol={svc.protocol} /><ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} size="sm" /></span>}
         actions={
           <>
@@ -158,7 +154,7 @@ export default function BehaviorPage() {
                     <input type="radio" name="dispatcher" value={c.id} checked={draft.dispatcher === c.id} disabled={c.disabled} onChange={() => pickDispatcher(c.id)} />
                     <span className="ex-radio-card-title ex-row">{c.id}{draft.dispatcher === c.id ? <Icon name="check" size={14} /> : null}</span>
                     <span className="ex-small ex-secondary">{c.desc}</span>
-                    {c.tag ? <span className="ex-small ex-muted">{c.tag}</span> : null}
+                    {c.tag ? <span className="ex-radio-card-tag">{c.tag}</span> : null}
                   </label>
                 ))}
               </div>

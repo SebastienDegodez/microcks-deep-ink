@@ -51,3 +51,25 @@ export const WithDisabledTab: StoryObj = {
     `,
   }),
 };
+
+export const LiveAndAlert: StoryObj = {
+  name: "Live dot and warning count",
+  parameters: { docs: { description: { story: "A live dot before the label (read \"Tasks, live\") and a warning pill (read \"Users, 2 pending changes\")." } } },
+  render: () => ({
+    props: {
+      tabs: [
+        { id: 'tasks', label: 'Tasks', count: 5, live: true },
+        { id: 'users', label: 'Users', count: 12, alert: 2, alertLabel: 'pending changes' },
+        { id: 'secrets', label: 'Secrets', count: 3 },
+      ],
+      v: 'tasks',
+    },
+    template: `
+      <mk-tabs label="Sections" [items]="tabs" [(value)]="v" activation="automatic">
+        @for (t of tabs; track t.id) {
+          <div mkTabPanel [tab]="t.id"><p style="margin:0">Content of the {{ t.label }} tab.</p></div>
+        }
+      </mk-tabs>
+    `,
+  }),
+};

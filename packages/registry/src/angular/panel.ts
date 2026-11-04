@@ -16,6 +16,8 @@ export class PanelActionsDirective {}
   host: {
     class: 'panel',
     '[attr.data-flush]': "flush() ? '' : null",
+    '[attr.data-title]': "titleStyle() === 'label' ? 'label' : null",
+    '[attr.data-pad]': "padding() === 'lg' ? 'lg' : null",
     '[attr.aria-labelledby]': 'title() ? titleId : null',
     '[attr.role]': "title() && isDiv ? 'region' : null",
     // `title` is an input here: do not leave it on the element as a tooltip.
@@ -49,6 +51,10 @@ export class PanelComponent {
   readonly headingLevel = input<1 | 2 | 3 | 4 | 5 | 6>(2);
   /** Removes the body padding, for tables and lists. */
   readonly flush = input(false, { transform: booleanAttribute });
+  /** `heading` (16px, default) or `label` (12px uppercase, muted). */
+  readonly titleStyle = input<'heading' | 'label'>('heading');
+  /** `md` = 16px padding (default), `lg` = 20px. */
+  readonly padding = input<'md' | 'lg'>('md');
 
   protected readonly actions = contentChild(PanelActionsDirective);
   protected readonly titleId = `mk-panel-title-${++nextId}`;

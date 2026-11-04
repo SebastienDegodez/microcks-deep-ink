@@ -12,6 +12,10 @@ export interface PanelProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
   actions?: ReactNode;
   /** Removes the body padding, for tables and lists. */
   flush?: boolean;
+  /** `heading` (16px, default) or `label` (12px uppercase, muted). */
+  titleStyle?: 'heading' | 'label';
+  /** `md` = 16px padding (default), `lg` = 20px. */
+  padding?: 'md' | 'lg';
   /** Root element. */
   as?: 'section' | 'div' | 'article' | 'aside';
   ref?: Ref<HTMLElement>;
@@ -20,7 +24,7 @@ export interface PanelProps extends Omit<HTMLAttributes<HTMLElement>, 'title'> {
 /**
  * Panel on `canvas` with a hairline border. Elevation is a lighter ink, never a shadow.
  */
-export function Panel({ title, headingLevel = 2, actions, flush, as = 'section', className, children, ref, ...rest }: PanelProps) {
+export function Panel({ title, headingLevel = 2, actions, flush, titleStyle = 'heading', padding = 'md', as = 'section', className, children, ref, ...rest }: PanelProps) {
   const titleId = useId();
   const Root = as as ElementType;
   const Heading = `h${headingLevel}` as ElementType;
@@ -30,6 +34,8 @@ export function Panel({ title, headingLevel = 2, actions, flush, as = 'section',
       {...rest}
       className={['panel', className].filter(Boolean).join(' ')}
       data-flush={flush ? '' : undefined}
+      data-title={titleStyle === 'label' ? 'label' : undefined}
+      data-pad={padding === 'lg' ? 'lg' : undefined}
       aria-labelledby={title ? titleId : rest['aria-labelledby']}
     >
       {title || actions ? (

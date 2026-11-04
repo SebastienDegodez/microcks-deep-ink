@@ -35,7 +35,6 @@ export default function TestsPage() {
     <>
       <PageHeader
         title={service ? `Tests of ${service.name} ${service.version}` : 'Test history'}
-        eyebrow="Tests"
         actions={
           <Button asChild variant="primary" icon="play">
             <RouterLink to={`/tests/create?service=${serviceId}`}>Run a test</RouterLink>

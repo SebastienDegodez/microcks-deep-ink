@@ -43,7 +43,6 @@ export default function TestRunPage() {
     <>
       <PageHeader
         title={`Test run #${testRunId}`}
-        eyebrow="Tests"
         actions={
           base ? (
             <Button asChild variant="ghost">

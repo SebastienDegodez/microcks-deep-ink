@@ -49,7 +49,7 @@ export default function AdminPage() {
 
   return (
     <>
-      <PageHeader title="Administration" eyebrow="Govern" />
+      <PageHeader title="Administration" />
       <div className="ad-toast">
         {toast ? (
           <Callout tone="success" live="polite" role="status" actions={<Button variant="ghost" onClick={() => setToast('')}>Dismiss</Button>}>

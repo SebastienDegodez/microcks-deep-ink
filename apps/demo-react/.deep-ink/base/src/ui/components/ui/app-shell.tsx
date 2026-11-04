@@ -25,6 +25,8 @@ export interface AppShellProps {
   brand: ReactNode;
   nav: ShellNavItem[];
   activeId: string;
+  /** Centre of the top bar, between the brand and the actions (for example a search button). */
+  topbarCenter?: ReactNode;
   topbarActions?: ReactNode;
   /** Site-wide notice rendered under the top bar (for example a DEMO callout). */
   banner?: ReactNode;
@@ -37,7 +39,7 @@ export interface AppShellProps {
 
 const NARROW = '(max-width: 767px)';
 
-export function AppShell({ brand, nav, activeId, topbarActions, banner, skipLinkLabel = 'Skip to content', navLabel = 'Main', children, renderLink }: AppShellProps) {
+export function AppShell({ brand, nav, activeId, topbarCenter, topbarActions, banner, skipLinkLabel = 'Skip to content', navLabel = 'Main', children, renderLink }: AppShellProps) {
   const navId = useId();
   const [open, setOpen] = useState(false);
   const menuRef = useRef<HTMLButtonElement>(null);
@@ -94,6 +96,7 @@ export function AppShell({ brand, nav, activeId, topbarActions, banner, skipLink
           Menu
         </Button>
         <div className="topbar-brand">{brand}</div>
+        {topbarCenter ? <div className="topbar-center">{topbarCenter}</div> : null}
         {topbarActions ? <div className="topbar-actions">{topbarActions}</div> : null}
       </header>
       {banner ? <div className="shell-banner">{banner}</div> : null}

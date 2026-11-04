@@ -25,3 +25,53 @@ export const Default: StoryObj = {
     );
   },
 };
+
+export const DotsAndIcons: StoryObj = {
+  name: 'Dots and icons',
+  render: () => {
+    const [r, setR] = useState('all');
+    const [view, setView] = useState('table');
+    return (
+      <div className="inline">
+        <Segmented
+          label="Last test"
+          value={r}
+          onChange={setR}
+          options={[
+            { id: 'all', label: 'All', count: 11, dot: 'neutral' },
+            { id: 'ok', label: 'Conformant', count: 3, dot: 'success' },
+            { id: 'ko', label: 'Failing', count: 5, dot: 'danger' },
+            { id: 'never', label: 'Never tested', count: 3, dot: 'muted' },
+          ]}
+        />
+        <Segmented
+          label="View"
+          value={view}
+          onChange={setView}
+          options={[
+            { id: 'table', label: 'Table', icon: 'list' },
+            { id: 'wall', label: 'Badge wall', icon: 'badge-wall' },
+          ]}
+        />
+      </div>
+    );
+  },
+};
+
+export const Joined: StoryObj = {
+  render: () => {
+    const [v, setV] = useState('groovy');
+    return (
+      <Segmented
+        label="Script language"
+        variant="joined"
+        value={v}
+        onChange={setV}
+        options={[
+          { id: 'groovy', label: 'Groovy' },
+          { id: 'js', label: 'JavaScript' },
+        ]}
+      />
+    );
+  },
+};

@@ -16,7 +16,8 @@ const serverTheme = (): Theme => 'dark';
 export type ThemeToggleProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'onClick' | 'aria-pressed' | 'aria-label'>;
 
 /**
- * Toggle button for the light theme. The label stays "Light theme"; `aria-pressed` tells whether it is on.
+ * Toggle button for the light theme (a bordered square with the moon icon in both themes).
+ * The label stays "Light theme"; `aria-pressed` tells whether it is on.
  */
 export function ThemeToggle(props: ThemeToggleProps) {
   const theme = useSyncExternalStore(subscribe, getTheme, serverTheme);
@@ -30,14 +31,14 @@ export function ThemeToggle(props: ThemeToggleProps) {
     <Button
       {...props}
       type="button"
-      variant="ghost"
+      variant="secondary"
       iconOnly
       className="theme-toggle"
       aria-label="Light theme"
       aria-pressed={theme === 'light'}
       onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
     >
-      <Icon name="sun" size={18} />
+      <Icon name="moon" size={18} />
     </Button>
   );
 }

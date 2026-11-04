@@ -93,7 +93,8 @@ export default function CataloguePage() {
     <div className="ex-stack">
       <PageHeader
         title="APIs & Services"
-        eyebrow={
+        size="lg"
+        meta={
           <>
             {data.total} services · {data.operationsTotal} operations · <RouterLink to="/workflows">used by {data.workflowsUsing} workflows</RouterLink>
           </>

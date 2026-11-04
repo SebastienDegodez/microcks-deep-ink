@@ -22,7 +22,7 @@ let nextId = 0;
     }
     @if (error()) {
       <p class="error" [id]="errorId">
-        <svg mkIcon name="warning" [size]="16"></svg>
+        <svg mkIcon name="cross" [size]="13"></svg>
         <span><span class="sr-only">Error: </span>{{ error() }}</span>
       </p>
     }
