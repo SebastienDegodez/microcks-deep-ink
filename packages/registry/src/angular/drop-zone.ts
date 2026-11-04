@@ -25,7 +25,7 @@ export function filesReadyMessage(count: number): string {
     '(drop)': 'onDrop($event)',
   },
   template: `
-    <svg mkIcon name="upload" [size]="28"></svg>
+    <span class="drop-zone-icon" aria-hidden="true"><svg mkIcon name="upload" [size]="24"></svg></span>
     <p class="drop-zone-heading" [id]="id + '-heading'">{{ heading() }}</p>
     <p class="drop-zone-hint" [id]="id + '-hint'">{{ hint() }}</p>
     <input
@@ -37,7 +37,7 @@ export function filesReadyMessage(count: number): string {
       [attr.aria-describedby]="id + '-heading ' + id + '-hint'"
       (change)="onChange($event)"
     />
-    <label [attr.for]="id" class="button drop-zone-choose" data-variant="primary">Choose files</label>
+    <label [attr.for]="id" class="button drop-zone-choose" data-variant="primary">{{ chooseLabel() }}</label>
     <p class="drop-zone-status" role="status">{{ message() }}</p>
   `,
 })
@@ -47,6 +47,8 @@ export class DropZoneComponent {
   /** Passed to the native input as a picker hint. Validate files in your application. */
   readonly accept = input<string>();
   readonly multiple = input(true, { transform: booleanAttribute });
+  /** Visible label of the file picker button ("Browse"). */
+  readonly chooseLabel = input('Choose files');
   /** Emits the chosen or dropped files. */
   readonly files = output<File[]>();
 

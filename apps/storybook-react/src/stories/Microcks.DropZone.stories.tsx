@@ -24,7 +24,7 @@ export const Single: StoryObj = {
   name: 'Single file',
   render: () => (
     <div style={{ maxWidth: 560 }}>
-      <DropZone heading="Replace the contract" hint="One YAML or JSON file" multiple={false} accept=".yaml,.yml,.json" onFiles={() => undefined} />
+      <DropZone heading="Replace the contract" hint="One YAML or JSON file" chooseLabel="Browse" multiple={false} accept=".yaml,.yml,.json" onFiles={() => undefined} />
     </div>
   ),
 };

@@ -33,7 +33,7 @@ export const Single: StoryObj = {
   render: () => ({
     template: `
       <div style="max-width:560px">
-        <mk-drop-zone heading="Replace the contract" hint="One YAML or JSON file" [multiple]="false" accept=".yaml,.yml,.json" />
+        <mk-drop-zone heading="Replace the contract" hint="One YAML or JSON file" chooseLabel="Browse" [multiple]="false" accept=".yaml,.yml,.json" />
       </div>
     `,
   }),

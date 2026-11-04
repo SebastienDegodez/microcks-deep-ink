@@ -77,7 +77,7 @@ export function AppLayout() {
         }
         topbarActions={
           <>
-            <Button asChild variant="primary" icon="arrow-down">
+            <Button asChild variant="primary" icon="download">
               <Link to="/sources/new">Import a contract</Link>
             </Button>
             <ThemeToggle />

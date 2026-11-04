@@ -141,18 +141,18 @@
     "drop-zone": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/drop-zone.tsx": "a88dd81f9f05a0f627612bd2e2bdefc78b0f84a4bb32380d02447ae1e64c0948",
-        "src/ui/styles/drop-zone.css": "5ef26696cd769669e68a40c74b34ae6ba297676b361a778b356d4577033124ff"
+        "src/ui/components/ui/drop-zone.tsx": "aa3a7475887fdb4b6a712d8f4eeaf86341ac492c21fa24bec7098892686a2569",
+        "src/ui/styles/drop-zone.css": "f5e1faddff225974a22b69c31ea1c85f74acfcf81a542c45b0644e105e2d6856"
       },
-      "hash": "b03450d0e212d5d6"
+      "hash": "08682580ede9fdbf"
     },
     "empty-state": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/empty-state.tsx": "ad6d151caad528002a4dc8e69c33ef5e39949929636bcc00d1688b026974296a",
-        "src/ui/styles/empty-state.css": "5e2604f2d5752f6b6cbe0c7692c1dba35de7bdcc23a60f14b82094b723710a70"
+        "src/ui/components/ui/empty-state.tsx": "acbb35de2836e92909be5628bc3389fdc9e3f029fb27f4bfda2dd0dd18ee66e3",
+        "src/ui/styles/empty-state.css": "7bc8ba34c387160ba25585d088ea65fc54e1b6ec5bd81932b8f41fe644b4cc4a"
       },
-      "hash": "212b3cae9c0ed913"
+      "hash": "bbcbe6fe739c6c98"
     },
     "input": {
       "version": "0.2.0",
@@ -381,9 +381,17 @@
         "src/ui/styles/tile.css": "4e39eb62b416295d7de11ace3555bce4842fcb3dc6f3053d02a037f43a891f54"
       },
       "hash": "2c3ba1dacad8b0ca"
+    },
+    "stat-card": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/stat-card.tsx": "ee00939604a72965f8ff998a8b8d85e698426348bcaafdef418578058b260c07",
+        "src/ui/styles/stat-card.css": "f262171b273ad3ec4628c13b8b8a75e0845c365f31f282a351b1b3f4b143edab"
+      },
+      "hash": "31b496118528abac"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "16212ac2b661733688ce6924191fa8ceee053a096d9b1717f62ee74881bf0655"
+    "src/ui/styles/index.css": "03e5aef93d536617ad19141874aae9a15e415a921c25eb9851b7a42c1bc51651"
   }
 }

@@ -20,3 +20,15 @@ export const Default: StoryObj = {
     `,
   }),
 };
+
+export const NoResults: StoryObj = {
+  name: "No results (icon)",
+  render: () => ({
+    template: `
+      <section mkEmptyState title="No service matches" icon="search-x">
+        <p>None of the 11 services matches: “zzz”. Remove a filter or reset the selection.</p>
+        <div mkEmptyActions><button mkButton variant="primary" icon="reset">Reset filters</button></div>
+      </section>
+    `,
+  }),
+};

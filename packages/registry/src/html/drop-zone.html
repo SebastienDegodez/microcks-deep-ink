@@ -1,7 +1,7 @@
 <!-- DropZone. A native file input (visually hidden but focusable) named by a visible label.
      Drag and drop is an enhancement. The status line is a polite live region ("2 files ready"). -->
 <div class="drop-zone" id="dz">
-  <svg class="icon" width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 16V4"/><path d="M6 10l6-6 6 6"/><path d="M4 20h16"/></svg>
+  <span class="drop-zone-icon" aria-hidden="true"><svg class="icon" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 16V4"/><path d="M6 10l6-6 6 6"/><path d="M4 20h16"/></svg></span>
   <p class="drop-zone-heading" id="dz-heading">Drop a contract anywhere</p>
   <p class="drop-zone-hint" id="dz-hint">OpenAPI, AsyncAPI, gRPC, GraphQL, Postman, SoapUI, HAR, Arazzo</p>
   <input id="dz-input" type="file" multiple class="drop-zone-input sr-only" aria-describedby="dz-heading dz-hint">
