@@ -192,6 +192,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
         badge={<LiveIndicator label="live · ~19 calls/min" paused={stream.paused} pausedLabel={`paused · ${newCalls}`} />}
         description={DESCRIPTION}
         descriptionTone="secondary"
+        descriptionWidth={780}
         align="start"
         actions={
           <>
@@ -557,7 +558,7 @@ function CallDetail({ call: c, replayNote, onClose, onReplay }: { call: TraceCal
       </div>
 
       <div className="tr2-actions">
-        <Button variant="primary" icon="reset" onClick={onReplay}>
+        <Button variant="primary" icon="replay" onClick={onReplay}>
           Replay this call
         </Button>
         <Button asChild icon="external">
