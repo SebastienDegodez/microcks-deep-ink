@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { layoutLoom } from './loom-layout';
+import { layoutLoom, loomGrid } from './loom-layout';
 import type { LoomSource, LoomStep } from './types';
 
 const rest: LoomSource = { name: 'apiPastry', type: 'openapi', protocol: 'REST', linked: true };
@@ -80,5 +80,22 @@ describe('layoutLoom', () => {
     const l = layoutLoom([], []);
     expect(l.columns).toBe(0);
     expect(l.placements).toEqual([]);
+  });
+});
+
+describe('loomGrid', () => {
+  it('places the six column centres of a four-step workflow like the prototype', () => {
+    const g = loomGrid(4);
+    expect([0, 1, 2, 3, 4, 5].map((c) => g.pct(g.centre(c)))).toEqual(['7.76%', '24.14%', '41.38%', '58.62%', '75.86%', '92.24%']);
+    expect(g.pct(g.centre(2) + 0.3)).toBe('46.55%');
+    expect(g.pct(g.centre(3) + 0.08)).toBe('60.00%');
+    expect(g.pct(0.9)).toBe('15.52%');
+    expect(g.template).toBe('minmax(0, 0.9fr) repeat(4, minmax(0, 1fr)) minmax(0, 0.9fr)');
+  });
+
+  it('keeps one step column when there is no step', () => {
+    const g = loomGrid(0);
+    expect(g.steps).toBe(1);
+    expect(g.pct(g.centre(2))).toBe('83.93%');
   });
 });

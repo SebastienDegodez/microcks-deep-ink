@@ -31,11 +31,32 @@ export interface LoomSource {
   type: 'openapi' | 'asyncapi';
   protocol: Protocol;
   linked: boolean;
+  /** Title and version of the source's API, shown in the lane header: "API Pastry 2.0". */
+  serviceLabel?: string;
 }
 
 export type LoomAction =
-  | { type: 'end'; name: string; on: 'success' | 'failure'; criteria: string; taken?: boolean }
-  | { type: 'retry'; name: string; on: 'failure'; retryAfter: number; retryLimit: number; applied?: boolean };
+  | {
+      type: 'end';
+      name: string;
+      on: 'success' | 'failure';
+      criteria: string;
+      taken?: boolean;
+      /** Short criteria drawn on the loom ("status == 'available'"); `criteria` stays the accessible text. */
+      label?: string;
+      /** Run the `taken` state comes from ("#14"): "not taken in #14". */
+      runLabel?: string;
+    }
+  | {
+      type: 'retry';
+      name: string;
+      on: 'failure';
+      retryAfter: number;
+      retryLimit: number;
+      applied?: boolean;
+      /** Run the attempts come from ("#14"): "3 attempts in #14". */
+      runLabel?: string;
+    };
 
 export interface LoomStep {
   stepId: string;
@@ -56,6 +77,22 @@ export interface LoomThread {
   /** stepId or '$outputs' */
   to: string;
   expression: string;
+}
+
+/** Workflow input, drawn in the inputs column. A bare string is the input name. */
+export interface LoomInput {
+  name: string;
+  /** Defaults to "$inputs.<name>". */
+  expression?: string;
+  /** Value in the shown run, already formatted ('"M"', '3.9'). */
+  value?: string;
+}
+
+/** Workflow output, drawn in the outputs column. A bare string is the output name. */
+export interface LoomOutput {
+  name: string;
+  /** Value in the shown run, already formatted; "—" when absent. */
+  value?: string;
 }
 
 export function parseJson<T>(value: T | string | undefined, fallback: T): T {

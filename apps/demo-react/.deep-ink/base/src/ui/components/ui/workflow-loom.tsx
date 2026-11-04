@@ -13,11 +13,32 @@ export interface LoomSource {
   type: 'openapi' | 'asyncapi';
   protocol: LoomProtocol;
   linked: boolean;
+  /** Title and version of the source's API, shown in the lane header: "API Pastry 2.0". */
+  serviceLabel?: string;
 }
 
 export type LoomAction =
-  | { type: 'end'; name: string; on: 'success' | 'failure'; criteria: string; taken?: boolean }
-  | { type: 'retry'; name: string; on: 'failure'; retryAfter: number; retryLimit: number; applied?: boolean };
+  | {
+      type: 'end';
+      name: string;
+      on: 'success' | 'failure';
+      criteria: string;
+      taken?: boolean;
+      /** Short criteria drawn on the loom ("status == 'available'"); `criteria` stays the accessible text. */
+      label?: string;
+      /** Run the `taken` state comes from ("#14"): "not taken in #14". */
+      runLabel?: string;
+    }
+  | {
+      type: 'retry';
+      name: string;
+      on: 'failure';
+      retryAfter: number;
+      retryLimit: number;
+      applied?: boolean;
+      /** Run the attempts come from ("#14"): "3 attempts in #14". */
+      runLabel?: string;
+    };
 
 export interface LoomStep {
   stepId: string;
@@ -40,13 +61,30 @@ export interface LoomThread {
   expression: string;
 }
 
+/** Workflow input, drawn in the inputs column. A bare string is the input name. */
+export interface LoomInput {
+  name: string;
+  /** Defaults to "$inputs.<name>". */
+  expression?: string;
+  /** Value in the shown run, already formatted ('"M"', '3.9'). */
+  value?: string;
+}
+
+/** Workflow output, drawn in the outputs column. A bare string is the output name. */
+export interface LoomOutput {
+  name: string;
+  /** Value in the shown run, already formatted; "—" when absent. */
+  value?: string;
+}
+
 /** The `<workflow-loom>` element and its properties. */
 export interface WorkflowLoomElement extends HTMLElement {
   sources: LoomSource[];
   steps: LoomStep[];
   threads: LoomThread[];
-  inputs: string[];
-  outputs: string[];
+  inputs: (string | LoomInput)[];
+  outputs: (string | LoomOutput)[];
+  outputNote?: string;
   validatesSchemas: boolean;
   selectedStep?: string;
   label: string;
@@ -65,8 +103,12 @@ export interface WorkflowLoomProps extends Omit<HTMLAttributes<WorkflowLoomEleme
   sources: LoomSource[];
   steps: LoomStep[];
   threads: LoomThread[];
-  inputs?: string[];
-  outputs?: string[];
+  /** Inputs column: names, or `{ name, expression?, value? }`. */
+  inputs?: (string | LoomInput)[];
+  /** Outputs column: names, or `{ name, value? }`. */
+  outputs?: (string | LoomOutput)[];
+  /** Note under the outputs ("No outputs: #14 failed."). */
+  outputNote?: string;
   /** The run validates schemas: every step shows "Success criteria" and "Schema validation". */
   validatesSchemas?: boolean;
   selectedStep?: string;
@@ -93,6 +135,7 @@ export function WorkflowLoom({
   threads,
   inputs,
   outputs,
+  outputNote,
   validatesSchemas,
   selectedStep,
   label,
@@ -121,6 +164,9 @@ export function WorkflowLoom({
   useLayoutEffect(() => {
     if (el.current) el.current.outputs = outputs ?? [];
   }, [outputs]);
+  useLayoutEffect(() => {
+    if (el.current) el.current.outputNote = outputNote;
+  }, [outputNote]);
   useLayoutEffect(() => {
     if (el.current) el.current.validatesSchemas = validatesSchemas ?? false;
   }, [validatesSchemas]);

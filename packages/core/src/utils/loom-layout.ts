@@ -114,3 +114,35 @@ export function layoutLoom(steps: LoomStep[], sources: LoomSource[] = []): LoomL
     warnings,
   };
 }
+
+/** Width, in grid units, of the inputs and outputs columns (a step column is 1 unit). */
+export const IO_UNITS = 0.9;
+
+export interface LoomGrid {
+  /** Step columns (at least 1). */
+  steps: number;
+  /** Total width in units: inputs + steps + outputs. */
+  total: number;
+  /** CSS grid-template-columns: inputs | one column per step depth | outputs. */
+  template: string;
+  /** Centre, in units, of grid column `c`: 0 = inputs, 1…steps = step depths, steps + 1 = outputs. */
+  centre(c: number): number;
+  /** A distance in units as a percentage of the full width ("41.38%"). */
+  pct(units: number): string;
+}
+
+/**
+ * Fluid horizontal geometry of the loom: the grid fills its box, so every mark is placed in percent.
+ * With 4 step columns the centres are 7.76, 24.14, 41.38, 58.62, 75.86 and 92.24 %.
+ */
+export function loomGrid(stepColumns: number): LoomGrid {
+  const steps = Math.max(1, stepColumns);
+  const total = steps + 2 * IO_UNITS;
+  return {
+    steps,
+    total,
+    template: `minmax(0, ${IO_UNITS}fr) repeat(${steps}, minmax(0, 1fr)) minmax(0, ${IO_UNITS}fr)`,
+    centre: (c) => (c <= 0 ? IO_UNITS / 2 : c > steps ? IO_UNITS + steps + IO_UNITS / 2 : IO_UNITS + c - 0.5),
+    pct: (units) => `${((units / total) * 100).toFixed(2)}%`,
+  };
+}

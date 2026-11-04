@@ -1,9 +1,11 @@
 import { Component, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
 import { icon } from '../../utils/icons';
-import { LoomLayout, LoomPlacement, layoutLoom } from '../../utils/loom-layout';
+import { LoomEdge, LoomGrid, LoomLayout, LoomPlacement, layoutLoom, loomGrid } from '../../utils/loom-layout';
 import {
   CheckState,
   LoomAction,
+  LoomInput,
+  LoomOutput,
   LoomSource,
   LoomStep,
   LoomThread,
@@ -11,13 +13,6 @@ import {
   StepStatus,
   parseJson,
 } from '../../utils/types';
-
-const COL = 276;
-const NODE_W = 232;
-const LANE_LABEL_H = 26;
-const THREAD_H = 20;
-const RETRY_HEAD = 46;
-const PLAIN_HEAD = 8;
 
 let uid = 0;
 
@@ -57,48 +52,67 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     :host { display: block; color: var(--text); font: var(--type-body); }
     *, *::before, *::after { box-sizing: border-box; }
     .bar { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 16px; margin-bottom: 12px; }
-    .io { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font: var(--type-small); color: var(--text-secondary); }
-    .io code { font: 400 12px/16px var(--font-mono); color: var(--text); background: var(--surface); border: 1px solid var(--border-control); border-radius: var(--radius-control); padding: 2px 6px; }
     .toggle { margin-left: auto; display: inline-flex; align-items: center; gap: 6px; min-height: 32px; padding: 4px 12px; font: 600 13px/18px var(--font-ui); color: var(--text); background: var(--surface); border: 1px solid var(--border-control); border-radius: var(--radius-control); cursor: pointer; }
     .toggle[aria-pressed="true"] { background: var(--selected); border-color: var(--action); }
     button:focus-visible, .scroll:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; box-shadow: var(--shadow-focus); }
-    .scroll { overflow: auto; padding: 4px 4px 12px; border-radius: var(--radius-panel); }
-    .loom { position: relative; }
-    svg.bg { position: absolute; left: 0; top: 0; overflow: visible; }
-    .lane-label { position: absolute; left: 0; display: flex; gap: 10px; align-items: center; white-space: nowrap; font: 400 12px/16px var(--font-mono); color: var(--text-secondary); }
-    .lane-label .warn { display: inline-flex; align-items: center; gap: 4px; color: var(--warning); font-weight: 600; }
-    .node { position: absolute; display: flex; flex-direction: column; gap: 2px; width: 232px; padding: 8px 10px; text-align: left; color: var(--text); background: var(--surface); border: 1.5px solid; border-radius: var(--radius-node); cursor: pointer; font: inherit; }
+    .scroll { overflow-x: auto; padding: 4px 0 4px; border-radius: var(--radius-panel); }
+    .stage { position: relative; display: grid; align-items: center; }
+    svg.edges { position: absolute; inset: 0; width: 100%; height: 100%; overflow: visible; pointer-events: none; }
+    path.ah { stroke: var(--border-control); }
+    path.edge { fill: none; stroke: var(--border-control); stroke-width: 1.5; }
+    .lane-head { grid-column: 2 / -1; display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 2px 0; font: 400 12px/16px var(--font-ui); color: var(--text-muted); }
+    .badge { display: inline-flex; overflow: hidden; font: 400 11px/16px var(--font-mono); border: 1px solid var(--border); border-radius: 6px; }
+    .badge > span { padding: 2px 7px; }
+    .bp { background: var(--lane); color: var(--on-proto); font-weight: 600; }
+    .bn { background: var(--surface); color: var(--text); }
+    .lt { font-family: var(--font-mono); }
+    .lane-head .warn { display: inline-flex; align-items: center; gap: 4px; color: var(--warning); font-weight: 600; }
+    .acts { grid-column: 1 / -1; position: relative; height: 54px; font: 400 11px/14px var(--font-mono); color: var(--text-secondary); }
+    .acts > * { position: absolute; white-space: nowrap; }
+    .end-label { top: 0; }
+    .note { color: var(--text-muted); }
+    .end-v { top: 27px; height: 27px; border-left: 1.5px dashed var(--text-secondary); }
+    .end-h { top: 27px; border-top: 1.5px dashed var(--text-secondary); }
+    .end-v.on, .end-h.on { border-style: solid; border-color: var(--success); }
+    .end-pill { top: 18px; display: inline-flex; align-items: center; gap: 5px; padding: 1px 8px; color: var(--text-secondary); background: var(--canvas); border: 1px solid currentColor; border-radius: 999px; }
+    .end-pill.on { color: var(--success); }
+    svg.loop { top: 20px; stroke: var(--text-secondary); }
+    svg.loop.bad { stroke: var(--danger); }
+    .retry-label { top: 20px; }
+    .retry-label .bad { color: var(--danger); font-weight: 600; }
+    .warp { grid-column: 2 / -2; position: relative; align-self: stretch; }
+    .warp::before { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 2px; margin-top: -1px; background: var(--lane); }
+    .warp::after { content: ''; position: absolute; left: 0; right: 0; top: 50%; height: 8px; margin-top: -4px; background: radial-gradient(circle 4px at 4px 50%, var(--lane) 99%, transparent), radial-gradient(circle 4px at calc(100% - 4px) 50%, var(--lane) 99%, transparent); }
+    .io { grid-column: 1; position: relative; z-index: 1; display: flex; flex-direction: column; align-items: flex-start; gap: 6px; min-width: 0; padding: 0 2px; }
+    .io.out { grid-column: -2; align-items: flex-end; }
+    .io-h { font: 400 12px/16px var(--font-ui); color: var(--text-muted); }
+    .io-chip { display: flex; flex-direction: column; align-items: flex-start; gap: 1px; max-width: 100%; padding: 4px 6px; font: 400 11px/14px var(--font-mono); text-align: left; color: var(--text); background: var(--canvas); border: 1px solid var(--border); border-radius: 6px; }
+    .io-x { font-weight: 600; overflow-wrap: anywhere; }
+    .io-v { color: var(--text-secondary); overflow-wrap: anywhere; }
+    .io-v.none { color: var(--text-muted); }
+    .io-note { max-width: 100%; font: 400 11px/1.4 var(--font-ui); color: var(--text-muted); text-align: right; }
+    .io-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font: var(--type-small); color: var(--text-secondary); }
+    .io-line code { font: 400 12px/16px var(--font-mono); color: var(--text); background: var(--surface); border: 1px solid var(--border-control); border-radius: var(--radius-control); padding: 2px 6px; }
+    .cell { position: relative; z-index: 1; display: flex; justify-content: center; min-width: 0; padding: 0 12px; }
+    .node { position: relative; width: 100%; max-width: 190px; display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; text-align: left; color: var(--text); background: var(--surface); border: 1.5px solid var(--border-strong); border-radius: var(--radius-node); cursor: pointer; font: inherit; }
     .node[data-status="not-run"] { border-style: dashed; }
     .node[aria-pressed="true"] { background: var(--selected); box-shadow: 0 0 0 2px var(--action); }
     .node[aria-pressed="true"]:focus-visible { box-shadow: 0 0 0 2px var(--action), var(--shadow-focus); }
-    .id { font: 600 12px/16px var(--font-mono); }
-    .op { font: 400 11px/16px var(--font-mono); color: var(--text-secondary); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .id { font: 600 12px/16px var(--font-mono); overflow-wrap: anywhere; }
+    .op { font: 400 11px/16px var(--font-mono); color: var(--text-secondary); overflow-wrap: anywhere; }
     .st { display: inline-flex; align-items: center; gap: 4px; margin-top: 2px; font: 600 12px/16px var(--font-ui); }
     .st.passed { color: var(--success); }
     .st.failed { color: var(--danger); }
     .st.not-run { color: var(--text-muted); }
     .gl { font-weight: 700; }
     .checks { display: flex; flex-direction: column; margin-top: 2px; }
-    .checks .chk { display: flex; white-space: nowrap; justify-content: space-between; gap: 6px; font: 400 11px/16px var(--font-ui); color: var(--text-secondary); }
+    .checks .chk { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 6px; font: 400 11px/16px var(--font-ui); color: var(--text-secondary); }
     .checks .c { display: inline-flex; align-items: center; gap: 3px; font-weight: 600; }
     .c.passed { color: var(--success); }
     .c.failed { color: var(--danger); }
     .c.off, .c.not-evaluated { color: var(--text-muted); }
-    .alabel { position: absolute; white-space: nowrap; font: 400 11px/14px var(--font-mono); color: var(--text-secondary); }
-    .alabel.on { color: var(--success); font-weight: 600; }
-    .alabel.bad { color: var(--danger); font-weight: 600; }
-    path.ah { stroke: var(--border-control); }
-    path.edge { fill: none; stroke: var(--border-control); stroke-width: 1.5; }
-    path.thread { fill: none; stroke: var(--link); stroke-width: 1.5; transition: opacity .15s; }
-    path.thread.dim { opacity: .25; }
-    path.act { fill: none; stroke: var(--border-control); stroke-width: 1.6; }
-    path.act.dashed { stroke-dasharray: 4 3; }
-    path.act.on { stroke: var(--success); }
-    path.act.bad { stroke: var(--danger); stroke-width: 2; }
-    rect.term { fill: var(--border-control); }
-    rect.term.on { fill: var(--success); }
+    .threads { grid-column: 1 / -1; }
     .threads { list-style: none; margin: 0; padding: 0; }
-    .threads.abs li { position: absolute; white-space: nowrap; }
     .thread-li { font: 400 11px/16px var(--font-mono); color: var(--link); }
     .thread-li.dim { color: var(--text-muted); }
     .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-panel); }
@@ -114,7 +128,7 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .t-threads { margin-top: 12px; }
     .t-threads .th { margin: 0 0 4px; font: 600 13px/18px var(--font-ui); color: var(--text-secondary); }
     .sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
-    @media (prefers-reduced-motion: reduce) { path.thread { transition: none; } }
+    .thread-li { padding: 2px 0; }
   `,
 })
 export class MkWorkflowLoom {
@@ -124,10 +138,12 @@ export class MkWorkflowLoom {
   @Prop() sources: LoomSource[] | string = [];
   @Prop() steps: LoomStep[] | string = [];
   @Prop() threads: LoomThread[] | string = [];
-  /** Workflow input names, shown above the loom. */
-  @Prop() inputs: string[] | string = [];
-  /** Workflow output names, shown above the loom. */
-  @Prop() outputs: string[] | string = [];
+  /** Workflow inputs, drawn in the inputs column: names, or `{ name, expression?, value? }`. */
+  @Prop() inputs: (string | LoomInput)[] | string = [];
+  /** Workflow outputs, drawn in the outputs column: names, or `{ name, value? }`. */
+  @Prop() outputs: (string | LoomOutput)[] | string = [];
+  /** Short note under the outputs ("No outputs: #14 failed."). */
+  @Prop() outputNote?: string;
   /** When the run validates schemas, every step shows its two checks. */
   @Prop() validatesSchemas = false;
   /** Selected step id (mutable: clicking a step selects it). */
@@ -138,6 +154,13 @@ export class MkWorkflowLoom {
   @State() hot?: string;
   @State() focusId?: string;
   @State() asTable = false;
+  /** Measured paths of the dependsOn edges (parallel branches only). */
+  @State() edgePaths: string[] = [];
+
+  private stageEl?: HTMLDivElement;
+  private resizer?: ResizeObserver;
+  private edgeKey = '';
+  private parallelEdges: LoomEdge[] = [];
 
   /** Emitted when a step is selected (click, Enter or Space). */
   @Event() mkStepSelect!: EventEmitter<{ stepId: string }>;
@@ -255,6 +278,59 @@ export class MkWorkflowLoom {
     ));
   }
 
+  private renderNode(s: LoomStep, pl: LoomPlacement, layout: LoomLayout, tabStop: string | undefined, descId: string | undefined) {
+    const c = this.checkStates(s);
+    return (
+      <button
+        type="button"
+        class="node"
+        data-status={s.status}
+        aria-pressed={this.selectedStep === s.stepId ? 'true' : 'false'}
+        aria-label={this.accessibleName(s, pl)}
+        aria-describedby={descId}
+        tabindex={s.stepId === tabStop ? 0 : -1}
+        ref={(el) => (el ? this.nodeEls.set(s.stepId, el) : this.nodeEls.delete(s.stepId))}
+        onClick={() => this.select(s.stepId)}
+        onKeyDown={(e) => this.onNodeKey(e, layout, pl)}
+        onMouseEnter={() => (this.hot = s.stepId)}
+        onMouseLeave={() => (this.hot = undefined)}
+        onFocus={() => {
+          this.hot = s.stepId;
+          this.focusId = s.stepId;
+        }}
+        onBlur={() => (this.hot = undefined)}
+      >
+        <span class="id">
+          {pl.number} {s.stepId}
+        </span>{' '}
+        <span class="op">{s.operation}</span>{' '}
+        {s.status && (
+          <span class={`st ${s.status}`}>
+            <span class="gl" aria-hidden="true">
+              {GLYPH[s.status]}
+            </span>{' '}
+            {this.statusVisible(s)}
+          </span>
+        )}{' '}
+        {this.validatesSchemas && (
+          <span class="checks">
+            {(['successCriteria', 'schemaValidation'] as const).map((k) => (
+              <span class="chk">
+                <span>{k === 'successCriteria' ? 'Success criteria' : 'Schema validation'}</span>{' '}
+                <span class={`c ${c[k]}`}>
+                  <span class="gl" aria-hidden="true">
+                    {GLYPH[c[k]]}
+                  </span>{' '}
+                  {CHECK_WORD[c[k]]}
+                </span>
+              </span>
+            ))}
+          </span>
+        )}
+      </button>
+    );
+  }
+
   private renderTable(layout: LoomLayout, steps: LoomStep[], sources: LoomSource[], threads: LoomThread[]) {
     const src = (name: string) => sources.find((s) => s.name === name);
     const none = (
@@ -348,276 +424,245 @@ export class MkWorkflowLoom {
     ];
   }
 
+  /* ---------- edges (parallel branches only), measured after render ---------- */
+
+  private measure = () => {
+    const stage = this.stageEl;
+    const edges = this.parallelEdges;
+    let next: string[] = [];
+    if (stage && edges.length) {
+      const box = stage.getBoundingClientRect();
+      next = edges.map((e) => {
+        const a = this.nodeEls.get(e.from)?.getBoundingClientRect();
+        const b = this.nodeEls.get(e.to)?.getBoundingClientRect();
+        if (!a || !b || !a.width || !b.width) return '';
+        const x1 = a.right - box.left, y1 = a.top + a.height / 2 - box.top;
+        const x2 = b.left - box.left, y2 = b.top + b.height / 2 - box.top;
+        const mx = (x1 + x2) / 2;
+        return `M${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
+      });
+    }
+    const key = next.join('|');
+    if (key !== this.edgeKey) {
+      this.edgeKey = key;
+      this.edgePaths = next;
+    }
+  };
+
+  componentDidRender() {
+    this.measure();
+  }
+
+  componentDidLoad() {
+    if (typeof ResizeObserver !== 'undefined' && this.stageEl) {
+      this.resizer = new ResizeObserver(() => this.measure());
+      this.resizer.observe(this.stageEl);
+    }
+  }
+
+  disconnectedCallback() {
+    this.resizer?.disconnect();
+    this.resizer = undefined;
+  }
+
+  /* ---------- actions row: end branch and retry loop, drawn above the step ---------- */
+
+  private renderActions(steps: LoomStep[], layout: LoomLayout, grid: LoomGrid, lane: number) {
+    const items: unknown[] = [];
+    steps.forEach((s, idx) => {
+      const pl = layout.placements[idx];
+      if (!pl || pl.lane !== lane) return;
+      const c = grid.centre(pl.column + 1);
+      const end = s.actions?.find((a): a is Extract<LoomAction, { type: 'end' }> => a.type === 'end');
+      const retry = s.actions?.find((a): a is Extract<LoomAction, { type: 'retry' }> => a.type === 'retry');
+      if (end) {
+        const taken = end.taken === true;
+        const state = end.taken === undefined ? '' : `${taken ? 'taken' : 'not taken'}${end.runLabel ? ` in ${end.runLabel}` : ''}`;
+        items.push(
+          <span class="end-label" style={{ left: `calc(${grid.pct(c)} + 6px)` }}>
+            {`end if ${end.label ?? end.criteria}`}
+            {state && <span class="note">{` · ${state}`}</span>}
+          </span>,
+          <span class={{ 'end-v': true, on: taken }} style={{ left: grid.pct(c) }} />,
+          <span class={{ 'end-h': true, on: taken }} style={{ left: grid.pct(c), width: grid.pct(0.3) }} />,
+          <span class={{ 'end-pill': true, on: taken }} style={{ left: grid.pct(c + 0.3) }}>
+            {icon('end', 11, 2.4)}
+            end
+          </span>,
+        );
+      }
+      if (retry) {
+        const applied = !!retry.applied;
+        const x = grid.pct(c + 0.08);
+        const attempts = applied && s.attempts ? ` · ${plural(s.attempts, 'attempt')}${retry.runLabel ? ` in ${retry.runLabel}` : ''}` : '';
+        items.push(
+          <svg class={{ loop: true, bad: applied }} style={{ left: x }} width="28" height="32" viewBox="0 0 28 32" fill="none" stroke-width="1.6" aria-hidden="true" focusable="false">
+            <path d="M5 32V15a9 9 0 0 1 18 0v13" />
+            <path d="M19 25l4 5 4-5" />
+          </svg>,
+          <span class="retry-label" style={{ left: `calc(${x} + 32px)` }}>
+            {`retry ×${retry.retryLimit} · ${seconds(retry.retryAfter)}`}
+            {attempts && <span class="bad">{attempts}</span>}
+          </span>,
+        );
+      }
+    });
+    return items;
+  }
+
   render() {
     const sources = parseJson<LoomSource[]>(this.sources, []);
     const steps = parseJson<LoomStep[]>(this.steps, []);
     const threads = parseJson<LoomThread[]>(this.threads, []);
-    const inputs = parseJson<string[]>(this.inputs, []);
-    const outputs = parseJson<string[]>(this.outputs, []);
+    const inputs = parseJson<(string | LoomInput)[]>(this.inputs, []).map((i) => (typeof i === 'string' ? { name: i } : i));
+    const outputs = parseJson<(string | LoomOutput)[]>(this.outputs, []).map((o) => (typeof o === 'string' ? { name: o } : o));
     const layout = layoutLoom(steps, sources);
     const lanes = [...sources];
     layout.placements.forEach((p) => {
       if (!lanes[p.lane]) lanes[p.lane] = { name: steps[p.number - 1]?.source ?? '', type: 'openapi', protocol: 'REST', linked: true };
     });
-
-    // Geometry
-    const nodeH = this.validatesSchemas ? 112 : 78;
-    const hasRetry = steps.some((s) => s.actions?.some((a) => a.type === 'retry'));
-    const maxEnds = steps.reduce((m, s) => Math.max(m, (s.actions ?? []).filter((a) => a.type === 'end').length), 0);
-    const head = hasRetry ? RETRY_HEAD : PLAIN_HEAD;
-    const foot = maxEnds ? 20 + 16 * maxEnds : PLAIN_HEAD;
-    const pitch = head + nodeH + foot;
-    const padL = threads.some((t) => t.from === '$inputs') ? 56 : 8;
-    const padR = threads.some((t) => t.to === '$outputs') ? 56 : 8;
-    const laneY: number[] = [];
-    let y = 0;
-    layout.laneRows.forEach((rows, i) => {
-      laneY[i] = y;
-      y += LANE_LABEL_H + rows * pitch;
-    });
-    const lanesBottom = y;
-    const pos = new Map<string, { x: number; y: number }>();
-    layout.placements.forEach((p) =>
-      pos.set(p.stepId, { x: padL + p.column * COL, y: (laneY[p.lane] ?? 0) + LANE_LABEL_H + p.row * pitch + head }),
-    );
-    const stripTop = lanesBottom + 12;
-    const width = padL + Math.max(0, layout.columns - 1) * COL + NODE_W + padR;
-    const height = stripTop + (threads.length ? threads.length * THREAD_H + 4 : 0);
-
-    const mid = (n: { x: number; y: number }) => n.y + nodeH / 2;
-    const edge = (a: { x: number; y: number }, b: { x: number; y: number }) => {
-      const x1 = a.x + NODE_W, y1 = mid(a), x2 = b.x, y2 = mid(b);
-      const mx = (x1 + x2) / 2;
-      return `M${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
-    };
-    const threadPath = (t: LoomThread) => {
-      const off = 18;
-      const a = pos.get(t.from), b = pos.get(t.to);
-      if (t.from === '$inputs' && b) return `M${b.x - 48} ${mid(b) + off} L${b.x - 1} ${mid(b) + off}`;
-      if (t.to === '$outputs' && a) return `M${a.x + NODE_W} ${mid(a) + off} L${a.x + NODE_W + 47} ${mid(a) + off}`;
-      if (!a || !b) return undefined;
-      const x1 = a.x + NODE_W, y1 = mid(a) + off, x2 = b.x, y2 = mid(b) + off;
-      const mx = (x1 + x2) / 2;
-      return `M${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`;
-    };
-    const involves = (t: LoomThread, id: string) => t.from === id || t.to === id;
-    const isDim = (t: LoomThread) => !!this.hot && !involves(t, this.hot);
+    const grid = loomGrid(layout.columns);
+    const parallel = steps.some((s) => s.dependsOn !== undefined);
+    this.parallelEdges = parallel ? layout.edges : [];
 
     const firstId = layout.placements[0]?.stepId;
     const known = (id?: string) => !!id && steps.some((s) => s.stepId === id);
     const tabStop = known(this.focusId) ? this.focusId : known(this.selectedStep) ? this.selectedStep : firstId;
+    const involves = (t: LoomThread, id: string) => t.from === id || t.to === id;
+    const isDim = (t: LoomThread) => !!this.hot && !involves(t, this.hot);
 
-    const protoColor = (s: LoomStep) => {
-      const lane = layout.placements.find((p) => p.stepId === s.stepId)?.lane ?? 0;
-      return `var(--${PROTOCOL_TOKEN[lanes[lane]?.protocol ?? 'REST']})`;
-    };
+    // Grid rows: per lane, a header, an actions row when a step has actions, then one row per parallel branch.
+    let row = 1;
+    const laneRows = lanes.map((_, i) => {
+      const header = row++;
+      const hasActions = steps.some((s, idx) => layout.placements[idx]?.lane === i && (s.actions ?? []).some((a) => a.type === 'end' || a.type === 'retry'));
+      const actions = hasActions ? row++ : undefined;
+      const first = row;
+      row += layout.laneRows[i] ?? 1;
+      return { header, actions, first };
+    });
+    const nodeFirst = laneRows[0]?.first ?? 1;
+    const nodeEnd = row;
+    const laneColor = (l: LoomSource) => `var(--${PROTOCOL_TOKEN[l.protocol] ?? PROTOCOL_TOKEN.REST})`;
 
     const graph = (
       <div class="scroll" role="region" aria-label={`${this.label}, diagram`} tabindex={0}>
-        <div class="loom" style={{ width: `${width}px`, height: `${height}px` }}>
-          <svg class="bg" width={width} height={height} aria-hidden="true" focusable="false">
-            <defs>
-              <marker id={`ah-${this.uid}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                <path class="ah" d="M1 1 L9 5 L1 9" fill="none" stroke-width="1.6" />
-              </marker>
-            </defs>
-            {lanes.map((l, i) =>
-              Array.from({ length: layout.laneRows[i] ?? 1 }, (_, r) => {
-                const ly = (laneY[i] ?? 0) + LANE_LABEL_H + r * pitch + head + nodeH / 2;
-                return (
-                  <line
-                    x1={0}
-                    x2={width}
-                    y1={ly}
-                    y2={ly}
-                    stroke={`var(--${PROTOCOL_TOKEN[l.protocol]})`}
-                    stroke-width="2"
-                    opacity="0.45"
-                  />
-                );
-              }),
-            )}
-            {layout.edges.map((e) => {
-              const a = pos.get(e.from), b = pos.get(e.to);
-              return a && b ? <path class="edge" d={edge(a, b)} marker-end={`url(#ah-${this.uid})`} /> : null;
-            })}
-            {threads.map((t) => {
-              const d = threadPath(t);
-              return d ? <path class={{ thread: true, dim: isDim(t) }} d={d} /> : null;
-            })}
-            {steps.map((s) => {
-              const p = pos.get(s.stepId);
-              if (!p) return null;
-              const acts = s.actions ?? [];
-              const retries = acts.filter((a) => a.type === 'retry');
-              const ends = acts.filter((a) => a.type === 'end');
-              return [
-                ...retries.map((a, k) => {
-                  const applied = a.type === 'retry' && a.applied;
-                  const x1 = p.x + 28 + k * 8, x2 = p.x + NODE_W - 28 - k * 8;
-                  return (
-                    <path
-                      class={{ act: true, bad: !!applied }}
-                      d={`M${x2} ${p.y} C ${x2} ${p.y - 30}, ${x1} ${p.y - 30}, ${x1} ${p.y - 1}`}
-                      marker-end={`url(#ah-${this.uid})`}
-                    />
-                  );
-                }),
-                ...ends.map((a, k) => {
-                  const taken = a.type === 'end' && a.taken === true;
-                  const bx = p.x + 20 + (ends.length - 1 - k) * 14;
-                  const ty = p.y + nodeH + 14 + 16 * k;
-                  return [
-                    <path class={{ act: true, on: taken, dashed: !taken }} d={`M${bx} ${p.y + nodeH} L${bx} ${ty}`} />,
-                    <rect class={{ term: true, on: taken }} x={bx - 4} y={ty - 4} width="8" height="8" rx="1.5" />,
-                  ];
-                }),
-              ];
-            })}
-          </svg>
-          {lanes.map((l, i) => (
-            <div class="lane-label" style={{ top: `${(laneY[i] ?? 0) + 2}px` }}>
-              <span>
-                {l.name} · {l.protocol}
-              </span>
-              {l.type === 'asyncapi' && <span>AsyncAPI, not runnable</span>}
-              {!l.linked && (
-                <span class="warn">
-                  {icon('warning', 12)}
-                  Not linked
+        <div
+          class="stage"
+          style={{ gridTemplateColumns: grid.template, minWidth: `${Math.max(740, 140 * grid.steps + 180)}px` }}
+          ref={(el) => (this.stageEl = el)}
+        >
+          {this.edgePaths.length > 0 && (
+            <svg class="edges" aria-hidden="true" focusable="false">
+              <defs>
+                <marker id={`ah-${this.uid}`} viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                  <path class="ah" d="M1 1 L9 5 L1 9" fill="none" stroke-width="1.6" />
+                </marker>
+              </defs>
+              {this.edgePaths.map((d) => (d ? <path class="edge" d={d} marker-end={`url(#ah-${this.uid})`} /> : null))}
+            </svg>
+          )}
+          {lanes.map((l, i) => {
+            const r = laneRows[i]!;
+            return [
+              <div class="lane-head" style={{ gridRow: `${r.header}` }}>
+                <span class="badge" style={{ '--lane': laneColor(l) }}>
+                  <span class="bp">{l.protocol}</span>
+                  <span class="bn">{l.name}</span>
                 </span>
-              )}
+                <span class="lt">{l.serviceLabel ? `${l.type} · ${l.serviceLabel}` : l.type}</span>
+                {l.type === 'asyncapi' && <span>AsyncAPI, not runnable</span>}
+                {!l.linked && (
+                  <span class="warn">
+                    {icon('warning', 12)}
+                    Not linked
+                  </span>
+                )}
+              </div>,
+              r.actions !== undefined && (
+                <div class="acts" aria-hidden="true" style={{ gridRow: `${r.actions}` }}>
+                  {this.renderActions(steps, layout, grid, i)}
+                </div>
+              ),
+              ...Array.from({ length: layout.laneRows[i] ?? 1 }, (_, k) => (
+                <div class="warp" aria-hidden="true" style={{ gridRow: `${r.first + k}`, '--lane': laneColor(l) }} />
+              )),
+            ];
+          })}
+          {inputs.length > 0 && (
+            <div class="io in" style={{ gridRow: `${nodeFirst} / ${nodeEnd}` }}>
+              <span class="io-h">inputs</span>
+              {inputs.map((n) => (
+                <span class="io-chip">
+                  <span class="io-x">{n.expression ?? `$inputs.${n.name}`}</span>
+                  {n.value !== undefined && <span class="io-v">{n.value}</span>}
+                </span>
+              ))}
             </div>
-          ))}
+          )}
+          {outputs.length > 0 && (
+            <div class="io out" style={{ gridRow: `${nodeFirst} / ${nodeEnd}` }}>
+              <span class="io-h">outputs</span>
+              {outputs.map((o) => (
+                <span class="io-chip">
+                  <span class="io-x">{o.name}</span>
+                  <span class={{ 'io-v': true, none: o.value === undefined }}>{o.value ?? '—'}</span>
+                </span>
+              ))}
+              {this.outputNote && <span class="io-note">{this.outputNote}</span>}
+            </div>
+          )}
           {steps.map((s, idx) => {
-            const p = pos.get(s.stepId);
             const pl = layout.placements[idx];
-            if (!p || !pl) return null;
+            if (!pl) return null;
+            const r = laneRows[pl.lane]!;
             const source = lanes[pl.lane];
             const desc = this.description(s, source);
             const descId = `d-${this.uid}-${idx}`;
-            const pressed = this.selectedStep === s.stepId;
-            const c = this.checkStates(s);
-            const acts = s.actions ?? [];
-            const retries = acts.filter((a) => a.type === 'retry');
-            const ends = acts.filter((a) => a.type === 'end');
-            return [
-              <button
-                type="button"
-                class="node"
-                data-status={s.status}
-                style={{ left: `${p.x}px`, top: `${p.y}px`, height: `${nodeH}px`, borderColor: protoColor(s) }}
-                aria-pressed={pressed ? 'true' : 'false'}
-                aria-label={this.accessibleName(s, pl)}
-                aria-describedby={desc ? descId : undefined}
-                tabindex={s.stepId === tabStop ? 0 : -1}
-                ref={(el) => (el ? this.nodeEls.set(s.stepId, el) : this.nodeEls.delete(s.stepId))}
-                onClick={() => this.select(s.stepId)}
-                onKeyDown={(e) => this.onNodeKey(e, layout, pl)}
-                onMouseEnter={() => (this.hot = s.stepId)}
-                onMouseLeave={() => (this.hot = undefined)}
-                onFocus={() => {
-                  this.hot = s.stepId;
-                  this.focusId = s.stepId;
-                }}
-                onBlur={() => (this.hot = undefined)}
-              >
-                <span class="id">
-                  {pl.number} {s.stepId}
-                </span>{' '}
-                <span class="op">{s.operation}</span>{' '}
-                {s.status && (
-                  <span class={`st ${s.status}`}>
-                    <span class="gl" aria-hidden="true">
-                      {GLYPH[s.status]}
-                    </span>{' '}
-                    {this.statusVisible(s)}
-                  </span>
-                )}{' '}
-                {this.validatesSchemas && (
-                  <span class="checks">
-                    <span class="chk">
-                      <span>Success criteria</span>{' '}
-                      <span class={`c ${c.successCriteria}`}>
-                        <span class="gl" aria-hidden="true">
-                          {GLYPH[c.successCriteria]}
-                        </span>{' '}
-                        {CHECK_WORD[c.successCriteria]}
-                      </span>
-                    </span>{' '}
-                    <span class="chk">
-                      <span>Schema validation</span>{' '}
-                      <span class={`c ${c.schemaValidation}`}>
-                        <span class="gl" aria-hidden="true">
-                          {GLYPH[c.schemaValidation]}
-                        </span>{' '}
-                        {CHECK_WORD[c.schemaValidation]}
-                      </span>
-                    </span>
+            return (
+              <div class="cell" style={{ gridColumn: `${pl.column + 2}`, gridRow: `${r.first + pl.row}` }}>
+                {this.renderNode(s, pl, layout, tabStop, desc ? descId : undefined)}
+                {desc && (
+                  <span id={descId} class="sr">
+                    {desc}
                   </span>
                 )}
-              </button>,
-              desc && (
-                <span id={descId} class="sr">
-                  {desc}
-                </span>
-              ),
-              ...retries.map((a, k) => {
-                if (a.type !== 'retry') return null;
-                const text = `retry ×${a.retryLimit} · ${seconds(a.retryAfter)}${a.applied && s.attempts ? ` · ${plural(s.attempts, 'attempt')}` : ''}`;
-                return (
-                  <span class={{ alabel: true, bad: !!a.applied }} aria-hidden="true" style={{ left: `${p.x + 28}px`, top: `${p.y - 44 - k * 14}px` }}>
-                    {text}
-                  </span>
-                );
-              }),
-              ...ends.map((a, k) => {
-                if (a.type !== 'end') return null;
-                const bx = p.x + 20 + (ends.length - 1 - k) * 14;
-                const ty = p.y + nodeH + 14 + 16 * k;
-                const state = a.taken === true ? ' · taken' : a.taken === false ? ' · not taken' : '';
-                return (
-                  <span class={{ alabel: true, on: a.taken === true }} aria-hidden="true" style={{ left: `${bx + 10}px`, top: `${ty - 7}px` }}>
-                    {`end if ${a.criteria}${state}`}
-                  </span>
-                );
-              }),
-            ];
+              </div>
+            );
           })}
           {threads.length > 0 && (
-            <ul class="threads abs" aria-label="Data threads">
-              {this.threadItems(
-                threads,
-                isDim,
-                (t) => (t.from === '$inputs' ? padL : (pos.get(t.from)?.x ?? padL)),
-                (i) => stripTop + i * THREAD_H,
-              )}
+            <ul class="threads" aria-label="Data threads" style={{ gridRow: `${nodeEnd}` }}>
+              {this.threadItems(threads, isDim)}
             </ul>
           )}
         </div>
       </div>
     );
 
+    const ioBar = [
+      inputs.length > 0 && (
+        <div class="io-line">
+          <span>Inputs</span>
+          {inputs.map((n) => (
+            <code>{n.value !== undefined ? `${n.name} = ${n.value}` : n.name}</code>
+          ))}
+        </div>
+      ),
+      outputs.length > 0 && (
+        <div class="io-line">
+          <span>Outputs</span>
+          {outputs.map((o) => (
+            <code>{o.value !== undefined ? `${o.name} = ${o.value}` : o.name}</code>
+          ))}
+        </div>
+      ),
+    ];
+
     return (
       <Host>
         <div role="group" aria-label={this.label}>
           <div class="bar">
-            {inputs.length > 0 && (
-              <div class="io">
-                <span>Inputs</span>
-                {inputs.map((n) => (
-                  <code>{n}</code>
-                ))}
-              </div>
-            )}
-            {outputs.length > 0 && (
-              <div class="io">
-                <span>Outputs</span>
-                {outputs.map((n) => (
-                  <code>{n}</code>
-                ))}
-              </div>
-            )}
+            {this.asTable && ioBar}
             <button type="button" class="toggle" aria-pressed={this.asTable ? 'true' : 'false'} onClick={() => (this.asTable = !this.asTable)}>
               {icon('table', 14)}
               Show as table
