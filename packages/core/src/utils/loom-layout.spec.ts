@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { layoutLoom, loomGrid, operationParts, weaveThreads } from './loom-layout';
+import { checkRows, layoutLoom, loomGrid, operationParts, weaveThreads } from './loom-layout';
 import type { LoomSource, LoomStep } from './types';
 
 const rest: LoomSource = { name: 'apiPastry', type: 'openapi', protocol: 'REST', linked: true };
@@ -137,5 +137,35 @@ describe('weaveThreads', () => {
     expect(woven.map((t) => t.id)).toEqual(['newPrice', 'size']);
     expect(woven[0]).toMatchObject({ missing: true, drops: [{ to: '$outputs', label: 'newPrice', idle: true }] });
     expect(woven[1]).toMatchObject({ value: '"M"' });
+  });
+});
+
+describe('checkRows', () => {
+  it('draws a generic list as given, whatever validatesSchemas says', () => {
+    expect(
+      checkRows(
+        [
+          { label: 'Call #2', state: 'pass' },
+          { label: 'Data passing', state: 'fail' },
+          { label: 'Contract', state: 'skip' },
+          { label: 'Schema', state: 'idle' },
+        ],
+        false,
+      ),
+    ).toEqual([
+      { label: 'Call #2', state: 'passed', word: 'passed' },
+      { label: 'Data passing', state: 'failed', word: 'failed' },
+      { label: 'Contract', state: 'off', word: 'skipped' },
+      { label: 'Schema', state: 'not-evaluated', word: 'not evaluated' },
+    ]);
+  });
+
+  it('keeps the legacy pair, drawn only when the run validates schemas', () => {
+    expect(checkRows({ successCriteria: 'passed', schemaValidation: 'failed' }, false)).toEqual([]);
+    expect(checkRows({ successCriteria: 'passed' }, true)).toEqual([
+      { label: 'Success criteria', state: 'passed', word: 'passed' },
+      { label: 'Schema validation', state: 'not-evaluated', word: 'not evaluated' },
+    ]);
+    expect(checkRows(undefined, true).map((r) => r.state)).toEqual(['not-evaluated', 'not-evaluated']);
   });
 });
