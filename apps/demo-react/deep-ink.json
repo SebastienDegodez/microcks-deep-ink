@@ -14,9 +14,9 @@
     "base": {
       "version": "0.2.0",
       "files": {
-        "src/ui/styles/base.css": "f8b3335c597aa78847bbc8661817b83729501202bc618bffadf95db29d9fba3b"
+        "src/ui/styles/base.css": "33b2992fa7f6bc7eacdbcd513ea767b35e20c347b8bea24eabf47502d7966e82"
       },
-      "hash": "32310454890a8040"
+      "hash": "da0de90ddd645ab1"
     },
     "icon": {
       "version": "0.2.0",
@@ -182,9 +182,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/live-indicator.tsx": "dcab4f118252676833a816f7e89b6a94b584312c784857b9f9a5b2a4cf6092ff",
-        "src/ui/styles/live-indicator.css": "6e23dadac23ae1e36fbabdc50f6a0efafab6847415774c3846fe99bf98c2d313"
+        "src/ui/styles/live-indicator.css": "7ffd37bc04482f1e9b1b2050ed22335c7cdd8b9e56626de54c3bd1b8495809cb"
       },
-      "hash": "ed49ce28eddc6bff"
+      "hash": "41232bcd089a2b4f"
     },
     "menu": {
       "version": "0.2.0",

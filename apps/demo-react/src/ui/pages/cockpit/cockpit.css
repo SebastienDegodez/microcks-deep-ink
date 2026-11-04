@@ -137,7 +137,7 @@
 .top-proto { flex: none; padding: 1px 5px; border-radius: 3px; background: var(--row-proto); color: var(--on-proto); font: 600 10px/normal var(--font-mono); }
 .top-label { font: 500 14px/normal var(--font-ui); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .top-version { color: var(--text-muted); }
-.top-live { flex: none; width: 7px; height: 7px; border-radius: 999px; background: var(--live); animation: live-pulse 1.6s ease-in-out infinite; }
+.top-live { flex: none; width: 7px; height: 7px; border-radius: 999px; background: var(--live); animation: deep-ink-pulse 1.6s ease-in-out infinite; }
 .top-count { flex: none; font: 600 13px/normal var(--font-mono); }
 .top-bar { display: block; margin-left: 26px; height: 6px; border-radius: 2px; background: var(--raised); }
 .top-bar > span { display: block; height: 100%; border-radius: 2px; background: var(--action); }

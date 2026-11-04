@@ -31,16 +31,12 @@
     height: 8px;
     border-radius: var(--radius-pill);
     background: var(--live);
-    animation: live-pulse 1.6s ease-in-out infinite;
+    animation: deep-ink-pulse 1.6s ease-in-out infinite;
   }
   .live[data-size="sm"] .live-dot,
   .live[data-variant="inline"] .live-dot,
   .live[data-variant="dot"] .live-dot { width: 7px; height: 7px; }
-  @keyframes live-pulse { 50% { opacity: 0.35; } }
   /* Paused: neutral colours and a pause glyph instead of the dot; the word "paused" is also written. */
   .live[data-paused] { border-color: var(--border-strong); color: var(--text-secondary); }
   .live[data-paused] > .icon { flex: none; stroke-width: 3; }
-  @media (prefers-reduced-motion: reduce) {
-    .live-dot { animation: none; }
-  }
 }

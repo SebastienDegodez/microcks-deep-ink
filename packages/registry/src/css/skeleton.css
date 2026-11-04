@@ -12,8 +12,4 @@
   @keyframes skeleton-pulse {
     50% { background: var(--border); }
   }
-  /* Static under reduced motion. */
-  @media (prefers-reduced-motion: reduce) {
-    .skeleton { animation: none; }
-  }
 }

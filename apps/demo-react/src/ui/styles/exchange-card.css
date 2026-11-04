@@ -53,5 +53,5 @@
   .exchange-card > pre[data-tone="params"] { color: var(--warning); }
   .exchange-card > pre[data-tone="headers"] { color: var(--text-muted); }
   .exchange-card > pre[data-grow] { flex: 1; }
-  .exchange-card > pre:focus-visible { outline-offset: -2px; }
+  .exchange-card > pre { --focus-offset: -2px; }
 }

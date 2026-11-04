@@ -26,11 +26,7 @@
   .run-progress-bar > [data-seg="done"] { background: var(--success); }
   .run-progress-bar > [data-seg="failed"] { background: var(--danger); }
   .run-progress-bar > [data-seg="warn"] { background: var(--warning); }
-  .run-progress-bar > [data-seg="current"] { background: var(--running); animation: run-pulse 1.4s ease-in-out infinite; }
-  @keyframes run-pulse { 50% { opacity: 0.45; } }
-  @media (prefers-reduced-motion: reduce) {
-    .run-progress-bar > [data-seg="current"] { animation: none; }
-  }
+  .run-progress-bar > [data-seg="current"] { --pulse-opacity: 0.45; background: var(--running); animation: deep-ink-pulse 1.4s ease-in-out infinite; }
 
   .run-progress-counts { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; margin: 0; padding: 0; list-style: none; font: 400 13px/18px var(--font-ui); color: var(--text-secondary); }
   .run-progress-counts > li { display: inline-flex; align-items: center; gap: 6px; }
