@@ -12,7 +12,7 @@ import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { Menu } from '@/ui/components/ui/menu';
 import { ProjectionPill } from '@/ui/components/ui/projection-pill';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
-import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { AgentCardTab } from './AgentCardTab';
 import { AgentMockTab } from './AgentMockTab';
 import { AgentSkillsTab } from './AgentSkillsTab';

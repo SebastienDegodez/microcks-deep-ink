@@ -15,7 +15,7 @@ import { Icon } from '@/ui/components/ui/icon';
 import { FilterBar, FilterReset, FilterRow, FilterSearch } from '@/ui/components/ui/filter-bar';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { StatusBadge } from '@/ui/components/ui/status-badge';
-import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { PROTOCOL_ORDER, fmt, operationUnit, pluralize } from '../explore-kit/format';
 
 const bandOf = (s: ServiceSummary): OperationResult[] =>

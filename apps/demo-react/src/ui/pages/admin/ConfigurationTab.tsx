@@ -1,6 +1,6 @@
 import { useQuery, useUseCases } from '@/ui/app';
 import { Icon } from '@/ui/components/ui/icon';
-import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import './configuration.css';
 
 /** Read-only: Microcks reads these values at start-up. */

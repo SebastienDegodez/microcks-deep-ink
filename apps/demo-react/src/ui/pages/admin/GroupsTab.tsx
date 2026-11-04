@@ -4,7 +4,7 @@ import { membershipChanges, membershipKey } from '@/domain/govern';
 import { useReturnFocus, useUseCases, type QueryResult } from '@/ui/app';
 import { Button } from '@/ui/components/ui/button';
 import { Icon } from '@/ui/components/ui/icon';
-import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
 import './groups.css';
 

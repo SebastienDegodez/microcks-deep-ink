@@ -7,7 +7,7 @@ import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Checkbox } from '@/ui/components/ui/checkbox';
 import { Icon } from '@/ui/components/ui/icon';
-import { ErrorBlock, LoadingBlock } from '../../workflows/shared';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { syncedText } from '../WorkflowHeader';
 import './source.css';
 
@@ -134,7 +134,7 @@ export function SourceTab({ detail, step, onSelectStep, serviceLabel }: SourceTa
     if (b.step) onSelectStep(b.id);
   };
 
-  if (source.status === 'loading' && !source.data) return <LoadingBlock label="Loading the Arazzo source" rows={2} />;
+  if (source.status === 'loading' && !source.data) return <LoadingBlock label="the Arazzo source" rows={2} />;
   if (source.status === 'error') return <ErrorBlock error={source.error} onRetry={source.reload} />;
 
   const used = [...new Set(workflow.steps.map((s) => s.sourceName))];

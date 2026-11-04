@@ -1,10 +1,5 @@
 /* Small layout helpers shared by the Test, Observe and Govern pages. Colors come from the tokens. */
 
-.demo-loading {
-  display: block;
-  min-height: 6rem;
-}
-
 .demo-mono {
   font-family: var(--font-mono);
 }

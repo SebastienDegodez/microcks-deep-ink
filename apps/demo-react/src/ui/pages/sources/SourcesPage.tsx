@@ -16,7 +16,7 @@ import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { FactRow, Facts, type Fact as RegistryFact } from '@/ui/components/ui/facts';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { Switch } from '@/ui/components/ui/switch';
-import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 
 const STATUS_WORD: Record<SourceStatus, string> = { imported: 'Imported', warning: 'Imported · 1 warning', failed: 'Failed', inactive: 'Inactive', running: 'Importing' };
 const STATUS_ICON: Record<SourceStatus, 'check' | 'warning' | 'cross' | 'pause-narrow' | 'running'> = { imported: 'check', warning: 'warning', failed: 'cross', inactive: 'pause-narrow', running: 'running' };

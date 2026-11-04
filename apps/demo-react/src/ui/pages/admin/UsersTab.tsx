@@ -5,7 +5,7 @@ import { Chip } from '@/ui/components/ui/chip';
 import { FilterSearch } from '@/ui/components/ui/filter-bar';
 import { Select } from '@/ui/components/ui/select';
 import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
-import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
 import './users.css';
 
