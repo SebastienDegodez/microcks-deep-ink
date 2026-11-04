@@ -301,10 +301,10 @@
     "table": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/table.tsx": "8a90ceec850db022d8ce99c5d0ea7f5387491e3fce72fa16eaec0041f61f3310",
-        "src/ui/styles/table.css": "698a6e715bb6cd03044aad365235eae8591014b93aaaec2dd12ac01b85816417"
+        "src/ui/components/ui/table.tsx": "4956efce542dd0e6a38d22ad75f617bf27cb462bf1b5391a8e8498f0520f17fc",
+        "src/ui/styles/table.css": "9b8bca88cec3ae6ab1a0d57f43519894e7b8c2011f10e8b7bfc00090bbfc5dd0"
       },
-      "hash": "18f8e3ef339923d8"
+      "hash": "25c04193b0969dd7"
     },
     "tabs": {
       "version": "0.2.0",
