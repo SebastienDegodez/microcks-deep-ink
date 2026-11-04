@@ -37,6 +37,14 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"busy","type":"boolean","control":"boolean","required":false,"default":"false","model":false,"description":""},
     ] },
   ],
+  "method-tag": [
+    { className: "MethodTagComponent", selector: "span[mkMethodTag]", inputs: [
+      {"name":"method","type":"string","control":"text","required":true,"model":false,"description":"GET/POST... for REST, SUBSCRIBE/PUBLISH for EVENT, the RPC name for gRPC, QUERY/MUTATION for GraphQL."},
+      {"name":"protocol","type":"Protocol","control":"select","options":["REST","SOAP","EVENT","gRPC","GRAPHQL","DIRECT","A2A"],"required":false,"default":"'REST'","model":false,"description":""},
+      {"name":"minWidth","type":"number | undefined","control":"number","required":false,"model":false,"description":"Fixed minimum width in px, so tags line up in a list (Import 52, Service 48, Usage 46, Traces 44)."},
+      {"name":"size","type":"\"sm\" | \"md\" | \"xs\"","control":"select","options":["sm","md","xs"],"required":false,"default":"'md'","model":false,"description":"`sm`: 11px 600, padding 1px 5px, 44px wide unless `minWidth` is set (step lists). `xs`: 10px 600, no minimum width (dense tables)."},
+    ] },
+  ],
   "api-badge": [
     { className: "ApiBadgeComponent", selector: "span[mkApiBadge]", inputs: [
       {"name":"protocol","type":"Protocol | undefined","control":"select","options":["REST","SOAP","EVENT","gRPC","GRAPHQL","DIRECT","A2A"],"required":false,"model":false,"description":"Left segment for an API badge. Ignored when `label` or `arazzo` is set."},
@@ -171,13 +179,13 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
     ] },
   ],
   "command-bar": [
-    { className: "CommandBarDirective", selector: "command-bar", inputs: [
+    { className: "CommandBarComponent", selector: "mk-command-bar", inputs: [
       {"name":"items","type":"CommandItem[]","control":"object","required":true,"model":false,"description":""},
-      {"name":"open","type":"boolean | undefined","control":"boolean","required":false,"default":"undefined","model":false,"description":"Modal mode: controls the dialog. Update your state from `closed`."},
+      {"name":"open","type":"boolean","control":"boolean","required":false,"default":"false","model":true,"description":"Modal mode, two-way: set to true to open. Ctrl/⌘K, Escape, the close button and a command change it too."},
       {"name":"inline","type":"boolean","control":"boolean","required":false,"default":"false","model":false,"description":"Render in place instead of in a dialog (docs, embedding)."},
-      {"name":"placeholder","type":"string | undefined","control":"text","required":false,"default":"undefined","model":false,"description":""},
-      {"name":"globalShortcut","type":"boolean | undefined","control":"boolean","required":false,"default":"undefined","model":false,"description":"Ctrl/⌘K opens the bar from anywhere. Default true."},
-      {"name":"label","type":"string | undefined","control":"text","required":false,"default":"undefined","model":false,"description":"Accessible name of the dialog and the search field. Default \"Command bar\"."},
+      {"name":"placeholder","type":"string","control":"text","required":false,"default":"'Jump to a service, or type an action…'","model":false,"description":""},
+      {"name":"globalShortcut","type":"boolean","control":"boolean","required":false,"default":"true","model":false,"description":"Ctrl/⌘K opens the bar from anywhere. Default true."},
+      {"name":"label","type":"string","control":"text","required":false,"default":"'Command bar'","model":false,"description":"Accessible name of the dialog and the search field. Default \"Command bar\"."},
     ] },
   ],
   "conformance-band": [
@@ -326,14 +334,6 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"variant","type":"ButtonVariant","control":"select","options":["link","primary","secondary","outline","ghost","dashed","danger"],"required":false,"default":"'secondary'","model":false,"description":""},
       {"name":"size","type":"ButtonSize","control":"select","options":["sm","compact","tile","md","lg"],"required":false,"default":"'md'","model":false,"description":""},
       {"name":"align","type":"\"end\" | \"start\"","control":"select","options":["end","start"],"required":false,"default":"'start'","model":false,"description":"Which edge of the trigger the menu lines up with."},
-    ] },
-  ],
-  "method-tag": [
-    { className: "MethodTagComponent", selector: "span[mkMethodTag]", inputs: [
-      {"name":"method","type":"string","control":"text","required":true,"model":false,"description":"GET/POST... for REST, SUBSCRIBE/PUBLISH for EVENT, the RPC name for gRPC, QUERY/MUTATION for GraphQL."},
-      {"name":"protocol","type":"Protocol","control":"select","options":["REST","SOAP","EVENT","gRPC","GRAPHQL","DIRECT","A2A"],"required":false,"default":"'REST'","model":false,"description":""},
-      {"name":"minWidth","type":"number | undefined","control":"number","required":false,"model":false,"description":"Fixed minimum width in px, so tags line up in a list (Import 52, Service 48, Usage 46, Traces 44)."},
-      {"name":"size","type":"\"sm\" | \"md\" | \"xs\"","control":"select","options":["sm","md","xs"],"required":false,"default":"'md'","model":false,"description":"`sm`: 11px 600, padding 1px 5px, 44px wide unless `minWidth` is set (step lists). `xs`: 10px 600, no minimum width (dense tables)."},
     ] },
   ],
   "segmented": [

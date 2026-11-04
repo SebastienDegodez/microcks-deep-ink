@@ -3,12 +3,12 @@ import React, { useState } from 'react';
 import { Button } from '@microcks-deep-ink/registry/react/button';
 import { CommandBar } from '@microcks-deep-ink/registry/react/command-bar';
 import { COMMANDS } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { detailOf, itemParams } from './_meta';
+import { itemParams } from './_meta';
 
 export default {
-  title: 'Elements/CommandBar',
+  title: 'Components/CommandBar',
   component: CommandBar,
-  parameters: itemParams(['command-bar', 'button', 'kbd'], 'An ARIA 1.2 combobox with a listbox: the input keeps focus and `aria-activedescendant` follows the highlighted option. Results are grouped by kind and the count is announced ("5 results"). The modal mode uses a native `<dialog>` and returns focus to the opener. `<command-bar>` is a Web Component.'),
+  parameters: itemParams(['command-bar', 'button', 'kbd'], 'An ARIA 1.2 combobox with a listbox: the input keeps focus and `aria-activedescendant` follows the highlighted option. Results are grouped by kind and the count is announced ("5 results"). The modal mode uses a native `<dialog>` and returns focus to the opener. Native React component (no Web Component).'),
 } satisfies Meta<typeof CommandBar>;
 
 export const Default: StoryObj = {
@@ -17,7 +17,7 @@ export const Default: StoryObj = {
     const [last, setLast] = useState('');
     return (
       <div className="sb-col" style={{ maxWidth: 560 }}>
-        <CommandBar inline items={COMMANDS} label="Command bar" placeholder="Type a command or a service" onCommand={(e: unknown) => setLast(detailOf<{ label: string }>(e).label)} />
+        <CommandBar inline items={COMMANDS} label="Command bar" placeholder="Type a command or a service" onCommand={(item) => setLast(item.label)} />
         <p className="sb-note" role="status">{last ? `Ran: ${last}` : 'Press Enter on an option to run it.'}</p>
       </div>
     );
@@ -55,7 +55,7 @@ export const Inline: StoryObj = {
     const [last, setLast] = useState('none');
     return (
       <div style={{ maxWidth: 560 }}>
-        <CommandBar inline items={COMMANDS} placeholder="Search services, operations and commands" onCommand={(e: unknown) => setLast(detailOf<{ label: string }>(e).label)} />
+        <CommandBar inline items={COMMANDS} placeholder="Search services, operations and commands" onCommand={(item) => setLast(item.label)} />
         <p role="status" className="sb-note">Last command: {last}</p>
       </div>
     );

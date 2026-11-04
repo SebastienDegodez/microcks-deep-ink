@@ -1,15 +1,14 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
-import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
-import { CommandBarDirective } from '@microcks-deep-ink/registry/angular/command-bar';
+import { CommandBarComponent } from '@microcks-deep-ink/registry/angular/command-bar';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
 import { COMMANDS } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
-  title: 'Elements/CommandBar',
-  argTypes: argTypesFor('command-bar', ['CommandBarDirective']),
-  decorators: [moduleMetadata({ imports: [CommandBarDirective, ButtonDirective], schemas: [CUSTOM_ELEMENTS_SCHEMA] })],
-  parameters: itemParams(['command-bar'], "A search field and a list of commands (ARIA 1.2 combobox): arrows move, Enter runs, Escape closes, Ctrl/\u2318K opens it from anywhere. In modal mode it uses a native `<dialog>` and returns focus to the opener. The host component needs `schemas: [CUSTOM_ELEMENTS_SCHEMA]`."),
+  title: 'Components/CommandBar',
+  argTypes: argTypesFor('command-bar', ['CommandBarComponent']),
+  decorators: [moduleMetadata({ imports: [CommandBarComponent, ButtonDirective] })],
+  parameters: itemParams(['command-bar'], "A search field and a list of commands (ARIA 1.2 combobox): arrows move, Enter runs, Escape closes, Ctrl/\u2318K opens it from anywhere. In modal mode it uses a native `<dialog>` and returns focus to the opener. Standalone Angular component `<mk-command-bar>`, signals, no Web Component."),
 };
 export default meta;
 
@@ -18,7 +17,7 @@ export const Inline: StoryObj = {
     props: { commands: COMMANDS, last: 'none' },
     template: `
       <div style="max-width:560px">
-        <command-bar inline [items]="commands" placeholder="Search services, operations and commands" (command)="last = $event.label"></command-bar>
+        <mk-command-bar inline [items]="commands" placeholder="Search services, operations and commands" (command)="last = $event.label"></mk-command-bar>
         <p role="status" class="sb-note">Last command: {{ last }}</p>
       </div>
     `,
@@ -30,7 +29,7 @@ export const NoShortcut: StoryObj = {
   name: 'Without the global shortcut',
   render: () => ({
     props: { commands: COMMANDS },
-    template: `<command-bar inline [items]="commands" [globalShortcut]="false" label="Local commands" placeholder="Type a command"></command-bar>`,
+    template: `<mk-command-bar inline [items]="commands" [globalShortcut]="false" label="Local commands" placeholder="Type a command"></mk-command-bar>`,
   }),
 };
 
@@ -39,7 +38,7 @@ export const Modal: StoryObj = {
     props: { commands: COMMANDS, open: false },
     template: `
       <button mkButton variant="primary" (click)="open = true">Open the command bar</button>
-      <command-bar [items]="commands" [open]="open" [globalShortcut]="false" (command)="open = false" (closed)="open = false"></command-bar>
+      <mk-command-bar [items]="commands" [(open)]="open" [globalShortcut]="false"></mk-command-bar>
     `,
   }),
 };
@@ -50,7 +49,7 @@ export const Default: StoryObj = {
     props: { commands: COMMANDS, last: '' },
     template: `
       <div style="max-width:560px">
-        <command-bar inline [items]="commands" label="Command bar" placeholder="Type a command or a service" (command)="last = $event.label"></command-bar>
+        <mk-command-bar inline [items]="commands" label="Command bar" placeholder="Type a command or a service" (command)="last = $event.label"></mk-command-bar>
         <p role="status" class="sb-note">{{ last ? 'Ran: ' + last : 'Press Enter on an option to run it.' }}</p>
       </div>
     `,
