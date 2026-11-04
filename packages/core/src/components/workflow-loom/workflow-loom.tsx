@@ -1,6 +1,6 @@
 import { Component, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
 import { icon } from '../../utils/icons';
-import { LoomEdge, LoomGrid, LoomLayout, LoomPlacement, layoutLoom, loomGrid } from '../../utils/loom-layout';
+import { LoomEdge, LoomGrid, LoomLayout, LoomPlacement, layoutLoom, loomGrid, operationParts } from '../../utils/loom-layout';
 import {
   CheckState,
   LoomAction,
@@ -26,14 +26,19 @@ const CHECK_WORD: Record<CheckState, string> = {
 };
 const CHECK_ICON: Record<CheckState, string> = { passed: 'check', failed: 'cross', off: 'dash', 'not-evaluated': 'circle' };
 
-/** Text glyphs for the node (decorative; the word next to them carries the meaning). */
-const GLYPH: Record<StepStatus | CheckState, string> = {
-  passed: '✓',
-  failed: '✕',
-  'not-run': '–',
-  off: '–',
-  'not-evaluated': '○',
-};
+/* Circled marks of the node (decorative: the words next to them carry the meaning). */
+const RING = 'M21 12a9 9 0 1 1-18 0a9 9 0 1 1 18 0';
+const MARK = { pass: 'M8 12.5l2.5 2.5L16 9.5', fail: 'M9 9l6 6M15 9l-6 6', skip: 'M8 12h8' };
+const STATUS_MARK: Record<StepStatus, string> = { passed: MARK.pass, failed: MARK.fail, 'not-run': MARK.skip };
+const CHECK_MARK: Record<CheckState, string> = { passed: MARK.pass, failed: MARK.fail, off: MARK.skip, 'not-evaluated': MARK.skip };
+
+const ringed = (mark: string, size: number) => (
+  <svg class="ring" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+    <path d={RING} />
+    <path d={mark} />
+  </svg>
+);
+
 
 const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? '' : 's'}`;
 const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))} s`;
@@ -94,20 +99,31 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .io-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font: var(--type-small); color: var(--text-secondary); }
     .io-line code { font: 400 12px/16px var(--font-mono); color: var(--text); background: var(--surface); border: 1px solid var(--border-control); border-radius: var(--radius-control); padding: 2px 6px; }
     .cell { position: relative; z-index: 1; display: flex; justify-content: center; min-width: 0; padding: 0 12px; }
-    .node { position: relative; width: 100%; max-width: 190px; display: flex; flex-direction: column; gap: 2px; padding: 8px 10px; text-align: left; color: var(--text); background: var(--surface); border: 1.5px solid var(--border-strong); border-radius: var(--radius-node); cursor: pointer; font: inherit; }
-    .node[data-status="not-run"] { border-style: dashed; }
-    .node[aria-pressed="true"] { background: var(--selected); box-shadow: 0 0 0 2px var(--action); }
-    .node[aria-pressed="true"]:focus-visible { box-shadow: 0 0 0 2px var(--action), var(--shadow-focus); }
-    .id { font: 600 12px/16px var(--font-mono); overflow-wrap: anywhere; }
-    .op { font: 400 11px/16px var(--font-mono); color: var(--text-secondary); overflow-wrap: anywhere; }
-    .st { display: inline-flex; align-items: center; gap: 4px; margin-top: 2px; font: 600 12px/16px var(--font-ui); }
+    .node { position: relative; width: 100%; max-width: 190px; display: flex; flex-direction: column; align-items: stretch; gap: 6px; padding: 8px; text-align: left; color: var(--text); background: var(--surface); border: 1px solid var(--border-strong); border-radius: 12px; cursor: pointer; font: inherit; }
+    .node[data-status="failed"] { border-color: var(--danger); }
+    .node[data-status="not-run"] { background: var(--canvas); border-style: dashed; }
+    .node[aria-pressed="true"] { padding: 7px; background: var(--selected); border: 2px solid var(--action); }
+    .hd { display: flex; align-items: center; gap: 6px; min-width: 0; }
+    .num { flex: none; display: inline-flex; align-items: center; justify-content: center; width: 18px; height: 18px; border-radius: 999px; background: var(--raised); color: var(--text); font: 600 11px/1 var(--font-ui); }
+    .node[data-status="failed"] .num { background: var(--danger); color: var(--on-status); }
+    .id { min-width: 0; font: 600 12px/16px var(--font-mono); overflow-wrap: anywhere; }
+    .op { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 4px; font: 400 11px/16px var(--font-mono); }
+    .mt { --method-bg: var(--lane, var(--proto-rest)); flex: none; padding: 1px 4px; font: 600 10px/14px var(--font-mono); color: var(--on-proto); background: var(--method-bg); border-radius: 3px; }
+    .mt[data-protocol="rest"][data-method="POST" i], .mt[data-protocol="rest"][data-method="PATCH" i], .mt[data-protocol="rest"][data-method="PUT" i] { --method-bg: var(--proto-event); }
+    .mt[data-protocol="rest"][data-method="DELETE" i] { --method-bg: var(--danger); color: var(--on-status); }
+    .pa { color: var(--text-secondary); overflow-wrap: anywhere; }
+    .rule { height: 1px; background: var(--border); }
+    .ring { flex: none; }
+    .st { display: inline-flex; align-items: center; gap: 5px; font: 600 12px/16px var(--font-ui); }
     .st.passed { color: var(--success); }
     .st.failed { color: var(--danger); }
     .st.not-run { color: var(--text-muted); }
-    .gl { font-weight: 700; }
-    .checks { display: flex; flex-direction: column; margin-top: 2px; }
-    .checks .chk { display: flex; flex-wrap: wrap; justify-content: space-between; gap: 0 6px; font: 400 11px/16px var(--font-ui); color: var(--text-secondary); }
-    .checks .c { display: inline-flex; align-items: center; gap: 3px; font-weight: 600; }
+    .checks { display: flex; flex-direction: column; gap: 3px; font: 400 11px/14px var(--font-ui); }
+    .chk { display: inline-flex; align-items: center; gap: 5px; color: var(--text-secondary); }
+    .chk.passed .ring { color: var(--success); }
+    .chk.failed, .chk.failed .ring { color: var(--danger); }
+    .chk.off, .chk.not-evaluated { color: var(--text-muted); }
+    .res { font: 400 10px/14px var(--font-mono); font-variant-numeric: tabular-nums; color: var(--text-muted); }
     .c.passed { color: var(--success); }
     .c.failed { color: var(--danger); }
     .c.off, .c.not-evaluated { color: var(--text-muted); }
@@ -192,7 +208,8 @@ export class MkWorkflowLoom {
   }
 
   private accessibleName(s: LoomStep, p: LoomPlacement): string {
-    const parts = [`Step ${p.number}`, s.stepId, s.operation];
+    const { method, path } = operationParts(s);
+    const parts = [`Step ${p.number}`, s.stepId, [method, path].filter(Boolean).join(' ')];
     const status = this.statusPhrase(s);
     if (status) parts.push(status);
     if (this.validatesSchemas) {
@@ -200,6 +217,7 @@ export class MkWorkflowLoom {
       parts.push(`Success criteria ${CHECK_WORD[c.successCriteria].toLowerCase()}`);
       parts.push(`Schema validation ${CHECK_WORD[c.schemaValidation].toLowerCase()}`);
     }
+    if (s.result) parts.push(s.result);
     return parts.join(', ');
   }
 
@@ -278,8 +296,14 @@ export class MkWorkflowLoom {
     ));
   }
 
-  private renderNode(s: LoomStep, pl: LoomPlacement, layout: LoomLayout, tabStop: string | undefined, descId: string | undefined) {
+  private renderNode(s: LoomStep, pl: LoomPlacement, layout: LoomLayout, tabStop: string | undefined, descId: string | undefined, protocol: string) {
     const c = this.checkStates(s);
+    const { method, path } = operationParts(s);
+    const cut = path.indexOf('/{');
+    const pathA = cut > 0 ? path.slice(0, cut) : path;
+    const pathB = cut > 0 ? path.slice(cut) : '';
+    const checks = this.validatesSchemas ? (['successCriteria', 'schemaValidation'] as const) : [];
+    const lower = s.status || checks.length > 0 || s.result;
     return (
       <button
         type="button"
@@ -300,33 +324,37 @@ export class MkWorkflowLoom {
         }}
         onBlur={() => (this.hot = undefined)}
       >
-        <span class="id">
-          {pl.number} {s.stepId}
+        <span class="hd">
+          <span class="num">{pl.number}</span> <span class="id">{s.stepId}</span>
         </span>{' '}
-        <span class="op">{s.operation}</span>{' '}
+        <span class="op">
+          {method && (
+            <span class="mt" data-method={method} data-protocol={protocol.toLowerCase()}>
+              {method}
+            </span>
+          )}{' '}
+          <span class="pa">{pathA}</span>
+          {pathB && <span class="pa">{pathB}</span>}
+        </span>{' '}
+        {lower && <span class="rule" aria-hidden="true" />}
         {s.status && (
           <span class={`st ${s.status}`}>
-            <span class="gl" aria-hidden="true">
-              {GLYPH[s.status]}
-            </span>{' '}
+            {ringed(STATUS_MARK[s.status], 13)}
             {this.statusVisible(s)}
           </span>
         )}{' '}
-        {this.validatesSchemas && (
+        {checks.length > 0 && (
           <span class="checks">
-            {(['successCriteria', 'schemaValidation'] as const).map((k) => (
-              <span class="chk">
-                <span>{k === 'successCriteria' ? 'Success criteria' : 'Schema validation'}</span>{' '}
-                <span class={`c ${c[k]}`}>
-                  <span class="gl" aria-hidden="true">
-                    {GLYPH[c[k]]}
-                  </span>{' '}
-                  {CHECK_WORD[c[k]]}
-                </span>
-              </span>
-            ))}
+            {checks.map((k) => [
+              <span class={`chk ${c[k]}`}>
+                {ringed(CHECK_MARK[c[k]], 12)}
+                {k === 'successCriteria' ? 'Success criteria' : 'Schema validation'}
+              </span>,
+              ' ',
+            ])}
           </span>
         )}
+        {s.result && <span class="res">{s.result}</span>}
       </button>
     );
   }
@@ -620,8 +648,8 @@ export class MkWorkflowLoom {
             const desc = this.description(s, source);
             const descId = `d-${this.uid}-${idx}`;
             return (
-              <div class="cell" style={{ gridColumn: `${pl.column + 2}`, gridRow: `${r.first + pl.row}` }}>
-                {this.renderNode(s, pl, layout, tabStop, desc ? descId : undefined)}
+              <div class="cell" style={{ gridColumn: `${pl.column + 2}`, gridRow: `${r.first + pl.row}`, '--lane': laneColor(source ?? lanes[0]!) }}>
+                {this.renderNode(s, pl, layout, tabStop, desc ? descId : undefined, source?.protocol ?? 'REST')}
                 {desc && (
                   <span id={descId} class="sr">
                     {desc}

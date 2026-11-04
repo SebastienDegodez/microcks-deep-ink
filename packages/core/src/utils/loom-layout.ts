@@ -146,3 +146,12 @@ export function loomGrid(stepColumns: number): LoomGrid {
     pct: (units) => `${((units / total) * 100).toFixed(2)}%`,
   };
 }
+
+/** Method and path of a step: explicit fields, else "GET /pastries" split at the first space. */
+export function operationParts(s: Pick<LoomStep, 'operation' | 'method' | 'path'>): { method: string; path: string } {
+  const space = s.operation.indexOf(' ');
+  const head = space > 0 ? s.operation.slice(0, space) : '';
+  const rest = space > 0 ? s.operation.slice(space + 1) : s.operation;
+  const looksLikeMethod = /^[A-Z]+$/.test(head);
+  return { method: s.method ?? (looksLikeMethod ? head : ''), path: s.path ?? (looksLikeMethod ? rest : s.operation) };
+}
