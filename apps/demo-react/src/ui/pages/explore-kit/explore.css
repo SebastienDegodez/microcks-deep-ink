@@ -49,12 +49,7 @@
 .ex-radio-card .ex-radio-card-tag { justify-self: start; padding: 0 5px; border: 1px solid var(--border); border-radius: 4px; font: 400 10px/16px var(--font-mono); color: var(--text-muted); }
 .ex-fieldset { border: 0; margin: 0; padding: 0; min-width: 0; display: grid; gap: 8px; }
 .ex-fieldset > legend { padding: 0; font-weight: 600; margin-bottom: 4px; }
-.ex-source-row { display: grid; gap: 4px; padding: 12px; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--surface); color: var(--text); text-decoration: none; min-width: 0; }
-.ex-source-row[aria-current='true'] { border-color: var(--action); background: var(--selected); }
 .ex-diff { margin: 0; }
-.ex-timeline { list-style: none; margin: 0; padding: 0; display: grid; gap: 0; }
-.ex-timeline > li { display: grid; gap: 2px; padding: 8px 0; border-top: 1px solid var(--border); }
-.ex-timeline > li:first-child { border-top: 0; }
 .ex-stepper { display: flex; flex-wrap: wrap; gap: 8px 16px; list-style: none; margin: 0; padding: 0; }
 .ex-stepper > li { display: flex; gap: 6px; align-items: center; color: var(--text-muted); }
 .ex-stepper > li[aria-current='step'] { color: var(--text); font-weight: 600; }
