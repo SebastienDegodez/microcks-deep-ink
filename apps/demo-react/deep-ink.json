@@ -14,9 +14,9 @@
     "base": {
       "version": "0.2.0",
       "files": {
-        "src/ui/styles/base.css": "a2a8bf5d8551b5c153637b5c2e161427645ea335d2f36df910a45c91fd7490ee"
+        "src/ui/styles/base.css": "c654e55d4cebec9b9be4eade0bfcdf992199db315f2313888ebbda0e4aa45990"
       },
-      "hash": "349a545e97a8313a"
+      "hash": "e471e4fa12f2b899"
     },
     "icon": {
       "version": "0.2.0",
