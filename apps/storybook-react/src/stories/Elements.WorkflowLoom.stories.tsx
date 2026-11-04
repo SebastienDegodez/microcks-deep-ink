@@ -1,7 +1,7 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React, { useState } from 'react';
 import { WorkflowLoom } from '@microcks-deep-ink/registry/react/workflow-loom';
-import { LOOM_CHECK_MENU, LOOM_RESTOCK_RUN14, type LoomScenario } from '@microcks-deep-ink/storybook-shared/fixtures';
+import { LOOM_CHECK_MENU, LOOM_RESTOCK_RUN14, LOOM_SESSION_RUN13, type LoomScenario } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { detailOf, itemParams } from './_meta';
 
 export default {
@@ -34,6 +34,12 @@ function Loom({ scenario, selected, tableToggle }: { scenario: LoomScenario; sel
 export const Default: StoryObj = {
   name: 'Run #14 (restock-pastry)',
   render: () => <Loom scenario={LOOM_RESTOCK_RUN14} selected="patchPastry" />,
+};
+
+/** A session run: each node lists generic checks (`checks: { label, state }[]`): Call #N, Data passing, Contract. */
+export const SessionChecks: StoryObj = {
+  name: 'Session run #13 (generic checks)',
+  render: () => <Loom scenario={LOOM_SESSION_RUN13} selected="patchPastry" />,
 };
 
 /** On a page that already has a Steps tab, `tableToggle={false}` hides the built-in "Show as table" button. */

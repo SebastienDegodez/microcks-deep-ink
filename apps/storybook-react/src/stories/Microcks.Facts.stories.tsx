@@ -60,6 +60,7 @@ export const SurfaceAndGap: StoryObj = {
         columns={2}
         boxed="surface"
         gap="10px 16px"
+        size="sm"
         items={[
           { term: 'Client', value: 'microcks-arazzo · 10.0.2.8', mono: true },
           { term: 'Dispatcher', value: 'URI_PARTS', mono: true },
@@ -77,4 +78,9 @@ export const SurfaceAndGap: StoryObj = {
       />
     </div>
   ),
+};
+
+export const LargeRows: StoryObj = {
+  name: 'Large rows (Service)',
+  render: () => <Facts size="lg" termWidth="150px" style={{ maxWidth: 560 }} items={[{ term: 'Version', value: '2.0', mono: true }, { term: 'Type', value: 'REST · OpenAPI 3.1' }, { term: 'Created', value: 'Oct 12, 2026' }]} />,
 };

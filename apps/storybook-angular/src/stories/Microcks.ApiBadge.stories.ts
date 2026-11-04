@@ -109,3 +109,35 @@ export const CompactAndMuted: StoryObj = {
     `,
   }),
 };
+
+export const WorkflowHeader: StoryObj = {
+  name: 'Workflow title and unfilled proofs',
+  render: () => ({
+    template: `
+<div style="display: flex; flex-direction: column; gap: 16px; align-items: flex-start">
+  <span mkApiBadge [arazzo]="true" name="Restock a pastry" version="1.2.0" size="xl"></span>
+  <div class="inline">
+    <span mkApiBadge size="compact" label="target" value="Implementations · schema validation" status="plain"></span>
+    <span mkApiBadge size="compact" label="runs · 7 d" value="2/4 passed" status="text"></span>
+    <span mkApiBadge size="compact" label="mock url" value="ready" status="positive"></span>
+  </div>
+</div>
+    `,
+  }),
+};
+
+export const ProofIcons: StoryObj = {
+  name: "Proof icons, protocol fill, icon-only",
+  render: () => ({
+    template: `
+      <div class="inline">
+        <span mkApiBadge size="compact" label="result" value="failed" status="danger" icon="close-sm"></span>
+        <span mkApiBadge size="compact" label="result" value="passed" status="success" icon="check"></span>
+        <span mkApiBadge size="compact" label="last test" value="13/15" status="danger" icon="close-sm"></span>
+        <span mkApiBadge size="compact" label="skills" value="3" status="protocol" protocol="A2A"></span>
+        <span mkApiBadge size="compact" label="streaming" status="success" icon="check" iconLabel="supported"></span>
+        <span mkApiBadge protocol="REST" name="API Pastry" version="2.0" versionTone="text"></span>
+      </div>
+    `,
+  }),
+};

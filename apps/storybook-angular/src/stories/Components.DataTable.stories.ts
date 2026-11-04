@@ -75,16 +75,16 @@ export const HiddenHeader: StoryObj = {
 };
 
 export const SentenceCase: StoryObj = {
-  name: "Sentence-case headers and row tones",
+  name: "Sentence-case headers, row headers and row tones",
   render: () => ({
     props: {
-      columns: [{ key: 'run', header: 'Run', mono: true }, { key: 'result', header: 'Result' }, { key: 'duration', header: 'Duration', align: 'end' }],
+      columns: [{ key: 'run', header: 'Run', mono: true, rowHeader: true }, { key: 'result', header: 'Result' }, { key: 'duration', header: 'Duration', align: 'end' }],
       rows: [
         { id: '16', run: '#16', result: 'Failed · step updatePrice', duration: '1.42 s' },
         { id: '15', run: '#15', result: 'Passed', duration: '0.98 s' },
         { id: '14', run: '#14', result: 'Idle · never run against implementations', duration: '—' },
       ],
-      tone: (r: { result: string }) => (r.result.startsWith('Failed') ? 'failed' : r.result.startsWith('Idle') ? 'idle' : undefined),
+      tone: (r: { result: string }) => (r.result.startsWith('Failed') ? 'danger' : r.result.startsWith('Idle') ? 'idle' : undefined),
     },
     template: `
 <mk-data-table caption="Workflow runs" headerCase="sentence" [columns]="columns" [rows]="rows" rowKey="id" [rowTone]="tone" />

@@ -1,3 +1,4 @@
+import { useRef } from 'react';
 import type { AdminGroup, AdminUser } from '@/domain/govern';
 import { membershipChanges, membershipKey } from '@/domain/govern';
 import { useUseCases, type QueryResult } from '@/ui/app';
@@ -20,6 +21,8 @@ interface GroupsTabProps {
 /** Roles × groups matrix: one column per manager, one row per value of the master label `domain`. */
 export function GroupsTab({ users, groups, draft, setDraft, notify, onChanged }: GroupsTabProps) {
   const uc = useUseCases();
+  // Discard and Apply remove the pending bar (and the focused button): focus moves to the section heading.
+  const headingRef = useRef<HTMLHeadingElement>(null);
   if (groups.status === 'error') return <ErrorBlock error={groups.error} what="Groups" onRetry={groups.reload} />;
   if (users.status === 'error') return <ErrorBlock error={users.error} what="Users" onRetry={users.reload} />;
   if (!groups.data || !users.data) return <LoadingBlock label="groups" />;
@@ -46,6 +49,7 @@ export function GroupsTab({ users, groups, draft, setDraft, notify, onChanged }:
     }
     notify(`${plural(changes.length, 'membership change')} applied in Keycloak realm microcks.`);
     setDraft(null);
+    headingRef.current?.focus();
     onChanged();
   };
 
@@ -53,7 +57,7 @@ export function GroupsTab({ users, groups, draft, setDraft, notify, onChanged }:
     <div className="ad-tab">
       <div className="ad-section-head">
         <div className="ad-section-title">
-          <h2>Manager groups</h2>
+          <h2 ref={headingRef} tabIndex={-1}>Manager groups</h2>
           <p>
             One group per value of the master label <span className="ad-mono">domain</span>. A member manages the Services carrying that value. Click a cell to add or remove a membership, then apply.
           </p>
@@ -131,8 +135,8 @@ export function GroupsTab({ users, groups, draft, setDraft, notify, onChanged }:
             <span className="ad-pending-list">
               {changes.map((c) => (c.kind === 'add' ? `+ ${c.userId} → ${pathOf(c.groupId)}` : `− ${c.userId} ✕ ${pathOf(c.groupId)}`)).join('   ')}
             </span>
-            <Button size="sm" onClick={() => setDraft(null)}>Discard</Button>
-            <Button size="sm" variant="primary" onClick={apply}>Apply to Keycloak</Button>
+            <Button onClick={() => { setDraft(null); headingRef.current?.focus(); }}>Discard</Button>
+            <Button variant="primary" onClick={apply}>Apply to Keycloak</Button>
           </div>
         ) : null}
       </div>
