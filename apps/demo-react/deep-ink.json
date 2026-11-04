@@ -501,9 +501,17 @@
         "src/ui/styles/exchange-card.css": "9beb16bd85d8ea21c0ca8b26dc86a418f3016042fa6ffe0a9054ef5e9282455a"
       },
       "hash": "59acb2534d7575e0"
+    },
+    "summary-strip": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/summary-strip.tsx": "4e5c927ac00df7c86be2f25268cf1ceda77da232290d60e051b262b21b52f463",
+        "src/ui/styles/summary-strip.css": "4bdda67531d6e1fd7b317ad741a02cbf677e1a844f8c3b9d0f6d7ff3681bcdb9"
+      },
+      "hash": "d129dc6bb8a30abc"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "dbfc007390b16ebea79eb4605242d8d5709feaac37089380d93516dbf4fd9a38"
+    "src/ui/styles/index.css": "8717ef42cefc2d64102af57083c576115556b443d75985d364177837f7b48962"
   }
 }

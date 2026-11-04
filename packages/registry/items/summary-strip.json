@@ -1,0 +1,21 @@
+{
+  "$schema": "../registry.schema.json",
+  "name": "summary-strip",
+  "title": "SummaryStrip",
+  "tier": "microcks",
+  "description": "Key facts in one bordered row: a muted label, mono values and 1px vertical separators, wrapping on narrow screens. Used for the Behavior \"Saved\" strip, the Service and Agent dispatcher summaries and the Sources schedule strip.",
+  "registryDependencies": ["base"],
+  "npmDependencies": { "react": [], "angular": [] },
+  "a11y": {
+    "pattern": "A <div> (role=\"note\" when it sums up the page state) holding text spans; the separators are aria-hidden",
+    "keyboard": [["Tab", "Reaches links or buttons placed in the strip"]],
+    "aria": [
+      "The separators are decorative (aria-hidden); the words and their order carry the meaning",
+      "role=\"note\" (optional) with an aria-label when the strip is a summary of the form below it"
+    ],
+    "rgaa": ["3.1", "9.3"],
+    "wcag": ["1.3.1", "1.4.1", "1.4.10"],
+    "notes": "Static item. Muted labels and secondary mono values keep 4.5:1 on --surface in both themes."
+  },
+  "stories": ["Microcks/SummaryStrip"]
+}
