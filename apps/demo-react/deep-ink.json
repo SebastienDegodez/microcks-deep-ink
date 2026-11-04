@@ -397,9 +397,25 @@
         "src/ui/styles/filter-bar.css": "f194714f7df7be29dae9878a7692d8b1af088ce7b261280751f4101510c1760a"
       },
       "hash": "22d0b49f781ca129"
+    },
+    "run-progress": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/run-progress.tsx": "9428f6c69afc165a643b78d0ed37d2b2aefe7841c93d57d16541aad1b1e3c3c8",
+        "src/ui/styles/run-progress.css": "d528d5af3efd7b85de957664642f09e41b725495424e318d91f937d9a3ebe8a0"
+      },
+      "hash": "452776151a17ecb4"
+    },
+    "runner-log": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/runner-log.tsx": "9747d30c0e46f743735c1e41e7b7607c2e969c2a0512636a2d5375c139471b81",
+        "src/ui/styles/runner-log.css": "6492310d27c28260304e63f2cd06e5e8f24e7d18617780ff70a280657b24b968"
+      },
+      "hash": "c0ceb32097c0e335"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "98b257cfe4e3e09d7600126013fe673d5819f122290de921535a7c436cd144f9"
+    "src/ui/styles/index.css": "6a86eec7f18ebdfdf27ba42268f7c4a2545c829e514903c7e95642ae4854d7c5"
   }
 }
