@@ -22,6 +22,7 @@ export default function UsagePage() {
   const selectId = useId();
   const [period, setPeriod] = useState<UsagePeriod>('today');
   const services = useQuery(() => uc.catalog.listServices(), []);
+  const scopes = useQuery(() => uc.observe.usageScopes(), []);
   const usage = useQuery(() => uc.observe.usage(scope, period), [scope, period]);
   const domains = useQuery(() => uc.observe.conformanceByDomain(), []);
   const view = usage.data;
@@ -49,10 +50,9 @@ export default function UsagePage() {
             <label className="us-control" htmlFor={selectId}>
               <span className="us-control-label">Service</span>
               <Select id={selectId} value={scope} onChange={(e) => navigate(e.target.value === 'all' ? '/metrics' : `/metrics/${e.target.value}`)}>
-                <option value="all">All services</option>
-                {(services.data ?? []).map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name} {s.version}
+                {(scopes.data ?? [{ id: 'all', label: 'All services' }]).map((o) => (
+                  <option key={o.id} value={o.id}>
+                    {o.label}
                   </option>
                 ))}
               </Select>
