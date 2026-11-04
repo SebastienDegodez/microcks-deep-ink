@@ -80,13 +80,15 @@ type RawRun = {
   /** p = passed, f = failed, n = no result, for each operation. */
   ops: string;
   reason?: string;
+  /** Stored conformance score, when the prototype gives one that is not passed/total. */
+  score?: number;
 };
 
 const PATCH_400 = 'PATCH /pastries/{name} · 400 Bad Request · schema mismatch on price';
 
 /** Runs #118..#99 of the Tests prototype (dates moved one day forward to the demo clock). #119 is added separately. */
 const HISTORY: RawRun[] = [
-  { n: 118, at: '2026-11-03T07:10:04Z', env: 'staging', runner: 'OPEN_API_SCHEMA', ms: 1840, res: 'passed', ops: 'ppp' },
+  { n: 118, at: '2026-11-03T07:10:04Z', env: 'staging', runner: 'OPEN_API_SCHEMA', ms: 1840, res: 'passed', ops: 'ppp', score: 92 },
   { n: 117, at: '2026-11-03T04:10:04Z', env: 'staging', runner: 'OPEN_API_SCHEMA', ms: 2110, res: 'failed', ops: 'ppf', reason: PATCH_400 },
   { n: 116, at: '2026-11-02T17:05:04Z', env: 'prod', runner: 'HTTP', ms: 960, res: 'passed', ops: 'ppp' },
   { n: 115, at: '2026-11-02T10:12:04Z', env: 'staging', runner: 'OPEN_API_SCHEMA', ms: 1920, res: 'passed', ops: 'ppp' },
@@ -134,7 +136,7 @@ function toRun(raw: RawRun): TestRun {
     id: String(raw.n), serviceId: 'pastry2', runner: raw.runner, environment: raw.env, endpoint: ENDPOINTS[raw.env], result: raw.res,
     startedAt: raw.at, durationMs: raw.ms, passed: steps.filter((s) => s.result === 'passed').length, total: steps.length, timeoutMs: 10_000,
     steps, reason: raw.reason, operations: [...raw.ops].map((c) => OUTCOME[c] ?? 'none'), operationLabels: OPERATION_LABELS, launchedBy: 'MA',
-    contractFile: CONTRACT_FILE,
+    contractFile: CONTRACT_FILE, ...(raw.score !== undefined ? { conformance: raw.score } : {}),
   };
 }
 
