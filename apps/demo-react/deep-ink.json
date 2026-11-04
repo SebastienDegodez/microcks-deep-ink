@@ -86,9 +86,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/chip.tsx": "6b280064685a73379e93abfc55ed3dd5aa7223efe14d05168165e55794a3e2be",
-        "src/ui/styles/chip.css": "e70f8e08704bf97b75f815f48a54edfaccac4d2489c5d04ef9d3d65e3e47dec2"
+        "src/ui/styles/chip.css": "b9ef175d9b209fa95868a86fdd7b1b831265eb3521977244200c8389a892d439"
       },
-      "hash": "aea02f6581309507"
+      "hash": "e4376867e005983d"
     },
     "copy-button": {
       "version": "0.2.0",

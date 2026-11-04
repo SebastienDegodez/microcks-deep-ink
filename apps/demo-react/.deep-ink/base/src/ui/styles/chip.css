@@ -109,7 +109,7 @@
     border-radius: 2px;
     background: var(--chip-proto);
   }
-  .chip[data-protocol] .chip-count { color: inherit; font-weight: 400; opacity: 0.8; }
+  .chip[data-protocol] .chip-count { color: inherit; font-weight: 400; }
   button.chip[data-protocol][aria-pressed="true"] {
     color: var(--on-proto);
     background: var(--chip-proto);
