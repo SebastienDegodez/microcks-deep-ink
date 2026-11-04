@@ -7,6 +7,7 @@ import type { ExtensionPointId, SlotContext } from '../src/react/plugin-slot';
 import type {
   LoomAction,
   LoomCheckState,
+  LoomDrop,
   LoomInput,
   LoomOutput,
   LoomProtocol,
@@ -30,6 +31,7 @@ assertEqual<Equal<LoomAction, Core.LoomAction>>();
 assertEqual<Equal<LoomStep, Core.LoomStep>>();
 assertEqual<Equal<LoomThread, Core.LoomThread>>();
 assertEqual<Equal<LoomInput, Core.LoomInput>>();
+assertEqual<Equal<LoomDrop, Core.LoomDrop>>();
 assertEqual<Equal<LoomOutput, Core.LoomOutput>>();
 assertEqual<Equal<CommandItem, Core.CommandItem>>();
 assertEqual<Equal<ExtensionPointId, keyof typeof EXTENSION_POINTS>>();

@@ -1,4 +1,4 @@
-import type { LoomSource, LoomStep } from './types';
+import type { LoomDrop, LoomSource, LoomStep, LoomThread } from './types';
 
 export interface LoomPlacement {
   stepId: string;
@@ -154,4 +154,33 @@ export function operationParts(s: Pick<LoomStep, 'operation' | 'method' | 'path'
   const rest = space > 0 ? s.operation.slice(space + 1) : s.operation;
   const looksLikeMethod = /^[A-Z]+$/.test(head);
   return { method: s.method ?? (looksLikeMethod ? head : ''), path: s.path ?? (looksLikeMethod ? rest : s.operation) };
+}
+
+/** A thread ready to draw: id resolved, consumers grouped into drops. */
+export interface WovenThread {
+  id: string;
+  from: string;
+  expression: string;
+  value?: string;
+  missing?: boolean;
+  drops: LoomDrop[];
+}
+
+/**
+ * Normalizes threads: keeps `drops` when given, otherwise weaves legacy one-consumer threads that share a
+ * producer and an expression into one row (the chip label is the consumer, or "outputs").
+ */
+export function weaveThreads(threads: LoomThread[]): WovenThread[] {
+  const woven: WovenThread[] = [];
+  for (const t of threads) {
+    const id = t.id ?? t.expression;
+    const drops = t.drops ?? (t.to ? [{ to: t.to, label: t.to === '$outputs' ? 'outputs' : t.to }] : []);
+    const same = t.drops ? undefined : woven.find((w) => w.id === id && w.from === t.from);
+    if (same) {
+      for (const d of drops) if (!same.drops.some((x) => x.to === d.to && x.label === d.label)) same.drops.push(d);
+      continue;
+    }
+    woven.push({ id, from: t.from, expression: t.expression, value: t.value, missing: t.missing, drops: [...drops] });
+  }
+  return woven;
 }

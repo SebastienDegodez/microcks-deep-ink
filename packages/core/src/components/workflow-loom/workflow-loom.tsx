@@ -1,6 +1,6 @@
 import { Component, Event, EventEmitter, Host, Prop, State, h } from '@stencil/core';
 import { icon } from '../../utils/icons';
-import { LoomEdge, LoomGrid, LoomLayout, LoomPlacement, layoutLoom, loomGrid, operationParts } from '../../utils/loom-layout';
+import { LoomEdge, LoomGrid, LoomLayout, LoomPlacement, WovenThread, layoutLoom, loomGrid, operationParts, weaveThreads } from '../../utils/loom-layout';
 import {
   CheckState,
   LoomAction,
@@ -127,10 +127,22 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .c.passed { color: var(--success); }
     .c.failed { color: var(--danger); }
     .c.off, .c.not-evaluated { color: var(--text-muted); }
-    .threads { grid-column: 1 / -1; }
+    .weft { grid-column: 1 / -1; position: relative; padding: 10px 0 6px; }
+    .heddle { position: absolute; top: 0; bottom: 0; width: 1px; background: var(--border); }
+    .wl { position: relative; list-style: none; margin: 0; padding: 0; }
+    .thr { position: relative; height: 46px; transition: opacity .15s; }
+    .thr.dim { opacity: .28; }
+    .tline { position: absolute; top: 30px; height: 1.5px; background: var(--text-muted); }
+    .tdot { position: absolute; top: 26px; width: 10px; height: 10px; margin-left: -5px; border-radius: 999px; background: var(--text-muted); }
+    .tlabel { position: absolute; top: 2px; display: inline-flex; align-items: baseline; gap: 6px; padding: 0 4px; white-space: nowrap; font: 400 11px/16px var(--font-mono); background: var(--canvas); border: 0; border-radius: 4px; }
+    .tx { color: var(--text-secondary); }
+    .tv { color: var(--text-muted); }
+    .tv.missing { color: var(--danger); }
+    .drop { position: absolute; top: 21px; transform: translateX(-50%); display: inline-flex; align-items: center; gap: 4px; padding: 1px 7px; white-space: nowrap; font: 400 11px/16px var(--font-mono); color: var(--text-secondary); background: var(--canvas); border: 1px solid var(--border-strong); border-radius: 999px; }
+    .drop.idle { color: var(--text-muted); }
+    .drop.bad { color: var(--danger); border-color: var(--danger); }
     .threads { list-style: none; margin: 0; padding: 0; }
-    .thread-li { font: 400 11px/16px var(--font-mono); color: var(--link); }
-    .thread-li.dim { color: var(--text-muted); }
+    .thread-li { font: 400 11px/16px var(--font-mono); color: var(--text-secondary); }
     .table-wrap { overflow: auto; border: 1px solid var(--border); border-radius: var(--radius-panel); }
     .table-wrap:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
     table { width: 100%; border-collapse: collapse; font: var(--type-small); }
@@ -145,6 +157,7 @@ const seconds = (n: number) => `${Number.isInteger(n) ? n : Number(n.toFixed(2))
     .t-threads .th { margin: 0 0 4px; font: 600 13px/18px var(--font-ui); color: var(--text-secondary); }
     .sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
     .thread-li { padding: 2px 0; }
+    @media (prefers-reduced-motion: reduce) { .thr { transition: none; } }
   `,
 })
 export class MkWorkflowLoom {
@@ -269,17 +282,44 @@ export class MkWorkflowLoom {
 
   /* ---------- rendering ---------- */
 
-  private threadItems(threads: LoomThread[], isDim: (t: LoomThread) => boolean, left?: (t: LoomThread) => number, top?: (i: number) => number) {
-    return threads.map((t, i) => (
-      <li
-        class={{ 'thread-li': true, dim: isDim(t) }}
-        style={left && top ? { left: `${left(t)}px`, top: `${top(i)}px` } : undefined}
-      >
-        <span class="sr">{`${t.from} to ${t.to}: `}</span>
-        {t.expression}
-        <span class="thread-to" aria-hidden="true">{` → ${t.to}`}</span>
-      </li>
-    ));
+  /** Text of a thread for the table view: "$inputs.size = "M" → listPastries (size · query)". */
+  private threadText(t: WovenThread): string {
+    const value = t.missing ? ' (not produced)' : t.value !== undefined ? ` = ${t.value}` : '';
+    const to = t.drops.map((d) => `${d.to === '$outputs' ? 'workflow output' : d.to} (${d.label}${d.bad ? `, got ${d.bad}` : ''})`).join(', ');
+    return `${t.expression}${value} → ${to || 'not consumed'}`;
+  }
+
+  private renderWeft(woven: WovenThread[], grid: LoomGrid, colOf: (id: string) => number, isDim: (t: WovenThread) => boolean) {
+    const heddles = Array.from({ length: grid.steps + 2 }, (_, c) => <span class="heddle" aria-hidden="true" style={{ left: grid.pct(grid.centre(c)) }} />);
+    return [
+      ...heddles,
+      <ul class="wl" aria-label="Data threads">
+        {woven.map((t) => {
+          const from = colOf(t.from);
+          const far = t.drops.reduce((m, d) => Math.max(m, colOf(d.to)), from);
+          const x = grid.pct(grid.centre(from));
+          return (
+            <li class={{ thr: true, dim: isDim(t) }}>
+              <span class="tline" aria-hidden="true" style={{ left: x, width: grid.pct(grid.centre(far) - grid.centre(from)) }} />
+              <span class="tdot" aria-hidden="true" style={{ left: x }} />
+              <span class="tlabel" style={{ left: `calc(${x} + 8px)` }}>
+                <span class="tx">{t.expression}</span>{' '}
+                {t.missing ? <span class="tv missing">— not produced</span> : t.value !== undefined && <span class="tv">{`= ${t.value}`}</span>}
+              </span>
+              {t.drops.map((d) => (
+                <span class={{ drop: true, idle: !!d.idle, bad: !!d.bad }} style={{ left: grid.pct(grid.centre(colOf(d.to))) }}>
+                  <svg width="9" height="9" viewBox="0 0 10 10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+                    <path d={d.bad ? 'M2 2l6 6M8 2L2 8' : 'M1 5h7M5 2l3 3-3 3'} />
+                  </svg>
+                  <span class="sr">{d.to === '$outputs' ? ', to the workflow output ' : `, to step ${d.to}: `}</span>
+                  {d.bad ? `${d.label} · got ${d.bad}` : d.label}
+                </span>
+              ))}
+            </li>
+          );
+        })}
+      </ul>,
+    ];
   }
 
   private renderNode(s: LoomStep, pl: LoomPlacement, layout: LoomLayout, tabStop: string | undefined, descId: string | undefined, protocol: string) {
@@ -348,7 +388,7 @@ export class MkWorkflowLoom {
     );
   }
 
-  private renderTable(layout: LoomLayout, steps: LoomStep[], sources: LoomSource[], threads: LoomThread[]) {
+  private renderTable(layout: LoomLayout, steps: LoomStep[], sources: LoomSource[], threads: WovenThread[]) {
     const src = (name: string) => sources.find((s) => s.name === name);
     const none = (
       <span>
@@ -434,7 +474,9 @@ export class MkWorkflowLoom {
         <div class="t-threads">
           <p class="th">Data threads</p>
           <ul class="threads" aria-label="Data threads">
-            {this.threadItems(threads, () => false)}
+            {threads.map((t) => (
+              <li class="thread-li">{this.threadText(t)}</li>
+            ))}
           </ul>
         </div>
       ),
@@ -530,7 +572,7 @@ export class MkWorkflowLoom {
   render() {
     const sources = parseJson<LoomSource[]>(this.sources, []);
     const steps = parseJson<LoomStep[]>(this.steps, []);
-    const threads = parseJson<LoomThread[]>(this.threads, []);
+    const threads = weaveThreads(parseJson<LoomThread[]>(this.threads, []));
     const inputs = parseJson<(string | LoomInput)[]>(this.inputs, []).map((i) => (typeof i === 'string' ? { name: i } : i));
     const outputs = parseJson<(string | LoomOutput)[]>(this.outputs, []).map((o) => (typeof o === 'string' ? { name: o } : o));
     const layout = layoutLoom(steps, sources);
@@ -545,8 +587,13 @@ export class MkWorkflowLoom {
     const firstId = layout.placements[0]?.stepId;
     const known = (id?: string) => !!id && steps.some((s) => s.stepId === id);
     const tabStop = known(this.focusId) ? this.focusId : known(this.selectedStep) ? this.selectedStep : firstId;
-    const involves = (t: LoomThread, id: string) => t.from === id || t.to === id;
-    const isDim = (t: LoomThread) => !!this.hot && !involves(t, this.hot);
+    const involves = (t: WovenThread, id: string) => t.from === id || t.drops.some((d) => d.to === id);
+    const isDim = (t: WovenThread) => !!this.hot && !involves(t, this.hot);
+    const colOf = (id: string) => {
+      if (id === '$outputs') return grid.steps + 1;
+      const pl = layout.placements.find((p) => p.stepId === id);
+      return pl ? pl.column + 1 : 0;
+    };
 
     // Grid rows: per lane, a header, an actions row when a step has actions, then one row per parallel branch.
     let row = 1;
@@ -648,9 +695,9 @@ export class MkWorkflowLoom {
             );
           })}
           {threads.length > 0 && (
-            <ul class="threads" aria-label="Data threads" style={{ gridRow: `${nodeEnd}` }}>
-              {this.threadItems(threads, isDim)}
-            </ul>
+            <div class="weft" style={{ gridRow: `${nodeEnd}` }}>
+              {this.renderWeft(threads, grid, colOf, isDim)}
+            </div>
           )}
         </div>
       </div>

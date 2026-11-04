@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { layoutLoom, loomGrid, operationParts } from './loom-layout';
+import { layoutLoom, loomGrid, operationParts, weaveThreads } from './loom-layout';
 import type { LoomSource, LoomStep } from './types';
 
 const rest: LoomSource = { name: 'apiPastry', type: 'openapi', protocol: 'REST', linked: true };
@@ -109,5 +109,33 @@ describe('operationParts', () => {
   });
   it('keeps a non-HTTP operation as the path', () => {
     expect(operationParts({ operation: 'receive pastry.restocked' })).toEqual({ method: '', path: 'receive pastry.restocked' });
+  });
+});
+
+describe('weaveThreads', () => {
+  it('weaves legacy one-consumer threads of the same expression into one row', () => {
+    const woven = weaveThreads([
+      { from: 'listPastries', to: 'getPastry', expression: '$steps.listPastries.outputs.firstName' },
+      { from: 'listPastries', to: 'patchPastry', expression: '$steps.listPastries.outputs.firstName' },
+      { from: 'listPastries', to: '$outputs', expression: '$steps.listPastries.outputs.firstName' },
+      { from: '$inputs', to: 'listPastries', expression: '$inputs.size' },
+    ]);
+    expect(woven).toHaveLength(2);
+    expect(woven[0]).toMatchObject({ id: '$steps.listPastries.outputs.firstName', from: 'listPastries' });
+    expect(woven[0]!.drops).toEqual([
+      { to: 'getPastry', label: 'getPastry' },
+      { to: 'patchPastry', label: 'patchPastry' },
+      { to: '$outputs', label: 'outputs' },
+    ]);
+  });
+
+  it('keeps the drops, id, value and missing flag of the new model', () => {
+    const woven = weaveThreads([
+      { id: 'newPrice', from: 'patchPastry', expression: '$steps.patchPastry.outputs.newPrice', missing: true, drops: [{ to: '$outputs', label: 'newPrice', idle: true }] },
+      { id: 'size', from: '$inputs', expression: '$inputs.size', value: '"M"', drops: [{ to: 'listPastries', label: 'size · query' }] },
+    ]);
+    expect(woven.map((t) => t.id)).toEqual(['newPrice', 'size']);
+    expect(woven[0]).toMatchObject({ missing: true, drops: [{ to: '$outputs', label: 'newPrice', idle: true }] });
+    expect(woven[1]).toMatchObject({ value: '"M"' });
   });
 });

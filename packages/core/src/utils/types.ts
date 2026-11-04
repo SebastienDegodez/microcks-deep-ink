@@ -77,12 +77,36 @@ export interface LoomStep {
   actions?: LoomAction[];
 }
 
+/** Where a thread's value is consumed: a step parameter or body, or a workflow output. */
+export interface LoomDrop {
+  /** stepId, or '$outputs' */
+  to: string;
+  /** Chip text: "name · path", "/price · body", "pastryName". */
+  label: string;
+  /** The consumer did not run, or the run produced no outputs: the chip is muted. */
+  idle?: boolean;
+  /** The consumer received another value ("Millefeuille"): drawn in danger, "· got Millefeuille". */
+  bad?: string;
+}
+
+/**
+ * A data thread (weft): one runtime expression, its producer and every place that consumes it.
+ * The legacy form `{ from, to, expression }` (one consumer per thread) still works: threads with the same
+ * producer and expression are woven into one row.
+ */
 export interface LoomThread {
+  /** Stable id, used by the lens. Defaults to the expression. */
+  id?: string;
   /** stepId or '$inputs' */
   from: string;
-  /** stepId or '$outputs' */
-  to: string;
+  /** Legacy single consumer: stepId or '$outputs'. Ignored when `drops` is set. */
+  to?: string;
   expression: string;
+  /** Value in the shown run, already formatted ('"M"'). */
+  value?: string;
+  /** The run did not produce the value: "— not produced". */
+  missing?: boolean;
+  drops?: LoomDrop[];
 }
 
 /** Workflow input, drawn in the inputs column. A bare string is the input name. */
