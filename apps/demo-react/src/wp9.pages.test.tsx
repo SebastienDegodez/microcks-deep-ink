@@ -336,14 +336,30 @@ describe('Administration (/admin/:tab?)', () => {
     expect(screen.queryByRole('checkbox')).toBeNull();
   });
 
-  it('creates a secret through the dialog and toggles a feature flag', async () => {
+  it('creates, edits and deletes a secret in the inline form', async () => {
     renderAt('/admin/secrets');
     await screen.findByRole('heading', { level: 1 });
-    fireEvent.click(await screen.findByRole('button', { name: 'Create secret' }));
-    fireEvent.change(await screen.findByLabelText(/^Name/), { target: { value: 'staging-token' } });
-    fireEvent.change(screen.getByLabelText(/Password/), { target: { value: 'hunter2hunter2' } });
-    fireEvent.click(screen.getAllByRole('button', { name: 'Create secret' }).pop() as HTMLElement);
-    await waitFor(() => expect(screen.getByText('staging-token')).toBeTruthy());
+    fireEvent.click(await screen.findByRole('button', { name: 'New secret' }, { timeout: 3000 }));
+    const create = screen.getByRole('button', { name: 'Create secret' }) as HTMLButtonElement;
+    expect(create.disabled).toBe(true);
+    expect(screen.getByText('Name required')).toBeTruthy();
+    fireEvent.change(screen.getByLabelText('Name'), { target: { value: 'staging-token' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Token' }));
+    fireEvent.change(screen.getByLabelText('Token'), { target: { value: 'hunter2hunter2' } });
+    expect(create.disabled).toBe(false);
+    fireEvent.click(create);
+    expect(await screen.findByText('Secret staging-token created. Reference it from an importer or a test.')).toBeTruthy();
+    expect(await screen.findByText('staging-token')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Edit secret postman-api' }));
+    expect(screen.getByRole('heading', { level: 2, name: 'Edit secret postman-api' })).toBeTruthy();
+    fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    expect(await screen.findByText('Secret postman-api updated.')).toBeTruthy();
+
+    fireEvent.click(screen.getByRole('button', { name: 'Delete secret gitlab-bakery' }));
+    expect(screen.getByRole('alert').textContent).toContain('Delete gitlab-bakery? 1 importer still reference it and will fail on next run.');
+    fireEvent.click(screen.getByRole('button', { name: 'Delete secret' }));
+    await waitFor(() => expect(screen.queryByText('gitlab-bakery')).toBeNull());
   });
 });
 
