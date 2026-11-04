@@ -248,6 +248,9 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"size","type":"\"sm\" | \"md\"","control":"select","options":["sm","md"],"required":false,"default":"'md'","model":false,"description":"`md` (default, Service) or `sm` (Copilot compact head)."},
       {"name":"headingLevel","type":"4 | 3 | 5 | 6 | \"none\"","control":"select","options":["none",4,3,5,6],"required":false,"default":"4","model":false,"description":"Level of the title heading; `none` renders plain text."},
     ] },
+    { className: "ExchangeComponent", selector: "div[mkExchange]", inputs: [
+      {"name":"separator","type":"boolean","control":"boolean","required":false,"default":"true","model":false,"description":"Draws a decorative ⇄ between the two cards."},
+    ] },
   ],
   "facts": [
     { className: "FactsComponent", selector: "dl[mkFacts]", inputs: [
@@ -259,6 +262,12 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"columns","type":"number | undefined","control":"number","required":false,"model":false,"description":"`columns` only: a fixed number of equal columns."},
       {"name":"size","type":"\"sm\" | \"md\" | \"lg\"","control":"select","options":["sm","md","lg"],"required":false,"default":"'md'","model":false,"description":"`sm`: 11px terms with a normal line height (Traces, Usage). `md` (default). `lg`: 14px text, 8px rows, 14px mono values (Service)."},
       {"name":"gap","type":"string | undefined","control":"text","required":false,"model":false,"description":"`inline` and `columns`: the grid gap, row then column (default `8px 16px`; WorkflowRun `9px 12px`)."},
+    ] },
+    { className: "FactRowComponent", selector: "div[mkFactRow]", inputs: [
+      {"name":"term","type":"string","control":"text","required":true,"model":false,"description":""},
+      {"name":"sub","type":"string | undefined","control":"text","required":false,"model":false,"description":"Muted 12px line under the value."},
+      {"name":"mono","type":"boolean","control":"boolean","required":false,"default":"false","model":false,"description":"Monospace 12px value (ids, paths, versions)."},
+      {"name":"tone","type":"FactTone | undefined","control":"select","options":["warning","danger","success","muted"],"required":false,"model":false,"description":"Colour of the value. The words must carry the meaning too."},
     ] },
   ],
   "field": [
