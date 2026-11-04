@@ -197,10 +197,10 @@
     "method-tag": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/method-tag.tsx": "d720b037060409dbde766c93972320a00cb2b9236bab818ed870dc39d690f102",
-        "src/ui/styles/method-tag.css": "6c3c9a3fe99b14289aba11d0e320a984487a5d120449325086c56b5c39419969"
+        "src/ui/components/ui/method-tag.tsx": "16d5822c6d15572c3475f1602bd51e943d584633fa69552e8d5267c779979e38",
+        "src/ui/styles/method-tag.css": "739ac7dadbab006dddf952bb5e755c0f637f69ab2a0e3c93ff0fb619de32501b"
       },
-      "hash": "831556f95847c5bc"
+      "hash": "e395c3648377f69a"
     },
     "segmented": {
       "version": "0.2.0",
