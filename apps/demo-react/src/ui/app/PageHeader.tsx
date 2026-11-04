@@ -20,8 +20,8 @@ export interface PageHeaderProps {
   meta?: ReactNode;
   /** Badge next to the title (an ApiBadge, a StatusBadge...). */
   badge?: ReactNode;
-  /** Where the badge sits in the title row: `end` (after the title, default) or `start` (before it, as on Tests). */
-  badgePosition?: 'start' | 'end';
+  /** Node before the title in the title row (a service badge on Tests, a method tag on Behavior). */
+  leading?: ReactNode;
   /** Lead paragraph under the title row (14px, max 720px). */
   description?: ReactNode;
   /** `muted` (default) or `secondary` text colour for the description. */
@@ -32,9 +32,10 @@ export interface PageHeaderProps {
   size?: 'md' | 'lg';
   /**
    * Title font: `brand` (Alegreya Sans SC 800, default), `plain` (IBM Plex Sans 600 28px, as on Import) or
-   * `subtitle` (Alegreya Sans SC 700 26px, secondary text, after a leading badge, as on Tests).
+   * `subtitle` (Alegreya Sans SC 700 26px, secondary text, after a leading badge, as on Tests) or
+   * `mono` (JetBrains Mono 600 24px, an operation path, as on Behavior).
    */
-  variant?: 'brand' | 'plain' | 'subtitle';
+  variant?: 'brand' | 'plain' | 'subtitle' | 'mono';
   /** Vertical alignment of the actions: `end` (default, bottom-aligned with the description) or `start`. */
   align?: 'end' | 'start';
 }
@@ -44,7 +45,7 @@ export interface PageHeaderProps {
  * focus to it when the route changes. Section headings below it are `<h2>`.
  * The wrapper is a `div`, not a `header`, so the page has exactly one banner landmark (the top bar).
  */
-export function PageHeader({ title, breadcrumb, breadcrumbSeparator = '›', meta, badge, badgePosition = 'end', description, descriptionTone = 'muted', actions, size = 'md', variant = 'brand', align = 'end' }: PageHeaderProps) {
+export function PageHeader({ title, breadcrumb, breadcrumbSeparator = '›', meta, badge, leading, description, descriptionTone = 'muted', actions, size = 'md', variant = 'brand', align = 'end' }: PageHeaderProps) {
   return (
     <div className="demo-page-header" data-align={align}>
       {breadcrumb && breadcrumb.length > 0 ? (
@@ -68,13 +69,13 @@ export function PageHeader({ title, breadcrumb, breadcrumbSeparator = '›', met
       ) : null}
       <div className="demo-page-header-row">
         <div className="demo-page-header-text">
-          <div className="demo-page-title-row" data-badge={badge ? badgePosition : undefined}>
-            {badgePosition === 'start' ? badge : null}
+          <div className="demo-page-title-row" data-leading={leading ? '' : undefined}>
+            {leading}
             <h1 id={PAGE_TITLE_ID} tabIndex={-1} className="demo-page-title" data-size={size} data-variant={variant}>
               {title}
             </h1>
             {meta ? <span className="demo-page-meta">{meta}</span> : null}
-            {badgePosition === 'end' ? badge : null}
+            {badge}
           </div>
           {description ? (
             <p className="demo-page-description" data-tone={descriptionTone}>
