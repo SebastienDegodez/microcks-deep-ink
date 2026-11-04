@@ -44,7 +44,7 @@ rules require one; the reasoning is in the Angular Storybook introduction and at
    build ─► dist/registry.json · dist/registry.full.json · dist/deep-ink-components.css
         │                          │                                   │
         ▼                          ▼                                   ▼
- packages/cli               apps/shared/copy-panel              apps/storybook-react · apps/storybook-angular
+ packages/cli               apps/shared/copy-panel              react/apps/storybook · apps/storybook-angular
  deep-ink init|add|...      "Copy" panel in both Storybooks     stories import the registry source directly
         │
         ▼ copies files (the demo never imports a package)
@@ -63,7 +63,7 @@ rules require one; the reasoning is in the Angular Storybook introduction and at
 | `packages/registry` | The registry: 46 items (CSS, React, Angular, HTML recipes, accessibility contract). See its [README](packages/registry/README.md) for the CSS class API |
 | `packages/cli` | `deep-ink`, a zero-dependency CLI that copies items into an app. See its [README](packages/cli/README.md) |
 | `packages/plugin-sdk` | Plugin manifest, extension points, shared plugin host |
-| `apps/storybook-react`, `apps/storybook-angular` | The two Storybooks, each with a Copy panel |
+| `react/apps/storybook`, `apps/storybook-angular` | The two Storybooks, each with a Copy panel (React: the `@microcks/deep-ink` package docs) |
 | `apps/demo-react` | The clickable demo: 19 screens, clean architecture, built only from copied components |
 | `tools/a11y` | The RGAA audit runner and the accessibility smoke run |
 | `tools/site` | The landing page and the script that assembles the Pages site |

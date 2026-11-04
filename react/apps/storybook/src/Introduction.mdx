@@ -1,0 +1,47 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Introduction" />
+
+> **DEMO.** This Storybook demonstrates a design system proposal for the Microcks UI v2. It is not an official Microcks release, and nothing is published on npm.
+
+# Microcks Deep Ink
+
+The Microcks UI v2 design system, a proposal for the maintainers.
+**The contract is the source of truth; the interface makes it alive.**
+
+This Storybook documents **`@microcks/deep-ink`**, the React package (private for now: built from a clone, not on npm).
+The Angular Storybook shows the same items; Angular, plain HTML and CSS are still copied with the `deep-ink` CLI, in the spirit of shadcn.
+
+- **Natural components** are native HTML (`<button>`, `<table>`, `<dialog>`) styled by a CSS class API with plain class names (`.button`, `.table`, `.dialog`).
+- **Microcks components** (API badge, status, operation row...) are native React code over the same CSS, plus an HTML recipe for plugins.
+- **Two Web Components remain**, where the logic is heavy: the Workflow Loom and the Plugin Slot. They ship as self-contained bundles with a thin wrapper.
+
+```
+packages/tokens          CSS variables, dark (Deep Ink) and light (Paper)
+packages/registry        CSS, HTML recipes and Angular sources; builds the one layered stylesheet
+packages/core            the two Web Components, compiled to element bundles
+react/packages/deep-ink  @microcks/deep-ink: the React components, styles.css, the element bundles
+```
+
+## Use a component
+
+```tsx
+import '@microcks/deep-ink/styles.css'; // once, in your entry file
+import { Button } from '@microcks/deep-ink';
+```
+
+Every story has a **Copy** panel (open by default, next to Controls and Accessibility). For React it shows the import to write;
+for HTML it shows the recipe and the CSS the `deep-ink` CLI copies (`pnpm deep-ink add button --framework html`).
+
+## Accessibility
+
+Every item documents its keyboard interactions and ARIA attributes in the story docs, taken from the registry. The target is RGAA 4.1.2 (about WCAG 2.1 AA),
+checked by axe-core and a11ylint. These tools do not replace an audit: **the status is "not audited"**, and this project never claims conformance.
+
+## Principles
+
+1. **Contract first.** Paths, URLs and payloads in mono, copyable in one click.
+2. **Density with air.** Workbench density, separated by the `space-6` rhythm.
+3. **Light over shadow.** Elevation lightens the ink; shadows only for overlays and focus.
+4. **Color is data, never the only data.** Protocol colors identify API types, status colors report outcomes, and every status also has an icon and a word.
+5. **Both themes, same meaning.** Use the **Theme** toolbar button to switch.

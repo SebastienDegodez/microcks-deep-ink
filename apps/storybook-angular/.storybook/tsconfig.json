@@ -6,8 +6,8 @@
     "allowSyntheticDefaultImports": true,
     "resolveJsonModule": true,
     "paths": {
-      "@microcks-deep-ink/registry/react/*": [
-        "../../../react/packages/deep-ink/src/*"
+      "@microcks/deep-ink": [
+        "../../../react/packages/deep-ink/src/index.ts"
       ],
       "react": [
         "../node_modules/@types/react"

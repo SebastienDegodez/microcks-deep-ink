@@ -17,7 +17,7 @@ need() {
   fi
 }
 
-need "$ROOT/apps/storybook-react/storybook-static/index.html" "pnpm build:storybooks"
+need "$ROOT/react/apps/storybook/storybook-static/index.html" "pnpm build:storybooks"
 need "$ROOT/apps/storybook-angular/storybook-static/index.html" "pnpm build:storybooks"
 need "$ROOT/apps/demo-react/dist/index.html" "pnpm build:demo"
 need "$ROOT/tools/site/index.html" "git checkout tools/site/index.html"
@@ -25,7 +25,7 @@ need "$ROOT/tools/site/index.html" "git checkout tools/site/index.html"
 rm -rf "$SITE"
 mkdir -p "$SITE/react" "$SITE/angular" "$SITE/demo"
 cp "$ROOT/tools/site/index.html" "$SITE/index.html"
-cp -r "$ROOT/apps/storybook-react/storybook-static/." "$SITE/react/"
+cp -r "$ROOT/react/apps/storybook/storybook-static/." "$SITE/react/"
 cp -r "$ROOT/apps/storybook-angular/storybook-static/." "$SITE/angular/"
 cp -r "$ROOT/apps/demo-react/dist/." "$SITE/demo/"
 # GitHub Pages: do not run Jekyll over the Storybook/Vite output (files starting with an underscore).
