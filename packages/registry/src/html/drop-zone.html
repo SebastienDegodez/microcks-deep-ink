@@ -40,3 +40,6 @@
     zone.addEventListener('drop', function (e) { e.preventDefault(); zone.removeAttribute('data-dragging'); take(e.dataTransfer.files); });
   })();
 </script>
+
+<!-- The status paragraph (role="status") stays in the page while it is empty: data-empty (or no text) hides it
+     visually, and the words are announced when your script fills it and removes data-empty. -->

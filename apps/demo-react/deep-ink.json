@@ -16,7 +16,7 @@
       "files": {
         "src/ui/styles/base.css": "f8b3335c597aa78847bbc8661817b83729501202bc618bffadf95db29d9fba3b"
       },
-      "hash": "9c994ac5707631ee"
+      "hash": "32310454890a8040"
     },
     "icon": {
       "version": "0.2.0",
@@ -378,9 +378,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/tile.tsx": "bb451a89d82a9a08ea3159f7592b42cf68d5646657cd16af97b26e9cd4737556",
-        "src/ui/styles/tile.css": "4e39eb62b416295d7de11ace3555bce4842fcb3dc6f3053d02a037f43a891f54"
+        "src/ui/styles/tile.css": "809bf1c786812dc6672f92042aebdf28bd946d25e8125f571ff8f938df3d5f4f"
       },
-      "hash": "2c3ba1dacad8b0ca"
+      "hash": "d71f33a1fd44bccf"
     },
     "stat-card": {
       "version": "0.2.0",

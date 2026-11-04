@@ -59,7 +59,7 @@
 
   .tile-body:empty { display: none; }
   .tile-body { display: flex; flex-direction: column; gap: 10px; min-width: 0; }
-  .tile-body > p, .tile-text { margin: 0; color: var(--text-secondary); font: 400 13px/1.5 var(--font-ui); }
+  .tile-body > p { margin: 0; color: var(--text-secondary); font: 400 13px/1.5 var(--font-ui); }
   .tile-badges { display: flex; flex-wrap: wrap; gap: 6px; }
 
   .tile-footer {
