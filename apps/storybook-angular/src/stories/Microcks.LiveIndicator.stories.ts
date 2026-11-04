@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { LiveIndicatorComponent } from '@microcks-deep-ink/registry/angular/live-indicator';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/LiveIndicator',
+  argTypes: argTypesFor('live-indicator', ['LiveIndicatorComponent']),
   decorators: [moduleMetadata({ imports: [LiveIndicatorComponent] })],
   parameters: itemParams(['live-indicator'], "Marks a real-time stream only. It is not a status and not a live region: pair it with a Pause control (RGAA 13.8) and announce stream changes elsewhere. The dot is static under reduced motion."),
 };

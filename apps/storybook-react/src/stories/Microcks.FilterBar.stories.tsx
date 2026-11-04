@@ -7,8 +7,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/FilterBar',
+  component: FilterBar,
   parameters: itemParams(['filter-bar', 'chip', 'segmented'], 'A named box of filter rows: a search field, titled rows of chips or segmented controls, and a Reset that writes the number of active filters.'),
-} satisfies Meta;
+} satisfies Meta<typeof FilterBar>;
 
 const PROTOCOLS: Array<[Protocol, number]> = [['REST', 4], ['SOAP', 1], ['EVENT', 2], ['GRAPHQL', 1]];
 
@@ -53,6 +54,17 @@ export const Catalogue: StoryObj = {
   },
 };
 
+/** `FilterReset` takes a `label` and shows the number of active filters. */
+export const ResetLabel: StoryObj = {
+  name: 'Reset button label',
+  render: () => (
+    <FilterBar label="Filter runs">
+      <FilterSearch label="Search runs" placeholder="Run number" />
+      <FilterReset count={3} label="Clear filters" />
+    </FilterBar>
+  ),
+};
+
 export const PageSearch: StoryObj = {
   name: 'Page search and category pills (Hub)',
   render: function Render() {
@@ -74,5 +86,19 @@ export const PageSearch: StoryObj = {
         </div>
       </div>
     );
+  },
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof FilterBar> = {
+  args: {
+    label: 'Filter services',
+    children: (
+      <>
+        <FilterRow title="Search"><FilterSearch label="Search services" placeholder="Search by name" size="md" /></FilterRow>
+        <FilterRow title="Protocol"><Chip protocol="REST">REST</Chip><Chip protocol="EVENT">EVENT</Chip></FilterRow>
+        <FilterReset count={2} label="Reset" />
+      </>
+    ),
   },
 };

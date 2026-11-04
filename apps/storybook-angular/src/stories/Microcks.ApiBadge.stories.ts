@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ApiBadgeComponent } from '@microcks-deep-ink/registry/angular/api-badge';
 import type { Protocol } from '@microcks-deep-ink/registry/angular/api-badge';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/ApiBadge',
+  argTypes: argTypesFor('api-badge', ['ApiBadgeComponent']),
   decorators: [moduleMetadata({ imports: [ApiBadgeComponent] })],
   parameters: itemParams(['api-badge', 'icon'], "Three segments: type, name, version. The visible text is the accessible name (\"REST API Pastry 2.0\"). The Arazzo variant inverts the left segment and never uses a protocol color."),
 };
@@ -28,6 +29,19 @@ export const Default: StoryObj = {
         @for (p of protocols; track p[0]) {
           <span mkApiBadge [protocol]="p[0]" [name]="p[1]" [version]="p[2]"></span>
         }
+      </div>
+    `,
+  }),
+};
+
+/** `versionTone="muted"` lowers the weight of the version next to the name. */
+export const MutedVersion: StoryObj = {
+  name: 'Muted version',
+  render: () => ({
+    template: `
+      <div class="inline">
+        <span mkApiBadge protocol="REST" name="API Pastry" version="2.0" versionTone="muted"></span>
+        <span mkApiBadge protocol="EVENT" name="Pastry orders" version="0.1.0" versionTone="muted" size="lg"></span>
       </div>
     `,
   }),

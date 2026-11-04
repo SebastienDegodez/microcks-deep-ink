@@ -7,8 +7,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/CiPanel',
+  component: CiPanel,
   parameters: itemParams(['ci-panel', 'copy-button', 'button'], '"Run it from CI": a region named by its title, shown by a toggle button with `aria-expanded` and `aria-controls`. Copy announces its result; the command wraps.'),
-} satisfies Meta;
+} satisfies Meta<typeof CiPanel>;
 
 const CMD = "microcks test 'Pastry Concierge:1.0' https://concierge.acme.io/a2a A2A_CONFORMANCE \\\n  --microcksURL=https://microcks.acme.io/api/ --waitFor=30sec";
 
@@ -37,4 +38,9 @@ export const Default: StoryObj = {
       </div>
     );
   },
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof CiPanel> = {
+  args: { title: 'Run it from your pipeline', pill: <ProjectionPill />, hint: 'Add this command to a CI job.', command: 'microcks test API-Pastry:2.0 http://pastry:8080 OPEN_API_SCHEMA', footnote: 'Needs the Microcks CLI.', dashed: false, copyLabel: 'Copy' },
 };

@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { StepperComponent } from '@microcks-deep-ink/registry/angular/stepper';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/Stepper',
+  argTypes: argTypesFor('stepper', ['StepperComponent']),
   decorators: [moduleMetadata({ imports: [StepperComponent] })],
   parameters: itemParams(['stepper'], 'Numbered steps in an ordered list. Progress marks the current step with aria-current="step" and writes "done" for done steps; list shows numbered instructions.'),
 };
@@ -17,6 +18,14 @@ export const Progress: StoryObj = {
       end: [{ label: 'Source', state: 'done' }, { label: 'Preview', state: 'done' }, { label: 'Live mock', state: 'done' }],
     },
     template: `<div style="display: flex; flex-direction: column; gap: 20px"><ol mkStepper label="Progress" [steps]="start"></ol><ol mkStepper label="Progress" [steps]="middle"></ol><ol mkStepper label="Progress" [steps]="end"></ol></div>`,
+  }),
+};
+
+/** `direction="vertical"` for a narrow column; `doneLabel` changes the word read for finished steps. */
+export const Vertical: StoryObj = {
+  render: () => ({
+    props: { steps: [{ label: 'Upload the contract', state: 'done' }, { label: 'Review the operations', state: 'current' }, { label: 'Publish', state: 'upcoming' }] },
+    template: `<ol mkStepper label="Import steps" direction="vertical" doneLabel="completed" [steps]="steps"></ol>`,
   }),
 };
 

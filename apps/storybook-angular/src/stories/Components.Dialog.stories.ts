@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { DialogComponent, DialogFooterDirective } from '@microcks-deep-ink/registry/angular/dialog';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Dialog',
+  argTypes: argTypesFor('dialog', ['DialogComponent']),
   decorators: [moduleMetadata({ imports: [DialogComponent, DialogFooterDirective, ButtonDirective] })],
   parameters: itemParams(['dialog', 'button'], "A native `<dialog>` opened with `showModal()`: focus is trapped by the browser, Escape closes it and focus returns to the opener."),
 };
@@ -21,6 +22,27 @@ export const Default: StoryObj = {
           <button mkButton variant="ghost" (click)="open = false">Cancel</button>
           <button mkButton variant="primary" (click)="open = false">Import</button>
         </div>
+      </dialog>
+    `,
+  }),
+};
+
+/** `size="sm"` for confirmations, `size="lg"` for wide content. `closeOnBackdrop` also closes on a click outside. */
+export const Sizes: StoryObj = {
+  render: () => ({
+    props: { small: false, large: false },
+    template: `
+      <div class="inline">
+        <button mkButton (click)="small = true">Open the small dialog</button>
+        <button mkButton (click)="large = true">Open the large dialog</button>
+      </div>
+      <dialog mkDialog [(open)]="small" size="sm" [closeOnBackdrop]="true" title="Discard changes?" description="A click on the backdrop closes this dialog.">
+        <p style="margin:0">Your edits are not saved.</p>
+        <div mkDialogFooter><button mkButton variant="ghost" (click)="small = false">Close</button></div>
+      </dialog>
+      <dialog mkDialog [(open)]="large" size="lg" title="Operation details">
+        <p style="margin:0">A wide dialog for forms and tables.</p>
+        <div mkDialogFooter><button mkButton variant="ghost" (click)="large = false">Close</button></div>
       </dialog>
     `,
   }),

@@ -5,8 +5,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Microcks/Facts',
+  component: Facts,
   parameters: itemParams(['facts'], 'Key/value facts in a native dl. Rows (term column and separators), inline (two-column grid) or columns (term over value). Tones colour a value; the words carry the meaning.'),
-} satisfies Meta;
+} satisfies Meta<typeof Facts>;
 
 export const Rows: StoryObj = {
   render: () => (
@@ -23,6 +24,19 @@ export const Rows: StoryObj = {
         <span>1,322 calls over 7 days <a href="#/usage">Usage details</a></span>
       </FactRow>
     </Facts>
+  ),
+};
+
+/** Row-level options: `sub` text, `mono` values and a `tone` on `FactRow`, plus the `muted` and `success` tones on `items`. */
+export const RowOptions: StoryObj = {
+  name: 'Row options (sub, mono, tone)',
+  render: () => (
+    <div className="sb-col" style={{ maxWidth: 520 }}>
+      <Facts items={[{ term: 'Checks', value: 'Passed', tone: 'success' }, { term: 'Last sync', value: 'Never', tone: 'muted' }]} />
+      <Facts>
+        <FactRow term="Endpoint" sub="Mock URL" mono tone="success">/rest/API+Pastry/2.0.0</FactRow>
+      </Facts>
+    </div>
   ),
 };
 
@@ -83,4 +97,17 @@ export const SurfaceAndGap: StoryObj = {
 export const LargeRows: StoryObj = {
   name: 'Large rows (Service)',
   render: () => <Facts size="lg" termWidth="150px" style={{ maxWidth: 560 }} items={[{ term: 'Version', value: '2.0', mono: true }, { term: 'Type', value: 'REST · OpenAPI 3.1' }, { term: 'Created', value: 'Oct 12, 2026' }]} />,
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Facts> = {
+  args: {
+    items: [{ term: 'Service', value: 'API Pastry' }, { term: 'Version', value: '2.0.0', mono: true }, { term: 'Status', value: 'Healthy', tone: 'success', sub: 'Last check 2 min ago' }],
+    layout: 'rows', boxed: false, strong: false, size: 'md', termWidth: undefined, columns: undefined, gap: undefined,
+  },
+  argTypes: {
+    layout: { control: 'inline-radio', options: ['rows', 'inline', 'columns'] },
+    boxed: { control: 'inline-radio', options: [false, true, 'surface'] },
+    size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] },
+  },
 };

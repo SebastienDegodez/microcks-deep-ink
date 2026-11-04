@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
 import { RunProgressComponent } from '@microcks-deep-ink/registry/angular/run-progress';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/RunProgress',
+  argTypes: argTypesFor('run-progress', ['RunProgressComponent']),
   decorators: [moduleMetadata({ imports: [RunProgressComponent, ButtonDirective] })],
   parameters: itemParams(['run-progress', 'button'], "Progress of a running test: the count done as text, a bar named by the count, the current step in a polite live region, and the counts by result."),
 };
@@ -23,5 +24,14 @@ export const Running: StoryObj = {
         </section>
       </div>
     `,
+  }),
+};
+
+/** A custom `label` for the progress bar and a `gap` between the segments. */
+export const LabelAndGap: StoryObj = {
+  name: 'Label and gap',
+  render: () => ({
+    props: { segments: ['done', 'done', 'done', 'current', 'queued', 'queued'] },
+    template: `<div style="max-width:560px"><section mkRunProgress label="Run #120 progress" [done]="3" [total]="6" caption="3 of 6 steps" [gap]="4" [segments]="segments"></section></div>`,
   }),
 };

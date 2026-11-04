@@ -22,7 +22,7 @@ import { MethodTag } from '@/ui/components/ui/method-tag';
 import { OpPickList } from '@/ui/components/ui/op-pick';
 import { SectionLabel } from '@/ui/components/ui/section-label';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
-import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import AgentPage from '../agent/AgentPage';
 import { MONTHS, fmt, pluralize } from '@/ui/app/format';
 

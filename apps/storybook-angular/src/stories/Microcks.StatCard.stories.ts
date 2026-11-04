@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { LiveIndicatorComponent } from '@microcks-deep-ink/registry/angular/live-indicator';
 import { STAT_CARD } from '@microcks-deep-ink/registry/angular/stat-card';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/StatCard',
+  argTypes: argTypesFor('stat-card'),
   decorators: [moduleMetadata({ imports: [...STAT_CARD, LiveIndicatorComponent] })],
   parameters: itemParams(['stat-card', 'live-indicator'], "A key figure: a small heading (a real heading), the figure as text with its unit, and optional detail. The tone colours the figure only; the words carry the meaning."),
 };
@@ -25,6 +26,18 @@ export const KeyFigures: StoryObj = {
           <a mkStatCardAction href="#/usage">Details</a>
           <p>Across 8 tested services · 3 never tested</p>
         </section>
+      </section>
+    `,
+  }),
+};
+
+/** `tone` colours the value; `headingLevel` keeps the page outline right inside a section. */
+export const Tones: StoryObj = {
+  render: () => ({
+    template: `
+      <section mkStatGrid label="Last 24 hours">
+        <section mkStatCard title="Passed" [headingLevel]="3" value="9" tone="success"><p>Runs without a failure.</p></section>
+        <section mkStatCard title="Failed" [headingLevel]="3" value="3" tone="danger"><p>Runs with a failing step.</p></section>
       </section>
     `,
   }),

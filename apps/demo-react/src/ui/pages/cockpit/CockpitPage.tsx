@@ -14,7 +14,7 @@ import { ConformanceBand, type OperationResult } from '@/ui/components/ui/confor
 import { Icon } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { StatCard, StatGrid } from '@/ui/components/ui/stat-card';
-import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { PROTOCOL_ORDER, fmt, operationUnit, pluralize, testRunHref } from '@/ui/app/format';
 import { buildAttention } from './attention';
 

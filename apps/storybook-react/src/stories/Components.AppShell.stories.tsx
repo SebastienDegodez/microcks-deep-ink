@@ -53,3 +53,23 @@ export const Playground: StoryObj<typeof AppShell> = {
   },
   decorators: [(Story) => <div style={{ height: 420, transform: 'translateZ(0)' }}><Story /></div>],
 };
+
+/** `navLabel` and `skipLinkLabel` translate the landmark names; `topbarCenter` fills the middle of the top bar; `renderLink` plugs a router link. */
+export const Customised: StoryObj = {
+  name: 'Labels, centre slot and router link',
+  render: () => (
+    <div style={{ height: 360, transform: 'translateZ(0)' }}>
+      <AppShell
+        brand="Microcks"
+        nav={NAV.slice(0, 3)}
+        activeId="cockpit"
+        navLabel="Primary"
+        skipLinkLabel="Skip to the page"
+        topbarCenter={<span className="sb-note">Search lives here</span>}
+        renderLink={(item, props) => <a {...props} data-route={item.id} />}
+      >
+        <h1 style={{ font: 'var(--type-section)', margin: 0 }}>Cockpit</h1>
+      </AppShell>
+    </div>
+  ),
+};

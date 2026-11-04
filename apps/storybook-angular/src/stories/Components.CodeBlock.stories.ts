@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { CodeBlockComponent } from '@microcks-deep-ink/registry/angular/code-block';
 import { RUN14_FAILURE } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/CodeBlock',
+  argTypes: argTypesFor('code-block', ['CodeBlockComponent']),
   decorators: [moduleMetadata({ imports: [CodeBlockComponent] })],
   parameters: itemParams(['code-block', 'copy-button'], "A `<figure>` with a focusable `<pre>` so keyboard users can scroll it. A bad line has a \"\u2715\" marker and a visible note, not color alone."),
 };

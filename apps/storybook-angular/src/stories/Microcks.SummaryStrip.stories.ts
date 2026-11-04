@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { SUMMARY_STRIP } from '@microcks-deep-ink/registry/angular/summary-strip';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/SummaryStrip',
+  argTypes: argTypesFor('summary-strip'),
   decorators: [moduleMetadata({ imports: [...SUMMARY_STRIP] })],
   parameters: itemParams(['summary-strip'], 'Key facts in one bordered row, separated by decorative 1px rules. The words carry the meaning; add role="note" for a page summary.'),
 };

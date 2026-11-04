@@ -24,7 +24,7 @@ import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { Panel } from '@/ui/components/ui/panel';
 import { SectionLabel } from '@/ui/components/ui/section-label';
 import { Tile, TileGrid } from '@/ui/components/ui/tile';
-import { ErrorBlock, LoadingBlock } from '../tests/PageStates';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import './hub.css';
 
 const HUB_URL = 'https://hub.microcks.io/api';

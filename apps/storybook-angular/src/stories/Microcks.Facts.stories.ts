@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { FACTS } from '@microcks-deep-ink/registry/angular/facts';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/Facts',
+  argTypes: argTypesFor('facts'),
   decorators: [moduleMetadata({ imports: [...FACTS] })],
   parameters: itemParams(['facts'], 'Key/value facts in a native dl. Rows (term column and separators), inline (two-column grid) or columns (term over value). Tones colour a value; the words carry the meaning.'),
 };
@@ -20,6 +21,19 @@ export const Rows: StoryObj = {
       ],
     },
     template: `<dl mkFacts [items]="items" style="max-width: 560px"><div mkFactRow term="Statistics"><span>1,322 calls over 7 days <a href="#/usage">Usage details</a></span></div></dl>`,
+  }),
+};
+
+/** Row options: `sub` text, `mono` value and a `tone` on `mkFactRow`. */
+export const RowOptions: StoryObj = {
+  name: 'Row options (sub, mono, tone)',
+  render: () => ({
+    template: `
+      <dl mkFacts style="max-width:520px">
+        <div mkFactRow term="Endpoint" sub="Mock URL" [mono]="true" tone="success">/rest/API+Pastry/2.0.0</div>
+        <div mkFactRow term="Last sync" tone="muted">Never</div>
+      </dl>
+    `,
   }),
 };
 

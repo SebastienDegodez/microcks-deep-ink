@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { PanelComponent, PanelActionsDirective } from '@microcks-deep-ink/registry/angular/panel';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Panel',
+  argTypes: argTypesFor('panel', ['PanelComponent']),
   decorators: [moduleMetadata({ imports: [PanelComponent, PanelActionsDirective, ButtonDirective] })],
   parameters: itemParams(['panel', 'button'], "A `<section>` named by its heading through `aria-labelledby`. Pick `headingLevel` so the outline stays ordered."),
 };

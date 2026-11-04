@@ -18,6 +18,17 @@ export const Default: StoryObj = {
   ),
 };
 
+/** `size="sm"` for dense toolbars; `surface="bg"` on a field that sits on a panel. */
+export const Small: StoryObj = {
+  render: () => (
+    <div className="sb-col" style={{ maxWidth: 360 }}>
+      <Input size="sm" aria-label="Filter, small" placeholder="Small input" />
+      <Input surface="bg" aria-label="Filter, page background" placeholder="Background surface" />
+      <Textarea size="sm" surface="bg" aria-label="Notes, small" placeholder="Small textarea" rows={3} />
+    </div>
+  ),
+};
+
 export const Mono: StoryObj = {
   render: () => (
     <div className="stack" style={{ maxWidth: 420 }}>

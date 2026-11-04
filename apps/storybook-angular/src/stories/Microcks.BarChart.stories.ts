@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { BarChartComponent } from '@microcks-deep-ink/registry/angular/bar-chart';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/BarChart',
+  argTypes: argTypesFor('bar-chart', ['BarChartComponent']),
   decorators: [moduleMetadata({ imports: [BarChartComponent] })],
   parameters: itemParams(['bar-chart'], 'Selectable bar chart: one button per bar with a full label, one tab stop and arrow keys; axes and labels are hidden, and a visually hidden table is the text equivalent.'),
 };

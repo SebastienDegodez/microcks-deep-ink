@@ -9,10 +9,11 @@ import { DescriptionListComponent } from '@microcks-deep-ink/registry/angular/de
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
 import { MockUrlComponent } from '@microcks-deep-ink/registry/angular/mock-url';
 import { CONFORMANCE, MOCK_BASE, OPERATIONS, SERVICE_TABS } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Patterns/Service page',
+  argTypes: argTypesFor('panel', ['PanelComponent']),
   decorators: [moduleMetadata({ imports: [PanelComponent, PanelActionsDirective, TabsComponent, TabPanelComponent, ApiBadgeComponent, ConformanceBandComponent, OperationListDirective, OperationRowComponent, StatusBadgeComponent, DescriptionListComponent, ButtonDirective, MockUrlComponent] })],
   parameters: itemParams(['panel', 'tabs', 'api-badge', 'conformance-band', 'operation-row', 'status-badge', 'description-list', 'button'], "A service detail page built only from registry items: proof badges and conformance in the header, tabs for the sections, the operation list with the mock URL of the selected one.", { layout: 'padded' }),
 };

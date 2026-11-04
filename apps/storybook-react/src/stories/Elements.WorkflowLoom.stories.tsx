@@ -6,8 +6,9 @@ import { detailOf, itemParams } from './_meta';
 
 export default {
   title: 'Elements/WorkflowLoom',
+  component: WorkflowLoom,
   parameters: itemParams(['workflow-loom', 'step-status'], 'Draws an Arazzo workflow: one lane per source, steps placed by `dependsOn` depth, threads for data, and only two action kinds, **retry** and **end** (no goto). Steps are buttons you move between with the arrow keys; **Show as table** swaps the drawing for an equivalent table. `<workflow-loom>` is a Web Component: the item copies a self-contained bundle plus a thin wrapper.', { layout: 'padded' }),
-} satisfies Meta;
+} satisfies Meta<typeof WorkflowLoom>;
 
 function Loom({ scenario, selected, tableToggle }: { scenario: LoomScenario; selected?: string; tableToggle?: boolean }) {
   const [step, setStep] = useState<string | undefined>(selected);
@@ -86,6 +87,11 @@ export const NotLinked: StoryObj = {
       }}
     />
   ),
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof WorkflowLoom> = {
+  args: { ...LOOM_RESTOCK_RUN14, selectedStep: 'patchPastry', tableToggle: true },
 };
 
 /** Same scenario as the Angular `Run14` story. */

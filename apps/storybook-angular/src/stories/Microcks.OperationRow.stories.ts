@@ -1,10 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { OperationListDirective, OperationRowComponent } from '@microcks-deep-ink/registry/angular/operation-row';
 import { OPERATIONS } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/OperationRow',
+  argTypes: argTypesFor('operation-row', ['OperationListDirective', 'OperationRowComponent']),
   decorators: [moduleMetadata({ imports: [OperationListDirective, OperationRowComponent] })],
   parameters: itemParams(['operation-row', 'method-tag', 'mock-url'], "A list of operations. Each row is a link or a button (never a clickable `<div>`); the selected row has `aria-current=\"true\"` and reveals its mock URL."),
 };
@@ -21,6 +22,19 @@ export const Default: StoryObj = {
           }
         </ul>
       </div>
+    `,
+  }),
+};
+
+/** `protocol` colours the method tag and `mockUrl` shows the mock endpoint under the path. */
+export const ProtocolAndMockUrl: StoryObj = {
+  name: 'Protocol and mock URL',
+  render: () => ({
+    template: `
+      <ul mkOperationList label="Operations of Pastry orders">
+        <li mkOperationRow method="SUBSCRIBE" protocol="EVENT" path="pastry/orders" meta="1 message" mockUrl="kafka://localhost:9092/pastry-orders"></li>
+        <li mkOperationRow method="GET" path="/pastries" meta="3 examples" mockUrl="http://localhost:8080/rest/API+Pastry/2.0.0/pastries"></li>
+      </ul>
     `,
   }),
 };

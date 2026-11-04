@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { MenuComponent } from '@microcks-deep-ink/registry/angular/menu';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Menu',
+  argTypes: argTypesFor('menu', ['MenuComponent']),
   decorators: [moduleMetadata({ imports: [MenuComponent] })],
   parameters: itemParams(['menu', 'button'], "A disclosure menu on the native `popover` attribute: the trigger is a button with `aria-expanded`, Escape and click outside close it natively. It is not an ARIA `role=\"menu\"` application menu."),
 };
@@ -22,6 +23,15 @@ export const Default: StoryObj = {
     template: `
 <mk-menu label="Actions" [items]="items" />
     `,
+  }),
+};
+
+/** `align="end"` opens the list towards the start of the page, for a menu at the right edge. */
+export const AlignEnd: StoryObj = {
+  name: 'Aligned to the end',
+  render: () => ({
+    props: { items: [{ id: 'edit', label: 'Edit' }, { id: 'delete', label: 'Delete', danger: true, separatorBefore: true }] },
+    template: `<div style="display:flex;justify-content:flex-end;min-height:180px"><mk-menu label="Actions" align="end" [items]="items" /></div>`,
   }),
 };
 

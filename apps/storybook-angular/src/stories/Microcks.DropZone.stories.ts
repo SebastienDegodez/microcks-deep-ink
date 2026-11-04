@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { DropZoneComponent } from '@microcks-deep-ink/registry/angular/drop-zone';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/DropZone',
+  argTypes: argTypesFor('drop-zone', ['DropZoneComponent']),
   decorators: [moduleMetadata({ imports: [DropZoneComponent] })],
   parameters: itemParams(['drop-zone', 'button', 'icon'], "Drag and drop is an enhancement. The zone holds a real `<input type=\"file\">` and a visible \"Choose files\" button, so keyboard and screen reader users upload the same way. A live region announces \"2 files ready\"."),
 };

@@ -1,9 +1,10 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { SelectDirective } from '@microcks-deep-ink/registry/angular/select';
-import { itemParams } from './_meta';
+import { argTypesFor, itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Select',
+  argTypes: argTypesFor('select', ['SelectDirective']),
   decorators: [moduleMetadata({ imports: [SelectDirective] })],
   parameters: itemParams(['select'], "The native `<select>`: the browser keeps keyboard, typeahead and the mobile picker."),
 };

@@ -4,7 +4,8 @@ import { stoppedStep } from '@/domain/arazzo';
 import { PageHeader, useQuery, useUseCases, usePageTitle } from '@/ui/app';
 import { Callout } from '@/ui/components/ui/callout';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
-import { ErrorBlock, LoadingBlock, WORKFLOW_TABS, isWorkflowTab, workflowPath, type WorkflowTab } from '../workflows/shared';
+import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
+import { WORKFLOW_TABS, isWorkflowTab, workflowPath, type WorkflowTab } from '../workflows/shared';
 import '../workflows/workflows.css';
 import './workflow.css';
 import { LastRunNote, WorkflowHeader } from './WorkflowHeader';
@@ -59,7 +60,7 @@ export default function WorkflowPage() {
     return (
       <>
         <PageHeader title={workflowId} />
-        <LoadingBlock label="Loading the workflow" rows={5} />
+        <LoadingBlock label="the workflow" rows={5} />
       </>
     );
   }
@@ -131,7 +132,7 @@ export default function WorkflowPage() {
           ) : sessions.data ? (
             <SessionsTab detail={detail.data} sessions={sessions.data} runs={runList} />
           ) : (
-            <LoadingBlock label="Loading the sessions" />
+            <LoadingBlock label="the sessions" rows={3} />
           )}
         </TabPanel>
         <TabPanel id="examples" value={tab}>
@@ -140,7 +141,7 @@ export default function WorkflowPage() {
           ) : examples.data ? (
             <ExamplesTab detail={detail.data} runs={runList} examples={examples.data} serviceLabel={serviceLabel} />
           ) : (
-            <LoadingBlock label="Loading the examples" />
+            <LoadingBlock label="the examples" rows={3} />
           )}
         </TabPanel>
         <TabPanel id="runs" value={tab}>
