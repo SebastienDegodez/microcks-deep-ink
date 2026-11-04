@@ -14,6 +14,15 @@
   .live[data-size="sm"] { gap: 6px; padding: 2px 8px; font-size: 11px; }
   /* Inline: no pill, just the dot and the word (KPI cards). */
   .live[data-variant="inline"] { gap: 6px; padding: 0; border: 0; font-size: 11px; }
+  /* Box: a dashed control-sized frame that stands in for a button while a job runs (Hub Install). md 36px, lg 44px. */
+  .live[data-variant="box"] {
+    box-sizing: border-box;
+    min-height: 36px;
+    padding: 0 12px;
+    border-style: dashed;
+    border-radius: var(--radius-control);
+  }
+  .live[data-variant="box"][data-size="lg"] { min-height: 44px; padding: 0 14px; font-size: 13px; }
   .live-dot {
     flex: none;
     width: 8px;

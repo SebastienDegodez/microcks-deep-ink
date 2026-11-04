@@ -40,3 +40,23 @@ export const Catalogue: StoryObj = {
     `,
   }),
 };
+
+export const PageSearch: StoryObj = {
+  name: 'Page search and category pills (Hub)',
+  render: () => ({
+    props: { q: '', cat: 'All', cats: [['All', 8], ['Samples', 3], ['Banking', 1], ['Retail', 2]] },
+    template: `
+      <div class="stack">
+        <div class="inline">
+          <mk-filter-search size="lg" label="Search packages and APIs" placeholder="Search packages, APIs, protocols…" [(value)]="q" />
+          <span style="font-size: 13px; color: var(--text-muted)">8 packages · 22 APIs</span>
+        </div>
+        <div class="inline" role="group" aria-label="Categories">
+          @for (c of cats; track c[0]) {
+            <button mkChip size="lg" [count]="c[1]" [pressed]="cat === c[0]" (click)="cat = c[0]">{{ c[0] }}</button>
+          }
+        </div>
+      </div>
+    `,
+  }),
+};

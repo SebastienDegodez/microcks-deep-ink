@@ -45,7 +45,7 @@ export function SkillList({ label, skills, selectedId, onSelectSkill, className,
           ) : null;
         const result = s.result ? (
           <span className="skill-item-result" data-result={s.result}>
-            <Icon name={s.result === 'pass' ? 'check' : 'cross'} size={12} />
+            <Icon name={s.result === 'pass' ? 'check-circle' : 'x-circle'} size={12} />
             {s.result === 'pass' ? 'passed' : 'failed'}
             {s.resultNote ? <span className="sr-only">: {s.resultNote}</span> : null}
           </span>

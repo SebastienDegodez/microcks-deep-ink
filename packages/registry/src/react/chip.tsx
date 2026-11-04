@@ -10,8 +10,8 @@ interface ChipOwnProps {
   labelKey?: string;
   tone?: ChipTone;
   variant?: ChipVariant;
-  /** `sm`: 11px, padding 1px 8px (row labels). */
-  size?: 'md' | 'sm';
+  /** `sm`: 11px, padding 1px 8px (row labels). `lg`: a 30px category pill in the UI font, 600 when pressed. */
+  size?: 'md' | 'sm' | 'lg';
   /** Protocol filter: square corners and a colour swatch; pressed fills with the protocol colour. */
   protocol?: Protocol;
   /** Count after the text, read as "REST 4". A zero count dims the chip. */

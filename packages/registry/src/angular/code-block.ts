@@ -1,9 +1,10 @@
 import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';
 import { CopyButtonComponent } from './copy-button';
+import { IconComponent } from './icon';
 
 export interface CodeLine {
   text: string;
-  /** Marks the line with a visible ✕ and a visible note. */
+  /** Marks the line with a visible cross (11px icon) and a hidden "Problem: " prefix; add a `note`. */
   bad?: boolean;
   /** Inline note written after the text, on the same row ("schema: number"). */
   note?: string;
@@ -23,18 +24,20 @@ export interface CodeTab {
 
 /**
  * Code in a `<figure>`. The scroll container is focusable and named (WCAG 2.1.1). A bad line has a
- * visible ✕ marker and note, not color alone. Use `code` for plain text or `lines` for markers.
+ * visible cross marker and note, not color alone. Use `code` for plain text or `lines` for markers.
  * Keep the `<pre>` template on one line: whitespace inside `<pre>` is preserved.
  */
 @Component({
   selector: 'figure[mkCodeBlock]',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CopyButtonComponent],
+  imports: [CopyButtonComponent, IconComponent],
   host: {
     class: 'code',
     '[attr.data-language]': 'language() || null',
     '[attr.data-variant]': 'variant()',
     '[attr.data-numbered]': "lineNumbers() ? '' : null",
+    '[attr.data-gutter]': "lineNumbers() && gutter() === 'narrow' ? 'narrow' : null",
+    '[attr.data-tone]': 'tone() ?? null',
     '[attr.data-diff]': "diff() ? '' : null",
   },
   template: `
@@ -53,7 +56,7 @@ export interface CodeTab {
         }
       </figcaption>
     }
-    <pre tabindex="0" role="region" [attr.aria-label]="name()" [style.max-height]="maxHeight() ?? null"><code [class]="language() ? 'language-' + language() : ''">@if (rows(); as ls) {@for (line of ls; track $index) {<span class="code-line" [attr.data-bad]="line.bad ? '' : null" [attr.data-selected]="line.selected ? '' : null" [attr.data-changed]="line.changed ? '' : null">@if (lineNumbers()) {<span class="code-ln" aria-hidden="true">{{ startLine() + $index }}</span>}@if (diff()) {<span class="code-mark" data-kind="changed" aria-hidden="true">{{ line.changed ? '+' : '' }}</span>@if (line.changed) {<span class="sr-only">Changed: </span>}}@if (line.bad) {<span class="code-mark" aria-hidden="true">✕</span><span class="sr-only">Problem: </span>}<span class="code-text">{{ line.text }}</span>@if (line.note) {<span class="code-note">{{ line.note }}</span>}</span>}} @else {{{ code() }}}</code></pre>
+    <pre tabindex="0" role="region" [attr.aria-label]="name()" [style.max-height]="maxHeight() ?? null"><code [class]="language() ? 'language-' + language() : ''">@if (rows(); as ls) {@for (line of ls; track $index) {<span class="code-line" [attr.data-bad]="line.bad ? '' : null" [attr.data-selected]="line.selected ? '' : null" [attr.data-changed]="line.changed ? '' : null">@if (lineNumbers()) {<span class="code-ln" aria-hidden="true">{{ startLine() + $index }}</span>}@if (diff()) {<span class="code-mark" data-kind="changed" aria-hidden="true">{{ line.changed ? '+' : '' }}</span>@if (line.changed) {<span class="sr-only">Changed: </span>}}@if (line.bad) {<span class="code-mark" aria-hidden="true"><svg mkIcon name="close" [size]="11"></svg></span><span class="sr-only">Problem: </span>}<span class="code-text">{{ line.text }}</span>@if (line.note) {<span class="code-note">{{ line.note }}</span>}</span>}} @else {{{ code() }}}</code></pre>
   `,
 })
 export class CodeBlockComponent {
@@ -76,6 +79,10 @@ export class CodeBlockComponent {
   readonly lineNumbers = input(false, { transform: booleanAttribute });
   /** Number of the first line. */
   readonly startLine = input(1);
+  /** Line-number gutter: `wide` is 44px (default), `narrow` 28px with 6px before the marker column. */
+  readonly gutter = input<'wide' | 'narrow'>('wide');
+  /** `danger`: the frame in the danger colour (the whole block failed, e.g. a schema mismatch). */
+  readonly tone = input<'danger'>();
 
   protected readonly rows = computed<CodeLine[] | undefined>(() => {
     const ls = this.lines();

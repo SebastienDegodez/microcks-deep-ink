@@ -1,3 +1,4 @@
+import type { ServiceSummary } from '@/domain/shared';
 import type {
   AdminGroup,
   AdminUser,
@@ -25,6 +26,8 @@ export interface AdminRepository {
   saveMembers(groupId: string, members: string[]): Promise<AdminGroup>;
   requests(): Promise<MembershipRequest[]>;
   approveRequest(requestId: string): Promise<void>;
+  /** Services a snapshot can hold (agents are not exported), in the order of the export list. */
+  snapshotServices(): Promise<ServiceSummary[]>;
   snapshot(serviceIds: string[]): Promise<Snapshot>;
   /** What importing a snapshot file would do. */
   snapshotImportPreview(fileName: string): Promise<SnapshotImportPreviewItem[]>;

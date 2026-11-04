@@ -1,9 +1,10 @@
 import { useId, type HTMLAttributes } from 'react';
 import { CopyButton } from './copy-button';
+import { Icon } from './icon';
 
 export interface CodeLine {
   text: string;
-  /** Marks the line with a visible ✕ and a visible note. */
+  /** Marks the line with a visible cross (11px icon) and a hidden "Problem: " prefix; add a `note`. */
   bad?: boolean;
   /** Inline note written after the text, on the same row ("schema: number"). */
   note?: string;
@@ -41,6 +42,10 @@ export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLElement>, 'child
   lineNumbers?: boolean;
   /** Number of the first line. */
   startLine?: number;
+  /** Line-number gutter: `wide` is 44px (default), `narrow` 28px with 6px before the marker column. */
+  gutter?: 'wide' | 'narrow';
+  /** `danger`: the frame in the danger colour (the whole block failed, e.g. a schema mismatch). */
+  tone?: 'danger';
   maxHeight?: string | number;
 }
 
@@ -57,6 +62,8 @@ export function CodeBlock({
   tabsLabel = 'Format',
   lineNumbers,
   startLine = 1,
+  gutter = 'wide',
+  tone,
   maxHeight,
   className,
   ...rest
@@ -75,6 +82,8 @@ export function CodeBlock({
       data-language={language}
       data-variant={variant}
       data-numbered={lineNumbers ? '' : undefined}
+      data-gutter={lineNumbers && gutter === 'narrow' ? 'narrow' : undefined}
+      data-tone={tone}
       data-diff={diff ? '' : undefined}
     >
       {header ? (
@@ -116,7 +125,7 @@ export function CodeBlock({
                   {line.bad ? (
                     <>
                       <span className="code-mark" aria-hidden="true">
-                        ✕
+                        <Icon name="close" size={11} />
                       </span>
                       <span className="sr-only">Problem: </span>
                     </>
