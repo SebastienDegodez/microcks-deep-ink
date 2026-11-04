@@ -7,7 +7,7 @@ export default function ScreenMapPage() {
   usePageTitle('Screen map · Microcks');
   return (
     <>
-      <PageHeader title="From contract to proof" eyebrow="Screen map" />
+      <PageHeader title="From contract to proof" />
       <p>
         19 screens across 8 steps, delivered in 7 waves by priority:{' '}
         {WAVES.map((name, i) => `W${i + 1} ${name}`).join(', ')}.

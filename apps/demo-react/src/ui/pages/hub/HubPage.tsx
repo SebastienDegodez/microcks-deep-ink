@@ -30,7 +30,7 @@ export default function HubPage() {
 
   return (
     <>
-      <PageHeader title="Hub" eyebrow="Govern" />
+      <PageHeader title="Hub" />
       <div className="hb-grid">
         <Panel title="Packages" as="section">
           <div className="stack">

@@ -61,7 +61,7 @@ describe('every route renders a placeholder with one h1 and a document title', (
 });
 
 describe('shell accessibility', () => {
-  it('provides skip link, landmarks, live region and the DEMO marking on every page', async () => {
+  it('provides skip link, landmarks and live region on every page', async () => {
     renderAt('/services');
     await screen.findByRole('heading', { level: 1 });
     expect(screen.getByRole('link', { name: 'Skip to content' })).toBeTruthy();
@@ -69,8 +69,6 @@ describe('shell accessibility', () => {
     expect(screen.getByRole('navigation', { name: 'Main' })).toBeTruthy();
     expect(screen.getByRole('main').id).toBe('main');
     expect(screen.getByRole('main').getAttribute('tabindex')).toBe('-1');
-    expect(screen.getByRole('banner').textContent).toContain('DEMO');
-    expect(screen.getByRole('banner').textContent).toContain('in-memory data, nothing is saved');
     expect(screen.getByTestId('live-region').getAttribute('aria-live')).toBe('polite');
   });
 

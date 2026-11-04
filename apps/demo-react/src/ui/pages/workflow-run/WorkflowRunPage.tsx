@@ -1,5 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
-import { Link, useParams, useSearchParams } from 'react-router';
+import { useParams, useSearchParams } from 'react-router';
 import { callTotals, runHeadline, stepsTally, stoppedStep, verdictExplanation, type StepResult, type Workflow, type WorkflowRun } from '@/domain/arazzo';
 import { formatClock, formatDuration } from '@/domain/shared';
 import { PageHeader, useQuery, useRelativeTime, useSubscription, useUseCases, usePageTitle } from '@/ui/app';
@@ -39,7 +39,7 @@ export default function WorkflowRunPage() {
   if (!live && stored.status === 'error') {
     return (
       <>
-        <PageHeader title="Workflow run" eyebrow="Workflows" />
+        <PageHeader title="Workflow run" />
         <ErrorBlock error={stored.error} onRetry={stored.reload} title="This run could not be loaded" />
       </>
     );
@@ -47,7 +47,7 @@ export default function WorkflowRunPage() {
   if (!run) {
     return (
       <>
-        <PageHeader title="Workflow run" eyebrow="Workflows" />
+        <PageHeader title="Workflow run" />
         <LoadingBlock label="Loading the run" rows={5} />
       </>
     );
@@ -118,11 +118,7 @@ function RunView({
     <>
       <PageHeader
         title="Workflow run"
-        eyebrow={
-          <>
-            <Link to="/workflows">Workflows</Link> › <Link to={workflowPath(run.documentId, run.workflowId, 'runs')}>{run.workflowId} runs</Link> › Run #{run.number}
-          </>
-        }
+        breadcrumb={[{ label: 'Workflows', to: '/workflows' }, { label: `${run.workflowId} runs`, to: workflowPath(run.documentId, run.workflowId, 'runs') }, { label: `Run #${run.number}` }]}
         badge={<ApiBadge arazzo name={`${run.workflowId} · run #${run.number}`} />}
         actions={
           <>

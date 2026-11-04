@@ -3,14 +3,17 @@ import { Link, Outlet, useMatches, useNavigate } from 'react-router';
 import type { CommandItem as CatalogCommand } from '@/domain/catalog/types';
 import { AppShell, type ShellNavItem } from '@/ui/components/ui/app-shell';
 import { Button } from '@/ui/components/ui/button';
+import { Icon } from '@/ui/components/ui/icon';
 import { CommandBar, type CommandItem } from '@/ui/components/ui/command-bar';
 import { ThemeToggle } from '@/ui/components/ui/theme-toggle';
 import { useQuery } from './hooks';
 import { LiveAnnouncerProvider } from './announcer';
-import { DemoBanner } from './DemoBanner';
 import microcksLogo from './microcks-logo.svg';
 import { NAV_ITEMS, type RouteHandle } from './nav';
 import { useUseCases } from './UseCasesProvider';
+
+/** "⌘K" on Apple platforms, "Ctrl K" elsewhere. */
+const SHORTCUT = typeof navigator !== 'undefined' && /Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent) ? '⌘K' : 'Ctrl K';
 
 const NAV: ShellNavItem[] = NAV_ITEMS.map((item) => ({ id: item.id, label: item.label, href: item.to }));
 
@@ -22,7 +25,8 @@ function toCommandItem(c: CatalogCommand): CommandItem {
 
 /**
  * Application shell: the copied `app-shell` (skip link, banner, navigation, main landmark), the `theme-toggle`
- * and the `command-bar` (Ctrl/Cmd+K) items of the design system. The DEMO marking sits in the top bar of every page.
+ * and the `command-bar` (Ctrl/Cmd+K) items of the design system. Top bar: brand, the search
+ * button (centre), then Import a contract, the theme toggle and the avatar.
  *
  * Skip link: with a hash router `href="#main"` would navigate, so `app-shell` intercepts the click and moves
  * focus to `<main id="main" tabindex="-1">`.
@@ -64,13 +68,22 @@ export function AppLayout() {
         }
         nav={NAV}
         activeId={activeNav}
+        topbarCenter={
+          <button type="button" className="demo-search" aria-haspopup="dialog" onClick={() => setPaletteOpen(true)}>
+            <Icon name="search" size={16} />
+            <span className="demo-search-text">Search an API, an operation, a command…</span>
+            <kbd aria-hidden="true">{SHORTCUT}</kbd>
+          </button>
+        }
         topbarActions={
           <>
-            <DemoBanner />
-            <Button type="button" variant="ghost" aria-haspopup="dialog" onClick={() => setPaletteOpen(true)}>
-              Search <span aria-hidden="true">Ctrl K</span>
+            <Button asChild variant="primary" icon="arrow-down">
+              <Link to="/sources/new">Import a contract</Link>
             </Button>
             <ThemeToggle />
+            <span className="demo-avatar" role="img" aria-label="Signed in as MA">
+              MA
+            </span>
           </>
         }
         renderLink={(_item, props) => {

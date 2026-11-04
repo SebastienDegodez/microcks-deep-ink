@@ -121,7 +121,7 @@ export default function ImportPage() {
     <div className="ex-stack">
       <PageHeader
         title="Add a source"
-        eyebrow={<span role="group" aria-label="Breadcrumb"><RouterLink to="/sources">Sources</RouterLink> / <span aria-current="page">Add a source</span></span>}
+        breadcrumb={[{ label: 'Sources', to: '/sources' }, { label: 'Add a source' }]}
       />
       <p className="ex-secondary" style={{ margin: 0 }}>Upload a file once, or point Microcks to a URL or a Git repository it keeps in sync. You see what it understood before anything is created.</p>
       <ol className="ex-stepper" aria-label="Import progress">

@@ -88,7 +88,6 @@ export default function TestCreatePage() {
     <>
       <PageHeader
         title="Run a test"
-        eyebrow="Tests"
         actions={
           <Button asChild variant="ghost">
             <RouterLink to="/tests">All test runs</RouterLink>

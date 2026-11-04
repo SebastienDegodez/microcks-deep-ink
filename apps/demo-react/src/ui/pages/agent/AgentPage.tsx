@@ -56,7 +56,7 @@ export default function AgentPage() {
     <div className="ex-stack">
       <PageHeader
         title={`${a.name} ${a.version}`}
-        eyebrow={<span role="group" aria-label="Breadcrumb"><RouterLink to="/services">APIs &amp; Services</RouterLink> / <span aria-current="page">{a.name} {a.version}</span></span>}
+        breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${a.name} ${a.version}` }]}
         badge={<ApiBadge protocol="A2A" name={a.name} version={a.version} />}
         actions={
           <>

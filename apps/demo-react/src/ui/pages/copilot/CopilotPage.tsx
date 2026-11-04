@@ -148,7 +148,7 @@ export default function CopilotPage() {
     <div className="ex-stack">
       <PageHeader
         title="AI Copilot"
-        eyebrow={<span role="group" aria-label="Breadcrumb"><RouterLink to="/services">APIs &amp; Services</RouterLink> › <RouterLink to={`/services/${svc.id}`}>{svc.name} {svc.version}</RouterLink> › <span aria-current="page">AI Copilot</span></span>}
+        breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}`, to: `/services/${svc.id}` }, { label: 'AI Copilot' }]}
         badge={<span className="ex-row"><ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} size="sm" /><ApiBadge label="samples" value={String(svc.exampleCount ?? served.length)} size="sm" />{sum.pending > 0 ? <ApiBadge label="" value={`+${sum.pending} AI`} status="info" size="sm" /> : null}</span>}
       />
       {wf ? (

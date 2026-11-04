@@ -53,10 +53,10 @@
     "app-shell": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/app-shell.tsx": "9fe13cc0e39a6ccccc59b5cca12c0bba0623427aad436da3febdc90962752ce0",
-        "src/ui/styles/app-shell.css": "c59410d6ee4ad98b264c99516c64a11e51010c0ae7d79ccb059e83a177246cb1"
+        "src/ui/components/ui/app-shell.tsx": "27de620df02988b1bf8ac4dd347ad762ec9ec8b0d9eecf030d279c0e36d68812",
+        "src/ui/styles/app-shell.css": "34406402beb5826b559f96d5556380fde26987dcea10835f29f38aaad4ccdb38"
       },
-      "hash": "d7000649db22067c"
+      "hash": "717a0452a33172f1"
     },
     "callout": {
       "version": "0.2.0",
@@ -317,11 +317,11 @@
     "theme-toggle": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/theme-toggle.tsx": "5b1578f5b40ba934944255ee0d94a8f6110488d564f7a12ced8cc3625ba2ad7d",
+        "src/ui/components/ui/theme-toggle.tsx": "8c2bd2b74a64762ce797fbfc491e246db8706b438f2ef4da564bb8ac71e769c0",
         "src/ui/components/ui/theme-toggle.theme.ts": "c1635da4117952f5cb51b10aa43f125df18f87abc49efd9d81580509597f6b6c",
-        "src/ui/styles/theme-toggle.css": "44029bed6b18d209d601494585c4d712efc4e9e0e1503033640c03175a5fb8c9"
+        "src/ui/styles/theme-toggle.css": "1e96f4974898f34428e58bdb81a33e84e31fc08cbd192783f73bcc10754fff14"
       },
-      "hash": "fb929f08a685b748"
+      "hash": "612daed0a70b595b"
     },
     "workflow-loom": {
       "version": "0.2.0",

@@ -122,11 +122,7 @@ export default function BehaviorPage() {
     <div className="ex-stack">
       <PageHeader
         title={operation.path}
-        eyebrow={
-          <span role="group" aria-label="Breadcrumb">
-            <RouterLink to="/services">APIs &amp; Services</RouterLink> › <RouterLink to={`/services/${svc.id}`}>{svc.name} {svc.version}</RouterLink> › <span aria-current="page">{operation.method} {operation.path}</span>
-          </span>
-        }
+        breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}`, to: `/services/${svc.id}` }, { label: `${operation.method} ${operation.path}` }]}
         badge={<span className="ex-row"><MethodTag method={operation.method} protocol={svc.protocol} /><ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} size="sm" /></span>}
         actions={
           <>
