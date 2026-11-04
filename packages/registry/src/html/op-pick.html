@@ -1,0 +1,40 @@
+<!--
+  OpPick. Toggle mode (Service): a named <ul> of buttons with aria-pressed; update it on click.
+  Radio mode (Copilot): role="radiogroup" of buttons with role="radio" aria-checked, roving tabindex
+  (tabindex="0" on the checked one, -1 elsewhere), arrows move and select.
+  Keep a space between the parts so the button's name reads "GET /pastries List pastries…".
+  .op-pick-end holds an end figure (calls) with a hidden prefix, or a warning AI count (data-tone="warning").
+-->
+<ul class="op-pick-list" aria-label="Operations">
+  <li>
+    <button type="button" class="op-pick" aria-pressed="true">
+      <span class="method" data-method="GET" data-protocol="rest">GET</span>
+      <span class="op-pick-main">
+        <span class="op-pick-path">/pastries</span>
+        <span class="op-pick-summary">List pastries by size</span>
+        <span class="op-pick-meta">3 examples · +1 AI</span>
+      </span>
+      <span class="op-pick-end"><span class="sr-only">Calls over 7 days: </span>812</span>
+    </button>
+  </li>
+  <li>
+    <button type="button" class="op-pick" aria-pressed="false">
+      <span class="method" data-method="PATCH" data-protocol="rest">PATCH</span>
+      <span class="op-pick-main"><span class="op-pick-path">/pastries/{name}</span><span class="op-pick-summary">Update a pastry</span></span>
+      <span class="op-pick-end"><span class="sr-only">Calls over 7 days: </span>96</span>
+    </button>
+  </li>
+</ul>
+
+<h2 id="op-title" class="section-label">1 · Operation</h2>
+<div class="op-pick-list" role="radiogroup" aria-labelledby="op-title">
+  <button type="button" class="op-pick" role="radio" aria-checked="true" tabindex="0">
+    <span class="method" data-method="GET" data-protocol="rest">GET</span>
+    <span class="op-pick-main"><span class="op-pick-path">/pastries</span><span class="op-pick-summary">3 examples</span></span>
+    <span class="op-pick-end" data-tone="warning">+2 AI</span>
+  </button>
+  <button type="button" class="op-pick" role="radio" aria-checked="false" tabindex="-1">
+    <span class="method" data-method="GET" data-protocol="rest">GET</span>
+    <span class="op-pick-main"><span class="op-pick-path">/pastries/{name}</span><span class="op-pick-summary">2 examples</span></span>
+  </button>
+</div>
