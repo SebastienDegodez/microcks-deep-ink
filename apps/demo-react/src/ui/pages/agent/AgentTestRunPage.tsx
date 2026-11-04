@@ -33,13 +33,16 @@ import { ConformanceMatrix, type CheckResult, type MatrixGroup, type MatrixRow }
 import { CiPanel } from '@/ui/components/ui/ci-panel';
 import { Field } from '@/ui/components/ui/field';
 import { ProjectionPill } from '@/ui/components/ui/projection-pill';
+import { ResultBox } from '@/ui/components/ui/result-box';
 import { RunMeta } from '@/ui/components/ui/run-meta';
 import { Icon } from '@/ui/components/ui/icon';
 import { Input } from '@/ui/components/ui/input';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
 import { RunnerLog } from '@/ui/components/ui/runner-log';
+import { SectionLabel } from '@/ui/components/ui/section-label';
 import { Select } from '@/ui/components/ui/select';
+import { SummaryStrip } from '@/ui/components/ui/summary-strip';
 import { TaskLanes } from '@/ui/components/ui/task-timeline';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 
@@ -197,13 +200,9 @@ function resultAt(checks: AgentCheck[], tick: number, running: boolean, i: numbe
 
 function VerdictBox({ verdict }: { verdict: DetailVerdict }) {
   return (
-    <div className="verdict-box">
-      <Icon name="cross" size={15} />
-      <span>
-        <span className="verdict-box-title"><Coded text={verdict.title} /></span>
-        <span className="verdict-box-body"><Coded text={verdict.body} /></span>
-      </span>
-    </div>
+    <ResultBox tone="danger" icon="cross" bordered={false} surface="raised" live="off" title={<Coded text={verdict.title} />}>
+      <Coded text={verdict.body} />
+    </ResultBox>
   );
 }
 
@@ -238,7 +237,7 @@ function Detail({ detail, check, onClose }: { detail: AgentCheckDetail; check: A
       {detail.kind === 'lanes' ? (
         <>
           <div className="detail-block">
-            <h4 className="detail-block-title">Task lifecycle · expected versus actual</h4>
+            <SectionLabel as="h4" lineHeight="normal">Task lifecycle · expected versus actual</SectionLabel>
             <div className="lifecycle-box">
               <TaskLanes lanes={detail.lanes} />
               {detail.note ? (
@@ -248,7 +247,7 @@ function Detail({ detail, check, onClose }: { detail: AgentCheckDetail; check: A
           </div>
           {detail.verdict ? <VerdictBox verdict={detail.verdict} /> : null}
           <div className="detail-block">
-            <h4 className="detail-block-title">Raw HTTP exchange · {detail.exchanges.length} calls</h4>
+            <SectionLabel as="h4" lineHeight="normal">Raw HTTP exchange · {detail.exchanges.length} calls</SectionLabel>
             {detail.exchanges.map((x, i) => (
               <div key={i} className="exchange" data-highlight={x.highlight ? '' : undefined}>
                 <div className="exchange-head">
@@ -279,7 +278,7 @@ function Detail({ detail, check, onClose }: { detail: AgentCheckDetail; check: A
       {detail.kind === 'stream' ? (
         <>
           <div className="detail-block">
-            <h4 className="detail-block-title">Received stream · a2a.v1.A2AService/SendStreamingMessage</h4>
+            <SectionLabel as="h4" lineHeight="normal">Received stream · a2a.v1.A2AService/SendStreamingMessage</SectionLabel>
             <ol className="stream-events">
               {detail.events.map((e, i) => (
                 <li key={i} data-expected={e.expected ? '' : undefined} data-bad={e.mark === 'x' ? '' : undefined} data-kind={e.kind === 'request' ? 'request' : e.kind === 'stream closed' ? 'closed' : undefined}>
@@ -385,15 +384,15 @@ function Results({ run, phase, tick, conversationSubs, onStep, onReplay, onEdit 
 
   return (
     <>
-      <div className="setup-strip">
-        <span className="setup-strip-label">Setup</span>
+      <SummaryStrip variant="canvas" className="setup-strip">
+        <SectionLabel lineHeight="normal">Setup</SectionLabel>
         <span className="setup-strip-text">{transports.map((t) => AGENT_TRANSPORT_NAMES[t]).join(' · ')}</span>
         <span className="setup-strip-text">{conversations.length} {conversations.length === 1 ? 'conversation' : 'conversations'}</span>
         <span><span className="muted">secret</span> <span className="mono">{run.setup.secret || 'none'}</span></span>
         <span><span className="muted">timeout</span> <span className="mono">{run.setup.timeoutMs} ms</span></span>
         <span><span className="muted">text</span> <span className="mono">{run.setup.textMode}{run.setup.dataSchema ? ' + JSON Schema' : ''}</span></span>
         {!running ? <Button size="sm" icon="pencil" className="edit-setup" onClick={onEdit}>Edit setup</Button> : null}
-      </div>
+      </SummaryStrip>
       <div className="run-top">
         {running ? (
           <RunProgress
