@@ -9,7 +9,7 @@
     gap: var(--space-2);
     min-height: 40px;
     margin: 0;
-    padding: 0 16px;
+    padding: 0 14px;
     font: 500 14px/20px var(--font-ui);
     text-decoration: none;
     white-space: nowrap;
@@ -26,7 +26,8 @@
 
   .button[data-size="sm"] {
     min-height: 32px;
-    padding: 0 12px;
+    padding: 0 10px;
+    gap: 6px;
     font-size: 13px;
     line-height: 18px;
   }

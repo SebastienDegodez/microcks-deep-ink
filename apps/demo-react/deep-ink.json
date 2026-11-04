@@ -30,9 +30,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/button.tsx": "ddfccddd50affae23dffd421cb4fd8237596c16a5c135dc821b232c9d45dcbc5",
-        "src/ui/styles/button.css": "e8d4b0e898cd210435c4769b7ee1879858f7326d4dac084131467a01d4d6535d"
+        "src/ui/styles/button.css": "e9396382f7aec80cc866c590f32a8da1a25f34e762a9ef674dcf247e5a3e8829"
       },
-      "hash": "a11090f5e7d96f29"
+      "hash": "f9ce3e58789b0c5b"
     },
     "ai-ghost-row": {
       "version": "0.2.0",
