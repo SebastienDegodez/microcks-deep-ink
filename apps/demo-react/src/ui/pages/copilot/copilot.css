@@ -29,32 +29,32 @@
 /* Two columns: settings (300-380px), proposals */
 .copilot-layout { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
 .copilot-settings { flex: 1 1 300px; max-width: 380px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
-.copilot-section-label { margin: 0; font-size: 11px; font-weight: 600; line-height: 1.4; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
+.copilot-section-label { margin: 0; font-size: 11px; font-weight: 600; line-height: normal; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
 .copilot-op { display: flex; flex-direction: column; gap: 8px; }
 .copilot-op > .copilot-section-label { padding: 0 4px; }
 
 /* Operation picker cards */
 .op-pick-list { display: flex; flex-direction: column; gap: 6px; }
 .op-pick {
-  box-sizing: border-box; display: flex; align-items: center; gap: 10px; width: 100%; margin: 0; padding: 10px 12px;
+  box-sizing: border-box; line-height: normal; display: flex; align-items: center; gap: 10px; width: 100%; margin: 0; padding: 10px 12px;
   border: 1px solid var(--border); border-radius: 6px; background: var(--canvas); color: var(--text); font: inherit; text-align: start; cursor: pointer;
 }
 .op-pick:hover { border-color: var(--border-strong); }
 .op-pick[aria-checked="true"] { border-color: var(--action); background: var(--selected); }
 .op-pick > .method { flex: none; min-width: 48px; box-sizing: border-box; justify-content: center; text-align: center; }
 .op-pick-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.op-pick-path { font: 400 13px/1.3 var(--font-mono); overflow-wrap: break-word; }
-.op-pick-summary { font-size: 12px; line-height: 1.3; color: var(--text-muted); }
+.op-pick-path { font: 400 13px/normal var(--font-mono); overflow-wrap: break-word; }
+.op-pick-summary { font-size: 12px; line-height: normal; color: var(--text-muted); }
 .op-pick-end { flex: none; display: inline-flex; align-items: center; gap: 4px; font: 400 11px/1 var(--font-mono); color: var(--warning); }
 .op-pick-end[data-tone="success"] { color: var(--success); }
 
 /* Generation settings */
 .copilot-box { display: flex; flex-direction: column; gap: 14px; padding: 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); }
 .copilot-field { display: flex; flex-direction: column; gap: 6px; }
-.copilot-label { font-size: 14px; font-weight: 500; color: var(--text); }
+.copilot-label { font-size: 14px; line-height: normal; font-weight: 500; color: var(--text); }
 .copilot-optional { font-weight: 400; color: var(--text-muted); }
 .copilot-field textarea { font-size: 14px; line-height: 1.5; padding: 8px 10px; min-height: 0; }
-.copilot-help { font-size: 12px; line-height: 1.4; color: var(--text-muted); }
+.copilot-help { font-size: 12px; line-height: normal; color: var(--text-muted); }
 .copilot-count { display: flex; border: 1px solid var(--border-strong); border-radius: 4px; overflow: hidden; }
 .copilot-count > button {
   flex: 1; height: 36px; margin: 0; border: none; border-right: 1px solid var(--border); background: var(--surface);
@@ -63,10 +63,10 @@
 .copilot-count > button:last-child { border-right: none; }
 .copilot-count > button[aria-checked="true"] { background: var(--selected); color: var(--text); }
 .copilot-count > button:focus-visible { outline-offset: -2px; }
-.copilot-model { display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); }
+.copilot-model { line-height: normal; display: flex; flex-direction: column; gap: 4px; padding: 10px 12px; border-radius: 6px; background: var(--surface); border: 1px solid var(--border); }
 .copilot-model-label { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
 .copilot-model-name { font-size: 13px; color: var(--text); }
-.copilot-model-key { font: 400 11px/1.4 var(--font-mono); color: var(--text-muted); }
+.copilot-model-key { font: 400 11px/normal var(--font-mono); color: var(--text-muted); }
 .copilot-model a { font-size: 12px; color: var(--link); }
 .copilot-context { display: flex; flex-direction: column; gap: 4px; font-size: 12px; line-height: 1.5; color: var(--text-muted); }
 .copilot-context-title { font-weight: 600; color: var(--text-secondary); }
@@ -120,10 +120,10 @@
 .proposal[data-status="rejected"] .proposal-toggle { opacity: 0.6; }
 .proposal-code { flex: none; padding: 1px 5px; border: 1px solid var(--success); border-radius: 4px; font: 600 11px/1.4 var(--font-mono); color: var(--success); }
 .proposal-title { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
-.proposal-name { font-size: 14px; font-weight: 600; line-height: 1.4; }
+.proposal-name { font-size: 14px; font-weight: 600; line-height: normal; }
 .proposal[data-status="rejected"] .proposal-name { text-decoration: line-through; }
-.proposal-sub { font: 400 11px/1.3 var(--font-mono); color: var(--text-muted); overflow-wrap: anywhere; }
-.proposal-state { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; }
+.proposal-sub { font: 400 11px/normal var(--font-mono); color: var(--text-muted); overflow-wrap: anywhere; }
+.proposal-state { line-height: normal; display: inline-flex; align-items: center; gap: 6px; font-size: 12px; }
 .proposal-state[data-tone="warning"] { color: var(--warning); }
 .proposal-state[data-tone="success"] { gap: 8px; color: var(--success); }
 .proposal-state[data-tone="muted"] { color: var(--text-muted); }
@@ -161,7 +161,7 @@
 .proposal-edit-field { min-width: 0; display: flex; flex-direction: column; gap: 4px; }
 .proposal-edit-field[data-size="name"] { flex: 1 1 220px; }
 .proposal-edit-field[data-size="request"] { flex: 2 1 260px; }
-.proposal-edit-label { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
+.proposal-edit-label { font-size: 12px; line-height: normal; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
 .proposal-edit-field input { min-height: 36px; height: 36px; padding: 0 10px; font-size: 14px; }
 .proposal-edit-field textarea { min-height: 0; padding: 10px 12px; background: var(--bg); font: 400 12px/1.6 var(--font-mono); }
 .proposal-edit-request {

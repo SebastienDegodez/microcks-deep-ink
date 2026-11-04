@@ -120,6 +120,8 @@ export default function CopilotPage() {
     const key = op.id;
     const ticket = ++run.current;
     const kept = (byOp[key]?.items ?? []).filter((i) => i.status === 'accepted');
+    // As in the prototype: the accepted rows stay, pending and rejected ones go at once (Cancel does not bring them back).
+    setByOp((cur) => ({ ...cur, [key]: { phase: 'review', items: kept } }));
     setGenerating(key);
     setExportOpen(false);
     announce(`Generating ${exWord(count)}…`);
@@ -175,6 +177,23 @@ export default function CopilotPage() {
   const exported = uc.copilot.exportApiExamples({ name: svc.name, version: svc.version }, groups, 'yaml');
   const exportFile = `${svc.name.toLowerCase().replace(/\s+/g, '-')}-${svc.version}-examples.yaml`;
   const isGenerating = generating === op.id;
+  const rows = (
+            <div className="copilot-rows">
+              {state.items.map((item) => (
+                <ProposalRow
+                  key={item.example.id}
+                  item={item}
+                  op={op}
+                  target={target}
+                  served={served}
+                  onPatch={(fn) => patchItem(op.id, item.example.id, fn)}
+                  onAccept={(edited) => void accept(item, edited)}
+                  onReject={() => void reject(item)}
+                  onUndo={() => void undo(item)}
+                />
+              ))}
+            </div>
+  );
   const wf = ctx.data && !wfDismissed ? ctx.data : undefined;
   const aiBadge = sum.accepted ? `+${sum.accepted} AI` : sum.pending ? `+${sum.pending} AI pending` : undefined;
   const pendingNote = sum.accepted > 0 && sum.pending > 0 ? `${sum.pending} pending ${sum.pending === 1 ? 'proposal stays' : 'proposals stay'} here and are not added.` : undefined;
@@ -187,8 +206,8 @@ export default function CopilotPage() {
         leading={<Icon name="spark" size={26} className="copilot-title-icon" />}
         badge={
           <span className="copilot-badges">
-            <RouterLink to={`/services/${svc.id}`} className="copilot-badge-link"><ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} size="sm" /></RouterLink>
-            <ApiBadge label="samples" value={String(svc.exampleCount ?? served.length)} status="action" values={aiBadge ? [{ value: aiBadge, status: 'warning' }] : undefined} size="sm" />
+            <RouterLink to={`/services/${svc.id}`} className="copilot-badge-link"><ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} /></RouterLink>
+            <ApiBadge label="samples" value={String(svc.exampleCount ?? served.length)} status="action" values={aiBadge ? [{ value: aiBadge, status: 'warning' }] : undefined} />
           </span>
         }
         description="Generate request and response examples from the contract's schemas when the specification has too few. You review every proposal before it joins the Service."
@@ -298,7 +317,7 @@ export default function CopilotPage() {
               <h2 id="sec-proposals">Proposals</h2>
               <span className="copilot-op-key"><MethodTag method={op.method} protocol={svc.protocol} /><span className="copilot-op-path">{op.path}</span></span>
             </div>
-            {state.items.length > 0 && !isGenerating ? (
+            {state.items.length > 0 ? (
               <div className="copilot-bulk">
                 <Button size="sm" variant="link" onClick={() => void acceptAll()}>Accept all pending</Button>
                 <Button size="sm" variant="link" onClick={() => setItems(op.id, (items) => items.map((i) => ({ ...i, expanded: anyCollapsed })))}>{anyCollapsed ? 'Expand all' : 'Collapse all'}</Button>
@@ -307,6 +326,7 @@ export default function CopilotPage() {
           </div>
 
           {isGenerating ? (
+            <>
             <div role="status" className="copilot-generating">
               <p className="copilot-generating-line">
                 <span className="copilot-live"><span aria-hidden="true" className="copilot-live-dot" />live</span>
@@ -322,29 +342,15 @@ export default function CopilotPage() {
                 </div>
               ))}
             </div>
+            {state.items.length > 0 ? rows : null}
+            </>
           ) : state.items.length === 0 ? (
             <div className="copilot-empty">
               <Icon name="spark" size={22} />
               <h3>No proposal for this operation yet</h3>
               <p>Choose how many examples you want, add a hint if useful, then generate. Proposals appear here as ghost rows for review.</p>
             </div>
-          ) : (
-            <div className="copilot-rows">
-              {state.items.map((item) => (
-                <ProposalRow
-                  key={item.example.id}
-                  item={item}
-                  op={op}
-                  target={target}
-                  served={served}
-                  onPatch={(fn) => patchItem(op.id, item.example.id, fn)}
-                  onAccept={(edited) => void accept(item, edited)}
-                  onReject={() => void reject(item)}
-                  onUndo={() => void undo(item)}
-                />
-              ))}
-            </div>
-          )}
+          ) : rows}
 
           <div className="copilot-summary">
             <p className="copilot-counts" role="status">

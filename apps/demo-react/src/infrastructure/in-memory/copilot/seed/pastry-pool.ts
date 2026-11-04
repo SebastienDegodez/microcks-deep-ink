@@ -25,11 +25,11 @@ export const PASTRY_BOOK: Record<string, Pastry> = {
 
 const DEFAULT_ORDER = ['Tartelette Framboise', 'Paris-Brest', 'Kouign-amann', 'Galette des Rois', 'Bûche de Noël'];
 
-/** The pastry a hint names ("French pastry names, e.g. Tarte Tatin" names Tarte Tatin), if any. */
+/** The pastry a hint is exactly ("Tarte Tatin"); a descriptive hint keeps the default order, as in the prototype. */
 function hintedPastry(hint: string | undefined): string | undefined {
   const text = hint?.trim().toLowerCase();
   if (!text) return undefined;
-  return Object.keys(PASTRY_BOOK).find((name) => text.includes(name.toLowerCase()));
+  return Object.keys(PASTRY_BOOK).find((name) => text === name.toLowerCase());
 }
 
 const json = (value: unknown) => JSON.stringify(value, null, 2);

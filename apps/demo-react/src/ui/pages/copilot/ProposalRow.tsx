@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex -- the request and response blocks scroll, so they are focusable regions (WCAG 2.1.1) */
-import { useId } from 'react';
+import { useEffect, useId, useRef } from 'react';
 import { findCriteriaConflict, validateExampleDraft } from '@/domain/copilot';
 import type { Example, Operation } from '@/domain/shared';
 import { exampleUrlPath } from '@/domain/catalog';
@@ -38,6 +38,18 @@ function paramLines(op: Operation, params: Record<string, string>): string {
 export function ProposalRow({ item, op, target, served, onPatch, onAccept, onReject, onUndo }: ProposalRowProps) {
   const uid = useId();
   const e = item.example;
+  // The pressed button unmounts: focus moves to the control that replaces it (WCAG 2.4.3).
+  const focusNext = useRef<'undo' | 'accept' | 'name' | 'edit' | undefined>(undefined);
+  const undoRef = useRef<HTMLButtonElement>(null);
+  const acceptRef = useRef<HTMLButtonElement>(null);
+  const editRef = useRef<HTMLButtonElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
+  useEffect(() => {
+    const next = focusNext.current;
+    if (!next) return;
+    focusNext.current = undefined;
+    ({ undo: undoRef, accept: acceptRef, edit: editRef, name: nameRef })[next].current?.focus();
+  }, [item.status, item.editing]);
   const pending = item.status === 'pending';
   const rejected = item.status === 'rejected';
   const conflict = rejected ? undefined : findCriteriaConflict(e, served);
@@ -74,12 +86,12 @@ export function ProposalRow({ item, op, target, served, onPatch, onAccept, onRej
         <span className="proposal-actions">
           {pending && !item.editing ? (
             <>
-              <Button size="sm" variant="primary" onClick={() => onAccept(false)} aria-label={`Accept ${e.name}`}>Accept</Button>
-              <Button size="sm" onClick={() => onPatch((i) => ({ ...i, editing: true, expanded: true, draftName: i.example.name, draftBody: i.example.response.body }))} aria-label={`Edit ${e.name}`}>Edit</Button>
-              <Button size="sm" variant="link" onClick={onReject} aria-label={`Reject ${e.name}`}>Reject</Button>
+              <Button ref={acceptRef} size="sm" variant="primary" onClick={() => { focusNext.current = 'undo'; onAccept(false); }} aria-label={`Accept ${e.name}`}>Accept</Button>
+              <Button ref={editRef} size="sm" onClick={() => { focusNext.current = 'name'; onPatch((i) => ({ ...i, editing: true, expanded: true, draftName: i.example.name, draftBody: i.example.response.body })); }} aria-label={`Edit ${e.name}`}>Edit</Button>
+              <Button size="sm" variant="link" onClick={() => { focusNext.current = 'undo'; onReject(); }} aria-label={`Reject ${e.name}`}>Reject</Button>
             </>
           ) : null}
-          {!pending ? <Button size="sm" variant="link" onClick={onUndo} aria-label={`Undo for ${e.name}`}>Undo</Button> : null}
+          {!pending ? <Button ref={undoRef} size="sm" variant="link" onClick={() => { focusNext.current = 'accept'; onUndo(); }} aria-label={`Undo for ${e.name}`}>Undo</Button> : null}
         </span>
       </div>
 
@@ -110,7 +122,7 @@ export function ProposalRow({ item, op, target, served, onPatch, onAccept, onRej
           <div className="proposal-edit-row">
             <div className="proposal-edit-field" data-size="name">
               <label className="proposal-edit-label" htmlFor={`${uid}-name`}>Example name</label>
-              <Input id={`${uid}-name`} value={item.draftName} onChange={(ev) => onPatch((i) => ({ ...i, draftName: ev.target.value }))} />
+              <Input ref={nameRef} id={`${uid}-name`} value={item.draftName} onChange={(ev) => onPatch((i) => ({ ...i, draftName: ev.target.value }))} />
             </div>
             <div className="proposal-edit-field" data-size="request">
               <span className="proposal-edit-label" id={`${uid}-req`}>Request</span>
@@ -132,8 +144,8 @@ export function ProposalRow({ item, op, target, served, onPatch, onAccept, onRej
             {draftError ? <span id={`${uid}-err`} className="proposal-edit-error"><Icon name="cross" size={13} />{draftError}</span> : null}
           </div>
           <div className="proposal-edit-actions">
-            <Button size="sm" variant="primary" disabled={Boolean(draftError)} onClick={() => onAccept(true)}>Apply and accept</Button>
-            <Button size="sm" onClick={() => onPatch((i) => ({ ...i, editing: false, draftName: i.example.name, draftBody: i.example.response.body }))}>Cancel edit</Button>
+            <Button size="sm" variant="primary" disabled={Boolean(draftError)} onClick={() => { focusNext.current = 'undo'; onAccept(true); }}>Apply and accept</Button>
+            <Button size="sm" onClick={() => { focusNext.current = 'edit'; onPatch((i) => ({ ...i, editing: false, draftName: i.example.name, draftBody: i.example.response.body })); }}>Cancel edit</Button>
           </div>
         </div>
       ) : null}
