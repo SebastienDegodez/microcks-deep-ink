@@ -31,7 +31,7 @@ const SEED_SECRETS: SecretSummary[] = [
 const RECENT: RecentImport[] = [
   { id: 'r1', protocol: 'REST', name: 'API Pastry 2.0', at: '2026-11-03T07:10:00Z', via: 'Upload', status: 'imported', statusText: 'Imported', note: '3 Operations · 7 Examples' },
   { id: 'r2', protocol: 'EVENT', name: 'Pastry orders API 0.1.0', at: '2026-11-03T04:10:00Z', via: 'Git repository · scheduled', status: 'imported', statusText: 'Imported', note: 'AsyncAPI · SUBSCRIBE pastry/orders' },
-  { id: 'r3', protocol: 'gRPC', name: 'HelloService v1', at: '2026-11-02T10:00:00Z', via: 'URL', status: 'warning', statusText: 'Missing Examples', note: 'Protobuf only: add a secondary Artifact (Postman, APIExamples) for the responses.' },
+  { id: 'r3', protocol: 'gRPC', name: 'HelloService v1', at: '2026-11-02T08:00:00Z', via: 'URL', status: 'warning', statusText: 'Missing Examples', note: 'Protobuf only: add a secondary Artifact (Postman, APIExamples) for the responses.' },
 ];
 
 
@@ -192,7 +192,7 @@ export function createInMemoryImportingAdapters(deps: InMemoryDeps = {}): Import
         });
         return {
           serviceId: input.name.toLowerCase().replace(/\W+/g, '-'), name: input.name.trim(), version: input.version.trim(), operationCount: 1, outcome: 'direct',
-          protocol: event ? 'EVENT' : 'DIRECT', samples: event ? '1 payload' : 'dynamic', mcp: false, resource,
+          protocol: event ? 'EVENT' : 'DIRECT', samples: event ? '1 payload' : 'dynamic', mcp: !event, resource,
           mockLabel: endpoint.label, mockUrl: endpoint.value, tryIt: endpoint.tryIt,
         };
       }),
