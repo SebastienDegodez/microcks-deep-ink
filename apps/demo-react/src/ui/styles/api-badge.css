@@ -20,12 +20,16 @@
   .api-badge[data-protocol="a2a"] { --badge-proto: var(--proto-a2a); }
 
   .api-badge > span { display: inline-flex; align-items: center; padding: 4px 9px; }
+<<<<<<< HEAD
   .api-badge[data-size="md"] > .api-badge-type { padding-inline: 8px; }
   .api-badge[data-size="sm"] > span { padding: 2px 6px; font-size: 11px; }
   /* Card (badge wall): 13px, roomier segments, the version in the text colour, a long name ellipsed. */
   .api-badge[data-size="card"] > span { padding: 6px 10px; font-size: 13px; }
   .api-badge[data-size="card"] > .api-badge-version { color: var(--text); }
   .api-badge[data-size="card"] > .api-badge-name { display: block; flex: 0 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+=======
+  .api-badge[data-size="sm"] > span { padding: 2px 6px; font-size: 11px; line-height: 13px; }
+>>>>>>> 417a6e2 (api-badge: 19px sm badges (13px line-height))
   /* Page headers: the name is set in the brand font. lg sits beside an h1, xl is the h1 itself. */
   .api-badge[data-size="lg"] > .api-badge-type { padding: 0 9px; }
   .api-badge[data-size="lg"] > .api-badge-name,
