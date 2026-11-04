@@ -155,7 +155,8 @@ export function SourceTab({ detail, step, onSelectStep, serviceLabel }: SourceTa
     if (block && fold && block.id !== selected?.id) {
       const n = block.to - block.from;
       rows.push(
-        <button key={`f${i}`} type="button" className="wf-yaml-row wf-src-fold" onClick={() => pick(block)} aria-label={`Unfold step ${block.id}, lines ${block.from + 1} to ${block.to + 1}`}>
+        <button key={`f${i}`} type="button" className="wf-yaml-row wf-src-fold" onClick={() => pick(block)}>
+          <span className="sr-only">{`Unfold step ${block.id}, lines ${block.from + 1} to ${block.to + 1}: `}</span>
           <span aria-hidden="true" className="wf-src-n">
             {i + 1}
           </span>

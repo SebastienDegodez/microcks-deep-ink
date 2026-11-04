@@ -171,7 +171,7 @@ export function RunsTab({ detail, runs, sessions = [], initialFilter }: RunsTabP
                 const bandAlt = `Steps: ${workflow.steps.map((s, i) => `${i + 1} · ${s.stepId} · ${CELL[r.steps.find((x) => x.stepId === s.stepId)?.status ?? 'not-run'].word}`).join('; ')}`;
                 return (
                   <li key={r.id} className="wf-runs-item">
-                    <Link to={runPath(r.id)} className="wf-runs-row wf-runs-link" aria-label={`Run #${r.number}, ${word}, origin ${originWord(r)}, ${end}, ${when}. Open run.`}>
+                    <Link to={runPath(r.id)} className="wf-runs-row wf-runs-link">
                       <span data-col="run" className="wf-runs-id">
                         #{r.number}
                       </span>
@@ -208,6 +208,7 @@ export function RunsTab({ detail, runs, sessions = [], initialFilter }: RunsTabP
                       </span>
                       <span data-col="chev" className="wf-runs-chev">
                         <Icon name="chevron" size={14} />
+                        <span className="sr-only">Open run</span>
                       </span>
                     </Link>
                     <div className="wf-runs-note" data-tone={note.tone}>

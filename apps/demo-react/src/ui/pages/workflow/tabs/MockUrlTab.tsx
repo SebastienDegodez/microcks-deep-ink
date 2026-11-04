@@ -110,7 +110,7 @@ export function MockUrlTab({ detail, runs, onShowRuns }: { detail: WorkflowDetai
               <span className="wf-mu-box-title">
                 curl <span className="wf-mu-box-sub">· inputs of {firstExample ? `the example ${firstExample}` : 'the workflow examples'}</span>
               </span>
-              <Button size="sm" className="wf-mu-box-btn" aria-label={`Copy the curl of ${workflow.workflowId}`} onClick={() => copy('curl', data.curl)}>
+              <Button size="sm" className="wf-mu-box-btn" aria-label={`${copied === 'curl' ? 'Copied' : 'Copy curl'} of ${workflow.workflowId}`} onClick={() => copy('curl', data.curl)}>
                 {copied === 'curl' ? 'Copied' : 'Copy curl'}
               </Button>
             </div>
