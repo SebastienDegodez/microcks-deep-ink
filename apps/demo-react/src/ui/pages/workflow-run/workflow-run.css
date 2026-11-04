@@ -40,11 +40,8 @@
 .wfr-meta-file { font-size: 12px; text-decoration: none; }
 .wfr-meta-file:hover { text-decoration: underline; }
 .wfr-running { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; }
-.wfr-running-label { display: inline-flex; align-items: center; gap: 6px; font: 600 14px/1.3 var(--font-ui); color: var(--running); }
-@keyframes wfr-spin { to { transform: rotate(360deg); } }
 @keyframes wfr-pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.35; } }
-.wfr-spin { animation: wfr-spin 0.9s linear infinite; transform-origin: 50% 50%; }
-@media (prefers-reduced-motion: reduce) { .wfr-spin, .wfr-pulse-bar { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .wfr-pulse-bar { animation: none; } }
 
 /* Scenario bar (reviewers) */
 .wfr-scenarios { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; padding: 10px 12px; border: 1px dashed var(--border-strong); border-radius: 8px; }
@@ -209,7 +206,7 @@ button.wfr-step-head:focus-visible { outline: 2px solid var(--focus-ring); outli
 .wfr-step-status { flex: none; display: inline-flex; align-items: center; gap: 6px; font: 600 13px/1.3 var(--font-ui); color: var(--text-muted); }
 .wfr-step-status[data-look="pass"] { color: var(--success); }
 .wfr-step-status[data-look="fail"] { color: var(--danger); }
-.wfr-step-status[data-look="run"] { color: var(--running); }
+.wfr-step-run { flex: none; }
 .wfr-step-chevron { flex: none; color: var(--text-muted); transition: transform 0.15s ease; }
 button[aria-expanded="true"] > .wfr-step-chevron { transform: rotate(90deg); }
 .wfr-step-chevron-slot { flex: none; width: 16px; }
