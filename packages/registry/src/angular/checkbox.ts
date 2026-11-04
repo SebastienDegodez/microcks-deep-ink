@@ -10,7 +10,7 @@ const uid = (prefix: string) => `${prefix}-${++nextId}`;
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [':host { display: contents; }'],
   template: `
-    <label class="choice">
+    <label class="choice" [attr.data-variant]="variant()">
       <input
         type="checkbox"
         class="checkbox"
@@ -37,6 +37,8 @@ export class CheckboxComponent {
   readonly label = input.required<string>();
   /** Secondary text, linked with aria-describedby. */
   readonly description = input<string>();
+  /** `card`: a bordered card label, selected fill when checked. */
+  readonly variant = input<'plain' | 'card'>('plain');
   readonly checked = model(false);
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly required = input(false, { transform: booleanAttribute });
@@ -53,7 +55,7 @@ export class CheckboxComponent {
   changeDetection: ChangeDetectionStrategy.OnPush,
   styles: [':host { display: contents; }'],
   template: `
-    <label class="choice">
+    <label class="choice" [attr.data-variant]="variant()">
       <input
         type="radio"
         class="radio"
@@ -78,6 +80,8 @@ export class CheckboxComponent {
 export class RadioComponent {
   readonly label = input.required<string>();
   readonly description = input<string>();
+  /** `card`: a bordered card label, selected fill when checked. */
+  readonly variant = input<'plain' | 'card'>('plain');
   readonly checked = model(false);
   readonly disabled = input(false, { transform: booleanAttribute });
   readonly required = input(false, { transform: booleanAttribute });
@@ -108,6 +112,7 @@ export interface RadioOption {
     '[attr.aria-describedby]': 'describedBy()',
     '[attr.aria-invalid]': "error() ? 'true' : null",
     '[attr.data-invalid]': "error() ? '' : null",
+    '[attr.data-variant]': 'variant()',
   },
   template: `
     <legend>{{ legend() }}@if (required()) {<span class="required" aria-hidden="true"> *</span>}</legend>
@@ -117,6 +122,7 @@ export interface RadioOption {
         [value]="o.value"
         [label]="o.label"
         [description]="o.description"
+        [variant]="variant()"
         [disabled]="!!o.disabled"
         [required]="required()"
         [checked]="value() === o.value"
@@ -144,6 +150,8 @@ export class RadioGroupComponent {
   readonly required = input(false, { transform: booleanAttribute });
   readonly help = input<string>();
   readonly error = input<string>();
+  /** `card`: each option is a bordered card label. */
+  readonly variant = input<'plain' | 'card'>('plain');
 
   private readonly uid = uid('mk-radio-group');
   protected readonly helpId = `${this.uid}-help`;
