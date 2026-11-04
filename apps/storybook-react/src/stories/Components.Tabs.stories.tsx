@@ -6,8 +6,9 @@ import { itemParams } from './_meta';
 
 export default {
   title: 'Components/Tabs',
+  component: Tabs,
   parameters: itemParams(['tabs'], 'WAI-ARIA tabs. Use them to switch views of one page, not to navigate between pages. The count is read with the label ("Operations, 4").'),
-} satisfies Meta;
+} satisfies Meta<typeof Tabs>;
 
 function Demo({ activation }: { activation: 'automatic' | 'manual' }) {
   const [v, setV] = useState('operations');
@@ -86,6 +87,28 @@ export const CardWithIcons: StoryObj = {
           ))}
         </Tabs>
       </div>
+    );
+  },
+};
+
+/** Interactive: every prop of the component is a control in the Controls panel. */
+export const Playground: StoryObj<typeof Tabs> = {
+  args: {
+    label: 'Service sections', value: 'operations', activation: 'automatic', variant: 'line', idPrefix: 'pg',
+    items: [{ id: 'operations', label: 'Operations', count: 8 }, { id: 'tests', label: 'Tests', alert: 1, alertLabel: 'failing' }, { id: 'contract', label: 'Contract' }],
+  },
+  argTypes: {
+    activation: { control: 'inline-radio', options: ['automatic', 'manual'] },
+    variant: { control: 'inline-radio', options: ['line', 'card'] },
+    onChange: { table: { disable: true } },
+  },
+  render: (args) => {
+    const [value, setValue] = useState(args.value);
+    return (
+      <>
+        <Tabs {...args} value={value} onChange={setValue} />
+        {args.items.map((i) => <TabPanel key={i.id} id={i.id} value={value} idPrefix={args.idPrefix}><p>{i.label} panel</p></TabPanel>)}
+      </>
     );
   },
 };
