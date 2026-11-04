@@ -41,6 +41,7 @@ export const WarningDismissible: StoryObj = {
         </ResultBox>
       </div>
     ) : <Button onClick={() => setShown(true)}>Show the result again</Button>;
+  },
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
