@@ -413,9 +413,17 @@
         "src/ui/styles/runner-log.css": "6492310d27c28260304e63f2cd06e5e8f24e7d18617780ff70a280657b24b968"
       },
       "hash": "c0ceb32097c0e335"
+    },
+    "section-label": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/section-label.tsx": "28558ccba5b6074e608b9d61b3c1891bba6b50562607d0052ea38ce70bd3001f",
+        "src/ui/styles/section-label.css": "17215c6135327222fcb6f6c72591ca8c6821cfffe54b0bb71863665aea23264c"
+      },
+      "hash": "45dd753bd200c6b9"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "6a86eec7f18ebdfdf27ba42268f7c4a2545c829e514903c7e95642ae4854d7c5"
+    "src/ui/styles/index.css": "72826b4a4eb01789632b037a8539699dddf10537015287b80c82c42f449b0077"
   }
 }
