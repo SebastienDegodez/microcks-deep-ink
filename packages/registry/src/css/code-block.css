@@ -46,7 +46,7 @@
     font-weight: 600;
     box-shadow: inset 0 -2px 0 var(--action);
   }
-  .code-tabs > button:focus-visible { outline-offset: -2px; }
+  .code-tabs > button { --focus-offset: -2px; }
 
   /* Copy is the small link-style button (button variant="link"), 12px in the header. */
   .code > figcaption :is(.code-copy.button, .code-copy .button) { min-width: 0; margin-inline-start: auto; font-size: 12px; }

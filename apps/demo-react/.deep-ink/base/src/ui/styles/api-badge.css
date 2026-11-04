@@ -1,7 +1,7 @@
 /* Deep Ink · api-badge@0.2.0 · copied from packages/registry. You own this file. */
 @layer deep-ink.components {
   .api-badge {
-    --badge-proto: var(--proto-rest);
+    --badge-proto: var(--proto, var(--proto-rest));
     display: inline-flex;
     vertical-align: middle;
     max-width: 100%;
@@ -11,14 +11,6 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-badge);
   }
-  .api-badge[data-protocol="rest"] { --badge-proto: var(--proto-rest); }
-  .api-badge[data-protocol="soap"] { --badge-proto: var(--proto-soap); }
-  .api-badge[data-protocol="event"] { --badge-proto: var(--proto-event); }
-  .api-badge[data-protocol="grpc"] { --badge-proto: var(--proto-grpc); }
-  .api-badge[data-protocol="graphql"] { --badge-proto: var(--proto-graphql); }
-  .api-badge[data-protocol="direct"] { --badge-proto: var(--proto-direct); }
-  .api-badge[data-protocol="a2a"] { --badge-proto: var(--proto-a2a); }
-
   .api-badge > span { display: inline-flex; align-items: center; padding: 4px 9px; }
   .api-badge[data-size="md"] > .api-badge-type { padding-inline: 8px; }
   .api-badge[data-size="sm"] > span { padding: 2px 6px; font-size: 11px; line-height: 13px; }

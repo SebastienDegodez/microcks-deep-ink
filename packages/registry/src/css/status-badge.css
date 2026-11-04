@@ -22,9 +22,5 @@
   .status[data-status="running"] { --status-color: var(--running); }
   .status[data-status="never"] { --status-color: var(--text-muted); }
   .status > .icon { flex: none; }
-  .status[data-status="running"] > .icon { animation: status-spin 0.9s linear infinite; }
-  @keyframes status-spin { to { transform: rotate(360deg); } }
-  @media (prefers-reduced-motion: reduce) {
-    .status[data-status="running"] > .icon { animation: none; }
-  }
+  .status[data-status="running"] > .icon { animation: deep-ink-spin 0.9s linear infinite; }
 }

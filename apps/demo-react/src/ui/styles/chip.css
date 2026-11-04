@@ -101,7 +101,7 @@
 
   /* Protocol filter: square corners, a 9px swatch in the protocol colour, filled when pressed. */
   .chip[data-protocol] {
-    --chip-proto: var(--proto-rest);
+    --chip-proto: var(--proto, var(--proto-rest));
     gap: 8px;
     min-height: 30px;
     padding: 0 10px;
@@ -109,12 +109,6 @@
     color: var(--text);
     font-weight: 600;
   }
-  .chip[data-protocol="soap"] { --chip-proto: var(--proto-soap); }
-  .chip[data-protocol="event"] { --chip-proto: var(--proto-event); }
-  .chip[data-protocol="grpc"] { --chip-proto: var(--proto-grpc); }
-  .chip[data-protocol="graphql"] { --chip-proto: var(--proto-graphql); }
-  .chip[data-protocol="direct"] { --chip-proto: var(--proto-direct); }
-  .chip[data-protocol="a2a"] { --chip-proto: var(--proto-a2a); }
   .chip[data-protocol]::before {
     content: "";
     flex: none;

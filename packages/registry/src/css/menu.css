@@ -59,7 +59,5 @@
     cursor: not-allowed;
   }
   /* Keep the focus ring inside the rounded popover. */
-  .menu-item:focus-visible {
-    outline-offset: -2px;
-  }
+  .menu-item { --focus-offset: -2px; }
 }
