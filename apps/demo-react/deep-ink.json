@@ -381,9 +381,17 @@
         "src/ui/styles/tile.css": "4e39eb62b416295d7de11ace3555bce4842fcb3dc6f3053d02a037f43a891f54"
       },
       "hash": "2c3ba1dacad8b0ca"
+    },
+    "stat-card": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/stat-card.tsx": "ee00939604a72965f8ff998a8b8d85e698426348bcaafdef418578058b260c07",
+        "src/ui/styles/stat-card.css": "f262171b273ad3ec4628c13b8b8a75e0845c365f31f282a351b1b3f4b143edab"
+      },
+      "hash": "31b496118528abac"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "16212ac2b661733688ce6924191fa8ceee053a096d9b1717f62ee74881bf0655"
+    "src/ui/styles/index.css": "03e5aef93d536617ad19141874aae9a15e415a921c25eb9851b7a42c1bc51651"
   }
 }
