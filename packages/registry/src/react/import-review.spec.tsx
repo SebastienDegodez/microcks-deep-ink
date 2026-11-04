@@ -20,6 +20,8 @@ describe('Import review options', () => {
   it('method tag small size', () => {
     render(<MethodTag method="PATCH" size="sm" />);
     expect(screen.getByText('PATCH').getAttribute('data-size')).toBe('sm');
+    render(<MethodTag method="DELETE" size="xs" />);
+    expect(screen.getByText('DELETE').getAttribute('data-size')).toBe('xs');
   });
 
   it('keeps the empty drop-zone status as a live region, flagged empty', () => {

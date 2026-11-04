@@ -36,6 +36,8 @@
     { id: 'newPrice', from: 'patchPastry', expression: '$steps.patchPastry.outputs.newPrice', missing: true,
       drops: [{ to: '$outputs', label: 'newPrice', idle: true }] },
   ];
+  // Session runs draw their own checks: checks: [{ label: 'Call #3', state: 'pass' }, { label: 'Data passing', state: 'fail' }]
+  // (state: pass | fail | skip | idle). To return focus to a step after a dialog: await loom.focusStep('patchPastry').
   loom.addEventListener('mkStepSelect', (e) => console.log('selected', e.detail.stepId)); // undefined: cleared
   loom.addEventListener('mkLensSelect', (e) => console.log('lens', e.detail.id, e.detail.expression)); // undefined: cleared
 </script>

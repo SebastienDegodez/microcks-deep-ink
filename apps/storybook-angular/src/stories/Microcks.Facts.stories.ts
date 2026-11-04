@@ -69,3 +69,11 @@ export const SurfaceAndGap: StoryObj = {
     `,
   }),
 };
+
+export const LargeRows: StoryObj = {
+  name: 'Large rows (Service)',
+  render: () => ({
+    props: { items: [{ term: 'Version', value: '2.0', mono: true }, { term: 'Type', value: 'REST · OpenAPI 3.1' }, { term: 'Created', value: 'Oct 12, 2026' }] },
+    template: `<dl mkFacts size="lg" termWidth="150px" [items]="items" style="max-width: 560px"></dl>`,
+  }),
+};

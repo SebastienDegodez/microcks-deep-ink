@@ -52,8 +52,9 @@ describe('Arazzo screens', () => {
 
   it('Run page shows the failed run #14 with the link to test run 119', async () => {
     renderAt('/workflows/runs/6729a1d27e4c0b5f93a8c214');
-    expect(await screen.findByRole('heading', { level: 1, name: 'Workflow run' })).toBeTruthy();
-    expect(await screen.findByText(/Run #14 failed/)).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 1, name: 'Run #14' })).toBeTruthy();
+    expect(await screen.findByRole('heading', { level: 2, name: 'Run failed' })).toBeTruthy();
+    expect((await screen.findAllByText('Stops at patchPastry')).length).toBeGreaterThan(0);
     const link = await screen.findByRole('link', { name: /test run #119/ });
     expect(link.getAttribute('href')).toContain('/tests/runner/119');
   });

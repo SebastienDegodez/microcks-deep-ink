@@ -19,6 +19,7 @@ import { PageHeader, usePageTitle, useQuery, useSubscription, useUseCases } from
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
+import { FactRow, Facts } from '@/ui/components/ui/facts';
 import { Field } from '@/ui/components/ui/field';
 import { Icon } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
@@ -447,38 +448,26 @@ function CallDetail({ call: c, replayNote, onClose, onReplay }: { call: TraceCal
         </button>
       </div>
 
-      <dl className="tr2-facts">
-        <div>
-          <dt>Client</dt>
-          <dd className="demo-mono">
-            {c.clientName} · {c.clientIp}
-          </dd>
-        </div>
-        <div>
-          <dt>Dispatcher</dt>
-          <dd className="demo-mono">{c.dispatcher ?? 'n/a'}</dd>
-        </div>
-        <div>
-          <dt>Dispatch criteria</dt>
-          <dd className="demo-mono tr2-crit">{c.criteria ?? 'none'}</dd>
-        </div>
-        <div>
-          <dt>Matched example</dt>
-          <dd className="tr2-example-name" data-miss={miss ? '' : undefined}>
-            {c.exampleName ?? 'none'}
-          </dd>
-        </div>
-        <div>
-          <dt>Status · latency</dt>
-          <dd>
-            <StatusText call={c} withLatency />
-          </dd>
-        </div>
-        <div>
-          <dt>Trace id</dt>
-          <dd className="demo-mono tr2-trace-id">{traceIds(c.seq).traceId}</dd>
-        </div>
-      </dl>
+      <Facts layout="columns" columns={2} boxed="surface" gap="10px 16px" className="tr2-facts">
+        <FactRow term="Client" mono>
+          {c.clientName} · {c.clientIp}
+        </FactRow>
+        <FactRow term="Dispatcher" mono>
+          {c.dispatcher ?? 'n/a'}
+        </FactRow>
+        <FactRow term="Dispatch criteria" mono tone="warning">
+          {c.criteria ?? 'none'}
+        </FactRow>
+        <FactRow term="Matched example" tone={miss ? 'warning' : undefined}>
+          <span className="tr2-example-name">{c.exampleName ?? 'none'}</span>
+        </FactRow>
+        <FactRow term="Status · latency">
+          <StatusText call={c} withLatency />
+        </FactRow>
+        <FactRow term="Trace id" mono tone="muted">
+          <span className="tr2-trace-id">{traceIds(c.seq).traceId}</span>
+        </FactRow>
+      </Facts>
 
       {c.baggage ? (
         <div role="note" aria-label="Arazzo run of this call" className="tr2-note">

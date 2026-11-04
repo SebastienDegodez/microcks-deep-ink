@@ -12,6 +12,9 @@ const secrets: SecretRepository = {
   create: async () => {
     throw new Error('not used');
   },
+  update: async () => {
+    throw new Error('not used');
+  },
   remove: async () => undefined,
 };
 

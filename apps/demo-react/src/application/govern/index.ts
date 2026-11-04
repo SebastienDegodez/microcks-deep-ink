@@ -13,7 +13,7 @@ import type { SecretSummary, ServiceSummary } from '@/domain/shared';
 import { validateSecretForm } from '@/domain/govern';
 import { NotFoundError, ValidationError } from '@/application/shared';
 import type { AdminRepository, HubRepository } from '@/application/ports/govern';
-import type { SecretRepository } from '@/application/ports/importing';
+import type { SecretInput, SecretRepository } from '@/application/ports/importing';
 
 export type GovernPorts = { hub: HubRepository; admin: AdminRepository; secrets: SecretRepository };
 
@@ -33,7 +33,9 @@ export interface GovernUseCases {
   listRequests(): Promise<MembershipRequest[]>;
   approveRequest(requestId: string): Promise<void>;
   listSecrets(): Promise<SecretSummary[]>;
-  createSecret(input: { name: string; kind: SecretSummary['kind']; description?: string; value: string }): Promise<SecretSummary>;
+  createSecret(input: SecretInput): Promise<SecretSummary>;
+  /** Throws `NotFoundError`. An empty `value` keeps the stored credential. */
+  updateSecret(id: string, input: Omit<SecretInput, 'name'>): Promise<SecretSummary>;
   deleteSecret(id: string): Promise<void>;
   /** Services a snapshot can hold, in the order of the export list. */
   listSnapshotServices(): Promise<ServiceSummary[]>;
@@ -75,6 +77,10 @@ export function createGovernUseCases({ hub, admin, secrets }: GovernPorts): Gove
       const first = Object.values(errors)[0];
       if (first) throw new ValidationError(first);
       return secrets.create(input);
+    },
+    updateSecret: async (id, input) => {
+      if (!(await secrets.list()).some((x) => x.id === id)) throw new NotFoundError('Secret', id);
+      return secrets.update(id, input);
     },
     deleteSecret: (id) => secrets.remove(id),
     listSnapshotServices: () => admin.snapshotServices(),

@@ -65,7 +65,7 @@ export function createRunner(state: ArazzoState, clock: Clock): WorkflowRunner {
         return runId;
       }),
     watch: (runId) => {
-      const run = state.runs.find((r) => r.id === runId);
+      const run = state.runs.find((r) => r.id === runId) ?? scenarioRun(runId);
       const frames: WorkflowRun[] = run ? runFrames(run) : [];
       return (listener) =>
         createSequenceStream(frames, { immediate: true, intervalMs: isFastMode() ? 1 : TICK_MS })(listener);
