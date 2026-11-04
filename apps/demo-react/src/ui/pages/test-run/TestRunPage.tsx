@@ -18,7 +18,8 @@ import { ConformanceBand, type OperationResult } from '@/ui/components/ui/confor
 import { CiPanel } from '@/ui/components/ui/ci-panel';
 import { TEST_RESULT_WORD } from '@/ui/app/outcomes';
 import { useReplay } from '@/ui/app/use-replay';
-import { Icon, type IconName } from '@/ui/components/ui/icon';
+import { Icon } from '@/ui/components/ui/icon';
+import { StatusBadge, type Outcome } from '@/ui/components/ui/status-badge';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
@@ -33,11 +34,11 @@ const STEP_MS = 1300;
 const LIVE_START = 3;
 
 type StepState = 'pass' | 'fail' | 'run' | 'pend';
-const LOOK: Record<StepState, { word: string; icon: IconName }> = {
-  pass: { word: 'Passed', icon: 'check' },
-  fail: { word: 'Failed', icon: 'cross' },
-  run: { word: 'Running', icon: 'running' },
-  pend: { word: 'Queued', icon: 'circle' },
+const LOOK: Record<StepState, { word: string; status: Outcome }> = {
+  pass: { word: 'Passed', status: 'conformant' },
+  fail: { word: 'Failed', status: 'failed' },
+  run: { word: 'Running', status: 'running' },
+  pend: { word: 'Queued', status: 'never' },
 };
 const SEGMENT: Record<StepState, RunSegment> = { pass: 'done', fail: 'failed', run: 'current', pend: 'queued' };
 
@@ -198,10 +199,7 @@ function RunView({ base }: { base: TestRun }) {
       {running ? (
         <>
           <LiveIndicator />
-          <span className="tr-running">
-            <Icon name="running" size={15} className="tr-spin" />
-            Running · step {Math.min(tick + 1, total)} of {total}
-          </span>
+          <StatusBadge shape="bare" status="running" label={`Running · step ${Math.min(tick + 1, total)} of ${total}`} />
         </>
       ) : (
         <ApiBadge label="result" value={TEST_RESULT_WORD[base.result].toLowerCase()} status={base.result === 'passed' ? 'success' : base.result === 'failed' ? 'danger' : 'warning'} />
@@ -415,10 +413,7 @@ function RunView({ base }: { base: TestRun }) {
                     <span key={i} data-state={states[i]} />
                   ))}
                 </span>
-                <span className="tr-state" data-state={opState}>
-                  <Icon name={LOOK[opState].icon} size={14} className={opState === 'run' ? 'tr-spin' : undefined} />
-                  {LOOK[opState].word}
-                </span>
+                <StatusBadge shape="bare" status={LOOK[opState].status} label={LOOK[opState].word} className="tr-state" />
                 <span className="tr-op-ms">{fin.length ? `${ms} ms` : '—'}</span>
               </div>
 
@@ -452,10 +447,7 @@ function RunView({ base }: { base: TestRun }) {
                         {isFin ? (step.httpStatus ?? 200) : '—'}
                       </span>
                       <span className="tr-step-ms">{isFin ? `${step.ms} ms` : '—'}</span>
-                      <span className="tr-state" data-state={st}>
-                        <Icon name={LOOK[st].icon} size={14} className={st === 'run' ? 'tr-spin' : undefined} />
-                        {LOOK[st].word}
-                      </span>
+                      <StatusBadge shape="bare" status={LOOK[st].status} label={LOOK[st].word} className="tr-state" />
                       <span className="tr-step-chevron" aria-hidden="true">
                         {isFin ? <Icon name="chevron" size={16} /> : null}
                       </span>

@@ -8,10 +8,11 @@ storybook-static/
 *.log
 .DS_Store
 packages/core/src/components.d.ts
-packages/registry/src/react/elements/
+react/packages/deep-ink/src/elements/
 packages/registry/src/angular/elements/
 a11y-report/
 /site/
 .ngc/
 tools/a11y/dist/
 *.tsbuildinfo
+react/apps/storybook/.storybook/copy-panel/exports.generated.json

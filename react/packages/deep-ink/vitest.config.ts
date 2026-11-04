@@ -1,0 +1,12 @@
+import { defineConfig } from 'vitest/config';
+
+export default defineConfig({
+  oxc: { jsx: { runtime: 'automatic' } },
+  test: {
+    environment: 'jsdom',
+    include: ['src/**/*.spec.{ts,tsx}', 'test/**/*.test.ts'],
+    setupFiles: ['test/setup.ts'],
+    css: false,
+    restoreMocks: true,
+  },
+});

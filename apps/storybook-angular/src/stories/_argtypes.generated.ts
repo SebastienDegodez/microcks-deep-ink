@@ -179,13 +179,13 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
     ] },
   ],
   "command-bar": [
-    { className: "CommandBarDirective", selector: "command-bar", inputs: [
+    { className: "CommandBarComponent", selector: "mk-command-bar", inputs: [
       {"name":"items","type":"CommandItem[]","control":"object","required":true,"model":false,"description":""},
-      {"name":"open","type":"boolean | undefined","control":"boolean","required":false,"default":"undefined","model":false,"description":"Modal mode: controls the dialog. Update your state from `closed`."},
+      {"name":"open","type":"boolean","control":"boolean","required":false,"default":"false","model":true,"description":"Modal mode, two-way: set to true to open. Ctrl/⌘K, Escape, the close button and a command change it too."},
       {"name":"inline","type":"boolean","control":"boolean","required":false,"default":"false","model":false,"description":"Render in place instead of in a dialog (docs, embedding)."},
-      {"name":"placeholder","type":"string | undefined","control":"text","required":false,"default":"undefined","model":false,"description":""},
-      {"name":"globalShortcut","type":"boolean | undefined","control":"boolean","required":false,"default":"undefined","model":false,"description":"Ctrl/⌘K opens the bar from anywhere. Default true."},
-      {"name":"label","type":"string | undefined","control":"text","required":false,"default":"undefined","model":false,"description":"Accessible name of the dialog and the search field. Default \"Command bar\"."},
+      {"name":"placeholder","type":"string","control":"text","required":false,"default":"'Jump to a service, or type an action…'","model":false,"description":""},
+      {"name":"globalShortcut","type":"boolean","control":"boolean","required":false,"default":"true","model":false,"description":"Ctrl/⌘K opens the bar from anywhere. Default true."},
+      {"name":"label","type":"string","control":"text","required":false,"default":"'Command bar'","model":false,"description":"Accessible name of the dialog and the search field. Default \"Command bar\"."},
     ] },
   ],
   "conformance-band": [

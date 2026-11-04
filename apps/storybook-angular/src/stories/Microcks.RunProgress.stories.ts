@@ -27,6 +27,21 @@ export const Running: StoryObj = {
   }),
 };
 
+/** Paused: the note is read before "Step forward" (it comes first in the DOM) and is still shown under the counts. */
+export const PausedNoteFirst: StoryObj = {
+  name: 'Paused (note read before the action)',
+  render: () => ({
+    props: { segments: ['done', 'done', 'current', 'queued'] },
+    template: `
+      <div style="max-width: 640px">
+        <section mkRunProgress [done]="2" [total]="4" caption="steps ended" nowLabel="Now calling" now="GET /pastries/Eclair%20Cafe" [segments]="segments" note="Paused: the replay waits. Step forward shows the next step.">
+          <button mkRunProgressAction mkButton size="sm" icon="chevron">Step forward</button>
+        </section>
+      </div>
+    `,
+  }),
+};
+
 /** A custom `label` for the progress bar and a `gap` between the segments. */
 export const LabelAndGap: StoryObj = {
   name: 'Label and gap',

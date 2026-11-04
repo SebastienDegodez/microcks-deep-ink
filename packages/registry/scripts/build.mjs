@@ -3,15 +3,16 @@
 //
 //   node scripts/build.mjs [--strict] [--quiet]
 //
-// Reads items/<name>.json, discovers source files by name (see README.md), validates
+// Reads items/<name>.json, discovers source files by name (see README.md; the React sources are in
+// react/packages/deep-ink/src), validates
 // everything and writes dist/registry.json, dist/registry.full.json and
 // dist/deep-ink-components.css. Only writes inside packages/registry.
 import { createHash } from 'node:crypto';
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { join, relative, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import Ajv from 'ajv';
-import { CORE_ELEMENTS, PKG_ROOT, syncElements } from './sync-elements.mjs';
+import { CORE_ELEMENTS, PKG_ROOT, sourceDir, syncElements } from './sync-elements.mjs';
 
 const TOKENS_DIST = resolve(PKG_ROOT, '..', 'tokens', 'dist');
 const FRAMEWORKS = ['react', 'angular'];
@@ -42,7 +43,7 @@ function readJson(path) {
 }
 
 function discover(root, framework, name, extra = []) {
-  const dir = join(root, 'src', framework);
+  const dir = sourceDir(root, framework);
   if (!existsSync(dir)) return [];
   const exts = EXT[framework].join('|');
   const re = new RegExp(`^${name}(\\.[a-z0-9-]+)*\\.(${exts})$`);
@@ -146,10 +147,11 @@ export function buildRegistry(options = {}) {
     };
     for (const fw of FRAMEWORKS) {
       const found = discover(root, fw, m.name, m.extraFiles?.[fw]);
-      for (const f of found) add(entry.files[fw], `src/${fw}/${f}`, f, f === `${m.name}.tsx` || f === `${m.name}.ts` ? 'component' : 'support');
+      const src = relative(root, sourceDir(root, fw));
+      for (const f of found) add(entry.files[fw], `${src}/${f}`, f, f === `${m.name}.tsx` || f === `${m.name}.ts` ? 'component' : 'support');
       for (const tag of m.elements ?? []) {
         for (const ext of ['js', 'd.ts']) {
-          const rel = `src/${fw}/elements/${tag}.${ext}`;
+          const rel = `${src}/elements/${tag}.${ext}`;
           if (existsSync(join(root, rel))) add(entry.files[fw], rel, `elements/${tag}.${ext}`, 'element');
         }
       }
@@ -194,12 +196,15 @@ export function buildRegistry(options = {}) {
 
   // Orphan sources (a file nobody claims) usually mean a typo in the name.
   for (const [dir, exts] of [['react', EXT.react], ['angular', EXT.angular], ['html', EXT.html], ['css', EXT.css]]) {
-    const abs = join(root, 'src', dir);
+    const abs = sourceDir(root, dir);
+    const src = relative(root, abs);
     if (!existsSync(abs)) continue;
     for (const d of readdirSync(abs, { withFileTypes: true })) {
       if (!d.isFile() || /\.(spec|stories)\./.test(d.name)) continue;
+      // The React package barrel (generated) is not a copyable file.
+      if (dir === 'react' && d.name === 'index.ts') continue;
       if (!exts.some((e) => d.name.endsWith('.' + e))) continue;
-      if (!claimed.has(`src/${dir}/${d.name}`)) warn(`src/${dir}/${d.name}: not owned by any item (name must start with an item name)`);
+      if (!claimed.has(`${src}/${d.name}`)) warn(`${src}/${d.name}: not owned by any item (name must start with an item name)`);
     }
   }
 

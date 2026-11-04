@@ -1,18 +1,79 @@
-<!-- CommandBar: Ctrl/⌘K. Combobox + listbox in a native modal dialog; Escape closes and focus returns to the opener. -->
-<script type="module" src="./elements/command-bar.js"></script>
+<!--
+  CommandBar recipe: Ctrl/⌘K. WAI-ARIA 1.2 combobox with a listbox in a native modal <dialog>.
+  dialog.showModal() traps focus; Escape closes; focus returns to the opener in the "close" event.
+  DOM focus stays in the input: aria-activedescendant points at the active option (aria-selected="true").
+  Script: filter the options on input, ArrowDown/ArrowUp/Home/End move the active option, Enter runs it,
+  and the polite status announces "3 results" or "No results". Group titles are visual only (aria-hidden).
+  Inline mode (docs, embedding): <div class="command-bar" data-inline role="group" aria-label="…"> around the panel.
+-->
+<button type="button" id="open-commands" class="button" aria-haspopup="dialog">Open command bar</button>
 
-<button type="button" id="open-commands" class="button">Open command bar</button>
-<command-bar id="commands" label="Command bar"></command-bar>
+<dialog class="command-bar" id="commands" aria-label="Command bar">
+  <div class="command-bar-panel">
+    <div class="command-bar-search">
+      <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+           stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+        <path d="M11 4a7 7 0 1 1 0 14a7 7 0 1 1 0-14" /><path d="M20 20l-3.5-3.5" />
+      </svg>
+      <label class="sr-only" for="commands-input">Command bar</label>
+      <input id="commands-input" class="command-bar-input" type="text" role="combobox" autocomplete="off"
+             aria-autocomplete="list" aria-expanded="true" aria-controls="commands-list"
+             aria-activedescendant="commands-o0" aria-keyshortcuts="Control+K Meta+K"
+             placeholder="Jump to a service, or type an action…" />
+      <kbd class="command-bar-kbd" aria-hidden="true">Ctrl K</kbd>
+      <button type="button" class="command-bar-close" aria-label="Close" data-close>
+        <svg class="icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+             stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">
+          <path d="M6 6l12 12M18 6L6 18" />
+        </svg>
+      </button>
+    </div>
+    <div class="command-bar-list" id="commands-list" role="listbox" aria-label="Command bar results">
+      <div class="command-bar-group" role="group" aria-label="Actions">
+        <div class="command-bar-group-title" aria-hidden="true">Actions</div>
+        <div class="command-bar-option" id="commands-o0" role="option" tabindex="-1" aria-selected="true">
+          <span class="command-bar-tag" data-kind="action">RUN</span>
+          <span>Run a test on API Pastry 2.0</span>
+          <span class="command-bar-hint" aria-hidden="true">Enter</span>
+        </div>
+      </div>
+      <div class="command-bar-group" role="group" aria-label="Services">
+        <div class="command-bar-group-title" aria-hidden="true">Services</div>
+        <div class="command-bar-option" id="commands-o1" role="option" tabindex="-1" aria-selected="false">
+          <span class="command-bar-tag" style="background: var(--proto-rest)">REST</span>
+          <span>Open API Pastry 2.0</span>
+          <span class="command-bar-hint" aria-hidden="true">service</span>
+        </div>
+      </div>
+      <div class="command-bar-group" role="group" aria-label="Operations">
+        <div class="command-bar-group-title" aria-hidden="true">Operations</div>
+        <div class="command-bar-option" id="commands-o2" role="option" tabindex="-1" aria-selected="false">
+          <span class="command-bar-tag" data-kind="nav">OPERATION</span>
+          <span>GET /pastries</span>
+          <span class="command-bar-hint" aria-hidden="true">operation</span>
+        </div>
+      </div>
+    </div>
+    <!-- Empty state, instead of the listbox: <div class="command-bar-empty">No match. Try a service name or "test".</div> -->
+    <div class="sr-only" role="status" aria-live="polite" aria-atomic="true">3 results</div>
+  </div>
+</dialog>
 
-<script type="module">
+<script>
   const bar = document.getElementById('commands');
-  bar.items = [
-    { id: 'test-pastry', label: 'Run a test on API Pastry 2.0', kind: 'action', keywords: ['test', 'run'] },
-    { id: 'svc-pastry', label: 'Open API Pastry 2.0', kind: 'service', protocol: 'REST', hint: 'service' },
-    { id: 'op-list', label: 'GET /pastries', kind: 'operation', hint: 'operation' },
-  ];
-  bar.addEventListener('mkCommand', (e) => console.log('run', e.detail.id));
-  document.getElementById('open-commands').addEventListener('click', () => bar.show());
-  // Ctrl/⌘K opens it too. Set bar.globalShortcut = false to turn that off.
-  // For docs, set bar.inline = true to render it in place instead of in a dialog.
+  const opener = document.getElementById('open-commands');
+  const open = () => {
+    bar.showModal();
+    bar.querySelector('.command-bar-input').focus();
+  };
+  opener.addEventListener('click', open);
+  document.addEventListener('keydown', (e) => {
+    if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
+      e.preventDefault();
+      bar.open ? bar.close() : open();
+    }
+  });
+  bar.querySelector('[data-close]').addEventListener('click', () => bar.close());
+  bar.addEventListener('click', (e) => e.target === bar && bar.close());
+  bar.addEventListener('close', () => opener.focus());
 </script>

@@ -1,0 +1,49 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "lib": [
+      "ES2022",
+      "DOM",
+      "DOM.Iterable"
+    ],
+    "jsx": "react-jsx",
+    "strict": true,
+    "skipLibCheck": true,
+    "noEmit": true,
+    "allowImportingTsExtensions": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@microcks/deep-ink": [
+        "./node_modules/@microcks/deep-ink/dist/index.d.ts"
+      ],
+      "@microcks-deep-ink/plugin-sdk": [
+        "./node_modules/@microcks-deep-ink/plugin-sdk"
+      ],
+      "@microcks-deep-ink/registry/*": [
+        "./node_modules/@microcks-deep-ink/registry/*"
+      ],
+      "react": [
+        "./node_modules/@types/react"
+      ],
+      "react/*": [
+        "./node_modules/@types/react/*"
+      ],
+      "react-dom": [
+        "./node_modules/@types/react-dom"
+      ],
+      "react-dom/*": [
+        "./node_modules/@types/react-dom/*"
+      ]
+    }
+  },
+  "include": [
+    "src",
+    ".storybook/css.d.ts",
+    ".storybook/preview.tsx",
+    ".storybook/manager.ts",
+    ".storybook/theme.ts",
+    ".storybook/copy-panel/*.tsx"
+  ]
+}

@@ -57,7 +57,8 @@ export function AgentTasksTab({ serviceId, initial, onChanged }: { serviceId: st
               <tr key={t.id} data-selected={t.id === task?.id ? '' : undefined}>
                 <th scope="row">
                   <button type="button" className="agent-task-pick" aria-pressed={t.id === task?.id} onClick={() => { setSelectedId(t.id); setCancelError(''); }}>
-                    {t.live ? <span className="agent-task-live" aria-hidden="true" /> : null}
+                    {/* The dot only: the hidden "(live)" after the button keeps the button named by the task id. */}
+                    {t.live ? <LiveIndicator variant="dot" label="" /> : null}
                     {t.id}
                   </button>
                   {t.live ? <span className="sr-only"> (live)</span> : null}

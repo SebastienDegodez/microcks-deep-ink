@@ -2,10 +2,19 @@ name: Build, check and publish the demo site
 
 # DEMO site: landing page, React Storybook, Angular Storybook and the clickable demo.
 # Pull requests build and check everything; only pushes to main deploy to GitHub Pages.
+#   react   the React workspace (react.yml): @microcks/deep-ink (dist) and the React Storybook
+#   root    the root workspace: registry, tokens, core, CLI, Angular Storybook, demo (it consumes the dist)
+#   site    assembles the Pages site, runs the accessibility smoke run, uploads the Pages artifact on main
+#   deploy  main only
 on:
   push:
     branches: [main]
   pull_request:
+    # svelte/ has svelte.yml, and react/apps/ (the React Storybook) is checked by react.yml.
+    paths-ignore:
+      - "svelte/**"
+      - "react/apps/**"
+      - "docs/**"
   workflow_dispatch:
 
 permissions:
@@ -21,7 +30,13 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
-  build:
+  react:
+    uses: ./.github/workflows/react.yml
+    with:
+      storybook: true
+
+  root:
+    needs: react
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
@@ -31,6 +46,11 @@ jobs:
           node-version: 22
           cache: pnpm
       - run: pnpm install --frozen-lockfile
+      # The React package, built by the react job (the demo and the Angular fixtures consume it).
+      - uses: actions/download-artifact@v4
+        with:
+          name: deep-ink-dist
+          path: react/packages/deep-ink/dist
 
       # Registry (strict: no missing Angular/React file), tokens, core elements, CLI.
       - run: pnpm build
@@ -39,19 +59,57 @@ jobs:
       - run: pnpm test
       - run: pnpm lint
 
-      # Storybooks + demo, then the site that Pages serves.
-      - run: pnpm build:storybooks
+      # Angular Storybook and the demo.
+      - run: pnpm --filter storybook-angular build-storybook
       - run: pnpm build:demo
+      - uses: actions/upload-artifact@v4
+        with:
+          name: storybook-angular
+          path: apps/storybook-angular/storybook-static
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        with:
+          name: demo
+          path: apps/demo-react/dist
+          if-no-files-found: error
+
+  site:
+    needs: [react, root]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 22
+          cache: pnpm
+      - uses: actions/download-artifact@v4
+        with:
+          name: storybook-react
+          path: artifacts/storybook-react
+      - uses: actions/download-artifact@v4
+        with:
+          name: storybook-angular
+          path: artifacts/storybook-angular
+      - uses: actions/download-artifact@v4
+        with:
+          name: demo
+          path: artifacts/demo
       - run: pnpm build:site
+        env:
+          REACT_STORYBOOK_DIR: artifacts/storybook-react
+          ANGULAR_STORYBOOK_DIR: artifacts/storybook-angular
+          DEMO_DIR: artifacts/demo
 
       # Accessibility smoke run: every story, every demo route, dark and light, axe + a11ylint (RGAA 4.1.2).
-      - uses: actions/setup-python@v7
+      - run: pnpm install --frozen-lockfile --filter a11y-tools
+      - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
       - run: pip install playwright==1.63.0
       - run: python -m playwright install --with-deps chromium
       - run: pnpm a11y
-      - uses: actions/upload-artifact@v7
+      - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: a11y-report
@@ -65,7 +123,7 @@ jobs:
 
   deploy:
     if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
-    needs: build
+    needs: site
     runs-on: ubuntu-latest
     environment:
       name: github-pages

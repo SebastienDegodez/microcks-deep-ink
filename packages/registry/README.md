@@ -6,7 +6,7 @@ panel read the JSON this package builds. DEMO, private, Apache-2.0.
 ```
 items/<name>.json     metadata, accessibility contract (validated by registry.schema.json)
 src/css/<name>.css    styles, wrapped in @layer deep-ink.components
-src/react/<name>.tsx  React (siblings imported relatively, files land flat in the target)
+../../react/packages/deep-ink/src/<name>.tsx  React, in the React workspace (siblings imported relatively, files land flat in the target)
 src/angular/<name>.ts Angular (standalone components and attribute directives)
 src/html/<name>.html  HTML recipe for plugins and vanilla use
 ```
@@ -28,11 +28,12 @@ Outputs in `dist/`: `registry.json` (index), `registry.full.json` (with file con
 (unlayered), then base and every item in its layer, in the order of `css-order.json`. Packages ship this file.
 The build fails on an unknown dependency, a cycle, a missing CSS file or a schema error. Every copied file gets a header
 (`// Deep Ink · <name>@0.2.0 · copied from packages/registry. You own this file.`).
-Element items list `"elements": ["workflow-loom"]` (or `command-bar`, `plugin-slot`); `scripts/sync-elements.mjs` copies the self-contained bundles from `packages/core/dist/elements`.
+Element items list `"elements": ["workflow-loom"]` (or `plugin-slot`); `scripts/sync-elements.mjs` copies the self-contained bundles from `packages/core/dist/elements`.
 `scripts/a11y-table.mjs` prints the component to RGAA table used by `docs/accessibility.md`.
 
-Checks: `test` (Vitest + jsdom + axe-core), `typecheck` (tsc for React, ngc for Angular), `lint` (jsx-a11y strict, react-hooks, angular-eslint template a11y).
-`test/setup.ts` unmounts after each test and polyfills `<dialog>` and `popover` for jsdom; `test/axe.ts` runs axe without color contrast (checked by the tokens test and the browser smoke run).
+Checks: `test` (build and CSS rules), `typecheck` (ngc for Angular), `lint` (angular-eslint template a11y).
+The React sources, their specs (Vitest + jsdom + axe-core), typecheck and lint (jsx-a11y strict, react-hooks) live in
+`react/packages/deep-ink`: `pnpm -C react install && pnpm -C react test`.
 
 ## CSS class API
 

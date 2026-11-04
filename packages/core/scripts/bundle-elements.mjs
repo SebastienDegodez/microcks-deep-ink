@@ -8,7 +8,7 @@ import { fileURLToPath } from 'node:url';
 
 const ROOT = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const OUT = join(ROOT, 'dist', 'elements');
-const TAGS = ['workflow-loom', 'command-bar', 'plugin-slot'];
+const TAGS = ['workflow-loom', 'plugin-slot'];
 
 // Extra exports of a bundle (the plugin slot re-exports the shared plugin host accessor).
 const EXTRA_EXPORT = {
