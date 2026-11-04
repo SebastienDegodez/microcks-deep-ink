@@ -14,9 +14,9 @@
     "base": {
       "version": "0.2.0",
       "files": {
-        "src/ui/styles/base.css": "8f5eac83537de41ab594ac59c0ab8db48a0d66c310509e2f02ab8b89fa02fde2"
+        "src/ui/styles/base.css": "f8b3335c597aa78847bbc8661817b83729501202bc618bffadf95db29d9fba3b"
       },
-      "hash": "ddb234272d1cbaa0"
+      "hash": "9c994ac5707631ee"
     },
     "icon": {
       "version": "0.2.0",
@@ -30,9 +30,9 @@
       "version": "0.2.0",
       "files": {
         "src/ui/components/ui/button.tsx": "ddfccddd50affae23dffd421cb4fd8237596c16a5c135dc821b232c9d45dcbc5",
-        "src/ui/styles/button.css": "e8d4b0e898cd210435c4769b7ee1879858f7326d4dac084131467a01d4d6535d"
+        "src/ui/styles/button.css": "e9396382f7aec80cc866c590f32a8da1a25f34e762a9ef674dcf247e5a3e8829"
       },
-      "hash": "a11090f5e7d96f29"
+      "hash": "f9ce3e58789b0c5b"
     },
     "ai-ghost-row": {
       "version": "0.2.0",
@@ -413,9 +413,17 @@
         "src/ui/styles/runner-log.css": "6492310d27c28260304e63f2cd06e5e8f24e7d18617780ff70a280657b24b968"
       },
       "hash": "c0ceb32097c0e335"
+    },
+    "section-label": {
+      "version": "0.2.0",
+      "files": {
+        "src/ui/components/ui/section-label.tsx": "28558ccba5b6074e608b9d61b3c1891bba6b50562607d0052ea38ce70bd3001f",
+        "src/ui/styles/section-label.css": "17215c6135327222fcb6f6c72591ca8c6821cfffe54b0bb71863665aea23264c"
+      },
+      "hash": "45dd753bd200c6b9"
     }
   },
   "generated": {
-    "src/ui/styles/index.css": "6a86eec7f18ebdfdf27ba42268f7c4a2545c829e514903c7e95642ae4854d7c5"
+    "src/ui/styles/index.css": "72826b4a4eb01789632b037a8539699dddf10537015287b80c82c42f449b0077"
   }
 }

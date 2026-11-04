@@ -1,3 +1,16 @@
+.tc-layout {
+  display: grid;
+  gap: 20px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: start;
+}
+
+@media (min-width: 1000px) {
+  .tc-layout {
+    grid-template-columns: minmax(0, 1fr) 360px;
+  }
+}
+
 .tc-section {
   display: flex;
   flex-direction: column;

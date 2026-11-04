@@ -80,13 +80,15 @@ type RawRun = {
   /** p = passed, f = failed, n = no result, for each operation. */
   ops: string;
   reason?: string;
+  /** Stored conformance score, when the prototype gives one that is not passed/total. */
+  score?: number;
 };
 
 const PATCH_400 = 'PATCH /pastries/{name} · 400 Bad Request · schema mismatch on price';
 
 /** Runs #118..#99 of the Tests prototype (dates moved one day forward to the demo clock). #119 is added separately. */
 const HISTORY: RawRun[] = [
-  { n: 118, at: '2026-11-03T07:10:04Z', env: 'staging', runner: 'OPEN_API_SCHEMA', ms: 1840, res: 'passed', ops: 'ppp' },
+  { n: 118, at: '2026-11-03T07:10:04Z', env: 'staging', runner: 'OPEN_API_SCHEMA', ms: 1840, res: 'passed', ops: 'ppp', score: 92 },
   { n: 117, at: '2026-11-03T04:10:04Z', env: 'staging', runner: 'OPEN_API_SCHEMA', ms: 2110, res: 'failed', ops: 'ppf', reason: PATCH_400 },
   { n: 116, at: '2026-11-02T17:05:04Z', env: 'prod', runner: 'HTTP', ms: 960, res: 'passed', ops: 'ppp' },
   { n: 115, at: '2026-11-02T10:12:04Z', env: 'staging', runner: 'OPEN_API_SCHEMA', ms: 1920, res: 'passed', ops: 'ppp' },
@@ -134,7 +136,7 @@ function toRun(raw: RawRun): TestRun {
     id: String(raw.n), serviceId: 'pastry2', runner: raw.runner, environment: raw.env, endpoint: ENDPOINTS[raw.env], result: raw.res,
     startedAt: raw.at, durationMs: raw.ms, passed: steps.filter((s) => s.result === 'passed').length, total: steps.length, timeoutMs: 10_000,
     steps, reason: raw.reason, operations: [...raw.ops].map((c) => OUTCOME[c] ?? 'none'), operationLabels: OPERATION_LABELS, launchedBy: 'MA',
-    contractFile: CONTRACT_FILE,
+    contractFile: CONTRACT_FILE, ...(raw.score !== undefined ? { conformance: raw.score } : {}),
   };
 }
 
@@ -160,13 +162,18 @@ export function seedTestRuns(): TestRun[] {
   return [run119, ...HISTORY.map(toRun), orders, conciergeRun(), ...OTHER_SERVICES.map(otherRun)];
 }
 
-/** Latest runs of other services, as the Catalogue and the Cockpit prototypes show them (#17, #9, #86). */
+/** Runs of other services: the latest ones the Catalogue and the Cockpit prototypes show (#17, #9, #86), and earlier passes. */
 const OTHER_SERVICES: { id: string; serviceId: string; runner: TestRunner; endpoint: string; at: string; ms: number; ops: string; reason?: string }[] = [
   { id: '17', serviceId: 'movie', runner: 'GRAPHQL_SCHEMA', endpoint: 'https://movies.staging.acme.io/graphql', at: '2026-11-03T03:10:04Z', ms: 1320, ops: 'pppf',
     reason: 'addReview · response does not match the schema: rating expected Int, got Float' },
   { id: '9', serviceId: 'hellogrpc', runner: 'GRPC_PROTOBUF', endpoint: 'grpc://hello.staging.acme.io:9000', at: '2026-11-02T08:00:04Z', ms: 410, ops: 'p' },
   { id: '86', serviceId: 'pastry1', runner: 'OPEN_API_SCHEMA', endpoint: 'https://pastry.staging.acme.io/v1', at: '2026-10-31T08:00:04Z', ms: 1650, ops: 'ppf',
     reason: 'PATCH /pastries/{name} · response body does not match schema: $.price expected number, got string' },
+  // Earlier passing runs of the week, so the Cockpit's "Tests · last 7 days" reads 14 passed, 7 failed.
+  { id: '40', serviceId: 'orders', runner: 'ASYNC_API_SCHEMA', endpoint: 'kafka://kafka.staging.acme.io:9092/PastryordersAPI-0.1.0-pastry-orders',
+    at: '2026-11-01T14:00:04Z', ms: 1180, ops: 'p' },
+  { id: '16', serviceId: 'movie', runner: 'GRAPHQL_SCHEMA', endpoint: 'https://movies.staging.acme.io/graphql', at: '2026-10-31T10:30:04Z', ms: 1290, ops: 'pppp' },
+  { id: '8', serviceId: 'hellogrpc', runner: 'GRPC_PROTOBUF', endpoint: 'grpc://hello.staging.acme.io:9000', at: '2026-10-30T09:00:04Z', ms: 420, ops: 'p' },
 ];
 
 function otherRun(raw: (typeof OTHER_SERVICES)[number]): TestRun {
