@@ -10,6 +10,7 @@ import { Button } from '@/ui/components/ui/button';
 import { Chip } from '@/ui/components/ui/chip';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { Menu } from '@/ui/components/ui/menu';
+import { ProjectionPill } from '@/ui/components/ui/projection-pill';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
 import { AgentCardTab } from './AgentCardTab';
@@ -72,7 +73,7 @@ export default function AgentPage() {
         breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${a.name} ${a.version}` }]}
         badge={
           <>
-            <span className="agent-projection" title="A2A support is a proposed protocol module for Microcks v2">Projection · v2 module</span>
+            <ProjectionPill title="A2A support is a proposed protocol module for Microcks v2" />
             <LiveIndicator label={`mock live · ${openTasks} open ${openTasks === 1 ? 'task' : 'tasks'} · last message ${lastMessage}`} />
           </>
         }
