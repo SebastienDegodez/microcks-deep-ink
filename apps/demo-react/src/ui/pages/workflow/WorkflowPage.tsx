@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
+import { stoppedStep } from '@/domain/arazzo';
 import { PageHeader, useQuery, useUseCases, usePageTitle } from '@/ui/app';
 import { Callout } from '@/ui/components/ui/callout';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
@@ -123,7 +124,7 @@ export default function WorkflowPage() {
           <StepsTab detail={detail.data} runs={runList} run={selectedRun} onPickRun={onPickRun} inspectLink={inspectLink} />
         </TabPanel>
         <TabPanel id="source" value={tab}>
-          <SourceTab detail={detail.data} />
+          <SourceTab detail={detail.data} step={step ?? (selectedRun?.status === 'FAILURE' ? stoppedStep(selectedRun)?.stepId : undefined)} onSelectStep={(s) => setQuery({ step: s })} serviceLabel={serviceLabel} />
         </TabPanel>
         <TabPanel id="mock-url" value={tab}>
           <MockUrlTab detail={detail.data} runs={runList} />
