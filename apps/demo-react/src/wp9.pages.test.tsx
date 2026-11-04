@@ -120,8 +120,11 @@ describe('Test history (/tests/service/:id)', () => {
     expect(within(table).getByText('#118')).toBeTruthy();
     expect(table.querySelector('tr[data-selected]')?.textContent).toContain('#117');
     expect(screen.getByRole('table', { name: /Conformance timeline, last 20 runs/ })).toBeTruthy();
-    fireEvent.change(screen.getByLabelText('Result'), { target: { value: 'failed' } });
+    fireEvent.click(within(screen.getByRole('group', { name: 'Result' })).getByRole('button', { name: /^Failed/ }));
     expect(within(await screen.findByRole('table', { name: 'Test runs' })).queryByText('#118')).toBeNull();
+    expect(screen.getByText(/match the filters/)).toBeTruthy();
+    fireEvent.click(screen.getAllByRole('button', { name: 'Reset filters' })[0]!);
+    expect(within(screen.getByRole('table', { name: 'Test runs' })).getByText('#118')).toBeTruthy();
   });
 
   it('shows one pressed bar per run and inspects the run of the clicked bar', async () => {
@@ -137,7 +140,9 @@ describe('Test history (/tests/service/:id)', () => {
     const timeout = within(group).getByRole('button', { name: /^Run #113, timed out, 10\.00 s/ });
     fireEvent.click(timeout);
     expect(timeout.getAttribute('aria-pressed')).toBe('true');
-    expect(screen.getByRole('link', { name: 'Open run #113' }).getAttribute('href')).toContain('/tests/runner/113');
+    expect(screen.getAllByRole('link', { name: 'Open run #113' })[0]?.getAttribute('href')).toContain('/tests/runner/113');
+    fireEvent.click(screen.getByRole('button', { name: 'Show run #118 in the timeline' }));
+    expect(within(group).getByRole('button', { name: /^Run #118,/ }).getAttribute('aria-pressed')).toBe('true');
     expect(screen.getByRole('img', { name: /^GET \/pastries: 19 passed, 1 failed/ })).toBeTruthy();
   });
 

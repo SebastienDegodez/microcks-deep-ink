@@ -1,6 +1,7 @@
 // @vitest-environment jsdom
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
+import { axeViolations } from '../../test/axe';
 import { DropZone, filesReadyMessage } from './drop-zone';
 
 afterEach(cleanup);
@@ -43,5 +44,22 @@ describe('DropZone', () => {
   it('formats the live message', () => {
     expect(filesReadyMessage(1)).toBe('1 file ready');
     expect(filesReadyMessage(3)).toBe('3 files ready');
+  });
+
+  it('small size: secondary Choose, rich hint and extra actions, single file', async () => {
+    const { container } = render(
+      <DropZone size="sm" heading="Drop a snapshot here" hint={<>A <code>microcks-repository.json</code> exported from any Microcks instance</>} chooseLabel="Choose a file" multiple={false} accept=".json" onFiles={() => {}}>
+        <button type="button" className="button" data-variant="link">Use a sample snapshot</button>
+      </DropZone>,
+    );
+    const zone = screen.getByRole('group', { name: 'Drop a snapshot here' });
+    expect(zone.getAttribute('data-size')).toBe('sm');
+    expect(screen.getByText('Choose a file').getAttribute('data-variant')).toBe('secondary');
+    expect(screen.getByRole('button', { name: 'Use a sample snapshot' })).toBeTruthy();
+    const input = container.querySelector('input[type="file"]') as HTMLInputElement;
+    expect(input.multiple).toBe(false);
+    expect(screen.getByLabelText('Choose a file')).toBe(input);
+    expect(container.querySelector('.drop-zone-icon svg')?.getAttribute('width')).toBe('28');
+    expect(await axeViolations(container)).toEqual([]);
   });
 });
