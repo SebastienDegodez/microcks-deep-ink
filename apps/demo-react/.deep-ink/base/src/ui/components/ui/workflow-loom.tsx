@@ -45,6 +45,12 @@ export interface LoomStep {
   source: string;
   /** "GET /pastries" */
   operation: string;
+  /** HTTP method drawn as a tag on the node ("GET"); defaults to the first word of `operation`. */
+  method?: string;
+  /** Path drawn on the node ("/pastries/{name}"); defaults to the rest of `operation`. */
+  path?: string;
+  /** One-line result of the run ("200 · 3 attempts · 5.4 s"), drawn at the bottom of the node. */
+  result?: string;
   /** Arazzo 1.1 step-level dependsOn: independent steps are drawn as parallel branches that join. */
   dependsOn?: string[];
   status?: LoomStepStatus;

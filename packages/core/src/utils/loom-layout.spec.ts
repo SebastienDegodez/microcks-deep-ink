@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { layoutLoom, loomGrid } from './loom-layout';
+import { layoutLoom, loomGrid, operationParts } from './loom-layout';
 import type { LoomSource, LoomStep } from './types';
 
 const rest: LoomSource = { name: 'apiPastry', type: 'openapi', protocol: 'REST', linked: true };
@@ -97,5 +97,17 @@ describe('loomGrid', () => {
     const g = loomGrid(0);
     expect(g.steps).toBe(1);
     expect(g.pct(g.centre(2))).toBe('83.93%');
+  });
+});
+
+describe('operationParts', () => {
+  it('splits "GET /pastries" into method and path', () => {
+    expect(operationParts({ operation: 'PATCH /pastries/{name}' })).toEqual({ method: 'PATCH', path: '/pastries/{name}' });
+  });
+  it('prefers the explicit method and path', () => {
+    expect(operationParts({ operation: 'GetPastries', method: 'GET', path: '/pastries' })).toEqual({ method: 'GET', path: '/pastries' });
+  });
+  it('keeps a non-HTTP operation as the path', () => {
+    expect(operationParts({ operation: 'receive pastry.restocked' })).toEqual({ method: '', path: 'receive pastry.restocked' });
   });
 });
