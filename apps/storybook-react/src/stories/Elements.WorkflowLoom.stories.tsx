@@ -93,3 +93,9 @@ export const NotLinked: StoryObj = {
 export const Playground: StoryObj<typeof WorkflowLoom> = {
   args: { ...LOOM_RESTOCK_RUN14, selectedStep: 'patchPastry', tableToggle: true },
 };
+
+/** Same scenario as the Angular `Run14` story. */
+export const Run14: StoryObj = {
+  name: 'Run #14 (retry and failed step)',
+  render: () => <Loom scenario={LOOM_RESTOCK_RUN14} selected="patchPastry" />,
+};

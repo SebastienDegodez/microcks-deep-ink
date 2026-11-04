@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, input } from '@angular/core';
 
 export interface ExchangeBlock {
   /** Accessible name of the block ("Request line", "Response body"). */
@@ -12,7 +12,7 @@ export interface ExchangeBlock {
 
 /**
  * One side of an exchange: `<section mkExchangeCard title="Response" label="Response of Eclair Cafe" status="200 OK" [blocks]="blocks"></section>`.
- * Put two of them in `<div class="exchange">` with `<div class="exchange-sep" aria-hidden="true">⇄</div>` between them.
+ * Put two of them side by side in `<div mkExchange>`.
  */
 @Component({
   selector: 'section[mkExchangeCard]',
@@ -51,3 +51,20 @@ export class ExchangeCardComponent {
   /** Level of the title heading; `none` renders plain text. */
   readonly headingLevel = input<3 | 4 | 5 | 6 | 'none'>(4);
 }
+
+/**
+ * A request and its response side by side: `<div mkExchange><section mkExchangeCard mkExchangeRequest …></section><section mkExchangeCard …></section></div>`.
+ * Mark the request with `mkExchangeRequest`; the other card is the response. `[separator]="false"` drops the decorative ⇄.
+ */
+@Component({
+  selector: 'div[mkExchange]',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'exchange' },
+  template: `<ng-content select="[mkExchangeRequest]" />@if (separator()) {<div class="exchange-sep" aria-hidden="true">⇄</div>}<ng-content />`,
+})
+export class ExchangeComponent {
+  /** Draws a decorative ⇄ between the two cards. */
+  readonly separator = input(true, { transform: booleanAttribute });
+}
+
+export const EXCHANGE_CARD = [ExchangeCardComponent, ExchangeComponent] as const;

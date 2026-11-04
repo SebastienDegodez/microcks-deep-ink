@@ -29,3 +29,14 @@ export class SummaryStripComponent {
   /** `text`: values in --text instead of --text-secondary (Service). */
   readonly values = input<'secondary' | 'text'>('secondary');
 }
+
+/** A decorative 1 x 16px separator, for strips built from projected content: `<span mkSummaryStripSep></span>`. */
+@Component({
+  selector: 'span[mkSummaryStripSep]',
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  host: { class: 'summary-strip-sep', 'aria-hidden': 'true' },
+  template: ``,
+})
+export class SummaryStripSepComponent {}
+
+export const SUMMARY_STRIP = [SummaryStripComponent, SummaryStripSepComponent] as const;

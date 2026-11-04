@@ -42,3 +42,16 @@ export const Playground: StoryObj<typeof CommandBar> = {
   args: { items: COMMANDS, inline: true, label: 'Command bar', placeholder: 'Type a command or a service', globalShortcut: false },
   decorators: [(Story) => <div style={{ maxWidth: 560 }}><Story /></div>],
 };
+
+export const Inline: StoryObj = {
+  name: 'Inline (long placeholder)',
+  render: () => {
+    const [last, setLast] = useState('none');
+    return (
+      <div style={{ maxWidth: 560 }}>
+        <CommandBar inline items={COMMANDS} placeholder="Search services, operations and commands" onCommand={(e: unknown) => setLast(detailOf<{ label: string }>(e).label)} />
+        <p role="status" className="sb-note">Last command: {last}</p>
+      </div>
+    );
+  },
+};
