@@ -47,3 +47,15 @@ export const Live: StoryObj = {
     `,
   }),
 };
+
+export const Outline: StoryObj = {
+  name: 'Outline note',
+  render: () => ({
+    template: `
+      <div style="display: flex; flex-direction: column; gap: 12px; max-width: 560px">
+        <mk-callout tone="warning" variant="outline">The secondary artifact needs API Pastry 2.0 in Microcks first: install the main package, then come back.</mk-callout>
+        <div style="max-width: 360px"><mk-callout tone="warning" variant="outline" size="sm">The token shown here is masked: paste the real secret in your CI settings.</mk-callout></div>
+      </div>
+    `,
+  }),
+};

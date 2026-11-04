@@ -21,6 +21,9 @@
   .api-badge > span { display: inline-flex; align-items: center; padding: 4px 9px; }
   .api-badge[data-size="md"] > .api-badge-type { padding-inline: 8px; }
   .api-badge[data-size="sm"] > span { padding: 2px 6px; font-size: 11px; line-height: 13px; }
+  /* Compact: 12px with tight segments, for list rows (Sources job cards, Hub, Workflows): type 2px 7px, name 2px 8px. */
+  .api-badge[data-size="compact"] > span { padding: 2px 8px; font-size: 12px; line-height: normal; }
+  .api-badge[data-size="compact"] > .api-badge-type { padding-inline: 7px; }
   /* Card (badge wall): 13px, roomier segments, the version in the text colour, a long name ellipsed. */
   .api-badge[data-size="card"] > span { padding: 6px 10px; font-size: 13px; }
   .api-badge[data-size="card"] > .api-badge-version { color: var(--text); }
@@ -47,16 +50,19 @@
   .api-badge[data-size="lg"] > .api-badge-name + .api-badge-version,
   .api-badge[data-size="xl"] > .api-badge-name + .api-badge-version { padding-inline-start: 0.25em; }
 
-  /* Proof fills: icon + word are always inside; color only speeds up scanning. */
+  /* Proof fills: a hidden status word is always inside; color only speeds up scanning. */
   .api-badge[data-status="success"] .api-badge-name { background: var(--success); color: var(--on-status); font-weight: 600; }
   .api-badge[data-status="danger"] .api-badge-name { background: var(--danger); color: var(--on-status); font-weight: 600; }
   .api-badge[data-status="warning"] .api-badge-name { background: var(--warning); color: var(--on-status); font-weight: 600; }
   .api-badge[data-status="info"] .api-badge-name { background: var(--link); color: var(--on-action); font-weight: 600; }
   .api-badge[data-status="action"] .api-badge-name,
   .api-badge-value[data-status="action"] { background: var(--action); color: var(--on-action); font-weight: 600; }
-  /* Neutral proof ("untested", "not exposed"): no fill, muted regular text. */
+  /* Neutral proof ("untested", "not exposed"): no fill, muted text, 600 like the other values (Catalogue and Sources prototypes). */
   .api-badge[data-status="neutral"] .api-badge-name,
-  .api-badge-value[data-status="neutral"] { color: var(--text-muted); font-weight: 400; }
+  .api-badge-value[data-status="neutral"] { color: var(--text-muted); font-weight: 600; }
+  /* Muted proof ("inactive"): the raised fill with secondary text (Sources last import shield). */
+  .api-badge[data-status="muted"] .api-badge-name,
+  .api-badge-value[data-status="muted"] { background: var(--raised); color: var(--text-secondary); font-weight: 600; }
   .api-badge-name > .icon { margin-inline-end: 4px; flex: none; }
   /* Extra proof values ("samples │ 7 │ +1 AI") are further filled segments of the same badge. */
   .api-badge-value { font-weight: 600; background: var(--surface); color: var(--text); }

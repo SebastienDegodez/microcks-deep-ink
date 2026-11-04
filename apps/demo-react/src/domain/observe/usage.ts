@@ -8,6 +8,12 @@ export const USAGE_PERIODS: { id: UsagePeriod; label: string }[] = [
   { id: '30d', label: '30 days' },
 ];
 
+/** A scope the Usage page can show: a service id, or `all`. */
+export interface UsageScope {
+  id: string;
+  label: string;
+}
+
 export interface UsageRowData {
   id: string;
   name: string;
@@ -100,7 +106,7 @@ export interface UsageView {
   periodLabel: string;
   chart: { title: string; subtitle: string; unit: 'hour' | 'day'; points: UsagePoint[]; max: number; defaultSelected: number; summary: string };
   kpis: { total: number; growth: number; trendText: string; peakTitle: string; peak: number; peakWhen: string; lastCall: string; lastCallAgo: string };
-  heatmap: { cells: HeatCell[]; months: string[]; subtitle: string; total: number; weekdayAverage: number; busiest: string; defaultSelected: number };
+  heatmap: { cells: HeatCell[]; months: string[]; subtitle: string; /** Note after the last day: "(today, until 09:10)". */ todayNote: string; total: number; weekdayAverage: number; busiest: string; defaultSelected: number };
   table: { title: string; subtitle: string; firstColumn: string; secondColumn: string; rows: UsageTableRow[]; total: number; trend: number; note: string };
   conformance: UsageData['conformance'];
 }
@@ -240,7 +246,7 @@ export function buildUsageView(data: UsageData, period: UsagePeriod): UsageView 
     periodLabel,
     chart: {
       title: period === 'today' ? 'Invocations per hour · today' : `Invocations per day · last ${periodLabel}`,
-      subtitle: period === 'today' ? `Tuesday, Nov 3 · until ${two(data.hourly.length - 1)}:10, later hours are still to come` : range,
+      subtitle: period === 'today' ? `Tuesday, Nov 3 · until ${two(data.hourly.length - 1)}:10, grey slots are still to come` : range,
       unit,
       points,
       max: niceMax(peakValue),
@@ -260,6 +266,7 @@ export function buildUsageView(data: UsageData, period: UsagePeriod): UsageView 
     heatmap: {
       cells,
       months,
+      todayNote: `(today, until ${two(data.hourly.length - 1)}:10)`,
       subtitle: `${one ? data.label : 'All services'} · ${shortDate(startMs, 0)} to ${shortDate(startMs, n - 1)} · select a day to read its count`,
       total: sum(data.daily),
       weekdayAverage: Math.round(sum(weekdayValues) / Math.max(1, weekdayValues.length)),

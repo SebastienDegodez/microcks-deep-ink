@@ -76,7 +76,7 @@ export function buildCiSnippet(input: CiSnippetInput, format: CiFormat): string[
     if (headers) lines.push(`  --operationsHeaders='${headers}' \\`);
     lines.push(`  --waitFor=${wait}`);
   } else if (format === 'gha') {
-    lines.push(`- name: Contract test ${input.apiName}`);
+    lines.push(`- name: Contract test ${input.apiRef.replace(/:([^:]*)$/, ' $1')}`);
     lines.push('  uses: microcks/test-github-action@v1');
     lines.push('  with:');
     lines.push(`    apiNameAndVersion: '${input.apiRef}'`);
@@ -115,7 +115,7 @@ export function buildCiSnippet(input: CiSnippetInput, format: CiFormat): string[
       lines.push(`      value: '${filtered}'`);
     }
     lines.push('    - name: waitFor');
-    lines.push(`      value: ${input.waitSec}`);
+    lines.push(`      value: ${wait}`);
   }
   return lines;
 }
@@ -133,7 +133,7 @@ export function diffCiLines(lines: string[], defaults: string[]): CiLine[] {
 
 export function ciDiffLegend(changed: number, serviceLabel: string): string {
   return changed === 0
-    ? `Default configuration for ${serviceLabel}. Change the form: the lines you affect are marked.`
+    ? `Default configuration for ${serviceLabel}. Change the form: the lines you affect light up.`
     : `${changed} ${changed === 1 ? 'line differs' : 'lines differ'} from the default configuration.`;
 }
 

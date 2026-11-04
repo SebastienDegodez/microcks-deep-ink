@@ -128,7 +128,7 @@ export default function ImportPage() {
   const steps = ['Source', directDone ? 'Preview (no contract)' : 'Preview', 'Live mock'];
 
   return (
-    <div className="import">
+    <div className="import" data-main-pad="roomy">
       <PageHeader
         title="Add a source"
         variant="plain"

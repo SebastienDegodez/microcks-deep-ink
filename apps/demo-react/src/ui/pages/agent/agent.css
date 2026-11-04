@@ -1,12 +1,6 @@
 /* Agent screens (18, 19). Layout only: the look comes from the copied components and the tokens. */
 .ag-layout { display: grid; gap: 16px; grid-template-columns: minmax(0, 320px) minmax(0, 1fr); align-items: start; }
 @media (max-width: 960px) { .ag-layout { grid-template-columns: minmax(0, 1fr); } }
-.ag-script { list-style: none; margin: 0; padding: 0; display: grid; gap: 8px; }
-.ag-script > li { display: grid; gap: 4px; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-md, 6px); background: var(--canvas); min-width: 0; }
-.ag-script > li[data-selected] { border-color: var(--action); background: var(--selected); }
-.ag-script > li[data-kind='user'] { background: var(--raised); margin-inline-start: 32px; }
-.ag-script > li[data-kind='turn'] { border-style: dashed; }
-.ag-chips { display: flex; flex-wrap: wrap; gap: 6px; }
 .ag-part { margin: 0; padding: 6px 8px; border-left: 2px solid var(--border-strong); overflow-wrap: anywhere; }
 .ag-part pre { margin: 0; white-space: pre-wrap; font-family: var(--font-mono); font-size: var(--type-small); }
 .ag-table-wrap { overflow-x: auto; }

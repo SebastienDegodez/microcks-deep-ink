@@ -36,6 +36,8 @@ export function createInMemoryObserveAdapters(_deps: InMemoryDeps = {}): Observe
   const metrics: MetricsRepository = {
     invocations: (serviceId, period) => after(() => invocations(serviceId, period)),
     usageData: (scope) => after(() => usageDataFor(scope)),
+    // Only API Pastry 2.0 has detailed series, as in the prototype.
+    usageScopes: () => after(() => [{ id: 'pastry2', label: 'API Pastry 2.0' }, { id: 'all', label: 'All services' }]),
     conformanceByDomain: () =>
       after<DomainConformance[]>(() => {
         const byDomain = new Map<string, DomainConformance>();

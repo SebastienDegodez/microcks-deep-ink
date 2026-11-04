@@ -38,7 +38,7 @@ export function filesReadyMessage(count: number): string {
       (change)="onChange($event)"
     />
     <label [attr.for]="id" class="button drop-zone-choose" data-variant="primary">{{ chooseLabel() }}</label>
-    <p class="drop-zone-status" role="status">{{ message() }}</p>
+    <p class="drop-zone-status" role="status" [attr.data-empty]="message() ? null : ''">{{ message() }}</p>
   `,
 })
 export class DropZoneComponent {
