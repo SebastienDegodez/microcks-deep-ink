@@ -78,7 +78,23 @@
   /* Muted proof ("inactive"): the raised fill with secondary text (Sources last import shield). */
   .api-badge[data-status="muted"] .api-badge-name,
   .api-badge-value[data-status="muted"] { background: var(--raised); color: var(--text-secondary); font-weight: 600; }
-  .api-badge-name > .icon { margin-inline-end: 4px; flex: none; }
+  /* Protocol fill ("skills │ 3" on the A2A colour): data-fill names the protocol, --on-proto text. */
+  .api-badge[data-fill="rest"] { --badge-proto: var(--proto-rest); }
+  .api-badge[data-fill="soap"] { --badge-proto: var(--proto-soap); }
+  .api-badge[data-fill="event"] { --badge-proto: var(--proto-event); }
+  .api-badge[data-fill="grpc"] { --badge-proto: var(--proto-grpc); }
+  .api-badge[data-fill="graphql"] { --badge-proto: var(--proto-graphql); }
+  .api-badge[data-fill="direct"] { --badge-proto: var(--proto-direct); }
+  .api-badge[data-fill="a2a"] { --badge-proto: var(--proto-a2a); }
+  .api-badge[data-status="protocol"] .api-badge-name,
+  .api-badge-value[data-status="protocol"] { background: var(--badge-proto); color: var(--on-proto); font-weight: 600; }
+  /* Opt-in proof icon: 12px, stroke 3, before the value (or alone, with a hidden word). */
+  .api-badge-name > .icon { margin-inline-end: 4px; flex: none; stroke-width: 3; }
+  :is(.api-badge-name, .api-badge-value)[data-icon-only] > .icon { margin-inline-end: 0; }
+  /* Version in the text colour: compact and card rows by default (Hub, Sources, Cockpit), or data-version="text". */
+  .api-badge[data-size="compact"] > .api-badge-version,
+  .api-badge[data-version="text"] > .api-badge-version { color: var(--text); }
+  .api-badge[data-version="muted"] > .api-badge-version { color: var(--text-muted); }
   /* Extra proof values ("samples │ 7 │ +1 AI") are further filled segments of the same badge. */
   .api-badge-value { font-weight: 600; background: var(--surface); color: var(--text); }
   .api-badge-value[data-status="success"] { background: var(--success); color: var(--on-status); }
@@ -86,5 +102,5 @@
   .api-badge-value[data-status="warning"] { background: var(--warning); color: var(--on-status); }
   .api-badge-value[data-status="info"] { background: var(--link); color: var(--on-action); }
   .api-badge-value[data-status="action"] { background: var(--action); color: var(--on-action); }
-  .api-badge-value > .icon { margin-inline-end: 4px; flex: none; }
+  .api-badge-value > .icon { margin-inline-end: 4px; flex: none; stroke-width: 3; }
 }

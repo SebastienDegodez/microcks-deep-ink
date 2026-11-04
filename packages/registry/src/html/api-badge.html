@@ -57,3 +57,13 @@
 
 <!-- Arazzo page title: mono tracked ARAZZO segment, the version in mono 13px on the name's baseline. -->
 <h1 style="margin: 0"><span class="api-badge" data-protocol="arazzo" data-size="xl"><span class="api-badge-type">ARAZZO</span> <span class="api-badge-name">Restock a pastry</span> <span class="api-badge-version">1.2.0</span></span></h1>
+
+<!-- Opt-in proof icon (12px, stroke 3) before the value; the hidden status word stays.
+     data-status="protocol" + data-fill="a2a": the value on the protocol colour with --on-proto text.
+     Icon-only value: data-icon-only on the segment and a hidden word ("supported"). -->
+<span class="api-badge" data-status="danger" data-size="compact"><span class="api-badge-type">last test</span> <span class="api-badge-name"><svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M7 7l10 10M17 7L7 17"/></svg>13/15 <span class="sr-only">(error)</span></span></span>
+<span class="api-badge" data-status="protocol" data-fill="a2a" data-size="compact"><span class="api-badge-type">skills</span> <span class="api-badge-name">3</span></span>
+<span class="api-badge" data-status="success" data-size="compact"><span class="api-badge-type">streaming</span> <span class="api-badge-name" data-icon-only><svg class="icon" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12l5 5 9-11"/></svg><span class="sr-only">supported</span> <span class="sr-only">(success)</span></span></span>
+
+<!-- Version tone: data-version="text" shows the version in the text colour at md (compact and card do it by default). -->
+<span class="api-badge" data-protocol="rest" data-size="md" data-version="text"><span class="api-badge-type">REST</span> <span class="api-badge-name">API Pastry</span> <span class="api-badge-version">2.0</span></span>

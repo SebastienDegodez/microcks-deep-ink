@@ -125,3 +125,19 @@ export const WorkflowHeader: StoryObj = {
     `,
   }),
 };
+
+export const ProofIcons: StoryObj = {
+  name: "Proof icons, protocol fill, icon-only",
+  render: () => ({
+    template: `
+      <div class="inline">
+        <span mkApiBadge size="compact" label="result" value="failed" status="danger" icon="close-sm"></span>
+        <span mkApiBadge size="compact" label="result" value="passed" status="success" icon="check"></span>
+        <span mkApiBadge size="compact" label="last test" value="13/15" status="danger" icon="close-sm"></span>
+        <span mkApiBadge size="compact" label="skills" value="3" status="protocol" protocol="A2A"></span>
+        <span mkApiBadge size="compact" label="streaming" status="success" icon="check" iconLabel="supported"></span>
+        <span mkApiBadge protocol="REST" name="API Pastry" version="2.0" versionTone="text"></span>
+      </div>
+    `,
+  }),
+};

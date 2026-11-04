@@ -99,3 +99,17 @@ export const WorkflowHeader: StoryObj = {
     </div>
   ),
 };
+
+export const ProofIcons: StoryObj = {
+  name: 'Proof icons, protocol fill, icon-only',
+  render: () => (
+    <div className="inline">
+      <ApiBadge size="compact" label="result" value="failed" status="danger" icon="close-sm" />
+      <ApiBadge size="compact" label="result" value="passed" status="success" icon="check" />
+      <ApiBadge size="compact" label="last test" value="13/15" status="danger" icon="close-sm" />
+      <ApiBadge size="compact" label="skills" value="3" status="protocol" protocol="A2A" />
+      <ApiBadge size="compact" label="streaming" status="success" icon="check" iconLabel="supported" />
+      <ApiBadge protocol="REST" name="API Pastry" version="2.0" versionTone="text" />
+    </div>
+  ),
+};
