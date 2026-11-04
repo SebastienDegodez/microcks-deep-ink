@@ -12,6 +12,7 @@ import { Callout } from '@/ui/components/ui/callout';
 import { Chip } from '@/ui/components/ui/chip';
 import { CodeBlock } from '@/ui/components/ui/code-block';
 import { CopyButton } from '@/ui/components/ui/copy-button';
+import { FactRow, Facts } from '@/ui/components/ui/facts';
 import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { Input } from '@/ui/components/ui/input';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
@@ -435,22 +436,18 @@ function ApiServicePage() {
           <div className="service-props">
             <section aria-labelledby="props-title" className="service-card props-card">
               <h2 id="props-title">Properties</h2>
-              <dl className="facts">
-                <div className="facts-row"><dt>Version</dt><dd className="ex-mono">{svc.version}</dd></div>
-                <div className="facts-row"><dt>Type</dt><dd className="facts-inline"><MethodTag method={svc.protocol} protocol={svc.protocol} className="facts-proto" /><span className="ex-secondary">{svc.format}</span></dd></div>
+              <Facts termWidth="150px" className="service-facts">
+                <FactRow term="Version" mono>{svc.version}</FactRow>
+                <FactRow term="Type"><span className="facts-inline"><MethodTag method={svc.protocol} protocol={svc.protocol} className="facts-proto" /><span className="ex-secondary">{svc.format}</span></span></FactRow>
                 {det.artifacts.map((a) => (
-                  <div className="facts-row" key={a.file}>
-                    <dt>{a.role === 'primary' ? 'Primary artifact' : 'Secondary artifact'}</dt>
-                    <dd className="facts-stack"><span className="facts-file">{a.file}</span><span className="facts-kind">{a.kind} · {a.summary}</span></dd>
-                  </div>
+                  <FactRow key={a.file} term={a.role === 'primary' ? 'Primary artifact' : 'Secondary artifact'} sub={<span className="facts-kind">{a.kind} · {a.summary}</span>}>
+                    <span className="facts-file">{a.file}</span>
+                  </FactRow>
                 ))}
-                <div className="facts-row">
-                  <dt>Last import</dt>
-                  <dd className="facts-stack"><span>{formatDay(det.importedAt)} at {formatHourMinute(det.importedAt)} · {relative(det.importedAt)}</span><span className="facts-note">{det.lastImportSummary}</span></dd>
-                </div>
-                <div className="facts-row"><dt>Created</dt><dd>{formatDay(det.createdAt)}</dd></div>
-                <div className="facts-row"><dt>Statistics</dt><dd className="facts-inline ex-secondary">{fmt(det.calls7d)} calls over 7 days <RouterLink to="/usage" className="facts-link">Usage details</RouterLink></dd></div>
-              </dl>
+                <FactRow term="Last import" sub={det.lastImportSummary}>{formatDay(det.importedAt)} at {formatHourMinute(det.importedAt)} · {relative(det.importedAt)}</FactRow>
+                <FactRow term="Created">{formatDay(det.createdAt)}</FactRow>
+                <FactRow term="Statistics"><span className="facts-inline ex-secondary">{fmt(det.calls7d)} calls over 7 days <RouterLink to="/usage" className="facts-link">Usage details</RouterLink></span></FactRow>
+              </Facts>
             </section>
             {det.mcp ? (
               <section aria-labelledby="agent-ready-title" className="service-card agent-card">
