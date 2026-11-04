@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, computed, Directive, input, output } from '@angular/core';
 import { IconComponent, type IconName } from './icon';
 
 export type ResultBoxTone = 'success' | 'warning' | 'danger' | 'neutral' | 'info';
@@ -10,6 +10,10 @@ const TONE_ICON: Record<ResultBoxTone, IconName | undefined> = {
   neutral: 'warning',
   info: undefined,
 };
+
+/** The end slot: `<span mkResultBoxAction><button mkButton size="sm">Undo</button></span>`. Same class as React's `action` wrapper. */
+@Directive({ selector: '[mkResultBoxAction]', host: { class: 'result-box-action' } })
+export class ResultBoxActionDirective {}
 
 /**
  * A framed result line in a `role="status"` box: `<div mkResultBox tone="success">Secret created.</div>`.
@@ -60,3 +64,5 @@ export class ResultBoxComponent {
     return icon === null ? undefined : (icon ?? TONE_ICON[this.tone()]);
   });
 }
+
+export const RESULT_BOX = [ResultBoxComponent, ResultBoxActionDirective] as const;

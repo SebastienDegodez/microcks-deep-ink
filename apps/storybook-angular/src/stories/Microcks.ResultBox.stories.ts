@@ -1,11 +1,11 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { ButtonDirective } from '@microcks-deep-ink/registry/angular/button';
-import { ResultBoxComponent } from '@microcks-deep-ink/registry/angular/result-box';
+import { RESULT_BOX } from '@microcks-deep-ink/registry/angular/result-box';
 import { itemParams } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/ResultBox',
-  decorators: [moduleMetadata({ imports: [ResultBoxComponent, ButtonDirective] })],
+  decorators: [moduleMetadata({ imports: [...RESULT_BOX, ButtonDirective] })],
   parameters: itemParams(['result-box', 'button'], 'A framed result line in a role="status" box. Keep it mounted before the result arrives so the text is announced; the tone icon is decorative.'),
 };
 export default meta;

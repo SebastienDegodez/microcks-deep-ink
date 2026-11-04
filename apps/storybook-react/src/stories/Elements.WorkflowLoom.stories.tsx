@@ -87,3 +87,9 @@ export const NotLinked: StoryObj = {
     />
   ),
 };
+
+/** Same scenario as the Angular `Run14` story. */
+export const Run14: StoryObj = {
+  name: 'Run #14 (retry and failed step)',
+  render: () => <Loom scenario={LOOM_RESTOCK_RUN14} selected="patchPastry" />,
+};

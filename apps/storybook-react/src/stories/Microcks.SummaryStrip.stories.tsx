@@ -1,6 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
-import { SummaryStrip } from '@microcks-deep-ink/registry/react/summary-strip';
+import { SummaryStrip, SummaryStripSep } from '@microcks-deep-ink/registry/react/summary-strip';
 import { itemParams } from './_meta';
 
 export default {
@@ -42,4 +42,18 @@ export const Playground: StoryObj<typeof SummaryStrip> = {
     parts: [{ text: '12', kind: 'value' }, { text: 'operations', kind: 'label' }, { text: '', sep: true }, { text: '3', kind: 'value' }, { text: 'failing', kind: 'label' }],
   },
   argTypes: { gap: { control: 'inline-radio', options: ['normal', 'roomy'] }, values: { control: 'inline-radio', options: ['secondary', 'text'] } },
+};
+
+export const FromContent: StoryObj = {
+  name: 'Built from content',
+  render: () => (
+    <SummaryStrip style={{ maxWidth: 900 }}>
+      <span className="summary-strip-label">Saved</span>
+      <span className="summary-strip-value">URI_PARTS · rule: name</span>
+      <SummaryStripSep />
+      <span className="summary-strip-value">delay 0 ms fixed</span>
+      <SummaryStripSep />
+      <a href="#/behavior">Edit the behaviour</a>
+    </SummaryStrip>
+  ),
 };
