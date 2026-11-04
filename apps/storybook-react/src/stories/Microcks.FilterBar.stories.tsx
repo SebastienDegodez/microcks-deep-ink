@@ -52,3 +52,27 @@ export const Catalogue: StoryObj = {
     );
   },
 };
+
+export const PageSearch: StoryObj = {
+  name: 'Page search and category pills (Hub)',
+  render: function Render() {
+    const [q, setQ] = useState('');
+    const [cat, setCat] = useState('');
+    const cats: Array<[string, number]> = [['All', 8], ['Samples', 3], ['Banking', 1], ['Retail', 2]];
+    return (
+      <div className="stack">
+        <div className="inline">
+          <FilterSearch size="lg" label="Search packages and APIs" placeholder="Search packages, APIs, protocols…" value={q} onChange={(e) => setQ(e.target.value)} />
+          <span style={{ fontSize: 13, color: 'var(--text-muted)' }}>8 packages · 22 APIs</span>
+        </div>
+        <div className="inline" role="group" aria-label="Categories">
+          {cats.map(([c, n]) => (
+            <Chip key={c} size="lg" count={n} pressed={(cat || 'All') === c} onClick={() => setCat(c === 'All' ? '' : c)}>
+              {c}
+            </Chip>
+          ))}
+        </div>
+      </div>
+    );
+  },
+};

@@ -77,6 +77,8 @@ describe('admin use cases', () => {
     const uc = setup();
     const snapshot = await uc.exportSnapshot(['pastry2', 'orders']);
     expect(snapshot.operations).toBe(4);
+    expect(snapshot.sizeKb).toBe(28);
+    expect((await uc.listSnapshotServices()).map((x) => x.id)).toEqual(['pastry2', 'pastry1', 'orders', 'usersignedup', 'hellogrpc', 'movie', 'hellosoap', 'petstore', 'beer', 'rocks']);
     expect(JSON.parse(snapshot.json).services.map((s: { id: string }) => s.id)).toEqual(['pastry2', 'orders']);
     expect((await uc.previewSnapshotImport('x.json')).map((p) => p.kind)).toEqual(['replace', 'replace', 'new']);
     expect(await uc.importSnapshot('x.json')).toEqual({ created: 1, replaced: 2 });

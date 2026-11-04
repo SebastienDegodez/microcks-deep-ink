@@ -1,6 +1,7 @@
 <!-- CodeBlock. The <pre> scrolls, so it is focusable and named (role="region" + aria-label).
      Framed: a header with optional format tabs (toggle buttons, aria-pressed) and a link-style Copy.
-     A bad line shows a visible ✕ marker AND a visible note. Copy button: see copy-button. -->
+     A bad line shows a visible 11px cross marker AND a visible note.
+     data-gutter="narrow" (with data-numbered): a 28px gutter. data-tone="danger": the frame in the danger colour. Copy button: see copy-button. -->
 <figure class="code" data-language="shell" data-variant="framed">
   <figcaption>
     <span class="code-tabs" role="group" aria-label="Format">
@@ -17,9 +18,9 @@
   <pre tabindex="0" role="region" aria-label="Stored as"><code>{"dispatcher": "URI_PARTS", "dispatcherRules": "name"}</code></pre>
 </figure>
 
-<!-- Numbered, with a bad line and its note inline. -->
-<figure class="code" data-language="json" data-variant="plain" data-numbered>
-  <pre tabindex="0" role="region" aria-label="Response body"><code class="language-json"><span class="code-line"><span class="code-ln" aria-hidden="true">1</span><span class="code-text">{</span></span><span class="code-line"><span class="code-ln" aria-hidden="true">2</span><span class="code-text">  "name": "Eclair Cafe",</span></span><span class="code-line" data-bad><span class="code-ln" aria-hidden="true">3</span><span class="code-mark" aria-hidden="true">✕</span><span class="sr-only">Problem: </span><span class="code-text">  "price": "2.5"</span><span class="code-note">schema: number</span></span><span class="code-line"><span class="code-ln" aria-hidden="true">4</span><span class="code-text">}</span></span></code></pre>
+<!-- Numbered (narrow gutter, danger frame), with a bad line and its note inline. -->
+<figure class="code" data-language="json" data-variant="plain" data-numbered data-gutter="narrow" data-tone="danger">
+  <pre tabindex="0" role="region" aria-label="Response body"><code class="language-json"><span class="code-line"><span class="code-ln" aria-hidden="true">1</span><span class="code-text">{</span></span><span class="code-line"><span class="code-ln" aria-hidden="true">2</span><span class="code-text">  "name": "Eclair Cafe",</span></span><span class="code-line" data-bad><span class="code-ln" aria-hidden="true">3</span><span class="code-mark" aria-hidden="true"><svg class="icon" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg></span><span class="sr-only">Problem: </span><span class="code-text">  "price": "2.5"</span><span class="code-note">schema: number</span></span><span class="code-line"><span class="code-ln" aria-hidden="true">4</span><span class="code-text">}</span></span></code></pre>
 </figure>
 
 <!-- Diff: changed lines carry a visible "+" (22px column, kept empty on other lines) and a hidden "Changed: ". -->
