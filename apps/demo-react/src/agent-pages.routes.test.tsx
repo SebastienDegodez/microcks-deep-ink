@@ -134,8 +134,9 @@ describe('Sources and Add a source', () => {
     await h1('Add a source');
     fireEvent.click(screen.getByRole('button', { name: /Example: Pastry concierge/ }));
     expect(await screen.findByText(/3 skills discovered/)).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Import' }));
-    expect(await screen.findByRole('heading', { level: 2, name: 'Agent imported, mock is live' })).toBeTruthy();
-    expect(screen.getByRole('link', { name: 'Test the agent' }).getAttribute('href')).toContain('/tests/agent?service=concierge');
+    fireEvent.click(screen.getByRole('button', { name: 'Create source' }));
+    expect(await screen.findByRole('heading', { level: 2, name: 'Source created' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Open agent' }).getAttribute('href')).toContain('/services/concierge');
+    expect(screen.getByText('http://microcks.local:8080/a2a/Pastry+concierge/1.0/jsonrpc')).toBeTruthy();
   });
 });
