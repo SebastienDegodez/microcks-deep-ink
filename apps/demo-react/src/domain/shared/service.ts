@@ -66,6 +66,8 @@ export interface Operation {
   rule: string;
   delayMs: number;
   mcpTool?: string;
+  /** Short schema signature of the operation, as the Copilot prompt quotes it ("name path → Pastry"). */
+  schemaSummary?: string;
 }
 
 export interface Example {

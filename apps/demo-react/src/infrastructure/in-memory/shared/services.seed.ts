@@ -50,9 +50,9 @@ const op = (id: string, method: string, path: string, summary: string, calls: nu
 /** Operations by service. pastry2 comes from `Service.dc.html`; the others are plausible stubs for WP7 to enrich. */
 export const OPERATIONS: Record<string, Operation[]> = {
   pastry2: [
-    op('get-list', 'GET', '/pastries', 'List pastries by size', 412, [38, 52, 61, 47, 70, 88, 56], { dispatcher: 'URI_PARAMS', rule: 'size', mcpTool: 'get_pastries' }),
-    op('get-name', 'GET', '/pastries/{name}', 'Get a pastry by its name', 1284, [140, 162, 175, 190, 168, 221, 228], { mcpTool: 'get_pastries_name' }),
-    op('patch-name', 'PATCH', '/pastries/{name}', 'Update price or availability', 96, [9, 14, 12, 18, 11, 20, 12], { mcpTool: 'patch_pastries_name' }),
+    op('get-list', 'GET', '/pastries', 'List pastries by size', 412, [38, 52, 61, 47, 70, 88, 56], { dispatcher: 'URI_PARAMS', rule: 'size', mcpTool: 'get_pastries', schemaSummary: 'size query (S|M|L) → Pastry[]' }),
+    op('get-name', 'GET', '/pastries/{name}', 'Get a pastry by its name', 1284, [140, 162, 175, 190, 168, 221, 228], { mcpTool: 'get_pastries_name', schemaSummary: 'name path → Pastry' }),
+    op('patch-name', 'PATCH', '/pastries/{name}', 'Update price or availability', 96, [9, 14, 12, 18, 11, 20, 12], { mcpTool: 'patch_pastries_name', schemaSummary: 'name path + {price, status} body → Pastry' }),
   ],
   orders: [op('publish-order', 'PUBLISH', 'pastry-orders-events', 'Order events', 1104, [140, 150, 160, 150, 165, 170, 169], { dispatcher: 'JSON_BODY', rule: '/orderId' })],
   movie: [
