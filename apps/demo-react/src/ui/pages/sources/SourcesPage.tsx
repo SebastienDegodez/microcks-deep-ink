@@ -18,7 +18,7 @@ import { Switch } from '@/ui/components/ui/switch';
 import { ErrorBlock, LoadingBlock } from '../explore-kit/states';
 
 const STATUS_WORD: Record<SourceStatus, string> = { imported: 'Imported', warning: 'Imported · 1 warning', failed: 'Failed', inactive: 'Inactive', running: 'Importing' };
-const STATUS_ICON: Record<SourceStatus, 'check' | 'warning' | 'cross' | 'pause' | 'running'> = { imported: 'check', warning: 'warning', failed: 'cross', inactive: 'pause', running: 'running' };
+const STATUS_ICON: Record<SourceStatus, 'check' | 'warning' | 'cross' | 'pause-narrow' | 'running'> = { imported: 'check', warning: 'warning', failed: 'cross', inactive: 'pause-narrow', running: 'running' };
 const RESULT_WORD = { imported: 'Imported', warning: 'Warning', failed: 'Failed', paused: 'Paused' } as const;
 /** The "last import" shield of the detail pane: the word and fill come from the source status, not from the last outcome. */
 const SHIELD: Record<Exclude<SourceStatus, 'running'>, { word: string; status: 'success' | 'warning' | 'danger' | 'neutral' }> = {
@@ -191,18 +191,21 @@ export default function SourcesPage() {
           <FilterSearch label="Filter sources by name, URL, secret or Service" placeholder="Filter by name, URL, secret, Service…" autoComplete="off" value={query} onChange={(e) => setQuery(e.target.value)} />
           <Segmented
             label="Status"
+            pressedFill="selected"
+            iconSize={13}
             value={status}
             onChange={(id) => setStatus(id as SourceStatus | 'all')}
             options={[
               { id: 'all', label: 'All', count: counts.all },
-              { id: 'imported', label: 'Imported', icon: 'check', count: counts.imported },
-              { id: 'warning', label: 'Warnings', icon: 'warning', count: counts.warning },
-              { id: 'failed', label: 'Failing', icon: 'cross', count: counts.failed },
-              { id: 'inactive', label: 'Inactive', icon: 'pause', count: counts.inactive },
+              { id: 'imported', label: 'Imported', icon: 'check', iconTone: 'success', count: counts.imported },
+              { id: 'warning', label: 'Warnings', icon: 'warning', iconTone: 'warning', count: counts.warning },
+              { id: 'failed', label: 'Failing', icon: 'cross', iconTone: 'danger', count: counts.failed },
+              { id: 'inactive', label: 'Inactive', icon: 'pause-narrow', iconTone: 'muted', count: counts.inactive },
             ]}
           />
           <Segmented
             label="Origin"
+            pressedFill="selected"
             value={origin}
             onChange={(id) => setOrigin(id as SourceOrigin | 'all')}
             options={[{ id: 'all', label: 'All', count: originTotals.all }, ...SOURCE_ORIGINS.map((o) => ({ id: o.id, label: o.label, count: originTotals[o.id] }))]}
@@ -273,7 +276,7 @@ export default function SourcesPage() {
                       <Button asChild size="sm" variant="ghost" icon="edit" className="source-edit"><RouterLink to="/sources/new" aria-label={`Edit ${j.name}`}>Edit</RouterLink></Button>
                     </>
                   )}
-                  <Button size="sm" variant="ghost" icon="trash" id={`source-delete-${j.id}`} className="source-delete" aria-label={`Delete ${j.name}`} onClick={() => setConfirm(j.id)}>Delete</Button>
+                  <Button size="sm" variant="ghost" icon="trash-plain" id={`source-delete-${j.id}`} className="source-delete" aria-label={`Delete ${j.name}`} onClick={() => setConfirm(j.id)}>Delete</Button>
                 </div>
               </article>
             );
@@ -425,7 +428,7 @@ function facts(s: Importer, nextScanAt: Date | string): Fact[] {
   ];
 }
 
-const RESULT_ICON = { imported: 'check', warning: 'warning', failed: 'cross', paused: 'pause' } as const;
+const RESULT_ICON = { imported: 'check', warning: 'warning', failed: 'cross', paused: 'pause-narrow' } as const;
 
 function TimelineLine({ entry, when }: { entry: Extract<SyncEntry, { kind: 'run' }>; when: string }) {
   return (
