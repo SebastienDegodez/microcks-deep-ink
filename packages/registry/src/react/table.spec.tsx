@@ -82,4 +82,10 @@ describe('DataTable', () => {
     );
     expect(await axeViolations(container)).toEqual([]);
   });
+
+  it('can hide a column header visually but keep it for assistive technology', () => {
+    render(<DataTable caption="Svc" columns={[{ key: 'name', header: 'Name' }, { key: 'id', header: 'Open', headerHidden: true }]} rows={[{ name: 'A', id: 'a' }]} rowKey="id" />);
+    const th = screen.getByRole('columnheader', { name: 'Open' });
+    expect(th.querySelector('.sr-only')?.textContent).toBe('Open');
+  });
 });
