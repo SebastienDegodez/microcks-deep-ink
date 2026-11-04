@@ -114,4 +114,43 @@ describe('WorkflowLoom element', () => {
     expect(bad?.textContent).toContain('name · path · got Millefeuille');
     expect(bad?.closest('li')?.classList.contains('tall')).toBe(true);
   });
+
+  it('draws generic check rows (session run) with their spoken state', async () => {
+    const { button } = await mount({
+      steps: [
+        { ...steps[0]!, checks: [{ label: 'Call #2', state: 'pass' }, { label: 'Data passing', state: 'fail' }, { label: 'Contract', state: 'skip' }] },
+        steps[1]!,
+      ],
+    });
+    const text = (button('Step 1').textContent ?? '').replace(/\s+/g, ' ');
+    expect(text).toContain('Call #2 passed Data passing failed Contract skipped');
+  });
+
+  it('puts the inputs, then the steps, then the outputs in the Tab order', async () => {
+    const { root } = await mount();
+    const order = [...root.querySelectorAll<HTMLButtonElement>('button')]
+      .filter((b) => b.tabIndex >= 0)
+      .map((b) => (b.textContent ?? '').replace(/\s+/g, ' ').trim().split(' ').slice(0, 4).join(' '));
+    const at = (prefix: string) => order.findIndex((t) => t.startsWith(prefix));
+    expect(at('Trace workflow input')).toBeGreaterThanOrEqual(0);
+    expect(at('Trace workflow input')).toBeLessThan(at('Step 1'));
+    expect(at('Step 1')).toBeLessThan(at('Trace workflow output'));
+  });
+
+  it('focuses a node through focusStep()', async () => {
+    const { el, root } = await mount();
+    const loom = el as HTMLElement & { focusStep(id: string): Promise<boolean> };
+    await expect(loom.focusStep('patchPastry')).resolves.toBe(true);
+    expect((root.activeElement?.textContent ?? '').replace(/\s+/g, ' ')).toContain('Step 2 patchPastry');
+    await expect(loom.focusStep('nope')).resolves.toBe(false);
+  });
+
+  it('lists the inputs before and the outputs after the table in the table view', async () => {
+    const { root, button } = await mount({ outputNote: 'No outputs: #14 failed.' });
+    button('Show as table').click();
+    await waitFor(() => expect(root.querySelector('table')).toBeTruthy());
+    const blocks = [...root.querySelectorAll('.io-line, .table-wrap')].map((n) => (n.classList.contains('table-wrap') ? 'table' : n.firstElementChild?.textContent));
+    expect(blocks).toEqual(['Inputs', 'table', 'Outputs']);
+  });
 });
+
