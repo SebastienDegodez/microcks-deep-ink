@@ -27,7 +27,7 @@ const callsText = (s: ServiceSummary) => `${fmt(s.calls24h)} ${s.protocol === 'E
 /** The label chips of the filter panel (the prototype shows a curated set, not every label). */
 const FEATURED_LABELS = ['domain=pastry', 'domain=movies', 'status=GA', 'status=beta', 'team=platform'];
 
-const lastTestText = (s: ServiceSummary, relative: (d: string) => string) => (s.lastTest ? `#${s.lastTest.runId} · ${relative(s.lastTest.when)}` : 'no test run yet');
+const lastTestText = (s: ServiceSummary, relative: (d: string) => string) => (s.lastTest ? [`#${s.lastTest.runId}`, s.lastTest.checks ? `${s.lastTest.checks.passed}/${s.lastTest.checks.total}` : null, relative(s.lastTest.when)].filter(Boolean).join(' · ') : 'no test run yet');
 
 export default function CataloguePage() {
   usePageTitle('APIs & Services · Microcks');
