@@ -46,5 +46,3 @@
 .agent-json-text :is([data-tok='colon'], [data-tok='punct']) { color: var(--text-muted); }
 .agent-json-text [data-tok='num'] { color: var(--warning); }
 .agent-json-text [data-tok='lit'] { color: var(--proto-a2a); }
-/* Text-only copy buttons, as in the prototype: the URL keeps the room. The result is still announced by CopyButton. */
-.agent-copy-plain > .icon { display: none; }
