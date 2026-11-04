@@ -397,10 +397,9 @@ function ApiServicePage() {
                     {selected && spec ? (
                       <div className="example-detail">
                         {selected.reviewState === 'pending' ? (
-                          <div role="note" className="example-detail-note">
-                            <Icon name="spark" size={14} />
-                            <span>Proposed by AI from the contract's <span className="ex-mono">{schemaName}</span> schema. The mock only serves it once accepted.</span>
-                          </div>
+                          <Callout tone="ai" variant="outline" title="">
+                            Proposed by AI from the contract's <span className="ex-mono">{schemaName}</span> schema. The mock only serves it once accepted.
+                          </Callout>
                         ) : null}
                         <div className="exchange">
                           <section className="exchange-card" aria-label={`Request of ${selected.name}`}>

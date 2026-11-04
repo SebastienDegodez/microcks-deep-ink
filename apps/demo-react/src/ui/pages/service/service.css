@@ -171,18 +171,6 @@
 .example-rejected > button { padding: 0; border: 0; background: transparent; color: var(--link); font: 600 12px/1.4 var(--font-ui); cursor: pointer; }
 
 .example-detail { flex: 999 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
-.example-detail-note {
-  display: flex;
-  align-items: flex-start;
-  gap: 8px;
-  padding: 9px 12px;
-  border: 1px dashed var(--warning);
-  border-radius: 6px;
-  color: var(--warning);
-  font-size: 13px;
-  line-height: 1.5;
-}
-.example-detail-note > .icon { flex: none; margin-top: 3px; }
 
 /* Request / response pair (also on the Copilot screen). */
 .exchange { display: flex; flex-wrap: wrap; gap: 10px; align-items: stretch; }
