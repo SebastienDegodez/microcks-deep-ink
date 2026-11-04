@@ -1,5 +1,6 @@
 import { useId, useState } from 'react';
 import { WEEKDAY_HEADERS, formatCount, heatmapWeeks, type UsageView } from '@/domain/observe';
+import { Facts } from '@/ui/components/ui/facts';
 import { Panel } from '@/ui/components/ui/panel';
 import { useRovingSelection } from '../tests/roving';
 import './heatmap.css';
@@ -85,20 +86,19 @@ export function UsageHeatmap({ view }: { view: UsageView }) {
           More
         </span>
       </div>
-      <dl className="facts">
-        <div>
-          <dt>12-week total</dt>
-          <dd>{formatCount(heatmap.total)}</dd>
-        </div>
-        <div>
-          <dt>Weekday average</dt>
-          <dd>{formatCount(heatmap.weekdayAverage)}</dd>
-        </div>
-        <div>
-          <dt>Busiest day</dt>
-          <dd>{heatmap.busiest}</dd>
-        </div>
-      </dl>
+      <Facts
+        layout="columns"
+        columns={3}
+        gap="10px"
+        size="sm"
+        strong
+        className="us-heat-facts"
+        items={[
+          { term: '12-week total', value: formatCount(heatmap.total), mono: true },
+          { term: 'Weekday average', value: formatCount(heatmap.weekdayAverage), mono: true },
+          { term: 'Busiest day', value: heatmap.busiest, mono: true },
+        ]}
+      />
       <table className="sr-only">
         <caption>Invocations per week and weekday</caption>
         <thead>
