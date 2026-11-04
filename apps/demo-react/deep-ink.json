@@ -141,10 +141,10 @@
     "drop-zone": {
       "version": "0.2.0",
       "files": {
-        "src/ui/components/ui/drop-zone.tsx": "747513a3b45164185e215bc983a2de4b8ab1d44c312a7e8ac2c3485807aa7665",
-        "src/ui/styles/drop-zone.css": "a3e17955601762c2925b8b3123c47dfd2dabea107ba925108a2a5e74eb28b449"
+        "src/ui/components/ui/drop-zone.tsx": "61c60c6b974f0229eb57f901f2216114e45c51dbb19d405ce245d21e6ba89b6f",
+        "src/ui/styles/drop-zone.css": "25ea0926bde6b043d1edfefb8a8bf04e87d0c00dd4b1c04bb617e3a9a610337c"
       },
-      "hash": "9553aa5550e73f32"
+      "hash": "0350e46774f23baf"
     },
     "empty-state": {
       "version": "0.2.0",
