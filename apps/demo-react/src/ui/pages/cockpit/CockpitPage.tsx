@@ -1,4 +1,5 @@
 import '../explore-kit/explore.css';
+import './cockpit.css';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 import type { OperationOutcome } from '@/domain/testing';
@@ -26,6 +27,9 @@ const START_STEPS = [
 
 const toOutcomes = (s: ServiceSummary): OperationResult[] =>
   s.lastResults ? s.lastResults.map((r) => (r === 'pass' ? 'pass' : 'fail')) : Array.from({ length: s.operationCount }, () => 'untested');
+
+/** Conformance level, same thresholds as the prototype: 80 and 50. */
+const level = (c: number | null) => (c === null ? 'none' : c >= 80 ? 'high' : c >= 50 ? 'mid' : 'low');
 
 const isLive = (s: ServiceSummary) => s.id === 'pastry2' || s.protocol === 'EVENT';
 
@@ -64,6 +68,8 @@ export default function CockpitPage() {
     <>
       <Button
         variant="secondary"
+        className="button-dashed"
+        icon="window"
         aria-pressed={empty}
         onClick={() => {
           setEmpty(!empty);
@@ -72,10 +78,10 @@ export default function CockpitPage() {
       >
         {empty ? 'Back to running instance' : 'Show empty install'}
       </Button>
-      <Button asChild icon="upload">
+      <Button asChild variant="secondary" icon="download">
         <RouterLink to="/sources/new">Import a contract</RouterLink>
       </Button>
-      <Button asChild variant="secondary" icon="play">
+      <Button asChild variant="primary" icon="play">
         <RouterLink to="/tests/create">Run a test</RouterLink>
       </Button>
     </>
@@ -117,10 +123,10 @@ export default function CockpitPage() {
   const firstOpen = START_STEPS.findIndex((s) => !done[s.id]);
   const tests = empty ? [] : data.recentTests;
   const passedRuns = empty ? 0 : 14;
-  const failedRuns = empty ? 0 : 6;
+  const failedRuns = empty ? 0 : 7;
 
   return (
-    <div className="ex-stack">
+    <div className="cockpit">
       <PageHeader
         title="Cockpit"
         size="lg"
@@ -133,82 +139,90 @@ export default function CockpitPage() {
         actions={actions}
       />
 
-      <section aria-label="Key figures" className="ex-kpi-grid">
-        <div className="ex-kpi">
-          <div className="ex-kpi-head">
-            <h2>APIs &amp; services</h2>
+      <section aria-label="Key figures" className="kpi-grid">
+        <div className="kpi-card">
+          <div className="kpi-card-head">
+            <h2 className="kpi-card-title">APIs &amp; services</h2>
             <RouterLink to="/services">Catalogue</RouterLink>
           </div>
-          <div>
-            <span className="ex-kpi-value">{services.length}</span>{' '}
-            <span className="ex-secondary">{empty ? 'no contract imported yet' : `${services.reduce((n, s) => n + s.operationCount, 0)} operations`}</span>
+          <div className="kpi-card-figure">
+            <span className="kpi-card-value">{services.length}</span>
+            <span className="kpi-card-unit">{empty ? 'no contract imported yet' : `${services.reduce((n, s) => n + s.operationCount, 0)} operations`}</span>
           </div>
-          <ul className="ex-row ex-plain-list" style={{ display: 'flex', flexWrap: 'wrap' }} aria-label="Services per protocol">
+          <ul className="kpi-protocols" aria-label="Services per protocol">
             {PROTOCOL_ORDER.map((p) => (
               <li key={p}>
-                <Chip>
-                  {p} {services.filter((s) => s.protocol === p).length}
-                </Chip>
+                <ApiBadge protocol={p} name={String(services.filter((s) => s.protocol === p).length)} size="sm" />
               </li>
             ))}
           </ul>
         </div>
-        <div className="ex-kpi">
-          <div className="ex-kpi-head">
-            <h2>Mock invocations today</h2>
-            {empty ? null : <LiveIndicator />}
+        <div className="kpi-card">
+          <div className="kpi-card-head">
+            <h2 className="kpi-card-title">Mock invocations today</h2>
+            {empty ? null : <LiveIndicator variant="inline" />}
           </div>
-          <div>
-            <span className="ex-kpi-value">{fmt(syncCalls)}</span> <span className="ex-secondary">requests</span>
+          <div className="kpi-card-figure">
+            <span className="kpi-card-value">{fmt(syncCalls)}</span>
+            <span className="kpi-card-unit">requests</span>
           </div>
           <div
-            className="ex-bars"
+            className="kpi-bars"
             role="img"
             aria-label={empty ? 'No mock invocation yet today' : `Mock requests per hour today, 00 h to 11 h: ${HOURS.join(', ')}`}
           >
             {Array.from({ length: 24 }, (_, h) => {
               const v = empty ? 0 : (HOURS[h] ?? 0);
               const future = h >= HOURS.length;
-              return <span key={h} data-future={future ? '' : undefined} style={{ height: future ? '2px' : `${Math.max(2, Math.round((v / hMax) * 100))}%` }} />;
+              return (
+                <span
+                  key={h}
+                  data-future={future ? '' : undefined}
+                  data-current={h === HOURS.length - 1 ? '' : undefined}
+                  style={{ height: future ? '2px' : `${Math.max(2, Math.round((v / hMax) * 100))}%` }}
+                />
+              );
             })}
           </div>
-          <span className="ex-small ex-secondary">
+          <span className="kpi-card-foot">
             {empty ? 'Mocks appear as soon as a contract is imported.' : `${fmt(msgs)} async messages published · last request 12 s ago`}
           </span>
         </div>
-        <div className="ex-kpi">
-          <div className="ex-kpi-head">
-            <h2>Tests · last 7 days</h2>
+        <div className="kpi-card">
+          <div className="kpi-card-head">
+            <h2 className="kpi-card-title">Tests · last 7 days</h2>
             <RouterLink to="/tests/service/pastry2">History</RouterLink>
           </div>
-          <div>
-            <span className="ex-kpi-value">{passedRuns + failedRuns}</span> <span className="ex-secondary">runs</span>
+          <div className="kpi-card-figure">
+            <span className="kpi-card-value">{passedRuns + failedRuns}</span>
+            <span className="kpi-card-unit">runs</span>
           </div>
-          <div className="ex-meter" role="img" aria-label={empty ? 'No test run yet' : `${passedRuns} passed, ${failedRuns} failed over the last 7 days`}>
-            <span style={{ width: `${passedRuns + failedRuns ? (passedRuns / (passedRuns + failedRuns)) * 100 : 0}%`, background: 'var(--success)' }} />
-            <span style={{ width: `${passedRuns + failedRuns ? (failedRuns / (passedRuns + failedRuns)) * 100 : 0}%`, background: 'var(--danger)' }} />
+          <div className="kpi-meter" role="img" aria-label={empty ? 'No test run yet' : `${passedRuns} passed, ${failedRuns} failed over the last 7 days`}>
+            <span style={{ flex: `${passedRuns} 1 0`, background: 'var(--success)' }} />
+            <span style={{ flex: `${failedRuns} 1 0`, background: 'var(--danger)' }} />
           </div>
-          <div className="ex-row ex-small">
-            <span><Icon name="check" size={14} /> {passedRuns} passed</span>
-            <span><Icon name="cross" size={14} /> {failedRuns} failed</span>
+          <div className="kpi-counts">
+            <span className="tone-success"><Icon name="check-circle" size={14} /> {passedRuns} passed</span>
+            <span className="tone-danger"><Icon name="x-circle" size={14} /> {failedRuns} failed</span>
           </div>
-          <span className="ex-small">
-            <RouterLink to="/workflows">Workflows {empty ? 0 : 5}</RouterLink>{' '}
-            <span className="ex-secondary">{empty ? '· no Arazzo document imported' : '· 1 failing'}</span>
+          <span className="kpi-workflows">
+            <RouterLink to="/workflows"><Icon name="dispatcher" size={12} />Workflows {empty ? 0 : 5}</RouterLink>
+            <span className={empty ? undefined : 'tone-danger'}>{empty ? '· no Arazzo document imported' : '· 1 failing'}</span>
           </span>
         </div>
-        <div className="ex-kpi">
-          <div className="ex-kpi-head">
-            <h2>Average conformance</h2>
+        <div className="kpi-card">
+          <div className="kpi-card-head">
+            <h2 className="kpi-card-title">Average conformance</h2>
             <RouterLink to="/usage">Details</RouterLink>
           </div>
-          <div>
-            <span className="ex-kpi-value">{avg === null ? '—' : `${avg}%`}</span> <span className="ex-secondary">{avg === null ? 'no test yet' : 'current score'}</span>
+          <div className="kpi-card-figure">
+            <span className="kpi-card-value" data-level={level(avg)}>{avg === null ? '—' : `${avg}%`}</span>
+            <span className="kpi-card-unit">{avg === null ? 'no test yet' : 'current score'}</span>
           </div>
-          <div className="ex-meter" aria-hidden="true">
-            <span style={{ width: `${avg ?? 0}%`, background: (avg ?? 0) >= 80 ? 'var(--success)' : (avg ?? 0) >= 50 ? 'var(--warning)' : 'var(--danger)' }} />
+          <div className="kpi-gauge" data-level={level(avg)} aria-hidden="true">
+            <span style={{ width: `${avg ?? 0}%` }} />
           </div>
-          <span className="ex-small ex-secondary">
+          <span className="kpi-card-foot">
             {avg === null ? 'Run a first test to get a conformance score.' : `Across ${tested.length} tested services · ${services.length - tested.length} never tested`}
           </span>
         </div>
