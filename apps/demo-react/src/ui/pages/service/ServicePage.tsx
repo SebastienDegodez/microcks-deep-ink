@@ -335,7 +335,7 @@ function ApiServicePage() {
                             return (
                               <span key={s.stepId} className="wf-usage-step" data-on={on ? '' : undefined} title={`operationId: ${s.operationId}${on ? ' · calls this operation' : ''}`}>
                                 {s.stepId}
-                                {on ? <span className="sr-only"> (calls this operation)</span> : null}
+                                <span className="sr-only"> (operationId {s.operationId}{on ? ', calls this operation' : ''})</span>
                               </span>
                             );
                           })}
@@ -468,8 +468,8 @@ function ApiServicePage() {
                   ].map((e) => (
                     <div key={e.name} className="endpoint-row">
                       <span className="endpoint-row-name"><span>{e.name}</span><span className="endpoint-row-spec">{e.spec}</span></span>
-                      <span className="endpoint-row-url">{e.url}</span>
-                      <CopyButton value={e.url} label="Copy" aria-label={`Copy ${e.name} URL`} className="endpoint-row-copy" />
+                      <span className="endpoint-row-url" title={e.url}>{e.url}</span>
+                      <CopyButton value={e.url} label="Copy" variant="link" aria-label={`Copy ${e.name} URL`} className="endpoint-row-copy" />
                     </div>
                   ))}
                 </div>
