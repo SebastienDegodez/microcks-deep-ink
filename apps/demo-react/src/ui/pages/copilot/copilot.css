@@ -26,9 +26,8 @@
 .copilot-rule > .icon { flex: none; margin-top: 2px; color: var(--warning); }
 .copilot-rule strong { color: var(--text); font-weight: 600; }
 
-/* Two columns: settings (300-380px), proposals */
-.copilot-layout { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
-.copilot-settings { flex: 1 1 300px; max-width: 380px; min-width: 0; display: flex; flex-direction: column; gap: 16px; }
+/* Two columns: registry split-pane, settings side (300-380px at every width), proposals main */
+.copilot-settings { display: flex; flex-direction: column; gap: 16px; }
 .copilot-section-label { margin: 0; font-size: 11px; font-weight: 600; line-height: normal; letter-spacing: 0.06em; text-transform: uppercase; color: var(--text-muted); }
 .copilot-op { display: flex; flex-direction: column; gap: 8px; }
 .copilot-op > .copilot-section-label { padding: 0 4px; }
@@ -58,7 +57,7 @@
 
 /* Proposals */
 .copilot-proposals {
-  flex: 999 1 560px; min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 14px;
+  display: flex; flex-direction: column; gap: 14px;
   padding: 20px; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas);
 }
 .copilot-proposals-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }

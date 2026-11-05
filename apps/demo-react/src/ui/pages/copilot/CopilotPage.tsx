@@ -12,6 +12,7 @@ import { Textarea } from '@/ui/components/ui/input';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { OpPickList } from '@/ui/components/ui/op-pick';
 import { SectionLabel } from '@/ui/components/ui/section-label';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { fresh, ProposalRow, type Item, type MockTarget } from './ProposalRow';
 
@@ -234,8 +235,8 @@ export default function CopilotPage() {
         <span><strong>AI examples are never served by the mock, counted in conformance tests or exported until a person accepts them.</strong> Accepted examples keep an AI provenance tag on the Service.</span>
       </div>
 
-      <div className="copilot-layout">
-        <div className="copilot-settings">
+      <SplitPane sideWidth="300px" sideMax="380px" mainWidth="560px" keepSideMax>
+        <SplitPaneSide className="copilot-settings">
           <section aria-labelledby="sec-op" className="copilot-op">
             <h2 id="sec-op" className="copilot-section-label">1 · Operation</h2>
             <OpPickList
@@ -306,9 +307,9 @@ export default function CopilotPage() {
             )}
             {!isGenerating && state.items.length > 0 ? <span className="copilot-help">Generating again replaces pending and rejected proposals. Accepted ones are kept.</span> : null}
           </section>
-        </div>
+        </SplitPaneSide>
 
-        <section aria-labelledby="sec-proposals" className="copilot-proposals">
+        <SplitPaneMain as="section" aria-labelledby="sec-proposals" className="copilot-proposals">
           <div className="copilot-proposals-head">
             <div className="copilot-proposals-title">
               <h2 id="sec-proposals">Proposals</h2>
@@ -387,8 +388,8 @@ export default function CopilotPage() {
               <pre role="region" tabIndex={0} aria-label={`${exportFile} content`}>{exported.text}</pre>
             </div>
           ) : null}
-        </section>
-      </div>
+        </SplitPaneMain>
+      </SplitPane>
     </div>
   );
 }

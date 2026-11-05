@@ -256,7 +256,7 @@ function ApiServicePage() {
         ]}
       >
         <TabPanel id="operations" idPrefix="svc" value={tabId}>
-          <SplitPane>
+          <SplitPane sideMax="360px" keepSideMax>
             <SplitPaneSide className="op-rail">
               <SectionLabel as="p" size="sm" weight="regular" split className="op-rail-head"><span>{pluralize(ops.data?.length ?? 0, 'operation')}</span><span>calls · 7 d</span></SectionLabel>
               <OpPickList
@@ -361,7 +361,7 @@ function ApiServicePage() {
                       {aiAccepted.length ? ` · ${pluralize(aiAccepted.length, 'AI example')} accepted` : ''}
                     </span>
                   </div>
-                  <SplitPane sideWidth="220px" sideMax="300px" mainWidth="420px" gap="16px">
+                  <SplitPane sideWidth="220px" sideMax="300px" mainWidth="420px" gap="16px" keepSideMax>
                     <SplitPaneSide className="example-col">
                     <ul className="example-list" aria-label="Examples of the operation">
                       {ordered.map((e) => {
