@@ -14,6 +14,7 @@ import { Field } from '@/ui/components/ui/field';
 import { Icon } from '@/ui/components/ui/icon';
 import { Input, Textarea } from '@/ui/components/ui/input';
 import { Segmented } from '@/ui/components/ui/segmented';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
 import './secrets.css';
@@ -79,8 +80,8 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
   };
 
   return (
-    <div className="ad-secrets">
-      <section className="ad-secrets-list" aria-labelledby="ad-secrets-title">
+    <SplitPane mainWidth="560px" sideWidth="360px" sideMax="none" className="ad-secrets">
+      <SplitPaneMain as="section" className="ad-secrets-list" aria-labelledby="ad-secrets-title">
         <div className="ad-section-head ad-section-head-center">
           <div className="ad-section-title">
             <h2 id="ad-secrets-title" tabIndex={-1}>Authentication secrets</h2>
@@ -149,21 +150,23 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
             </tbody>
           </table>
         </div>
-      </section>
+      </SplitPaneMain>
       {form ? (
-        <SecretForm
-          key={form.id ?? 'new'}
-          initial={form}
-          names={list.map((s) => s.name)}
-          onCancel={closeForm}
-          onSaved={(message) => {
-            closeForm();
-            notify(message);
-            secrets.reload();
-          }}
-        />
+        <SplitPaneSide>
+          <SecretForm
+            key={form.id ?? 'new'}
+            initial={form}
+            names={list.map((s) => s.name)}
+            onCancel={closeForm}
+            onSaved={(message) => {
+              closeForm();
+              notify(message);
+              secrets.reload();
+            }}
+          />
+        </SplitPaneSide>
       ) : null}
-    </div>
+    </SplitPane>
   );
 }
 
