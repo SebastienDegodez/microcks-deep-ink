@@ -1,11 +1,14 @@
-import type { HTMLAttributes, ReactNode } from 'react';
+import { Fragment, isValidElement, type HTMLAttributes, type ReactNode } from 'react';
 import { Icon, type IconName } from './icon';
 
 export type Outcome = 'conformant' | 'failed' | 'partial' | 'running' | 'never';
 
 export interface StatusBadgeProps extends HTMLAttributes<HTMLSpanElement> {
   status: Outcome;
-  /** Overrides the default word, e.g. "Retrying · attempt 2 of 3" with markup. The word is always rendered. */
+  /**
+   * Overrides the default word, e.g. "Retrying · attempt 2 of 3" with markup. The word is always rendered:
+   * an empty label (see `isEmptyLabel`) falls back to the default word.
+   */
   label?: ReactNode;
   /** `lg`: page-level status (14px word, 15px icon, 2.6 stroke, normal line height). */
   size?: 'md' | 'sm' | 'lg';
@@ -29,6 +32,18 @@ const ICON: Record<'circled' | 'bare', Record<Outcome, IconName>> = {
   bare: { conformant: 'check', failed: 'cross', partial: 'warning', running: 'running', never: 'circle' },
 };
 
+/**
+ * Empty = renders no text: null, undefined, booleans, blank strings, and arrays or fragments holding only those.
+ * Any other element counts as content (what a component renders is unknown here).
+ */
+function isEmptyLabel(node: ReactNode): boolean {
+  if (node == null || typeof node === 'boolean') return true;
+  if (typeof node === 'string') return node.trim() === '';
+  if (Array.isArray(node)) return node.every(isEmptyLabel);
+  if (isValidElement<{ children?: ReactNode }>(node) && node.type === Fragment) return isEmptyLabel(node.props.children);
+  return false;
+}
+
 /** Icon + word + color. The word is never optional. */
 export function StatusBadge({ status, label, size = 'md', shape = 'circled', className, ...rest }: StatusBadgeProps) {
   const known = status in WORD ? status : 'never';
@@ -36,7 +51,7 @@ export function StatusBadge({ status, label, size = 'md', shape = 'circled', cla
   return (
     <span {...rest} className={['status', className].filter(Boolean).join(' ')} data-status={status} data-size={size} data-shape={shape}>
       <Icon name={ICON[shape][known]} size={iconSize} />
-      <span>{label ?? WORD[known]}</span>
+      <span>{isEmptyLabel(label) ? WORD[known] : label}</span>
     </span>
   );
 }

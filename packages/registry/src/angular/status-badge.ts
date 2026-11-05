@@ -26,7 +26,7 @@ const ICON: Record<'circled' | 'bare', Record<Outcome, IconName>> = {
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent],
   host: { class: 'status', '[attr.data-status]': 'status()', '[attr.data-size]': 'size()', '[attr.data-shape]': 'shape()' },
-  template: `<svg mkIcon [name]="icon()" [size]="iconSize()"></svg><span><ng-content>{{ label() ?? word() }}</ng-content></span>`,
+  template: `<svg mkIcon [name]="icon()" [size]="iconSize()"></svg><span><ng-content>{{ text() }}</ng-content></span>`,
 })
 export class StatusBadgeComponent {
   readonly status = input.required<Outcome>();
@@ -46,8 +46,10 @@ export class StatusBadgeComponent {
   protected icon(): IconName {
     return ICON[this.shape()][this.known()];
   }
-  protected word(): string {
-    return WORD[this.known()];
+  /** A blank label (undefined, empty or whitespace only) falls back to the default word. */
+  protected text(): string {
+    const label = this.label();
+    return label?.trim() ? label : WORD[this.known()];
   }
   protected iconSize(): number {
     if (this.size() === 'lg') return 15;

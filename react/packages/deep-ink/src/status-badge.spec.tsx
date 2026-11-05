@@ -76,4 +76,22 @@ describe('StatusBadge', () => {
     );
     expect(await axeViolations(container)).toEqual([]);
   });
+
+  it.each([
+    ['false', false],
+    ['null', null],
+    ['an empty string', ''],
+    ['a blank string', '   '],
+    ['an empty fragment', <></>],
+    ['a fragment of nothing', <>{false}{null}</>],
+    ['an empty array', []],
+  ])('falls back to the status word when the label is %s', (_, label) => {
+    render(<StatusBadge status="running" role="status" label={label} />);
+    expect(screen.getByRole('status').textContent).toBe('Running');
+  });
+
+  it('keeps a label with content as-is, including 0', () => {
+    render(<StatusBadge status="failed" role="status" label={0} />);
+    expect(screen.getByRole('status').textContent).toBe('0');
+  });
 });
