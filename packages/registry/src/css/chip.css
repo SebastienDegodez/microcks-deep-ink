@@ -3,7 +3,7 @@
     box-sizing: border-box;
     display: inline-flex;
     align-items: center;
-    gap: 4px;
+    gap: var(--space-1);
     min-height: 24px;
     margin: 0;
     padding: 2px 10px;
@@ -32,7 +32,7 @@
     min-height: 30px;
     padding: 0 12px;
     gap: 6px;
-    font: 400 13px/18px var(--font-ui);
+    font: var(--type-small);
   }
   .chip[data-size="lg"] .chip-count { font: 400 11px/16px var(--font-mono); }
   button.chip[data-size="lg"] { min-height: 30px; padding: 0 12px; }
@@ -101,7 +101,7 @@
   /* Protocol filter: square corners, a 9px swatch in the protocol colour, filled when pressed. */
   .chip[data-protocol] {
     --chip-proto: var(--proto, var(--proto-rest));
-    gap: 8px;
+    gap: var(--space-2);
     min-height: 30px;
     padding: 0 10px;
     border-radius: var(--radius-control);

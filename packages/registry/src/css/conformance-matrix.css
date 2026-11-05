@@ -16,7 +16,7 @@
     width: max(260px, calc(100% * 1.7 / (1.7 + var(--matrix-columns, 3))));
     padding: 10px 14px;
     color: var(--text-muted);
-    font: 600 12px/16px var(--font-ui);
+    font: var(--type-label);
     letter-spacing: 0.04em;
     text-transform: uppercase;
   }

@@ -3,7 +3,7 @@
     --bar-chart-height: 160px;
     --bar-chart-gap: 4px;
     display: flex;
-    gap: 8px;
+    gap: var(--space-2);
     align-items: stretch;
     min-width: 0;
   }
@@ -21,7 +21,7 @@
     color: var(--text-muted);
   }
   .bar-chart-axis[data-side="end"] { align-items: flex-start; color: var(--link); }
-  .bar-chart-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
+  .bar-chart-main { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: var(--space-1); }
   .bar-chart-plot { position: relative; height: var(--bar-chart-height); border-bottom: 1px solid var(--border-strong); }
   .bar-chart-grid { position: absolute; left: 0; right: 0; border-top: 1px dashed var(--border); }
   .bar-chart-bars {

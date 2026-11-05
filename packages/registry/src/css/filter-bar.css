@@ -11,14 +11,14 @@
     border: 1px solid var(--border);
     border-radius: var(--radius-panel);
   }
-  .filter-bar-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; min-width: 0; }
-  .filter-bar-row:first-child { gap: 12px; }
+  .filter-bar-row { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); min-width: 0; }
+  .filter-bar-row:first-child { gap: var(--space-3); }
   .filter-bar-label {
     flex: none;
     width: 76px;
     margin: 0;
     color: var(--text-muted);
-    font: 600 12px/16px var(--font-ui);
+    font: var(--type-label);
     letter-spacing: 0.06em;
     text-transform: uppercase;
   }
@@ -26,7 +26,7 @@
     box-sizing: border-box;
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: var(--space-2);
     flex: 1 1 260px;
     min-width: 0;
     max-width: 420px;
@@ -53,7 +53,7 @@
   }
   /* The ring is drawn on the field, around the input. */
   .filter-bar-search > input:focus-visible { outline-color: transparent; box-shadow: none; }
-  .filter-bar-end { margin-inline-start: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+  .filter-bar-end { margin-inline-start: auto; display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); }
   .filter-bar-reset {
     display: inline-flex;
     align-items: center;

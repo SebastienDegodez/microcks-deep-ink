@@ -7,7 +7,7 @@
     color: var(--status-color);
     font: 600 13px/18px var(--font-ui);
   }
-  .status[data-size="sm"] { gap: 4px; font-size: 12px; line-height: 16px; }
+  .status[data-size="sm"] { gap: var(--space-1); font-size: 12px; line-height: 16px; }
   /* Summary rows (catalogue, service tests list) keep a 13px word next to the ring. */
   .status[data-size="sm"][data-shape="circled"] { gap: 6px; font-size: 13px; line-height: 18px; }
   /* Page-level status (test run verdict, running chip): 14px word, no fixed line box. */

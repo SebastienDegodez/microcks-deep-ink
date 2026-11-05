@@ -20,7 +20,7 @@
     min-height: 32px;
     margin: 0;
     padding: 0 10px;
-    font: 400 13px/18px var(--font-ui);
+    font: var(--type-small);
     color: var(--text-secondary);
     background: transparent;
     border: 0;
@@ -100,7 +100,7 @@
   .segmented[data-variant="joined"][data-size="sm"] > button {
     min-height: 28px;
     padding: 6px 12px;
-    font: 600 12px/16px var(--font-mono);
+    font: var(--type-badge);
     border-inline-end: 0;
   }
 

@@ -22,7 +22,7 @@
   button.skill-item:hover { border-color: var(--border-strong); }
   /* Selected: selected fill, action border and the pressed state. */
   button.skill-item[aria-pressed="true"] { background: var(--selected); border-color: var(--action); }
-  .skill-item[data-variant="fallback"] { gap: 4px; background: transparent; border-style: dashed; }
+  .skill-item[data-variant="fallback"] { gap: var(--space-1); background: transparent; border-style: dashed; }
   button.skill-item[data-variant="fallback"][aria-pressed="true"] { background: var(--selected); }
 
   .skill-item-head { display: flex; align-items: baseline; justify-content: space-between; gap: var(--space-3); }
@@ -34,7 +34,7 @@
   .skill-item-foot { display: flex; flex-wrap: wrap; align-items: center; gap: 4px 6px; }
   .skill-item-tag { padding: 0 7px; border: 1px solid var(--border); border-radius: var(--radius-pill); font: 400 11px/normal var(--font-mono); color: var(--text-secondary); }
   .skill-item-meta { font: 400 11px/normal var(--font-mono); color: var(--text-muted); }
-  .skill-item-result { display: inline-flex; align-items: center; gap: 4px; margin-inline-start: auto; font: 600 11px/normal var(--font-ui); }
+  .skill-item-result { display: inline-flex; align-items: center; gap: var(--space-1); margin-inline-start: auto; font: 600 11px/normal var(--font-ui); }
   .skill-item-result[data-result="pass"] { color: var(--success); }
   .skill-item-result[data-result="fail"] { color: var(--danger); }
   .skill-item-result > .icon { stroke-width: 2.4; }

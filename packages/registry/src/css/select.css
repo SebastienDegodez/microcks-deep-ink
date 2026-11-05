@@ -5,7 +5,7 @@
     min-height: 40px;
     margin: 0;
     padding: 0 36px 0 12px;
-    font: 400 15px/22px var(--font-ui);
+    font: var(--type-body);
     color: var(--text);
     background-color: var(--surface);
     /* Caret drawn with gradients so it follows currentColor in both themes. */
