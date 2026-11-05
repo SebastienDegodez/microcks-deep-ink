@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { IconComponent } from './icon';
 
 export type RunSegment = 'done' | 'failed' | 'warn' | 'current' | 'queued';
@@ -12,6 +12,7 @@ const COUNT_ICON = { pass: 'check', fail: 'cross', warn: 'warning', pending: 'ci
 
 /**
  * Progress of a running test: the count done, what runs now, one segment per step, the counts by result.
+ * `label` is the accessible name of the section; `busy` marks the bar as updating (aria-busy="true" on the bar only); step announcements are not affected.
  * Project a control for the end of the counts row with `[mkRunProgressAction]`.
  */
 @Component({
@@ -32,7 +33,7 @@ const COUNT_ICON = { pass: 'check', fail: 'cross', warn: 'warning', pending: 'ci
         </div>
       }
     </div>
-    <div class="run-progress-bar" role="img" [attr.aria-label]="summary()">
+    <div class="run-progress-bar" role="img" [attr.aria-label]="summary()" [attr.aria-busy]="busy() ? 'true' : null">
       @for (s of segments(); track $index) {<span [attr.data-seg]="s"></span>}
     </div>
     <!-- The note comes before the foot in the DOM, so the reason is read before the step control; CSS shows it last. -->
@@ -50,7 +51,10 @@ const COUNT_ICON = { pass: 'check', fail: 'cross', warn: 'warning', pending: 'ci
   `,
 })
 export class RunProgressComponent {
+  /** Accessible name of the section. */
   readonly label = input('Progress');
+  /** busy marks the bar as updating (aria-busy="true" on the bar only); step announcements are not affected. Absent by default. */
+  readonly busy = input(false, { transform: booleanAttribute });
   readonly done = input.required<number>();
   readonly total = input.required<number>();
   /** "test steps done", "matrix cells filled". */

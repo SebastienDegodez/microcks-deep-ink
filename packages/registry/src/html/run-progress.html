@@ -1,6 +1,10 @@
 <!--
   RunProgress. The count done is text; the bar is role="img" named by "5 of 7 test steps done";
   "Now calling" is a polite live region. The current segment pulses (not under reduced motion).
+  aria-label is the accessible name of the section. busy marks the bar as updating; step announcements are not affected:
+  while the run updates, add aria-busy="true" on the bar only (never on the section, an ancestor of the live region)
+  and remove it when the run settles:
+    <div class="run-progress-bar" role="img" aria-label="5 of 7 test steps done" aria-busy="true">
 -->
 <section class="run-progress" aria-label="Progress">
   <div class="run-progress-top">
