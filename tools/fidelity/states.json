@@ -62,5 +62,6 @@
  {"id": "workflow-copy-mock-curl", "route": "/workflows/pastry/restock-pastry/mock-url", "focus": {"role": "button", "name": "Copy curl of restock-pastry"}, "keys": ["Enter"]},
  {"id": "workflow-copy-runs-endpoint", "route": "/workflows/pastry/restock-pastry/runs", "focus": {"role": "button", "name": "Copy the runs endpoint"}, "keys": ["Enter"]},
  {"id": "workflow-copy-session-body", "route": "/workflows/pastry/restock-pastry/sessions", "focus": {"role": "button", "name": "Copy body"}, "keys": ["Enter"]},
- {"id": "workflow-copy-session-curl", "route": "/workflows/pastry/restock-pastry/sessions", "focus": {"role": "button", "name": "Copy curl"}, "keys": ["Enter"]}
+ {"id": "workflow-copy-session-curl", "route": "/workflows/pastry/restock-pastry/sessions", "focus": {"role": "button", "name": "Copy curl"}, "keys": ["Enter"]},
+ {"id": "behavior-dispatcher-script", "route": "/services/pastry2/operations/get-name", "focus": {"role": "radio", "name": "SCRIPT Groovy or JavaScript returns the example name."}, "keys": ["Space"]}
 ]

@@ -177,7 +177,7 @@ export function DispatcherPanel({ draft, examples, pathParams, pathPrefix, edit 
               <span className="rules-scope">In scope {SCOPE.map((s) => <code key={s}>{s}</code>)}</span>
             </div>
             <div className="rules-editor">
-              <pre className="rules-gutter" aria-hidden="true">{Array.from({ length: scriptLines }, (_, i) => i + 1).join('\n')}</pre>
+              <CodeBlock frame="none" variant="bare" focusable="never" className="rules-gutter" aria-hidden="true" code={Array.from({ length: scriptLines }, (_, i) => i + 1).join('\n')} />
               <label htmlFor="script-editor" className="sr-only">Dispatcher script</label>
               <textarea
                 id="script-editor"
