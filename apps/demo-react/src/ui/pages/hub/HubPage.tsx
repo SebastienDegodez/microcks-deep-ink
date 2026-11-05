@@ -23,6 +23,7 @@ import { Icon } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { Panel } from '@/ui/components/ui/panel';
 import { SectionLabel } from '@/ui/components/ui/section-label';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { Tile, TileGrid } from '@/ui/components/ui/tile';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import './hub.css';
@@ -121,48 +122,52 @@ export default function HubPage() {
         </div>
       </div>
 
-      <div className="hb-layout">
-        <TileGrid label="Packages" className="hb-packages" aria-busy={list.status === 'loading'}>
-          {list.status === 'loading' && !list.data ? <LoadingBlock label="packages" /> : null}
-          {list.status === 'error' ? <ErrorBlock error={list.error} what="Packages" onRetry={list.reload} /> : null}
-          {shown.map((p) => (
-            <PackageTile
-              key={p.id}
-              pkg={p}
-              selected={p.id === selected?.id}
-              status={statusOf(p)}
-              onSelect={() => select(p.id)}
-              onInstall={() => void install(p, 'sync', 'main', {}, 'card')}
-            />
-          ))}
-          {list.data && shown.length === 0 ? (
-            <div className="hb-empty">
-              No package matches this search.
-              <button
-                type="button"
-                className="hb-empty-reset"
-                onClick={() => {
-                  setSearch('');
-                  setCategory('');
-                }}
-              >
-                Clear search and category
-              </button>
-            </div>
-          ) : null}
-        </TileGrid>
+      <SplitPane sideWidth="400px" sideMax="560px" mainWidth="560px" keepSideMax>
+        <SplitPaneMain>
+          <TileGrid label="Packages" aria-busy={list.status === 'loading'}>
+            {list.status === 'loading' && !list.data ? <LoadingBlock label="packages" /> : null}
+            {list.status === 'error' ? <ErrorBlock error={list.error} what="Packages" onRetry={list.reload} /> : null}
+            {shown.map((p) => (
+              <PackageTile
+                key={p.id}
+                pkg={p}
+                selected={p.id === selected?.id}
+                status={statusOf(p)}
+                onSelect={() => select(p.id)}
+                onInstall={() => void install(p, 'sync', 'main', {}, 'card')}
+              />
+            ))}
+            {list.data && shown.length === 0 ? (
+              <div className="hb-empty">
+                No package matches this search.
+                <button
+                  type="button"
+                  className="hb-empty-reset"
+                  onClick={() => {
+                    setSearch('');
+                    setCategory('');
+                  }}
+                >
+                  Clear search and category
+                </button>
+              </div>
+            ) : null}
+          </TileGrid>
+        </SplitPaneMain>
 
         {selected ? (
-          <Detail
-            key={selected.id}
-            pkg={selected}
-            status={statusOf(selected)}
-            installedMode={how[selected.id] ?? 'sync'}
-            error={error}
-            onInstall={(mode, role, picked) => void install(selected, mode, role, picked, 'detail')}
-          />
+          <SplitPaneSide>
+            <Detail
+              key={selected.id}
+              pkg={selected}
+              status={statusOf(selected)}
+              installedMode={how[selected.id] ?? 'sync'}
+              error={error}
+              onInstall={(mode, role, picked) => void install(selected, mode, role, picked, 'detail')}
+            />
+          </SplitPaneSide>
         ) : null}
-      </div>
+      </SplitPane>
     </>
   );
 }
