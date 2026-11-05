@@ -13,6 +13,8 @@ export interface SplitPaneProps extends HTMLAttributes<HTMLDivElement> {
   align?: 'start' | 'stretch';
   /** Both panes grow alike instead of the main pane taking the rest (Sources). */
   balanced?: boolean;
+  /** Keep the `sideMax` cap below 720px too, instead of letting the side pane fill the row (Service rail, Copilot side). */
+  keepSideMax?: boolean;
 }
 
 export interface SplitPanePaneProps extends HTMLAttributes<HTMLElement> {
@@ -21,7 +23,7 @@ export interface SplitPanePaneProps extends HTMLAttributes<HTMLElement> {
 }
 
 /** List + detail layout. Children: a `SplitPaneSide` and a `SplitPaneMain`, in reading order. */
-export function SplitPane({ sideWidth, sideMax, mainWidth, gap, align = 'start', balanced, className, style, ...rest }: SplitPaneProps) {
+export function SplitPane({ sideWidth, sideMax, mainWidth, gap, align = 'start', balanced, keepSideMax, className, style, ...rest }: SplitPaneProps) {
   const vars: Record<string, string> = {};
   if (sideWidth) vars['--split-side'] = sideWidth;
   if (sideMax) vars['--split-side-max'] = sideMax;
@@ -33,6 +35,7 @@ export function SplitPane({ sideWidth, sideMax, mainWidth, gap, align = 'start',
       className={['split-pane', className].filter(Boolean).join(' ')}
       data-align={align === 'stretch' ? 'stretch' : undefined}
       data-balanced={balanced ? '' : undefined}
+      data-keep-side-max={keepSideMax ? '' : undefined}
       style={{ ...(vars as CSSProperties), ...style }}
     />
   );

@@ -28,8 +28,11 @@
     min-width: 0;
     box-sizing: border-box;
   }
-  /* The side pane is allowed to fill the row once the main pane has wrapped under it. */
+  /*
+   * The side pane is allowed to fill the row once the main pane has wrapped under it,
+   * unless data-keep-side-max keeps the cap at every width (Service rail, Copilot side).
+   */
   @media (max-width: 720px) {
-    .split-pane > .split-pane-side { max-width: none; }
+    .split-pane:not([data-keep-side-max]) > .split-pane-side { max-width: none; }
   }
 }

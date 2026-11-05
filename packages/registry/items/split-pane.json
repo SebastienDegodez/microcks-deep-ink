@@ -3,7 +3,7 @@
   "name": "split-pane",
   "title": "SplitPane",
   "tier": "microcks",
-  "description": "List plus detail layout: a side pane with a flexible width and a cap, next to a main pane that takes the rest. It wraps the detail under the list on narrow screens. Used on Admin, Agent, Behavior, Hub, Service, Sources, Tests, Traces, Usage, Workflow, WorkflowRun and Workflows.",
+  "description": "List plus detail layout: a side pane with a flexible width and a cap, next to a main pane that takes the rest. It wraps the detail under the list on narrow screens; below 720px the side pane fills the row unless keepSideMax (data-keep-side-max) keeps its cap. Used on Admin, Agent, Behavior, Hub, Service, Sources, Tests, Traces, Usage, Workflow, WorkflowRun and Workflows.",
   "registryDependencies": ["base"],
   "npmDependencies": { "angular": [] },
   "a11y": {

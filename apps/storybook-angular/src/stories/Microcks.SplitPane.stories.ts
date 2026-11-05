@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { SPLIT_PANE } from '@microcks-deep-ink/registry/angular/split-pane';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/SplitPane',
@@ -33,3 +33,19 @@ export const DetailFirst: StoryObj = {
     template: `<div mkSplitPane sideWidth="400px" sideMax="560px" mainWidth="560px"><section mkSplitPaneMain aria-label="Calls" style="${box}">The list of calls takes the rest of the row.</section><aside mkSplitPaneSide aria-label="Call detail" style="${box}">The detail of the selected call.</aside></div>`,
   }),
 };
+
+/** `keepSideMax` keeps the side cap below 720px: the rail stays 360px wide instead of filling the row (Service, Copilot). */
+export const KeepSideMax: StoryObj = {
+  name: 'Keep the side cap on narrow screens',
+  render: () => ({
+    template: `<div mkSplitPane sideWidth="360px" sideMax="360px" [keepSideMax]="true"><nav mkSplitPaneSide aria-label="Operations" style="${box}">GET /pastries · GET /pastries/&#123;name&#125; · PATCH /pastries/&#123;name&#125;</nav><section mkSplitPaneMain aria-label="Operation detail" style="${box}">Below 720px the detail wraps under the rail, which keeps its 360px cap.</section></div>`,
+  }),
+};
+
+/** Interactive: every input of the directive is a control in the Controls panel. */
+export const Playground: StoryObj = playground(
+  'split-pane',
+  'SplitPaneDirective',
+  { sideWidth: '280px', sideMax: '360px', mainWidth: '520px', gap: '20px', align: 'start', balanced: false, keepSideMax: false },
+  `<nav mkSplitPaneSide aria-label="Services" style="${box}">List</nav><section mkSplitPaneMain aria-label="Detail" style="${box}">Detail of the selected item.</section>`,
+);

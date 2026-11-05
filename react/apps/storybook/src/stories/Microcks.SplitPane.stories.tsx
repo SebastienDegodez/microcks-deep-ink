@@ -43,10 +43,21 @@ export const DetailFirst: StoryObj = {
   ),
 };
 
+/** `keepSideMax` keeps the side cap below 720px: the rail stays 360px wide instead of filling the row (Service, Copilot). */
+export const KeepSideMax: StoryObj = {
+  name: 'Keep the side cap on narrow screens',
+  render: () => (
+    <SplitPane sideWidth="360px" sideMax="360px" keepSideMax>
+      <SplitPaneSide as="nav" aria-label="Operations" style={box}>GET /pastries · GET /pastries/{'{name}'} · PATCH /pastries/{'{name}'}</SplitPaneSide>
+      <SplitPaneMain as="section" aria-label="Operation detail" style={box}>Below 720px the detail wraps under the rail, which keeps its 360px cap.</SplitPaneMain>
+    </SplitPane>
+  ),
+};
+
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof SplitPane> = {
   args: {
-    sideWidth: '280px', sideMax: undefined, mainWidth: undefined, gap: undefined, align: 'start', balanced: false,
+    sideWidth: '280px', sideMax: undefined, mainWidth: undefined, gap: undefined, align: 'start', balanced: false, keepSideMax: false,
     children: (
       <>
         <SplitPaneSide as="nav"><Panel title="Services"><p>List</p></Panel></SplitPaneSide>
