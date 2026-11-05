@@ -506,6 +506,7 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"gap","type":"string | undefined","control":"text","required":false,"model":false,"description":"Gap between the panes (20px)."},
       {"name":"align","type":"\"start\" | \"stretch\"","control":"select","options":["start","stretch"],"required":false,"default":"'start'","model":false,"description":"`stretch`: both panes as tall as the taller one."},
       {"name":"balanced","type":"boolean","control":"boolean","required":false,"default":"false","model":false,"description":"Both panes grow alike instead of the main pane taking the rest (Sources)."},
+      {"name":"keepSideMax","type":"boolean","control":"boolean","required":false,"default":"false","model":false,"description":"Keep the `sideMax` cap below 720px too, instead of letting the side pane fill the row (Service rail, Copilot side)."},
     ] },
   ],
   "stat-card": [
