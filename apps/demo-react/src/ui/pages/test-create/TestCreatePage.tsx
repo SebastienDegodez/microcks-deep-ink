@@ -2,78 +2,20 @@ import '../tests/page-kit.css';
 import { useId, useRef, useState, type FormEvent } from 'react';
 import { Link as RouterLink, useNavigate, useSearchParams } from 'react-router';
 import type { CreateTestForm } from '@/application/testing';
-import {
-  CI_FORMATS,
-  CI_STEPS,
-  buildCiSnippet,
-  ciDiffLegend,
-  diffCiLines,
-  parseTimeout,
-  summarizeSelection,
-  timeoutHelp,
-  validateTestForm,
-  type CiFormat,
-  type CiHeader,
-  type TestRunner,
-  type TestTarget,
-} from '@/domain/testing';
+import { buildCiSnippet, diffCiLines, parseTimeout, summarizeSelection, validateTestForm, type CiFormat, type TestTarget } from '@/domain/testing';
 import { PageHeader, useQuery, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
-import { Checkbox, Radio } from '@/ui/components/ui/checkbox';
-import { Chip } from '@/ui/components/ui/chip';
-import { CodeBlock } from '@/ui/components/ui/code-block';
-import { Field } from '@/ui/components/ui/field';
-import { Icon } from '@/ui/components/ui/icon';
-import { Input } from '@/ui/components/ui/input';
-import { MethodTag } from '@/ui/components/ui/method-tag';
-import { Select } from '@/ui/components/ui/select';
-import { Switch } from '@/ui/components/ui/switch';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
+import { AuthSection } from './AuthSection';
+import { CiAside } from './CiAside';
+import { initialDraft, recommendedRunner, type Draft } from './draft';
+import { HeadersSection } from './HeadersSection';
+import { RunnerSection } from './RunnerSection';
+import { ScopeSection } from './ScopeSection';
+import { TargetSection } from './TargetSection';
 import './test-create.css';
-
-interface HeaderRow extends CiHeader {
-  id: number;
-}
-
-interface Draft {
-  serviceId: string;
-  endpoint: string;
-  runner: TestRunner;
-  timeout: string;
-  secret: string;
-  ops: string[] | null;
-  oauth: boolean;
-  tokenUri: string;
-  clientId: string;
-  clientSecret: string;
-  scopes: string;
-  headers: HeaderRow[];
-  nextId: number;
-}
-
-function recommendedRunner(target: TestTarget): TestRunner {
-  return (target.runners.find((r) => r.recommended) ?? target.runners[0])?.id ?? 'OPEN_API_SCHEMA';
-}
-
-function initialDraft(target: TestTarget): Draft {
-  return {
-    serviceId: target.serviceId,
-    endpoint: target.endpoint,
-    runner: recommendedRunner(target),
-    timeout: '10000',
-    secret: '',
-    ops: target.type === 'EVENT' ? [target.operations[0]?.id ?? ''] : null,
-    oauth: false,
-    tokenUri: 'https://auth.staging.acme.io/realms/bakery/protocol/openid-connect/token',
-    clientId: 'pastry-tests',
-    clientSecret: '',
-    scopes: 'pastry:read pastry:write',
-    headers: [],
-    nextId: 1,
-  };
-}
 
 export default function TestCreatePage() {
   usePageTitle('Run a test · Microcks');
@@ -164,9 +106,7 @@ function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: st
     headers: [],
   };
   const lines = diffCiLines(buildCiSnippet(ciInput, ciTab), buildCiSnippet(defaultInput, ciTab));
-  const changed = lines.filter((l) => l.changed).length;
   const serviceLabel = `${service?.name ?? ''} ${service?.version ?? ''}`.trim();
-  const samples = target.operations.reduce((n, o) => n + o.samples, 0);
 
   const focusFirstError = () => {
     if (errors.endpoint) endpointRef.current?.focus();
@@ -207,284 +147,25 @@ function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: st
     setSecretTouched(false);
   };
 
-  const setHeader = (id: number, patch: Partial<HeaderRow>) => update({ headers: d.headers.map((x) => (x.id === id ? { ...x, ...patch } : x)) });
-  const opsError = errors.operations;
-  const opsErrorId = `${uid}-ops-error`;
   const blockId = `${uid}-block`;
 
   return (
     <div className="tc-layout">
       <form className="tc-form" aria-label="Test configuration" onSubmit={onSubmit} noValidate>
-        <fieldset className="tc-section">
-          <legend>
-            <span className="tc-step">01</span>Target
-          </legend>
-          <Field label="Service under test">
-            {(control) => (
-              <div className="tc-service-row">
-                <span className="tc-svc-picker">
-                  {service ? <ApiBadge protocol={service.protocol} name={service.name} version={service.version} /> : null}
-                  <span className="tc-svc-meta">
-                    {target.operations.length} {target.operations.length === 1 ? 'operation' : 'operations'} · {samples} {samples === 1 ? 'sample' : 'samples'}
-                  </span>
-                  <Icon name="chevron-down" size={14} />
-                  {/* The native select carries the keyboard and screen reader behaviour; the styled box above is its face. */}
-                  <select {...control} aria-describedby={`${uid}-contract`} className="tc-svc-select" value={target.serviceId} onChange={(e) => pickService(e.target.value)}>
-                    {form.services.map((s) => (
-                      <option key={s.id} value={s.id}>
-                        {s.name} {s.version} · {form.targets.find((t) => t.serviceId === s.id)?.operations.length ?? 0} ops
-                      </option>
-                    ))}
-                  </select>
-                </span>
-                <span className="tc-contract" id={`${uid}-contract`}>
-                  Contract: <span className="tc-contract-value">{target.artifacts}</span>
-                </span>
-              </div>
-            )}
-          </Field>
-          <div className="tc-endpoint-block">
-            <Field label="Test endpoint" required help={target.endpointHelp} error={errors.endpoint} className="tc-endpoint">
-              {(control) => (
-                <Input
-                  {...control}
-                  ref={endpointRef}
-                  mono
-                  spellCheck={false}
-                  autoComplete="off"
-                  value={d.endpoint}
-                  onChange={(e) => update({ endpoint: e.target.value })}
-                />
-              )}
-            </Field>
-            {target.recentEndpoints.length > 0 ? (
-              <div className="tc-recent" role="group" aria-label="Recently tested endpoints">
-                <span className="tc-recent-label">Recently tested</span>
-                {target.recentEndpoints.map((r) => (
-                  <Chip key={r.url} size="sm" pressed={r.url === d.endpoint.trim()} onClick={() => update({ endpoint: r.url })} className="tc-recent-chip">
-                    <span className="tc-recent-env">{r.env}</span> {r.url}
-                  </Chip>
-                ))}
-              </div>
-            ) : null}
-          </div>
-        </fieldset>
-
-        <fieldset className="tc-section" data-gap="12">
-          <legend>
-            <span className="tc-step">02</span>Test runner
-            <span className="tc-legend-hint">What &quot;conformant&quot; means for this run</span>
-          </legend>
-          <div role="radiogroup" aria-label="Test runner" className="tc-runner-grid">
-            {target.runners.map((r) => {
-              const meta = form.runners.find((m) => m.id === r.id);
-              return (
-                <Radio
-                  key={r.id}
-                  variant="card"
-                  name="runner"
-                  value={r.id}
-                  checked={d.runner === r.id}
-                  disabled={Boolean(r.unavailableReason)}
-                  onChange={() => update({ runner: r.id })}
-                  label={
-                    <span className="tc-runner-name">
-                      <span className="tc-runner-id">{r.id}</span>
-                      {r.recommended ? <span className="tc-bestfit">best fit</span> : null}
-                    </span>
-                  }
-                  description={
-                    <>
-                      <span className="tc-runner-desc">{meta?.description}</span>
-                      {r.unavailableReason ? <span className="tc-reason">{r.unavailableReason}</span> : null}
-                    </>
-                  }
-                />
-              );
-            })}
-          </div>
-        </fieldset>
-
-        <fieldset className="tc-section">
-          <legend>
-            <span className="tc-step">03</span>Scope
-          </legend>
-          <div className="tc-scope">
-            <div className="tc-ops" role={isEvent ? 'radiogroup' : 'group'} aria-labelledby={`${uid}-ops-label`} aria-describedby={opsError ? opsErrorId : undefined}>
-              <div className="tc-ops-head">
-                <span id={`${uid}-ops-label`} className="tc-ops-label">
-                  {isEvent ? 'Operation to listen to' : `Operations · ${selected.length} of ${target.operations.length}`}
-                </span>
-                {!isEvent ? (
-                  <Button variant="link" size="sm" className="tc-ops-toggle" onClick={() => update({ ops: allSelected ? [] : target.operations.map((o) => o.id) })}>
-                    {allSelected ? 'Clear all' : 'Select all'}
-                  </Button>
-                ) : null}
-              </div>
-              {target.operations.map((o, i) => {
-                const on = selected.includes(o.id);
-                const label = <OperationLabel verb={o.verb} path={o.path} samples={o.samples} protocol={service?.protocol} />;
-                return isEvent ? (
-                  <Radio key={o.id} ref={i === 0 ? opsRef : undefined} variant="card" className="tc-op" name="operation" checked={on} onChange={() => update({ ops: [o.id] })} label={label} />
-                ) : (
-                  <Checkbox
-                    key={o.id}
-                    ref={i === 0 ? opsRef : undefined}
-                    variant="card"
-                    className="tc-op"
-                    checked={on}
-                    onChange={(e) => update({ ops: e.target.checked ? [...selected, o.id] : selected.filter((x) => x !== o.id) })}
-                    label={label}
-                  />
-                );
-              })}
-              {opsError ? (
-                <p className="error" id={opsErrorId}>
-                  <Icon name="cross" size={13} />
-                  <span>
-                    <span className="sr-only">Error: </span>
-                    {opsError}
-                  </span>
-                </p>
-              ) : null}
-            </div>
-            <Field label="Timeout" help={timeoutHelp(d.timeout, isEvent)} error={errors.timeout} className="tc-timeout-field">
-              {(control) => (
-                <div className="tc-timeout">
-                  <Input
-                    {...control}
-                    ref={timeoutRef}
-                    type="number"
-                    mono
-                    min={1000}
-                    max={30000}
-                    step={1000}
-                    value={d.timeout}
-                    onChange={(e) => update({ timeout: e.target.value })}
-                  />
-                  <span className="tc-unit" aria-hidden="true">
-                    ms
-                  </span>
-                </div>
-              )}
-            </Field>
-          </div>
-        </fieldset>
-
-        <fieldset className="tc-section">
-          <legend>
-            <span className="tc-step">04</span>Authentication
-            <span className="tc-legend-hint">Optional · to reach a secured endpoint</span>
-          </legend>
-          <div className="tc-auth">
-            <Field label="Secret" help="Credentials or CA certificate managed in Administration › Secrets.">
-              {(control) => (
-                <Select {...control} className="tc-mono-select" value={d.secret} onChange={(e) => update({ secret: e.target.value })}>
-                  <option value="">None</option>
-                  {form.secrets.map((s) => (
-                    <option key={s.id} value={s.name}>
-                      {s.name}
-                    </option>
-                  ))}
-                </Select>
-              )}
-            </Field>
-            <div className="tc-oauth-toggle" role="group" aria-labelledby={`${uid}-oauth-label`}>
-              <span id={`${uid}-oauth-label`} className="label">
-                OAuth2
-              </span>
-              <Switch label="Client credentials grant" aria-describedby={`${uid}-oauth-help`} checked={d.oauth} onChange={(checked) => update({ oauth: checked })} />
-              <p className="help" id={`${uid}-oauth-help`}>
-                Microcks fetches a token before each request. <span className="demo-mono">openid</span> is always included in scopes.
-              </p>
-            </div>
-          </div>
-          {d.oauth ? (
-            <div className="tc-oauth">
-              <div className="tc-wide">
-                <Field label="Token URI">{(control) => <Input {...control} mono className="tc-link-input" spellCheck={false} value={d.tokenUri} onChange={(e) => update({ tokenUri: e.target.value })} />}</Field>
-              </div>
-              <Field label="Client Id">{(control) => <Input {...control} mono spellCheck={false} value={d.clientId} onChange={(e) => update({ clientId: e.target.value })} />}</Field>
-              <Field label="Client Secret" required error={secretTouched ? errors.clientSecret : undefined}>
-                {(control) => (
-                  <Input
-                    {...control}
-                    aria-invalid={errors.clientSecret ? true : undefined}
-                    onBlur={() => setSecretTouched(true)}
-                    ref={clientSecretRef}
-                    type="password"
-                    mono
-                    placeholder="Required"
-                    autoComplete="off"
-                    value={d.clientSecret}
-                    onChange={(e) => update({ clientSecret: e.target.value })}
-                  />
-                )}
-              </Field>
-              <div className="tc-wide">
-                <Field
-                  label={
-                    <>
-                      Scopes <span className="tc-label-hint">space-separated</span>
-                    </>
-                  }
-                >
-                  {(control) => <Input {...control} mono spellCheck={false} value={d.scopes} onChange={(e) => update({ scopes: e.target.value })} />}
-                </Field>
-              </div>
-            </div>
-          ) : null}
-        </fieldset>
-
-        {!isEvent ? (
-          <fieldset className="tc-section" data-gap="12">
-            <legend>
-              <span className="tc-step">05</span>Request headers
-              <span className="tc-legend-hint">Optional · added to or overriding the examples&apos; headers</span>
-            </legend>
-            {d.headers.length === 0 ? <p className="tc-empty">No extra header. Use a comma-separated list for several values of the same header.</p> : null}
-            {d.headers.length > 0 ? (
-              <div className="tc-headers">
-                <div className="tc-header-row tc-header-head" aria-hidden="true">
-                  <span>Applies to</span>
-                  <span>Name</span>
-                  <span>Values</span>
-                  <span />
-                </div>
-                {d.headers.map((h, i) => (
-                  <div className="tc-header-row" key={h.id}>
-                    <Select aria-label={`Header ${i + 1} applies to`} className="tc-mono-select" value={h.scope} onChange={(e) => setHeader(h.id, { scope: e.target.value })}>
-                      <option value="globals">All operations</option>
-                      {target.operations.map((o) => (
-                        <option key={o.id} value={o.name}>
-                          {o.name}
-                        </option>
-                      ))}
-                    </Select>
-                    <Input aria-label={`Header ${i + 1} name`} mono spellCheck={false} placeholder="x-api-key" value={h.name} onChange={(e) => setHeader(h.id, { name: e.target.value })} />
-                    <Input aria-label={`Header ${i + 1} values`} mono spellCheck={false} placeholder="value1, value2" value={h.values} onChange={(e) => setHeader(h.id, { values: e.target.value })} />
-                    <Button iconOnly icon="cross" size="sm" aria-label={`Remove header ${h.name || i + 1}`} onClick={() => update({ headers: d.headers.filter((x) => x.id !== h.id) })} />
-                  </div>
-                ))}
-              </div>
-            ) : null}
-            <div className="tc-header-actions">
-              <Button variant="dashed" size="compact" icon="plus" onClick={() => update({ headers: [...d.headers, { id: d.nextId, scope: 'globals', name: '', values: '' }], nextId: d.nextId + 1 })}>
-                Add header
-              </Button>
-              {d.headers.length === 0 ? (
-                <Button
-                  variant="outline"
-                  size="compact"
-                  className="tc-apikey"
-                  onClick={() => update({ headers: [{ id: d.nextId, scope: 'globals', name: 'x-api-key', values: 'staging-4f2a9c' }], nextId: d.nextId + 1 })}
-                >
-                  + x-api-key (globals)
-                </Button>
-              ) : null}
-            </div>
-          </fieldset>
-        ) : null}
+        <TargetSection form={form} target={target} service={service} d={d} update={update} uid={uid} endpointError={errors.endpoint} endpointRef={endpointRef} onPickService={pickService} />
+        <RunnerSection form={form} target={target} d={d} update={update} />
+        <ScopeSection target={target} protocol={service?.protocol} d={d} update={update} uid={uid} selected={selected} errors={errors} opsRef={opsRef} timeoutRef={timeoutRef} />
+        <AuthSection
+          secrets={form.secrets}
+          d={d}
+          update={update}
+          uid={uid}
+          clientSecretError={errors.clientSecret}
+          secretTouched={secretTouched}
+          onSecretBlur={() => setSecretTouched(true)}
+          clientSecretRef={clientSecretRef}
+        />
+        {!isEvent ? <HeadersSection target={target} d={d} update={update} /> : null}
 
         {submitError ? (
           <div className="tc-submit-error">
@@ -521,60 +202,7 @@ function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: st
         </div>
       </form>
 
-      <aside className="tc-ci" aria-labelledby={`${uid}-ci-title`}>
-        <div className="tc-ci-head">
-          <h2 id={`${uid}-ci-title`} className="tc-ci-title">
-            Run it from CI
-          </h2>
-          <Chip size="sm" variant="outline">
-            <Icon name="refresh-arrows" size={12} /> synced with the form
-          </Chip>
-        </div>
-        <p className="tc-ci-intro">The same test, as code. Once it passes here, paste it in your pipeline so every build proves the contract.</p>
-        <CodeBlock
-          className="tc-ci-code"
-          tabsLabel="CI format"
-          tabs={CI_FORMATS.map((f) => ({ id: f.id, label: f.label }))}
-          tab={ciTab}
-          onTabChange={(id) => setCiTab(id as CiFormat)}
-          lines={lines.map((l) => ({ text: l.text || ' ', changed: l.changed }))}
-        />
-        <p className="tc-ci-legend" role="status">
-          <span className="tc-ci-swatch" aria-hidden="true" />
-          <span>{ciDiffLegend(changed, serviceLabel)}</span>
-        </p>
-        {d.oauth ? (
-          <div className="tc-callout-outline" role="note">
-            <Icon name="warning" size={14} />
-            <span>OAuth2 settings only apply to this run from the UI: the CLI, the GitHub Action and the Tekton task shown here do not carry them.</span>
-          </div>
-        ) : null}
-        <div className="tc-ci-steps">
-          <h3>Before you paste</h3>
-          <ol>
-            {CI_STEPS[ciTab].map((step, i) => (
-              <li key={step}>
-                <span className="tc-ci-step-n" aria-hidden="true">
-                  {i + 1}
-                </span>
-                <span>{step}</span>
-              </li>
-            ))}
-          </ol>
-        </div>
-      </aside>
+      <CiAside uid={uid} ciTab={ciTab} onTabChange={setCiTab} lines={lines} serviceLabel={serviceLabel} oauth={d.oauth} />
     </div>
-  );
-}
-
-function OperationLabel({ verb, path, samples, protocol }: { verb: string; path: string; samples: number; protocol?: Parameters<typeof MethodTag>[0]['protocol'] }) {
-  return (
-    <span className="tc-op-label">
-      <MethodTag method={verb} protocol={protocol} />
-      <span className="tc-op-path">{path}</span>
-      <span className="tc-op-samples">
-        {samples} {samples === 1 ? 'sample' : 'samples'}
-      </span>
-    </span>
   );
 }
