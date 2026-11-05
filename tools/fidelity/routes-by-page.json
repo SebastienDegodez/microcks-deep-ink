@@ -1,0 +1,21 @@
+{
+ "import": ["/sources/new","/import"],
+ "sources": ["/sources","/sources/pastry-orders"],
+ "cockpit": ["/"],
+ "catalogue": ["/services"],
+ "service": ["/services/pastry2","/services/pastry1","/services/petstore","/services/beer","/services/hellosoap","/services/orders","/services/usersignedup","/services/hellogrpc","/services/movie","/services/rocks","/services/concierge"],
+ "agent": ["/services/concierge/skills","/tests/agent/3","/tests/agent"],
+ "behavior": ["/services/pastry2/operations/get-name","/services/pastry1/operations/get-name","/services/petstore/operations/list-pets","/services/beer/operations/find-beer","/services/hellosoap/operations/say-hello","/services/orders/operations/publish-order","/services/usersignedup/operations/user-signedup","/services/hellogrpc/operations/greeting","/services/movie/operations/movies","/services/rocks/operations/list","/services/pastry1/operations/patch-name","/services/movie/operations/add-review","/services/pastry2/operations/patch-name","/services/pastry2/operations/get-list"],
+ "copilot": ["/services/pastry2/copilot","/services/pastry1/copilot","/services/petstore/copilot","/services/beer/copilot","/services/hellosoap/copilot","/services/orders/copilot","/services/usersignedup/copilot","/services/hellogrpc/copilot","/services/movie/copilot","/services/rocks/copilot"],
+ "workflows": ["/workflows"],
+ "workflow": ["/workflows/pastry/restock-pastry","/workflows/pastry/restock-pastry/mock-url","/workflows/pastry/order-pastry","/workflows/pastry/compare-prices","/workflows/pastry/compare-prices/mock-url","/workflows/pastry/check-menu","/workflows/pastry/check-menu/mock-url","/workflows/beer/checkout-beer","/workflows/pastry/restock-pastry/loom","/workflows/pastry/restock-pastry/runs","/workflows/pastry/restock-pastry/source","/workflows/pastry/order-pastry/loom","/workflows/pastry/compare-prices/loom","/workflows/pastry/compare-prices/runs","/workflows/pastry/compare-prices/source","/workflows/pastry/check-menu/runs","/workflows/pastry/check-menu/source","/workflows/pastry/check-menu/loom"],
+ "workflow-run": ["/workflows/runs/6729a1d27e4c0b5f93a8c214","/workflows/pastry/restock-pastry/run","/workflows/pastry/compare-prices/run","/workflows/runs/6728e1a03c9b4f5d87e2a633","/workflows/pastry/check-menu/run","/workflows/runs/67290c5a9d3e41b7a6f8e215","/workflows/runs/6729a3f08b1d6e2c45f7a930","/workflows/runs/6729a4b15c9e7d3a28b0f6e1","/workflows/runs/67299b3e1f0a4c7d82e5b106","/workflows/runs/6728f8d47b2c4e09a1d3c524"],
+ "test-create": ["/tests/create"],
+ "test-run": ["/tests/runner/119","/tests/runner/86","/tests/runner/41","/tests/runner/118","/tests/runner/17","/tests/runner/9","/tests/runner/33","/tests/runner/5","/tests/runner/117","/tests/runner/116","/tests/runner/115","/tests/runner/114","/tests/runner/113","/tests/runner/112","/tests/runner/111","/tests/runner/110","/tests/runner/109","/tests/runner/108","/tests/runner/40","/tests/runner/16","/tests/runner/8"],
+ "tests": ["/tests","/tests/service/pastry2","/tests/service/pastry1","/tests/service/concierge","/tests/service/orders","/tests/service/movie","/tests/service/hellogrpc"],
+ "usage": ["/metrics","/usage","/metrics/pastry2"],
+ "traces": ["/traces"],
+ "hub": ["/hub"],
+ "admin": ["/admin","/admin/secrets"],
+ "map": ["/map"]
+}
