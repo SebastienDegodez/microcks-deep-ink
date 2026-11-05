@@ -11,6 +11,7 @@ import { Icon } from '@/ui/components/ui/icon';
 import { Textarea } from '@/ui/components/ui/input';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { OpPickList } from '@/ui/components/ui/op-pick';
+import { SectionLabel } from '@/ui/components/ui/section-label';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { fresh, ProposalRow, type Item, type MockTarget } from './ProposalRow';
 
@@ -287,7 +288,7 @@ export default function CopilotPage() {
               <span id="copilot-hint-help" className="copilot-help">Added to the prompt next to the operation and its schemas.</span>
             </div>
             <div className="copilot-model">
-              <span className="copilot-model-label">Model</span>
+              <SectionLabel lineHeight="normal">Model</SectionLabel>
               <span className="copilot-model-name">OpenAI-compatible endpoint configured by admin</span>
               <span className="copilot-model-key">ai-copilot.implementation=openai</span>
               <RouterLink to="/admin">See Administration settings</RouterLink>

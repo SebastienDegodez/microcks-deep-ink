@@ -6,6 +6,7 @@ import { Button } from '@/ui/components/ui/button';
 import { Exchange, ExchangeCard } from '@/ui/components/ui/exchange-card';
 import { Icon } from '@/ui/components/ui/icon';
 import { Input, Textarea } from '@/ui/components/ui/input';
+import { SectionLabel } from '@/ui/components/ui/section-label';
 
 export type Status = 'pending' | 'accepted' | 'rejected';
 export interface Item { example: Example; status: Status; edited: boolean; expanded: boolean; editing: boolean; draftName: string; draftBody: string }
@@ -127,16 +128,16 @@ export function ProposalRow({ item, op, target, served, onPatch, onAccept, onRej
         <div className="proposal-edit proposal-body">
           <div className="proposal-edit-row">
             <div className="proposal-edit-field" data-size="name">
-              <label className="proposal-edit-label" htmlFor={`${uid}-name`}>Example name</label>
+              <SectionLabel as="label" lineHeight="normal" htmlFor={`${uid}-name`}>Example name</SectionLabel>
               <Input ref={nameRef} id={`${uid}-name`} value={item.draftName} onChange={(ev) => onPatch((i) => ({ ...i, draftName: ev.target.value }))} />
             </div>
             <div className="proposal-edit-field" data-size="request">
-              <span className="proposal-edit-label" id={`${uid}-req`}>Request</span>
+              <SectionLabel lineHeight="normal" id={`${uid}-req`}>Request</SectionLabel>
               <span className="proposal-edit-request" aria-labelledby={`${uid}-req`} role="group">{reqLine}</span>
             </div>
           </div>
           <div className="proposal-edit-field">
-            <label className="proposal-edit-label" htmlFor={`${uid}-body`}>Response body · application/json</label>
+            <SectionLabel as="label" lineHeight="normal" htmlFor={`${uid}-body`}>Response body · application/json</SectionLabel>
             <Textarea
               id={`${uid}-body`}
               mono
