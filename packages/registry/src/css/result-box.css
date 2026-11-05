@@ -6,7 +6,7 @@
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    gap: 8px 12px;
+    gap: var(--space-2) var(--space-3);
     padding: 10px 12px;
     border: 1px solid var(--result-box-tone);
     border-radius: 6px;
@@ -38,10 +38,10 @@
   .result-box-body { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
   .result-box-title { margin: 0; font: 600 14px/1.4 var(--font-ui); color: var(--text); }
   .result-box-body strong { font-weight: 600; color: var(--text); }
-  .result-box[data-bordered="false"] .result-box-body { gap: 4px; }
+  .result-box[data-bordered="false"] .result-box-body { gap: var(--space-1); }
   .result-box[data-bordered="false"] .result-box-title { line-height: normal; }
   .result-box[data-bordered="false"] .result-box-body > span { max-width: 80ch; }
-  .result-box-action { flex: none; display: inline-flex; align-items: center; gap: 8px; }
+  .result-box-action { flex: none; display: inline-flex; align-items: center; gap: var(--space-2); }
 
   .result-box-dismiss {
     flex: none;
