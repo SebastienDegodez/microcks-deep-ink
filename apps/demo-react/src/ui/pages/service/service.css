@@ -8,16 +8,13 @@
 .service-ai-action .icon { color: var(--warning); }
 
 /* ---- Operations tab -------------------------------------------------------------------------------------- */
-.service-ops { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
-
-.op-rail { flex: 1 1 260px; max-width: 360px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+/* Operations and examples are registry split-panes. The side panes keep their cap on narrow screens too (the
+   registry lifts it below 720px). */
+.op-rail { max-width: 360px; display: flex; flex-direction: column; gap: 6px; }
 .op-rail-head { padding: 0 4px 4px; }
 .op-rail-note { margin: 6px 4px 0; font-size: 12px; line-height: 1.5; color: var(--text-muted); }
 
 .op-detail {
-  flex: 999 1 520px;
-  min-width: 0;
-  box-sizing: border-box;
   display: flex;
   flex-direction: column;
   gap: 20px;
@@ -95,9 +92,8 @@
 .op-examples-head { display: flex; flex-wrap: wrap; align-items: baseline; gap: 10px; }
 .op-examples-head h3 { margin: 0; font-size: 16px; font-weight: 600; }
 .op-examples-head > span { font-size: 13px; color: var(--text-muted); }
-.op-examples-body { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
 
-.example-col { flex: 1 1 220px; max-width: 300px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+.example-col { max-width: 300px; display: flex; flex-direction: column; gap: 6px; }
 .example-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .example-pick { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
 .example-pick[data-selected] { border-color: var(--action); background: var(--selected); }
@@ -144,7 +140,7 @@
 .example-rejected { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 8px 12px; font-size: 12px; color: var(--text-muted); }
 .example-rejected > button { padding: 0; border: 0; background: transparent; color: var(--link); font: 600 12px/1.4 var(--font-ui); cursor: pointer; }
 
-.example-detail { flex: 999 1 420px; min-width: 0; display: flex; flex-direction: column; gap: 10px; }
+.example-detail { display: flex; flex-direction: column; gap: 10px; }
 
 /* Request / response pair: registry exchange-card. The prototype pads the request line 12px all round. */
 .service-page .exchange-card > pre[data-tone='secondary'] { padding: 12px; }
