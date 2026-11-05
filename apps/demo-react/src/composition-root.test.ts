@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 import { NotFoundError, ValidationError } from '@/application/shared';
 import type { UseCases } from '@/application/use-cases';
-import { createUseCases } from './composition-root';
+import { createComposition, createUseCases, parseBackend } from './composition-root';
 
 let uc: UseCases;
 beforeEach(() => {
@@ -152,5 +152,24 @@ describe('testing, observe, govern and importing use cases', () => {
     const preview = await uc.importing.analyze({ kind: 'url', url: 'https://acme.io/pastry.yaml' });
     expect(preview.services[0]?.operations).toHaveLength(3);
     expect((await uc.importing.import(preview.previewId, { role: 'primary' })).serviceId).toBe('pastry2');
+  });
+});
+
+describe('backend switch', () => {
+  it('defaults to the in-memory backend', () => {
+    expect(createComposition()).toMatchObject({ backend: 'memory', httpFeatures: [] });
+  });
+
+  it('falls back to memory per feature when the http backend has no adapter for it', async () => {
+    const composition = createComposition({ backend: 'http', apiBaseUrl: 'http://demo.test/api/' });
+    expect(composition).toMatchObject({ backend: 'http', httpFeatures: [] });
+    expect(await composition.useCases.catalog.listServices()).toHaveLength(11);
+  });
+
+  it('parses VITE_DEMO_BACKEND', () => {
+    expect(parseBackend(undefined)).toBe('memory');
+    expect(parseBackend('')).toBe('memory');
+    expect(parseBackend('http')).toBe('http');
+    expect(() => parseBackend('graphql')).toThrow('Unknown demo backend "graphql": expected one of memory, http.');
   });
 });
