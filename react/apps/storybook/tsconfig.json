@@ -44,6 +44,8 @@
     ".storybook/preview.tsx",
     ".storybook/manager.ts",
     ".storybook/theme.ts",
-    ".storybook/copy-panel/*.tsx"
+    ".storybook/copy-panel/*.tsx",
+    ".storybook/docs/*.ts",
+    ".storybook/docs/*.tsx"
   ]
 }

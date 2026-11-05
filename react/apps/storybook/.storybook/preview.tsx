@@ -5,6 +5,7 @@ import { setTheme } from '@microcks/deep-ink';
 import '@microcks/deep-ink/styles.css';
 import '@microcks-deep-ink/storybook-shared/foundations.css';
 import { theme } from './theme';
+import { DocsPage } from './docs/DocsPage';
 
 try {
   document.documentElement.lang = 'en';
@@ -45,7 +46,8 @@ const preview: Preview = {
     layout: 'padded',
     backgrounds: { disable: true },
     controls: { expanded: true, matchers: { color: /(background|color)$/i } },
-    docs: { theme },
+    // Autodocs page: default blocks plus the registry description, keyboard and ARIA contract (parameters.deepInk).
+    docs: { theme, page: DocsPage },
     options: {
       selectedPanel: 'deep-ink/copy',
       storySort: { order: ['Introduction', 'Getting started', 'Foundations', 'Components', 'Microcks', 'Elements', 'Patterns', 'Plugins'] },
