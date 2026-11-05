@@ -35,6 +35,20 @@ export const Small: StoryObj = {
   }),
 };
 
+export const Large: StoryObj = {
+  name: "Large (page-level status)",
+  render: () => ({
+    template: `
+      <div class="inline">
+        <span mkStatusBadge size="lg" status="conformant"></span>
+        <span mkStatusBadge size="lg" shape="bare" status="failed"></span>
+        <span mkStatusBadge size="lg" shape="bare" status="running" label="Running · step 2 of 5"></span>
+        <span mkStatusBadge size="lg" shape="bare" status="running">Retrying · attempt <strong>2</strong> of 3</span>
+      </div>
+    `,
+  }),
+};
+
 export const Bare: StoryObj = {
   name: "Bare (step outcomes)",
   render: () => ({

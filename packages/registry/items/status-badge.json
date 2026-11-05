@@ -16,6 +16,8 @@
     "keyboard": [],
     "aria": [
       "Icon is aria-hidden; the word carries the meaning",
+      "The label may hold markup (React ReactNode, Angular projected content); its text is the visible word, read as one phrase",
+      "Sizes (sm, md, lg) change only type and icon scale, never the role or the name",
       "Shapes differ: check, cross, triangle, arc, circle (circled shape: ringed check, ringed cross, dashed ring)",
       "Spin of the running icon stops under reduced motion",
       "Not a live region: announce changes elsewhere if needed"

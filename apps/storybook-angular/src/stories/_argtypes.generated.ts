@@ -517,8 +517,8 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
   "status-badge": [
     { className: "StatusBadgeComponent", selector: "span[mkStatusBadge]", inputs: [
       {"name":"status","type":"Outcome","control":"select","options":["running","failed","conformant","partial","never"],"required":true,"model":false,"description":""},
-      {"name":"label","type":"string | undefined","control":"text","required":false,"model":false,"description":"Overrides the default word. The word is always rendered."},
-      {"name":"size","type":"\"sm\" | \"md\"","control":"select","options":["sm","md"],"required":false,"default":"'md'","model":false,"description":""},
+      {"name":"label","type":"string | undefined","control":"text","required":false,"model":false,"description":"Overrides the default word. The word is always rendered. For markup, project content instead."},
+      {"name":"size","type":"\"sm\" | \"md\" | \"lg\"","control":"select","options":["sm","md","lg"],"required":false,"default":"'md'","model":false,"description":"`lg`: page-level status (14px word, 15px icon, 2.6 stroke, normal line height)."},
       {"name":"shape","type":"\"circled\" | \"bare\"","control":"select","options":["circled","bare"],"required":false,"default":"'circled'","model":false,"description":"`circled` (default): ringed icons for a summary (last test, last run); \"never\" is a dashed ring. `bare`: plain check and cross for step and test outcomes."},
     ] },
   ],

@@ -10,12 +10,17 @@
   .status[data-size="sm"] { gap: 4px; font-size: 12px; line-height: 16px; }
   /* Summary rows (catalogue, service tests list) keep a 13px word next to the ring. */
   .status[data-size="sm"][data-shape="circled"] { gap: 6px; font-size: 13px; line-height: 18px; }
+  /* Page-level status (test run verdict, running chip): 14px word, no fixed line box. */
+  .status[data-size="lg"] { font-size: 14px; line-height: normal; }
   /* Stroke weights of the prototype: rings 2.2, bare check and cross 2.6, running arc 2.4. */
   .status > .icon { stroke-width: 2.2; }
   .status[data-shape="bare"][data-status="conformant"] > .icon,
   .status[data-shape="bare"][data-status="failed"] > .icon { stroke-width: 2.6; }
   .status[data-status="running"] > .icon { stroke-width: 2.4; }
   .status[data-shape="bare"][data-status="never"] > .icon { stroke-width: 2; }
+  /* lg draws every shape at 2.6, as the verdict icon of the test run page. */
+  .status[data-size="lg"] > .icon,
+  .status[data-size="lg"][data-shape][data-status] > .icon { stroke-width: 2.6; }
   .status[data-status="conformant"] { --status-color: var(--success); }
   .status[data-status="failed"] { --status-color: var(--danger); }
   .status[data-status="partial"] { --status-color: var(--warning); }

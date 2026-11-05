@@ -13,3 +13,9 @@
   <svg class="icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6L6 18"/></svg>
   <span>Failed</span>
 </span>
+<!-- data-size="lg": page-level status (test run, running chip). 14px word, 15px icon whatever the shape, 2.6 stroke, normal line height.
+     The word may hold markup; it stays the visible text of the badge. -->
+<span class="status" data-status="running" data-size="lg" data-shape="bare">
+  <svg class="icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M12 3a9 9 0 1 0 9 9"/></svg>
+  <span>Retrying · attempt <strong>2</strong> of 3</span>
+</span>
