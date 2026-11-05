@@ -7,6 +7,7 @@ import { useAnnounce, useUseCases } from '@/ui/app';
 import { Button } from '@/ui/components/ui/button';
 import { Checkbox } from '@/ui/components/ui/checkbox';
 import { Icon } from '@/ui/components/ui/icon';
+import { Input } from '@/ui/components/ui/input';
 import type { IconName } from '@/ui/components/ui/icon';
 import { Panel } from '@/ui/components/ui/panel';
 
@@ -87,7 +88,7 @@ export function SimulatorPanel({ serviceId, operationId, method, protocol, mockB
           <label htmlFor="sim-path" className="section-label">Request</label>
           <div className="sim-request" style={{ '--sim-proto': `var(--proto-${protocol.toLowerCase()}, var(--proto-rest))` } as CSSProperties}>
             <span className="sim-method">{method}</span>
-            <input id="sim-path" className="sim-input" type="text" spellCheck={false} value={input} onChange={(e) => setInput(e.target.value)} aria-describedby="sim-base" />
+            <Input id="sim-path" className="sim-input" type="text" spellCheck={false} value={input} onChange={(e) => setInput(e.target.value)} aria-describedby="sim-base" />
           </div>
           <span id="sim-base" className="sim-base">{mockBase} + path</span>
         </div>

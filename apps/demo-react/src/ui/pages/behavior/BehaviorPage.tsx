@@ -13,6 +13,7 @@ import { Icon } from '@/ui/components/ui/icon';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { Panel } from '@/ui/components/ui/panel';
 import { Segmented } from '@/ui/components/ui/segmented';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { SummaryStrip } from '@/ui/components/ui/summary-strip';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { DispatcherPanel } from './DispatcherPanel';
@@ -117,8 +118,8 @@ export default function BehaviorPage() {
         </SummaryStrip>
       </div>
 
-      <div className="behavior-layout">
-        <div className="behavior-config">
+      <SplitPane className="behavior-layout" sideWidth="360px" sideMax="480px" mainWidth="600px" keepSideMax>
+        <SplitPaneMain className="behavior-config">
           <DispatcherPanel draft={draft} examples={exs} pathParams={pathParams} pathPrefix={operation.path.split('{')[0] ?? '/'} edit={edit} />
 
           <Panel padding="lg" title="Delay" id="sec-delay" className="delay">
@@ -223,17 +224,19 @@ export default function BehaviorPage() {
               <p role="status" className="stateful-note"><Icon name="info" size={14} />Dispatcher switched to SCRIPT with a view-counter sample. Responses can read <code>{'{{ views }}'}</code> from the request context.</p>
             ) : null}
           </Panel>
-        </div>
+        </SplitPaneMain>
 
-        <SimulatorPanel
-          serviceId={serviceId}
-          operationId={operationId}
-          method={operation.method}
-          protocol={svc.protocol}
-          mockBase={`http://microcks.local:8080/rest/${svc.name.replace(/ /g, '+')}/${svc.version}`}
-          draft={draft}
-        />
-      </div>
+        <SplitPaneSide>
+          <SimulatorPanel
+            serviceId={serviceId}
+            operationId={operationId}
+            method={operation.method}
+            protocol={svc.protocol}
+            mockBase={`http://microcks.local:8080/rest/${svc.name.replace(/ /g, '+')}/${svc.version}`}
+            draft={draft}
+          />
+        </SplitPaneSide>
+      </SplitPane>
     </div>
   );
 }
