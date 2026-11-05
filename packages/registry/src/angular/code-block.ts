@@ -5,11 +5,12 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   ElementRef,
-  HostAttributeToken,
   inject,
   input,
   model,
+  Renderer2,
   signal,
   viewChild,
 } from '@angular/core';
@@ -53,10 +54,6 @@ export interface CodeTab {
   host: {
     '[class.code]': '!preOnly',
     '[class.code-pre]': 'preOnly',
-    '[attr.tabindex]': 'preOnly && region() ? 0 : hostTabindex',
-    '[attr.role]': "preOnly && region() ? 'region' : hostRole",
-    '[attr.aria-label]': 'preOnly && region() ? name() : hostAriaLabel',
-    '[style.max-height]': 'preOnly ? (maxHeight() ?? null) : null',
     '[attr.data-language]': 'language() || null',
     '[attr.data-variant]': 'variant()',
     '[attr.data-numbered]': "lineNumbers() ? '' : null",
@@ -148,15 +145,38 @@ export class CodeBlockComponent {
   private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
   /** On a `<pre>` host (`<pre mkCodeBlock>`): only the pre, no figure (React `frame="none"`). */
   protected readonly preOnly = this.host.nativeElement.nodeName === 'PRE';
-  // The host's own tabindex/role/aria-label: kept as written unless the pre-only host is the named region.
-  protected readonly hostTabindex = inject(new HostAttributeToken('tabindex'), { optional: true });
-  protected readonly hostRole = inject(new HostAttributeToken('role'), { optional: true });
-  protected readonly hostAriaLabel = inject(new HostAttributeToken('aria-label'), { optional: true });
   private readonly pre = viewChild<ElementRef<HTMLPreElement>>('pre');
   private readonly overflows = signal(true);
   protected readonly region = computed(() => this.focusable() === 'always' || (this.focusable() === 'overflow' && this.overflows()));
 
   constructor() {
+    // A <pre> host is the region itself: set tabindex/role/aria-label/max-height imperatively, and remove only what
+    // this component set. No host bindings for them, so a <figure> host keeps every consumer attribute, static or bound.
+    if (this.preOnly) {
+      const r = inject(Renderer2);
+      const el = this.host.nativeElement;
+      let owned = false;
+      let ownedMaxHeight = false;
+      effect(() => {
+        if (this.region()) {
+          r.setAttribute(el, 'tabindex', '0');
+          r.setAttribute(el, 'role', 'region');
+          r.setAttribute(el, 'aria-label', this.name());
+          owned = true;
+        } else if (owned) {
+          for (const a of ['tabindex', 'role', 'aria-label']) r.removeAttribute(el, a);
+          owned = false;
+        }
+        const mh = this.maxHeight();
+        if (mh !== undefined) {
+          r.setStyle(el, 'max-height', mh);
+          ownedMaxHeight = true;
+        } else if (ownedMaxHeight) {
+          r.removeStyle(el, 'max-height');
+          ownedMaxHeight = false;
+        }
+      });
+    }
     let ro: ResizeObserver | undefined;
     inject(DestroyRef).onDestroy(() => ro?.disconnect());
     // Remeasure after every render: notes, markers, gutter or tabs change the content width without changing the text.

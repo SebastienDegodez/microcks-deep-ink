@@ -166,12 +166,21 @@ export const PreOnly: StoryObj = {
   }),
 };
 
-/** Figure mode keeps the role, aria-label and tabindex written on the host (the component does not own them there). */
+/**
+ * The component never binds role, aria-label or tabindex on a `<figure>` host: static or bound consumer attributes stay.
+ * On a `<pre>` host it sets them only while it is the named region (here `focusable="never"`, so the consumer's stay).
+ */
 export const ConsumerHostAttributes: StoryObj = {
   name: 'Consumer host attributes kept',
   render: () => ({
-    props: { code: '{"name": "Millefeuille"}' },
-    template: `<figure mkCodeBlock id="consumer-host" role="group" aria-label="Pastry sample" tabindex="-1" variant="plain" caption="Sample" [code]="code"></figure>`,
+    props: { code: '{"name": "Millefeuille"}', role: 'group', label: 'Bound pastry sample', ti: -1 },
+    template: `
+      <div class="stack">
+        <figure mkCodeBlock id="consumer-static" role="group" aria-label="Pastry sample" tabindex="-1" variant="plain" caption="Sample" [code]="code"></figure>
+        <figure mkCodeBlock id="consumer-bound" [attr.role]="role" [attr.aria-label]="label" [tabindex]="ti" variant="plain" caption="Sample" [code]="code"></figure>
+        <pre mkCodeBlock id="consumer-pre" focusable="never" variant="plain" [attr.aria-label]="label" [code]="code"></pre>
+      </div>
+    `,
   }),
 };
 

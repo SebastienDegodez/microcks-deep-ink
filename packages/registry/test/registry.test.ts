@@ -116,17 +116,6 @@ describe('CSS rules', () => {
     expect(css).toMatch(/\.code\[data-variant="bare"\] > pre \{[^}]*--focus-offset:\s*-2px/);
   });
 
-  // Figure-mode hosts keep the consumer's role/aria-label/tabindex: the host bindings fall back to the initial attributes.
-  it('keeps consumer role, aria-label and tabindex on the Angular code block host', () => {
-    const src = readFileSync(join(ROOT, 'src', 'angular', 'code-block.ts'), 'utf8');
-    expect(src).toContain(`'[attr.tabindex]': 'preOnly && region() ? 0 : hostTabindex'`);
-    expect(src).toContain(`'[attr.role]': "preOnly && region() ? 'region' : hostRole"`);
-    expect(src).toContain(`'[attr.aria-label]': 'preOnly && region() ? name() : hostAriaLabel'`);
-    for (const [attr, field] of [['tabindex', 'hostTabindex'], ['role', 'hostRole'], ['aria-label', 'hostAriaLabel']]) {
-      expect(src).toContain(`${field} = inject(new HostAttributeToken('${attr}'), { optional: true })`);
-    }
-  });
-
   it('never removes the outline without a replacement', () => {
     for (const { f, text } of cssFiles) expect(strip(text), f).not.toMatch(/outline\s*:\s*(none|0)\b/);
   });
