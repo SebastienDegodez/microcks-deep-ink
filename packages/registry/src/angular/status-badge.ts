@@ -17,19 +17,23 @@ const ICON: Record<'circled' | 'bare', Record<Outcome, IconName>> = {
   bare: { conformant: 'check', failed: 'cross', partial: 'warning', running: 'running', never: 'circle' },
 };
 
-/** Icon + word + color. The word is never optional. */
+/**
+ * Icon + word + color. The word is never optional.
+ * Rich words (e.g. "Retrying · attempt <strong>2</strong> of 3") are projected as content; they replace label and the default word.
+ */
 @Component({
   selector: 'span[mkStatusBadge]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent],
   host: { class: 'status', '[attr.data-status]': 'status()', '[attr.data-size]': 'size()', '[attr.data-shape]': 'shape()' },
-  template: `<svg mkIcon [name]="icon()" [size]="iconSize()"></svg><span>{{ label() ?? word() }}</span>`,
+  template: `<svg mkIcon [name]="icon()" [size]="iconSize()"></svg><span><ng-content>{{ text() }}</ng-content></span>`,
 })
 export class StatusBadgeComponent {
   readonly status = input.required<Outcome>();
-  /** Overrides the default word. The word is always rendered. */
+  /** Overrides the default word. The word is always rendered. For markup, project content instead. */
   readonly label = input<string>();
-  readonly size = input<'md' | 'sm'>('md');
+  /** `lg`: page-level status (14px word, 15px icon, 2.6 stroke, normal line height). */
+  readonly size = input<'md' | 'sm' | 'lg'>('md');
   /**
    * `circled` (default): ringed icons for a summary (last test, last run); "never" is a dashed ring.
    * `bare`: plain check and cross for step and test outcomes.
@@ -42,10 +46,13 @@ export class StatusBadgeComponent {
   protected icon(): IconName {
     return ICON[this.shape()][this.known()];
   }
-  protected word(): string {
-    return WORD[this.known()];
+  /** A blank label (undefined, empty or whitespace only) falls back to the default word. */
+  protected text(): string {
+    const label = this.label();
+    return label?.trim() ? label : WORD[this.known()];
   }
   protected iconSize(): number {
+    if (this.size() === 'lg') return 15;
     return this.shape() === 'circled' ? (this.size() === 'sm' ? 14 : 15) : this.size() === 'sm' ? 13 : 14;
   }
 }

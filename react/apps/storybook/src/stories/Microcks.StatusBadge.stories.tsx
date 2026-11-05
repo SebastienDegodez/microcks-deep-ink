@@ -30,6 +30,27 @@ export const Small: StoryObj = {
   ),
 };
 
+export const Large: StoryObj = {
+  name: 'Large (page-level status)',
+  render: () => (
+    <div className="inline">
+      <StatusBadge size="lg" status="conformant" />
+      <StatusBadge size="lg" shape="bare" status="failed" />
+      <StatusBadge size="lg" shape="bare" status="running" label="Running · step 2 of 5" />
+      <StatusBadge
+        size="lg"
+        shape="bare"
+        status="running"
+        label={
+          <>
+            Retrying · attempt <strong>2</strong> of 3
+          </>
+        }
+      />
+    </div>
+  ),
+};
+
 export const Bare: StoryObj = {
   name: 'Bare (step outcomes)',
   render: () => (
@@ -47,7 +68,8 @@ export const Playground: StoryObj<typeof StatusBadge> = {
   args: { status: 'conformant', size: 'md', shape: 'circled' },
   argTypes: {
     status: { control: 'select', options: ['conformant', 'failed', 'partial', 'running', 'never'] },
-    size: { control: 'inline-radio', options: ['md', 'sm'] },
+    size: { control: 'inline-radio', options: ['md', 'sm', 'lg'] },
+    label: { control: 'text', description: 'Overrides the word (ReactNode). Unset keeps the default word.' },
     shape: { control: 'inline-radio', options: ['circled', 'bare'] },
   },
 };
