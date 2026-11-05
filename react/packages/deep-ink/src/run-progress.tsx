@@ -11,7 +11,7 @@ export interface RunCount {
 export interface RunProgressProps extends HTMLAttributes<HTMLElement> {
   /** Accessible name of the section (the only naming API: it wins over a passed `aria-label`). */
   label?: string;
-  /** The run is updating: sets aria-busy="true" on the section so assistive tech waits for the region to settle. Absent by default. */
+  /** busy marks the bar as updating (aria-busy="true" on the bar only); step announcements are not affected. Absent by default. */
   busy?: boolean;
   done: number;
   total: number;
@@ -37,7 +37,7 @@ const COUNT_ICON = { pass: 'check', fail: 'cross', warn: 'warning', pending: 'ci
 export function RunProgress({ label = 'Progress', busy = false, done, total, caption, nowLabel, now, segments, counts, action, note, gap, className, style, ...rest }: RunProgressProps) {
   const summary = `${done} of ${total} ${caption}`;
   return (
-    <section {...rest} aria-label={label} aria-busy={busy || undefined} className={['run-progress', className].filter(Boolean).join(' ')} style={gap !== undefined ? ({ ...style, '--run-gap': `${gap}px` } as CSSProperties) : style}>
+    <section {...rest} aria-label={label} className={['run-progress', className].filter(Boolean).join(' ')} style={gap !== undefined ? ({ ...style, '--run-gap': `${gap}px` } as CSSProperties) : style}>
       <div className="run-progress-top">
         <p className="run-progress-count">
           <span className="run-progress-done">
@@ -53,7 +53,7 @@ export function RunProgress({ label = 'Progress', busy = false, done, total, cap
           </div>
         ) : null}
       </div>
-      <div className="run-progress-bar" role="img" aria-label={summary}>
+      <div className="run-progress-bar" role="img" aria-label={summary} aria-busy={busy || undefined}>
         {segments.map((s, i) => (
           <span key={i} data-seg={s} />
         ))}

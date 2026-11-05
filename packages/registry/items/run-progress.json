@@ -11,7 +11,7 @@
     "keyboard": [["Tab", "Reaches the step control"]],
     "aria": [
       "The section's accessible name is the `label` option (\"Progress\" by default); it is the only naming API and wins over a passed aria-label",
-      "`busy` (off by default) sets aria-busy=\"true\" on the section, the region that holds the live step and the bar, while the run updates; the attribute is absent otherwise",
+      "`busy` (off by default) marks the bar as updating: aria-busy=\"true\" on the role=\"img\" bar only, never on an ancestor of the live region, so step announcements are not affected; the attribute is absent otherwise",
       "The segment bar is role=\"img\" named \"5 of 7 test steps done\"",
       "\"Now calling\" is aria-live=\"polite\": the current step is announced when it changes",
       "Each count writes its word next to a decorative icon; the current segment's pulse stops under reduced motion",
