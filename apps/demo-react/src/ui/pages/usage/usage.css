@@ -5,4 +5,3 @@
 .us-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; }
 .us-control { display: flex; flex-direction: column; gap: 4px; }
 .us-control .select { min-width: 210px; }
-.us-split { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }

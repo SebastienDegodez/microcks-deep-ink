@@ -24,6 +24,9 @@
  { "id": "tests-create-endpoint-error", "route": "/tests/create?service=pastry2", "focus": { "role": "textbox", "name": "Test endpoint" }, "keys": ["Control+a", "Backspace"] },
  { "id": "tests-create-ops-error", "route": "/tests/create?service=pastry2", "focus": { "role": "button", "name": "Clear all" }, "keys": ["Enter"] },
  { "id": "tests-create-header-row", "route": "/tests/create?service=pastry2", "focus": { "role": "button", "name": "Add header" }, "keys": ["Enter"] },
+ { "id": "usage-period-7d", "route": "/metrics", "focus": { "role": "button", "name": "7 days" }, "keys": ["Enter"] },
+ { "id": "usage-period-30d", "route": "/metrics", "focus": { "role": "button", "name": "30 days" }, "keys": ["Enter"] },
+ { "id": "usage-service-period-30d", "route": "/metrics/pastry2", "focus": { "role": "button", "name": "30 days" }, "keys": ["Enter"] },
  { "id": "workflows-loading", "route": "/workflows", "focus": { "role": "button", "name": "Show loading" }, "keys": ["Enter"] },
  { "id": "workflows-empty", "route": "/workflows", "focus": { "role": "button", "name": "Show empty state" }, "keys": ["Enter"] }
 ]
