@@ -39,5 +39,8 @@
  { "id": "agent-run-cell-signature", "route": "/tests/agent/3", "focus": { "role": "button", "name": "Signature (JWS): Absent 4 ms" }, "keys": ["Enter"] },
  { "id": "agent-run-cell-iface-http", "route": "/tests/agent/3", "focus": { "role": "button", "name": "HTTP+JSON × Interfaces reachable: Passed 88 ms" }, "keys": ["Enter"] },
  { "id": "agent-run-conversation-grpc", "route": "/tests/agent/3", "focus": { "role": "button", "name": "gRPC × ord-2417-ready · stream closed without lastChunk: true" }, "keys": ["Enter"] },
- { "id": "agent-setup-conversation-off", "route": "/tests/agent", "focus": { "role": "checkbox", "name": "eclair-size-m", "exact": false }, "keys": ["Space"] }
+ { "id": "agent-setup-conversation-off", "route": "/tests/agent", "focus": { "role": "checkbox", "name": "eclair-size-m", "exact": false }, "keys": ["Space"] },
+ { "id": "test-run-119-running", "route": "/tests/runner/119" },
+ { "id": "test-run-119-skip", "route": "/tests/runner/119", "focus": { "role": "button", "name": "Skip to result" }, "keys": ["Enter"] },
+ { "id": "test-run-118-replay", "route": "/tests/runner/118", "focus": { "role": "button", "name": "Replay run" }, "keys": ["Enter"] }
 ]

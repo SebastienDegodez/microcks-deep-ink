@@ -36,7 +36,6 @@
 .tr-verdict:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }
 .tr-verdict-head { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 16px 32px; }
 .tr-score { display: flex; flex-direction: column; gap: 4px; }
-.tr-score-label { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
 .tr-score-value { font: 800 64px/0.9 var(--font-brand); color: var(--danger); }
 .tr-score-value[data-level='high'] { color: var(--success); }
 .tr-score-value[data-level='mid'] { color: var(--warning); }
@@ -125,7 +124,6 @@
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px;
   border-bottom: 1px solid var(--border); background: var(--raised); font-size: 12px;
 }
-.tr-code-title { font-weight: 600; letter-spacing: 0.04em; text-transform: uppercase; color: var(--text-muted); }
 .tr-code-source { font-family: var(--font-mono); color: var(--text-secondary); }
 .tr-code { margin: 0; padding: 8px 0; overflow-x: auto; background: var(--bg); font: 400 12px/20px var(--font-mono); }
 .tr-code > code { display: inline-block; min-width: 100%; font: inherit; }
