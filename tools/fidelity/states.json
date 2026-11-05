@@ -15,5 +15,13 @@
  { "id": "sources-new-url-tab", "route": "/sources/new", "focus": { "role": "tab", "name": "URL" }, "keys": ["Enter"] },
  { "id": "service-properties-tab", "route": "/services/pastry2", "focus": { "role": "tab", "name": "Properties & MCP" }, "keys": ["Enter"] },
  { "id": "agent-card-tab", "route": "/services/concierge", "focus": { "role": "tab", "name": "Agent Card" }, "keys": ["Enter"] },
- { "id": "workflow-steps-tab", "route": "/workflows/pastry/restock-pastry", "focus": { "role": "tab", "name": "Steps , 4" }, "keys": ["Enter"] }
+ { "id": "workflow-steps-tab", "route": "/workflows/pastry/restock-pastry", "focus": { "role": "tab", "name": "Steps , 4" }, "keys": ["Enter"] },
+ { "id": "tests-create-runner-http", "route": "/tests/create?service=pastry2", "focus": { "role": "radio", "name": "HTTP" }, "keys": ["Space"] },
+ { "id": "tests-create-runner-postman", "route": "/tests/create?service=pastry2", "focus": { "role": "radio", "name": "POSTMAN" }, "keys": ["Space"] },
+ { "id": "tests-create-ci-github", "route": "/tests/create?service=pastry2", "focus": { "role": "button", "name": "GitHub Actions" }, "keys": ["Enter"] },
+ { "id": "tests-create-ci-tekton", "route": "/tests/create?service=pastry2", "focus": { "role": "button", "name": "Tekton" }, "keys": ["Enter"] },
+ { "id": "tests-create-oauth", "route": "/tests/create?service=pastry2", "focus": { "role": "switch", "name": "Client credentials grant" }, "keys": ["Space"] },
+ { "id": "tests-create-endpoint-error", "route": "/tests/create?service=pastry2", "focus": { "role": "textbox", "name": "Test endpoint" }, "keys": ["Control+a", "Backspace"] },
+ { "id": "tests-create-ops-error", "route": "/tests/create?service=pastry2", "focus": { "role": "button", "name": "Clear all" }, "keys": ["Enter"] },
+ { "id": "tests-create-header-row", "route": "/tests/create?service=pastry2", "focus": { "role": "button", "name": "Add header" }, "keys": ["Enter"] }
 ]
