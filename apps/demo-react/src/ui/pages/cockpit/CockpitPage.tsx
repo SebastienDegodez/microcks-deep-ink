@@ -13,6 +13,7 @@ import { Chip } from '@/ui/components/ui/chip';
 import { ConformanceBand, type OperationResult } from '@/ui/components/ui/conformance-band';
 import { Icon } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
+import { SplitPane, SplitPaneMain } from '@/ui/components/ui/split-pane';
 import { StatCard, StatGrid } from '@/ui/components/ui/stat-card';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { PROTOCOL_ORDER, fmt, operationUnit, pluralize, testRunHref } from '@/ui/app/format';
@@ -229,57 +230,59 @@ export default function CockpitPage() {
 
       {empty ? (
         <section aria-labelledby="start-title" className="start">
-          <div className="start-main">
-            <div className="start-intro">
-              <div className="start-heading">
-                <h2 id="start-title" className="start-title">Getting started</h2>
-                <span className="start-progress">{stepsDone} of 3 done</span>
+          <SplitPane mainWidth="460px">
+            <SplitPaneMain className="start-main">
+              <div className="start-intro">
+                <div className="start-heading">
+                  <h2 id="start-title" className="start-title">Getting started</h2>
+                  <span className="start-progress">{stepsDone} of 3 done</span>
+                </div>
+                <p className="start-lead">This Microcks instance has no API yet. Three steps take you from a contract to a live mock and a conformance proof.</p>
               </div>
-              <p className="start-lead">This Microcks instance has no API yet. Three steps take you from a contract to a live mock and a conformance proof.</p>
-            </div>
-            <ol className="start-steps">
-              {START_STEPS.map((step, i) => {
-                const isDone = Boolean(done[step.id]);
-                const current = i === firstOpen;
-                return (
-                  <li key={step.id} className="start-step" data-current={current ? '' : undefined} data-done={isDone ? '' : undefined}>
-                    <button
-                      type="button"
-                      className="start-step-toggle"
-                      aria-pressed={isDone}
-                      aria-label={`Mark step ${i + 1} as ${isDone ? 'not done' : 'done'}`}
-                      onClick={() => setDone({ ...done, [step.id]: !isDone })}
-                    >
-                      {isDone ? <Icon name="check" size={14} /> : i + 1}
-                    </button>
-                    <div className="start-step-text">
-                      <span className="start-step-title">{step.title}</span>
-                      <span className="start-step-desc">{step.desc}</span>
-                      {step.code ? <pre className="start-step-code">{step.code}</pre> : null}
-                    </div>
-                    <RouterLink className="start-step-cta" to={step.to}>{step.cta}</RouterLink>
-                  </li>
-                );
-              })}
-            </ol>
-          </div>
-          <aside aria-labelledby="start-other-title" className="start-other">
-            <h3 id="start-other-title" className="start-other-title">Other ways to start</h3>
-            <RouterLink to="/hub" className="start-other-link">
-              <span className="start-other-name">Browse the Hub</span>
-              <span className="start-other-desc">Install a ready-made API from the community catalogue.</span>
-            </RouterLink>
-            <div aria-hidden="true" className="start-other-rule" />
-            <RouterLink to="/sources" className="start-other-link">
-              <span className="start-other-name">Connect a Git repository</span>
-              <span className="start-other-desc">A scheduled Importer keeps mocks in sync with your contracts.</span>
-            </RouterLink>
-            <div aria-hidden="true" className="start-other-rule" />
-            <a href="https://microcks.io/documentation/tutorials/getting-started/" target="_blank" rel="noreferrer" className="start-other-link">
-              <span className="start-other-name">Read the getting-started tutorial</span>
-              <span className="start-other-desc">microcks.io documentation, opens in a new tab.</span>
-            </a>
-          </aside>
+              <ol className="start-steps">
+                {START_STEPS.map((step, i) => {
+                  const isDone = Boolean(done[step.id]);
+                  const current = i === firstOpen;
+                  return (
+                    <li key={step.id} className="start-step" data-current={current ? '' : undefined} data-done={isDone ? '' : undefined}>
+                      <button
+                        type="button"
+                        className="start-step-toggle"
+                        aria-pressed={isDone}
+                        aria-label={`Mark step ${i + 1} as ${isDone ? 'not done' : 'done'}`}
+                        onClick={() => setDone({ ...done, [step.id]: !isDone })}
+                      >
+                        {isDone ? <Icon name="check" size={14} /> : i + 1}
+                      </button>
+                      <div className="start-step-text">
+                        <span className="start-step-title">{step.title}</span>
+                        <span className="start-step-desc">{step.desc}</span>
+                        {step.code ? <pre className="start-step-code">{step.code}</pre> : null}
+                      </div>
+                      <RouterLink className="start-step-cta" to={step.to}>{step.cta}</RouterLink>
+                    </li>
+                  );
+                })}
+              </ol>
+            </SplitPaneMain>
+            <aside aria-labelledby="start-other-title" className="start-other">
+              <h3 id="start-other-title" className="start-other-title">Other ways to start</h3>
+              <RouterLink to="/hub" className="start-other-link">
+                <span className="start-other-name">Browse the Hub</span>
+                <span className="start-other-desc">Install a ready-made API from the community catalogue.</span>
+              </RouterLink>
+              <div aria-hidden="true" className="start-other-rule" />
+              <RouterLink to="/sources" className="start-other-link">
+                <span className="start-other-name">Connect a Git repository</span>
+                <span className="start-other-desc">A scheduled Importer keeps mocks in sync with your contracts.</span>
+              </RouterLink>
+              <div aria-hidden="true" className="start-other-rule" />
+              <a href="https://microcks.io/documentation/tutorials/getting-started/" target="_blank" rel="noreferrer" className="start-other-link">
+                <span className="start-other-name">Read the getting-started tutorial</span>
+                <span className="start-other-desc">microcks.io documentation, opens in a new tab.</span>
+              </a>
+            </aside>
+          </SplitPane>
         </section>
       ) : (
         <>
@@ -414,7 +417,7 @@ export default function CockpitPage() {
                         <span className="top-name">
                           <span className="top-proto">{s.protocol}</span>
                           <span className="top-label">{s.name} <span className="top-version">{s.version}</span></span>
-                          {isLive(s) ? <span className="top-live" aria-label="live" role="img" /> : null}
+                          {isLive(s) ? <LiveIndicator variant="dot" size="sm" aria-label="live" role="img" /> : null}
                         </span>
                         <span className="top-count">{fmt(s.calls24h)}</span>
                       </span>
