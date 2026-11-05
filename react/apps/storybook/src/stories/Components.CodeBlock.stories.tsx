@@ -164,6 +164,23 @@ export const Bare: StoryObj = {
   ),
 };
 
+/**
+ * `frame="none"`: only the `<pre class="code-pre">`, no figure, header or copy. With `variant="bare"` it has no border,
+ * radius or padding, so the page keeps its own padding class. `focusable`: `always` (named region), `overflow`
+ * (region only while it scrolls) or `never` (plain `<pre>`, only for content that never scrolls: a scrolling pre must stay
+ * keyboard reachable, WCAG 2.1.1; use `overflow` when it may scroll).
+ */
+export const PreOnly: StoryObj = {
+  name: 'Pre only (frame="none")',
+  render: () => (
+    <div className="stack" style={{ maxWidth: 360 }}>
+      <CodeBlock frame="none" variant="bare" label="Input schema of getPastry" style={{ padding: '10px 12px', borderRadius: 4 }} code={'{\n  "type": "object",\n  "properties": { "name": { "type": "string" } }\n}'} />
+      <CodeBlock frame="none" variant="plain" focusable="overflow" label="Long command" code={'curl -X PATCH http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille -d \'{"price": 3.9}\''} />
+      <CodeBlock frame="none" variant="plain" focusable="never" code={'{"dispatcher": "URI_PARTS"}'} />
+    </div>
+  ),
+};
+
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof CodeBlock> = {
   args: {
@@ -181,11 +198,13 @@ export const Playground: StoryObj<typeof CodeBlock> = {
     source: 'pastry.http',
     headerTone: undefined,
     focusable: 'always',
+    frame: 'figure',
   },
   argTypes: {
     variant: { control: 'inline-radio', options: ['framed', 'plain', 'bare'] },
     headerTone: { control: 'inline-radio', options: [undefined, 'raised'] },
-    focusable: { control: 'inline-radio', options: ['always', 'overflow'] },
+    focusable: { control: 'inline-radio', options: ['always', 'overflow', 'never'] },
+    frame: { control: 'inline-radio', options: ['figure', 'none'] },
     gutter: { control: 'inline-radio', options: ['wide', 'narrow'] },
     tone: { control: 'inline-radio', options: [undefined, 'danger'] },
   },

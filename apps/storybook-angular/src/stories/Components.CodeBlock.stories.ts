@@ -144,7 +144,47 @@ export const Bare: StoryObj = {
   }),
 };
 
-export const Playground: StoryObj = playground('code-block', 'CodeBlockComponent', {
+/**
+ * `<pre mkCodeBlock>`: only the pre. `focusable`: `always` (named region), `overflow` (region only while it scrolls) or
+ * `never` (plain pre, only for content that never scrolls: a scrolling pre must stay keyboard reachable, WCAG 2.1.1).
+ */
+export const PreOnly: StoryObj = {
+  name: 'Pre only (<pre mkCodeBlock>)',
+  render: () => ({
+    props: {
+      schema: '{\n  "type": "object",\n  "properties": { "name": { "type": "string" } }\n}',
+      long: `curl -X PATCH http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille -d '{"price": 3.9}'`,
+      short: '{"dispatcher": "URI_PARTS"}',
+    },
+    template: `
+      <div class="stack" style="max-width:360px">
+        <pre mkCodeBlock variant="bare" label="Input schema of getPastry" style="padding:10px 12px;border-radius:4px" [code]="schema"></pre>
+        <pre mkCodeBlock variant="plain" focusable="overflow" label="Long command" [code]="long"></pre>
+        <pre mkCodeBlock variant="plain" focusable="never" [code]="short"></pre>
+      </div>
+    `,
+  }),
+};
+
+/**
+ * The component never binds role, aria-label or tabindex on a `<figure>` host: static or bound consumer attributes stay.
+ * On a `<pre>` host it sets them only while it is the named region (here `focusable="never"`, so the consumer's stay).
+ */
+export const ConsumerHostAttributes: StoryObj = {
+  name: 'Consumer host attributes kept',
+  render: () => ({
+    props: { code: '{"name": "Millefeuille"}', role: 'group', label: 'Bound pastry sample', ti: -1 },
+    template: `
+      <div class="stack">
+        <figure mkCodeBlock id="consumer-static" role="group" aria-label="Pastry sample" tabindex="-1" variant="plain" caption="Sample" [code]="code"></figure>
+        <figure mkCodeBlock id="consumer-bound" [attr.role]="role" [attr.aria-label]="label" [tabindex]="ti" variant="plain" caption="Sample" [code]="code"></figure>
+        <pre mkCodeBlock id="consumer-pre" focusable="never" variant="plain" [attr.aria-label]="label" [code]="code"></pre>
+      </div>
+    `,
+  }),
+};
+
+const playgroundBase = playground('code-block', 'CodeBlockComponent', {
   code: 'GET /pastries/{name}\nAccept: application/json\n\n200 OK\n{ "name": "Millefeuille", "price": 3.9 }',
   language: 'http',
   caption: 'Request and response',
@@ -157,3 +197,15 @@ export const Playground: StoryObj = playground('code-block', 'CodeBlockComponent
   lineNumbers: true,
   gutter: 'wide',
 });
+
+/** `frame` is a story control only: in Angular the host picks the mode (`<figure mkCodeBlock>` or `<pre mkCodeBlock>`). */
+export const Playground: StoryObj = {
+  ...playgroundBase,
+  args: { ...playgroundBase.args, frame: 'figure' },
+  argTypes: { ...playgroundBase.argTypes, frame: { control: 'inline-radio', options: ['figure', 'none'], description: '`none`: `<pre mkCodeBlock>`, only the pre (no figure, header or copy).' } },
+  render: (a, ctx) => {
+    const { frame, ...rest } = a;
+    const out = playgroundBase.render!(rest as typeof a, ctx) as { props: Record<string, unknown>; template: string };
+    return frame === 'none' ? { props: rest, template: out.template.replace(/^<figure/, '<pre').replace(/<\/figure>$/, '</pre>') } : { props: rest, template: out.template };
+  },
+};

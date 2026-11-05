@@ -2,7 +2,7 @@
   "name": "code-block",
   "title": "CodeBlock",
   "tier": "natural",
-  "description": "Figure with a scrollable, focusable code area, an optional caption and source, a copy button and marked bad lines; framed, plain or bare.",
+  "description": "Figure with a scrollable, focusable code area, an optional caption and source, a copy button and marked bad lines; framed, plain or bare, or the <pre> alone (frame=\"none\").",
   "registryDependencies": [
     "base",
     "icon",
@@ -13,7 +13,7 @@
   },
   "elements": [],
   "a11y": {
-    "pattern": "<figure> + <figcaption> + <pre tabindex=\"0\"><code>",
+    "pattern": "<figure> + <figcaption> + <pre tabindex=\"0\"><code>, or <pre class=\"code-pre\"><code> alone (frame=\"none\")",
     "keyboard": [
       [
         "Tab",
@@ -27,9 +27,12 @@
     "aria": [
       "The scrollable <pre> is focusable and named by the caption (role=\"region\" + aria-label)",
       "With focusable=\"overflow\" the <pre> is focusable and named only while its content actually scrolls (RGAA 7.3); otherwise it is plain text (default: always focusable)",
+      "With focusable=\"never\" the <pre> is never focusable nor named: only for content that never scrolls (wrapped or short). A scrolling <pre> that is not focusable cannot be scrolled with the keyboard (WCAG 2.1.1, RGAA 7.3): use focusable=\"overflow\" whenever it may scroll",
+      "With frame=\"none\" (Angular: <pre mkCodeBlock>) only the <pre> is rendered: no <figure>, header or copy button. focusable=\"always\" → tabindex=\"0\" + role=\"region\" + aria-label from label (else caption, language, \"Code\"); \"overflow\" → the same only while it scrolls; \"never\" → a plain <pre>",
       "With a source, the caption is shown as an uppercase title (text-transform only, the accessible text is unchanged) and the source is plain text after it",
       "A bad line shows a visible ✕ marker and a visible note; the note is also read by assistive technology",
-      "The copy button announces \"Copied\" or \"Copy failed\" through a polite live region (copy-button)"
+      "The copy button announces \"Copied\" or \"Copy failed\" through a polite live region (copy-button)",
+      "In Angular figure mode the host <figure> keeps any role, aria-label and tabindex written by the consumer; the component only sets them on a <pre mkCodeBlock> host that is the named region"
     ],
     "rgaa": [
       "1.1",
@@ -44,7 +47,7 @@
       "2.4.7",
       "4.1.2"
     ],
-    "notes": "Pass lines for per-line markers, or code for plain text. Long lines scroll inside the region (no loss of content at 320px). variant=\"bare\" drops the frame, header and padding for a <pre> inside a card; headerTone=\"raised\" puts the header on --raised."
+    "notes": "Pass lines for per-line markers, or code for plain text. Long lines scroll inside the region (no loss of content at 320px). variant=\"bare\" drops the frame, header and padding for a <pre> inside a card; headerTone=\"raised\" puts the header on --raised. frame=\"none\" renders only <pre class=\"code-pre\"> with the data-* hooks; with variant=\"bare\" it has no border, radius or padding, so the page keeps its own padding class."
   },
   "stories": [
     "Components/CodeBlock"

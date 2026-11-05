@@ -160,7 +160,7 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
     ] },
   ],
   "code-block": [
-    { className: "CodeBlockComponent", selector: "figure[mkCodeBlock]", inputs: [
+    { className: "CodeBlockComponent", selector: "figure[mkCodeBlock], pre[mkCodeBlock]", inputs: [
       {"name":"code","type":"string | undefined","control":"text","required":false,"model":false,"description":"Plain text. Use `lines` for per-line markers."},
       {"name":"lines","type":"CodeLine[] | undefined","control":"object","required":false,"model":false,"description":""},
       {"name":"language","type":"string | undefined","control":"text","required":false,"model":false,"description":""},
@@ -171,7 +171,7 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"variant","type":"\"plain\" | \"framed\" | \"bare\"","control":"select","options":["plain","framed","bare"],"required":false,"default":"'framed'","model":false,"description":"`plain`: just the bordered code, no header (no caption, tabs or copy). `bare`: no frame, no header and no padding, for a `<pre>` inside a card that already draws the frame."},
       {"name":"source","type":"string | undefined","control":"text","required":false,"model":false,"description":"Source written at the end of the header (mono), next to the caption shown as an uppercase title."},
       {"name":"headerTone","type":"\"raised\" | undefined","control":"select","options":["raised"],"required":false,"model":false,"description":"`raised`: the header on the raised fill (--raised)."},
-      {"name":"focusable","type":"\"always\" | \"overflow\"","control":"select","options":["always","overflow"],"required":false,"default":"'always'","model":false,"description":"`always` (default): the `<pre>` is always a focusable named region. `overflow`: it is focusable and named (role=\"region\" + aria-label) only while its content actually scrolls (RGAA 7.3); otherwise it is plain text."},
+      {"name":"focusable","type":"\"always\" | \"overflow\" | \"never\"","control":"select","options":["always","overflow","never"],"required":false,"default":"'always'","model":false,"description":"`always` (default): the `<pre>` is always a focusable named region. `overflow`: it is focusable and named (role=\"region\" + aria-label) only while its content actually scrolls (RGAA 7.3); otherwise it is plain text. `never`: always a plain `<pre>`. Only for content that never scrolls (wrapped or short): a scrolling `<pre>` that is not focusable cannot be scrolled with the keyboard (WCAG 2.1.1); use `overflow` when it may scroll."},
       {"name":"tabs","type":"CodeTab[] | undefined","control":"object","required":false,"model":false,"description":"Format switch in the header (curl, HTTPie, MCP tool call): toggle buttons with aria-pressed."},
       {"name":"tab","type":"string | undefined","control":"text","required":false,"model":true,"description":""},
       {"name":"tabsLabel","type":"string","control":"text","required":false,"default":"'Format'","model":false,"description":"Accessible name of the tab group."},
@@ -523,7 +523,7 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
   ],
   "status-badge": [
     { className: "StatusBadgeComponent", selector: "span[mkStatusBadge]", inputs: [
-      {"name":"status","type":"Outcome","control":"select","options":["running","failed","conformant","partial","never"],"required":true,"model":false,"description":""},
+      {"name":"status","type":"Outcome","control":"select","options":["running","never","failed","conformant","partial"],"required":true,"model":false,"description":""},
       {"name":"label","type":"string | undefined","control":"text","required":false,"model":false,"description":"Overrides the default word. The word is always rendered. For markup, project content instead."},
       {"name":"size","type":"\"sm\" | \"md\" | \"lg\"","control":"select","options":["sm","md","lg"],"required":false,"default":"'md'","model":false,"description":"`lg`: page-level status (14px word, 15px icon, 2.6 stroke, normal line height)."},
       {"name":"shape","type":"\"bare\" | \"circled\"","control":"select","options":["bare","circled"],"required":false,"default":"'circled'","model":false,"description":"`circled` (default): ringed icons for a summary (last test, last run); \"never\" is a dashed ring. `bare`: plain check and cross for step and test outcomes."},

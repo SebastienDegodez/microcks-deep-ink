@@ -5,13 +5,16 @@ import {
   Component,
   computed,
   DestroyRef,
+  effect,
   ElementRef,
   inject,
   input,
   model,
+  Renderer2,
   signal,
   viewChild,
 } from '@angular/core';
+import { NgTemplateOutlet } from '@angular/common';
 import { CopyButtonComponent } from './copy-button';
 import { IconComponent } from './icon';
 
@@ -38,15 +41,19 @@ export interface CodeTab {
 /**
  * Code in a `<figure>`. The scroll container is focusable and named (WCAG 2.1.1). A bad line has a
  * visible cross marker and note, not color alone. Use `code` for plain text or `lines` for markers.
- * With `focusable="overflow"` the `<pre>` is focusable and named only while it actually scrolls (RGAA 7.3).
- * Keep the `<pre>` template on one line: whitespace inside `<pre>` is preserved.
+ * With `focusable="overflow"` the `<pre>` is focusable and named only while it actually scrolls (RGAA 7.3);
+ * `focusable="never"` keeps it a plain `<pre>`.
+ * Pre only (React `frame="none"`): put the directive on a `<pre>` (`<pre mkCodeBlock>`). The host is then the
+ * `<pre class="code-pre">` itself: no figure, header or copy button. Combine with `variant="bare"` for zero chrome.
+ * Keep the `<pre>` and `<code>` templates on one line: whitespace inside `<pre>` is preserved.
  */
 @Component({
-  selector: 'figure[mkCodeBlock]',
+  selector: 'figure[mkCodeBlock], pre[mkCodeBlock]',
   changeDetection: ChangeDetectionStrategy.OnPush,
-  imports: [CopyButtonComponent, IconComponent],
+  imports: [CopyButtonComponent, IconComponent, NgTemplateOutlet],
   host: {
-    class: 'code',
+    '[class.code]': '!preOnly',
+    '[class.code-pre]': 'preOnly',
     '[attr.data-language]': 'language() || null',
     '[attr.data-variant]': 'variant()',
     '[attr.data-numbered]': "lineNumbers() ? '' : null",
@@ -56,25 +63,28 @@ export interface CodeTab {
     '[attr.data-diff]': "diff() ? '' : null",
   },
   template: `
-    @if (header()) {
-      <figcaption>
-        @if (tabs()?.length) {
-          <span class="code-tabs" role="group" [attr.aria-label]="tabsLabel()">
-            @for (t of tabs(); track t.id) {
-              <button type="button" [attr.aria-pressed]="t.id === tab()" (click)="tab.set(t.id)">{{ t.label }}</button>
-            }
-          </span>
-        }
-        <span class="code-caption" [id]="captionId" [attr.data-title]="source() ? '' : null">{{ caption() ?? '' }}</span>
-        @if (source()) {
-          <span class="code-source">{{ source() }}</span>
-        }
-        @if (copy()) {
-          <mk-copy-button class="code-copy" variant="link" [value]="value()" />
-        }
-      </figcaption>
+    <ng-template #body><code [class]="language() ? 'language-' + language() : ''">@if (rows(); as ls) {@for (line of ls; track $index) {<span class="code-line" [attr.data-bad]="line.bad ? '' : null" [attr.data-selected]="line.selected ? '' : null" [attr.data-changed]="line.changed ? '' : null">@if (lineNumbers()) {<span class="code-ln" aria-hidden="true">{{ startLine() + $index }}</span>}@if (diff()) {<span class="code-mark" data-kind="changed" aria-hidden="true">{{ line.changed ? '+' : '' }}</span>@if (line.changed) {<span class="sr-only">Changed: </span>}}@if (line.bad) {<span class="code-mark" aria-hidden="true"><svg mkIcon name="close" [size]="11"></svg></span><span class="sr-only">Problem: </span>}<span class="code-text">{{ line.text }}</span>@if (line.note) {<span class="code-note">{{ line.note }}</span>}</span>}} @else {{{ code() }}}</code></ng-template>
+    @if (preOnly) {<ng-container [ngTemplateOutlet]="body" />} @else {
+      @if (header()) {
+        <figcaption>
+          @if (tabs()?.length) {
+            <span class="code-tabs" role="group" [attr.aria-label]="tabsLabel()">
+              @for (t of tabs(); track t.id) {
+                <button type="button" [attr.aria-pressed]="t.id === tab()" (click)="tab.set(t.id)">{{ t.label }}</button>
+              }
+            </span>
+          }
+          <span class="code-caption" [id]="captionId" [attr.data-title]="source() ? '' : null">{{ caption() ?? '' }}</span>
+          @if (source()) {
+            <span class="code-source">{{ source() }}</span>
+          }
+          @if (copy()) {
+            <mk-copy-button class="code-copy" variant="link" [value]="value()" />
+          }
+        </figcaption>
+      }
+      <pre #pre [attr.tabindex]="region() ? 0 : null" [attr.role]="region() ? 'region' : null" [attr.aria-label]="region() ? name() : null" [style.max-height]="maxHeight() ?? null"><ng-container [ngTemplateOutlet]="body" /></pre>
     }
-    <pre #pre [attr.tabindex]="region() ? 0 : null" [attr.role]="region() ? 'region' : null" [attr.aria-label]="region() ? name() : null" [style.max-height]="maxHeight() ?? null"><code [class]="language() ? 'language-' + language() : ''">@if (rows(); as ls) {@for (line of ls; track $index) {<span class="code-line" [attr.data-bad]="line.bad ? '' : null" [attr.data-selected]="line.selected ? '' : null" [attr.data-changed]="line.changed ? '' : null">@if (lineNumbers()) {<span class="code-ln" aria-hidden="true">{{ startLine() + $index }}</span>}@if (diff()) {<span class="code-mark" data-kind="changed" aria-hidden="true">{{ line.changed ? '+' : '' }}</span>@if (line.changed) {<span class="sr-only">Changed: </span>}}@if (line.bad) {<span class="code-mark" aria-hidden="true"><svg mkIcon name="close" [size]="11"></svg></span><span class="sr-only">Problem: </span>}<span class="code-text">{{ line.text }}</span>@if (line.note) {<span class="code-note">{{ line.note }}</span>}</span>}} @else {{{ code() }}}</code></pre>
   `,
 })
 export class CodeBlockComponent {
@@ -103,8 +113,10 @@ export class CodeBlockComponent {
   /**
    * `always` (default): the `<pre>` is always a focusable named region. `overflow`: it is focusable and named
    * (role="region" + aria-label) only while its content actually scrolls (RGAA 7.3); otherwise it is plain text.
+   * `never`: always a plain `<pre>`. Only for content that never scrolls (wrapped or short): a scrolling `<pre>` that
+   * is not focusable cannot be scrolled with the keyboard (WCAG 2.1.1); use `overflow` when it may scroll.
    */
-  readonly focusable = input<'always' | 'overflow'>('always');
+  readonly focusable = input<'always' | 'overflow' | 'never'>('always');
   /** Format switch in the header (curl, HTTPie, MCP tool call): toggle buttons with aria-pressed. */
   readonly tabs = input<CodeTab[]>();
   readonly tab = model<string>();
@@ -127,19 +139,49 @@ export class CodeBlockComponent {
   });
   protected readonly diff = computed(() => this.rows()?.some((l) => l.changed) ?? false);
   protected header(): boolean {
-    return this.variant() === 'framed' && Boolean(this.caption() || this.copy() || this.tabs()?.length || this.source());
+    return !this.preOnly && this.variant() === 'framed' && Boolean(this.caption() || this.copy() || this.tabs()?.length || this.source());
   }
 
+  private readonly host = inject<ElementRef<HTMLElement>>(ElementRef);
+  /** On a `<pre>` host (`<pre mkCodeBlock>`): only the pre, no figure (React `frame="none"`). */
+  protected readonly preOnly = this.host.nativeElement.nodeName === 'PRE';
   private readonly pre = viewChild<ElementRef<HTMLPreElement>>('pre');
   private readonly overflows = signal(true);
-  protected readonly region = computed(() => this.focusable() !== 'overflow' || this.overflows());
+  protected readonly region = computed(() => this.focusable() === 'always' || (this.focusable() === 'overflow' && this.overflows()));
 
   constructor() {
+    // A <pre> host is the region itself: set tabindex/role/aria-label/max-height imperatively, and remove only what
+    // this component set. No host bindings for them, so a <figure> host keeps every consumer attribute, static or bound.
+    if (this.preOnly) {
+      const r = inject(Renderer2);
+      const el = this.host.nativeElement;
+      let owned = false;
+      let ownedMaxHeight = false;
+      effect(() => {
+        if (this.region()) {
+          r.setAttribute(el, 'tabindex', '0');
+          r.setAttribute(el, 'role', 'region');
+          r.setAttribute(el, 'aria-label', this.name());
+          owned = true;
+        } else if (owned) {
+          for (const a of ['tabindex', 'role', 'aria-label']) r.removeAttribute(el, a);
+          owned = false;
+        }
+        const mh = this.maxHeight();
+        if (mh !== undefined) {
+          r.setStyle(el, 'max-height', mh);
+          ownedMaxHeight = true;
+        } else if (ownedMaxHeight) {
+          r.removeStyle(el, 'max-height');
+          ownedMaxHeight = false;
+        }
+      });
+    }
     let ro: ResizeObserver | undefined;
     inject(DestroyRef).onDestroy(() => ro?.disconnect());
     // Remeasure after every render: notes, markers, gutter or tabs change the content width without changing the text.
     afterEveryRender(() => {
-      const el = this.pre()?.nativeElement;
+      const el = this.preOnly ? this.host.nativeElement : this.pre()?.nativeElement;
       if (this.focusable() !== 'overflow' || !el) {
         ro?.disconnect();
         ro = undefined;
