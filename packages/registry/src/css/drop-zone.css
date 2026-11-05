@@ -3,7 +3,7 @@
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 12px;
+    gap: var(--space-3);
     padding: 44px 20px;
     background: var(--surface);
     border: 1.5px dashed var(--action);
@@ -16,7 +16,7 @@
   .drop-zone-icon { display: grid; place-content: center; width: 52px; height: 52px; border-radius: var(--radius-pill); background: var(--selected); color: var(--action); }
   .drop-zone-heading { margin: 0; color: var(--text); font: 600 19px/normal var(--font-ui); }
   .drop-zone-hint { max-width: 480px; margin: 0; color: var(--text-secondary); font: 400 14px/normal var(--font-ui); }
-  .drop-zone-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; }
+  .drop-zone-actions { display: flex; flex-wrap: wrap; justify-content: center; gap: var(--space-2); }
   .drop-zone-choose { padding-inline: 20px; }
 
   /* Small: a compact zone inside a panel (Admin snapshots). */
@@ -30,15 +30,7 @@
   .drop-zone[data-size="sm"] .drop-zone-actions > .button { min-height: 36px; }
   .drop-zone-status { margin: 0; color: var(--text); font: var(--type-small); font-weight: 600; }
   .drop-zone { position: relative; }
-  /* An empty status takes no room (no gap, no line) but stays in the accessibility tree, so the next text is announced. */
-  .drop-zone-status:is(:empty, [data-empty]) {
-    position: absolute;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-    clip-path: inset(50%);
-    white-space: nowrap;
-  }
+  /* An empty status carries .sr-only: it takes no room (no gap, no line) but stays in the accessibility tree, so the next text is announced. */
   /* The input is visually hidden (.sr-only) but focusable: its label shows the focus. */
   .drop-zone-input:focus-visible + .drop-zone-actions > .drop-zone-choose {
     outline: 2px solid var(--action);

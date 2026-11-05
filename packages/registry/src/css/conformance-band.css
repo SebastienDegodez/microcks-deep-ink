@@ -1,7 +1,7 @@
 @layer deep-ink.components {
   .conformance-wrap { display: flex; flex-direction: column; gap: var(--space-2); min-width: 0; }
   /* Full: 12px cells, 4px apart, solid colours. */
-  .conformance { display: flex; gap: 4px; height: 12px; margin: 0; padding: 0; list-style: none; }
+  .conformance { display: flex; gap: var(--space-1); height: 12px; margin: 0; padding: 0; list-style: none; }
   /* Mini (catalogue rows): a fixed 96 x 14 band. */
   .conformance[data-size="mini"] { flex: none; width: 96px; height: 14px; gap: 2px; }
   .conformance > [data-result] { flex: 1; min-width: 3px; border-radius: 2px; box-sizing: border-box; }

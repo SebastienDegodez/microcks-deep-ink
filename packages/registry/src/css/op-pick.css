@@ -35,7 +35,7 @@
   .op-pick-path { font: 400 13px/normal var(--font-mono); overflow-wrap: anywhere; }
   .op-pick-summary { font-size: 12px; line-height: normal; color: var(--text-muted); }
   .op-pick-meta { font: 400 11px/normal var(--font-mono); color: var(--text-muted); }
-  .op-pick-end { flex: none; display: inline-flex; align-items: center; gap: 4px; font: 400 12px/1 var(--font-mono); color: var(--text-secondary); }
+  .op-pick-end { flex: none; display: inline-flex; align-items: center; gap: var(--space-1); font: 400 12px/1 var(--font-mono); color: var(--text-secondary); }
   .op-pick-end[data-tone] { font-size: 11px; }
   .op-pick-end[data-tone="warning"] { color: var(--warning); }
   .op-pick-end[data-tone="success"] { color: var(--success); }

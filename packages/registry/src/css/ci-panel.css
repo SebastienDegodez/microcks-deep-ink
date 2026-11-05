@@ -16,9 +16,9 @@
     color: var(--text);
   }
   .ci-panel[data-dashed] { border-style: dashed; }
-  .ci-panel-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; }
-  .ci-panel-text { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
-  .ci-panel-title { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; margin: 0; font: 600 14px/20px var(--font-ui); }
+  .ci-panel-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: var(--space-2); }
+  .ci-panel-text { display: flex; flex-direction: column; gap: var(--space-1); min-width: 0; }
+  .ci-panel-title { display: inline-flex; flex-wrap: wrap; align-items: center; gap: var(--space-2); margin: 0; font: 600 14px/20px var(--font-ui); }
   .ci-panel-hint { max-width: 72ch; margin: 0; color: var(--text-muted); font: 400 12px/1.5 var(--font-ui); }
   .ci-panel-code {
     margin: 0;

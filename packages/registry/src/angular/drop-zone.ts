@@ -42,7 +42,7 @@ export function filesReadyMessage(count: number): string {
       <label [attr.for]="id" class="button drop-zone-choose" [attr.data-variant]="size() === 'sm' ? 'secondary' : 'primary'">{{ chooseLabel() }}</label>
       <ng-content />
     </div>
-    <p class="drop-zone-status" role="status" [attr.data-empty]="message() ? null : ''">{{ message() }}</p>
+    <p class="drop-zone-status" role="status" [class.sr-only]="!message()" [attr.data-empty]="message() ? null : ''">{{ message() }}</p>
   `,
 })
 export class DropZoneComponent {

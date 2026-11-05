@@ -36,7 +36,7 @@
   .choice[data-variant="card"] .choice-label { font: 600 13px/18px var(--font-ui); }
   /* Compact card: dense list rows, about 33px with a 13px box (TestCreate operations list). */
   .choice[data-variant="compact"] {
-    gap: 8px;
+    gap: var(--space-2);
     align-items: center;
     padding: 7px 10px;
     background: var(--surface);
@@ -57,7 +57,7 @@
   .choice[data-variant="card"] > .radio { width: 18px; height: 18px; }
   .choice[data-variant="card"] > .radio::before { width: 8px; height: 8px; }
   .choice[data-variant="card"] > .checkbox::before { width: 10px; height: 10px; }
-  .fieldset[data-variant="card"] { gap: 8px; }
+  .fieldset[data-variant="card"] { gap: var(--space-2); }
 
   .choice:has(input:disabled) {
     color: var(--text-muted);

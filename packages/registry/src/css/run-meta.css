@@ -7,9 +7,9 @@
     gap: 8px 22px;
     margin: 0;
     color: var(--text);
-    font: 400 13px/18px var(--font-ui);
+    font: var(--type-small);
   }
-  .run-meta-item { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: 8px; min-width: 0; }
+  .run-meta-item { display: inline-flex; flex-wrap: wrap; align-items: baseline; gap: var(--space-2); min-width: 0; }
   .run-meta-item > dt { margin: 0; color: var(--text-muted); }
   .run-meta-item > dd { margin: 0; min-width: 0; overflow-wrap: anywhere; }
   .run-meta-item > dd[data-kind="mono"] { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }

@@ -111,7 +111,7 @@ export function DropZone({ heading, hint, accept, multiple = true, chooseLabel =
         </label>
         {children}
       </div>
-      <p className="drop-zone-status" role="status" data-empty={message ? undefined : ''}>
+      <p className={message ? 'drop-zone-status' : 'drop-zone-status sr-only'} role="status" data-empty={message ? undefined : ''}>
         {message}
       </p>
     </div>

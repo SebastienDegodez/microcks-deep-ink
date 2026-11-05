@@ -24,6 +24,7 @@ import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
 import { RunnerLog } from '@/ui/components/ui/runner-log';
+import { SectionLabel } from '@/ui/components/ui/section-label';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { useThrottledAnnounce } from '../tests/useThrottledAnnounce';
 import './test-run.css';
@@ -290,7 +291,7 @@ function RunView({ base }: { base: TestRun }) {
           <section aria-label="Verdict" className="tr-verdict" ref={verdictRef} tabIndex={-1}>
             <div className="tr-verdict-head">
               <div className="tr-score">
-                <span className="tr-score-label">Conformance score</span>
+                <SectionLabel lineHeight="normal">Conformance score</SectionLabel>
                 <span className="tr-score-value" data-level={score >= 80 ? 'high' : score >= 50 ? 'mid' : 'low'}>
                   {score}%
                 </span>
@@ -468,7 +469,7 @@ function CodeCard({ title, source, rows, label, bad }: { title: string; source: 
   return (
     <div className="tr-code-card" data-bad={bad ? '' : undefined}>
       <div className="tr-code-head">
-        <span className="tr-code-title">{title}</span>
+        <SectionLabel lineHeight="normal">{title}</SectionLabel>
         <span className="tr-code-source">{source}</span>
       </div>
       <pre className="tr-code" tabIndex={0} aria-label={label}>
