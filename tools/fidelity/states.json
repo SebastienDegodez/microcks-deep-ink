@@ -28,5 +28,20 @@
  { "id": "usage-period-30d", "route": "/metrics", "focus": { "role": "button", "name": "30 days" }, "keys": ["Enter"] },
  { "id": "usage-service-period-30d", "route": "/metrics/pastry2", "focus": { "role": "button", "name": "30 days" }, "keys": ["Enter"] },
  { "id": "workflows-loading", "route": "/workflows", "focus": { "role": "button", "name": "Show loading" }, "keys": ["Enter"] },
- { "id": "workflows-empty", "route": "/workflows", "focus": { "role": "button", "name": "Show empty state" }, "keys": ["Enter"] }
+ { "id": "workflows-empty", "route": "/workflows", "focus": { "role": "button", "name": "Show empty state" }, "keys": ["Enter"] },
+ {"id": "workflow-source-tab", "route": "/workflows/pastry/restock-pastry", "focus": {"role": "tab", "name": "Source"}, "keys": ["Enter"]},
+ {"id": "workflow-mock-url-tab", "route": "/workflows/pastry/restock-pastry", "focus": {"role": "tab", "name": "Mock URL"}, "keys": ["Enter"]},
+ {"id": "workflow-sessions-tab", "route": "/workflows/pastry/restock-pastry", "focus": {"role": "tab", "name": "Sessions , 3"}, "keys": ["Enter"]},
+ {"id": "workflow-examples-tab", "route": "/workflows/pastry/restock-pastry", "focus": {"role": "tab", "name": "Examples , 2"}, "keys": ["Enter"]},
+ {"id": "workflow-runs-tab", "route": "/workflows/pastry/restock-pastry", "focus": {"role": "tab", "name": "Runs , 14"}, "keys": ["Enter"]},
+ {"id": "workflow-loom-run14", "route": "/workflows/pastry/restock-pastry/loom?run=14"},
+ {"id": "workflow-sessions-compare-prices", "route": "/workflows/pastry/compare-prices/sessions"},
+ {"id": "workflow-examples-compare-prices", "route": "/workflows/pastry/compare-prices/examples"},
+ {"id": "workflow-sessions-open", "route": "/workflows/pastry/restock-pastry/sessions", "focus": {"role": "button", "name": "s-2b91e04d open checkout-web · compensation test 2 calls received Not verified yet"}, "keys": ["Enter"]},
+ {"id": "workflow-copy-yaml", "route": "/workflows/pastry/restock-pastry/source", "focus": {"role": "button", "name": "Copy YAML"}, "keys": ["Enter"]},
+ {"id": "workflow-copy-mock-url", "route": "/workflows/pastry/restock-pastry/mock-url", "focus": {"role": "button", "name": "Copy the Mock URL of restock-pastry"}, "keys": ["Enter"]},
+ {"id": "workflow-copy-mock-curl", "route": "/workflows/pastry/restock-pastry/mock-url", "focus": {"role": "button", "name": "Copy curl of restock-pastry"}, "keys": ["Enter"]},
+ {"id": "workflow-copy-runs-endpoint", "route": "/workflows/pastry/restock-pastry/runs", "focus": {"role": "button", "name": "Copy the runs endpoint"}, "keys": ["Enter"]},
+ {"id": "workflow-copy-session-body", "route": "/workflows/pastry/restock-pastry/sessions", "focus": {"role": "button", "name": "Copy body"}, "keys": ["Enter"]},
+ {"id": "workflow-copy-session-curl", "route": "/workflows/pastry/restock-pastry/sessions", "focus": {"role": "button", "name": "Copy curl"}, "keys": ["Enter"]}
 ]
