@@ -28,7 +28,94 @@ reliably discover, all of which render:
 anti-aliasing jitter). `--tolerant` makes NEAR non-failing; use it only after inspecting the `diff-*.png`.
 
 Captures: 1440 px wide, full page, dark and light, `reduced_motion=reduce` and `animations=disabled`. Query strings are
-stripped from crawled links (states/probe/leak captures come later).
+stripped from crawled links: use `states` for query-string routes.
+
+All commands below accept `--app <dir>` and `--no-build` like `shoot`; `probe` and `leak` default to `routes.txt`.
+
+### states — interaction states
+
+```sh
+python3 -I tools/fidelity/snap.py states . ../pix/st-base [--only cockpit-cmdk,services-filter] [--file states.json]
+python3 -I tools/fidelity/snap.py states . ../pix/st-after --no-build
+python3 -I tools/fidelity/snap.py diff ../pix/st-base ../pix/st-after
+```
+
+Why: `shoot` only sees the default render of each route; an open ⌘K palette, a filtered list, a non-default tab or a
+query-string route (`?run=14&step=patchPastry`) are never captured. `states.json` lists them:
+
+```json
+{ "id": "admin-secrets-tab", "route": "/admin", "focus": { "role": "tab", "name": "Secrets , 5" }, "keys": ["Enter"] }
+```
+
+`route` is opened as-is (query kept), then `focus` (`page.get_by_role(role, name=…, exact=true)`; add `"exact": false`
+for a substring), then each `keys` entry (`keyboard.press`), then `type` (`keyboard.type`). Targets are by role +
+accessible name only: read them with `page.locator('body').aria_snapshot()`, don't guess. Same capture settings as
+`shoot`, written to `<id>--<theme>.png`; a state whose target is missing prints `FAILED <id>` and exits 1.
+
+Time is frozen: each page gets a paused Playwright fake clock (`Date`, timers, rAF) at a fixed instant, advanced only by
+fixed steps (2 s after load in 4 rounds of real wait + fake step, 200 ms after each key, 800 ms after typing). The
+cockpit traffic ticker (a JS interval, untouched by `animations=disabled`) therefore shows the same rows on every run.
+Chromium runs with software raster on one thread and no partial raster (`DETERMINISTIC_ARGS`), which removes the
+1-step anti-aliasing jitter (`NEAR` on table borders, tab underlines) seen with the default raster; `shoot` is unchanged.
+
+### probe — animation inventory
+
+```sh
+python3 -I tools/fidelity/snap.py probe . ../pix/base [--routes /,/services]
+```
+
+Why: `shoot` disables animations and reduces motion, so a refactor that drops or renames a keyframe (e.g. the cockpit
+`.top-live` dot using `deep-ink-pulse`) is invisible to pixels. `probe` loads each route in dark WITHOUT reduced motion and
+writes `<out>/anim/<safe-route>.json`: the sorted `{path, animationName, animationDuration}` of every element (and
+`::before`/`::after`) whose computed `animation-name` is not `none` (`path` is a short CSS path, ≤4 levels or up to an id).
+When both dirs have `anim/`, `diff` compares the JSON files too: any difference, missing or extra file is `ANIM <file>`
+and fails.
+
+### leak — page CSS bleeding across routes
+
+```sh
+python3 -I tools/fidelity/snap.py leak . ../pix/leak [--routes …] [--tolerant]
+```
+
+Why: the demo is code-split; Vite injects each page's CSS chunk on first visit and never removes it. Unlayered page CSS
+(`.facts`, `.projection-pill`, …) can then restyle components on pages visited later, which a fresh-page `shoot` never
+sees. In ONE page per theme `leak` visits every route by hash navigation (no reload), then re-visits each one and
+captures `<out>/leak/<safe>--<theme>.png`, compared (same strict rules as `diff`) with a fresh-page capture in
+`<out>/fresh/`. Both run on the frozen clock and raster flags of `states`.
+
+A pixel difference alone also comes from in-memory app state (runner progress, visited filters) or 1-step
+anti-aliasing, so each difference is judged by a deterministic CSS-only rule, in the fresh page itself (same DOM, app
+state and clock): its computed styles are recorded, its stylesheets are replaced by the accumulated ones in the same
+order (`<out>/leak/<safe>--<theme>--css.png`), then
+
+- **LEAK** (fails, exit 1) when the swap changes the pixels AND at least one rule from a stylesheet the route does not
+  load itself matches an element whose computed value changed for a property that rule declares. LEAKs are grouped by
+  that set of foreign rules: `LEAK <Chunk>.css <selector> [+ …] -> <n> route-theme(s): …`. Computed styles are
+  per-element maps of every property the element exposes, custom properties included, compared on the union of keys:
+  a foreign `.x { --c: red }` read by the route's own `color: var(--c, black)` changes `--c` on the element the rule
+  matches, so it is attributed even when `--c` is unknown to `:root`.
+- **LEAK-NOISE** (reported, never fails) otherwise: `(no CSS-caused pixel change)` or `(no foreign rule involved)`.
+  Gate on the exit code; read the noise lines when a page's own state behaviour is under change.
+
+`--tolerant` skips NEAR differences at both steps. On main (110 routes) it reports exactly 3 LEAKs: `.exchange`
+(AgentTestRunPage.css) on service and copilot pages, `.demo-page-header-text:has(.run-meta)` (AgentTestRunPage.css) on
+workflow run pages, `.agent-split > :first-child / :last-child` (ImportPage.css) on the concierge pages.
+
+Self-test (custom-property-only leak, must fail as LEAK):
+
+```sh
+python3 -I tools/fidelity/snap.py leak-selftest . ../pix/selftest [--no-build] [--app …]   # exit 0 = PASS
+```
+
+It copies `dist/` to `<out>/selftest/app/dist`, makes the ServicePage chunk read
+`outline: 3px solid var(--selftest-leak, transparent)` on `.ex-stack`, appends `.ex-stack { --selftest-leak: #ff0000 }`
+to the AdminPage chunk, runs `leak` on `/admin,/services/pastry2` and expects exit 1 with
+`LEAK AdminPage.css .ex-stack`. The real `dist/` is never modified.
+
+Chromium quirk: once a document took a full-page screenshot taller than the viewport, its fallback monospace text
+measures wider (`Ctrl K` kbd 50 → 57 px) until reload. The single leak page is in that state after its first tall
+route, so every leak page and fresh reference is "primed" with one throwaway tall full-page screenshot first; the
+`fresh/` captures are therefore not byte-identical to `shoot`'s.
 
 ## compare.py — prototype vs demo
 
