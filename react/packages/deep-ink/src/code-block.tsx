@@ -1,4 +1,4 @@
-import { useId, type HTMLAttributes } from 'react';
+import { useId, useLayoutEffect, useRef, useState, type HTMLAttributes } from 'react';
 import { CopyButton } from './copy-button';
 import { Icon } from './icon';
 
@@ -35,8 +35,20 @@ export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLElement>, 'child
   label?: string;
   /** Show the copy button. */
   copy?: boolean;
-  /** `plain`: just the bordered code, no header (no caption, tabs or copy). */
-  variant?: 'framed' | 'plain';
+  /**
+   * `plain`: just the bordered code, no header (no caption, tabs or copy).
+   * `bare`: no frame, no header and no padding, for a `<pre>` inside a card that already draws the frame.
+   */
+  variant?: 'framed' | 'plain' | 'bare';
+  /** Source written at the end of the header (mono), next to the caption shown as an uppercase title. */
+  source?: string;
+  /** `raised`: the header on the raised fill (--raised). */
+  headerTone?: 'raised';
+  /**
+   * `always` (default): the `<pre>` is always a focusable named region. `overflow`: it is focusable and named
+   * (role="region" + aria-label) only while its content actually scrolls (RGAA 7.3); otherwise it is plain text.
+   */
+  focusable?: 'always' | 'overflow';
   /** Format switch in the header (curl, HTTPie, MCP tool call): toggle buttons with aria-pressed. */
   tabs?: CodeTab[];
   tab?: string;
@@ -53,6 +65,8 @@ export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLElement>, 'child
   tone?: 'danger';
   maxHeight?: string | number;
 }
+
+const scrolls = (el: HTMLElement) => el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight;
 
 export function CodeBlock({
   code,
@@ -71,6 +85,9 @@ export function CodeBlock({
   gutter = 'wide',
   tone,
   maxHeight,
+  source,
+  headerTone,
+  focusable = 'always',
   className,
   ...rest
 }: CodeBlockProps) {
@@ -80,7 +97,22 @@ export function CodeBlock({
   const tabLabel = tabs?.find((t) => t.id === tab)?.label;
   const label = regionLabel ?? caption ?? (tabLabel ? `${tabLabel} code` : language ? `${language} code` : 'Code');
   const diff = rows?.some((l) => l.changed) ?? false;
-  const header = variant !== 'plain' && (caption || copy || tabs?.length);
+  const header = variant === 'framed' && (caption || copy || tabs?.length || source);
+  const preRef = useRef<HTMLPreElement>(null);
+  const [overflows, setOverflows] = useState(true);
+  // Remeasure on every rendered-content change: notes, markers and the gutter change the width without changing the text.
+  useLayoutEffect(() => {
+    if (focusable === 'overflow' && preRef.current) setOverflows(scrolls(preRef.current));
+  }, [focusable, code, lines, lineNumbers, startLine, gutter, variant, maxHeight]);
+  // ...and when the box itself is resized (container width, max height).
+  useLayoutEffect(() => {
+    const pre = preRef.current;
+    if (focusable !== 'overflow' || !pre || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(() => setOverflows(scrolls(pre)));
+    ro.observe(pre);
+    return () => ro.disconnect();
+  }, [focusable]);
+  const region = focusable !== 'overflow' || overflows;
   return (
     <figure
       {...rest}
@@ -90,6 +122,7 @@ export function CodeBlock({
       data-numbered={lineNumbers ? '' : undefined}
       data-gutter={lineNumbers && gutter === 'narrow' ? 'narrow' : undefined}
       data-tone={tone}
+      data-header-tone={header && headerTone ? headerTone : undefined}
       data-diff={diff ? '' : undefined}
     >
       {header ? (
@@ -103,14 +136,19 @@ export function CodeBlock({
               ))}
             </span>
           ) : null}
-          <span className="code-caption" id={captionId}>
+          <span className="code-caption" id={captionId} data-title={source ? '' : undefined}>
             {caption ?? ''}
           </span>
+          {source ? <span className="code-source">{source}</span> : null}
           {copy ? <CopyButton value={value} variant="link" className="code-copy" /> : null}
         </figcaption>
       ) : null}
       {/* The scroll container must be keyboard reachable (WCAG 2.1.1), so it is focusable and named. */}
-      <pre tabIndex={0} role="region" aria-label={label} style={maxHeight !== undefined ? { maxHeight } : undefined}>
+      <pre
+        ref={preRef}
+        {...(region ? { tabIndex: 0, role: 'region', 'aria-label': label } : null)}
+        style={maxHeight !== undefined ? { maxHeight } : undefined}
+      >
         <code className={language ? `language-${language}` : undefined}>
           {rows
             ? rows.map((line, i) => (

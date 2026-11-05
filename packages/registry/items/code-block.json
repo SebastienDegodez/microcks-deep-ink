@@ -2,7 +2,7 @@
   "name": "code-block",
   "title": "CodeBlock",
   "tier": "natural",
-  "description": "Figure with a scrollable, focusable code area, an optional caption, a copy button and marked bad lines.",
+  "description": "Figure with a scrollable, focusable code area, an optional caption and source, a copy button and marked bad lines; framed, plain or bare.",
   "registryDependencies": [
     "base",
     "icon",
@@ -26,6 +26,8 @@
     ],
     "aria": [
       "The scrollable <pre> is focusable and named by the caption (role=\"region\" + aria-label)",
+      "With focusable=\"overflow\" the <pre> is focusable and named only while its content actually scrolls (RGAA 7.3); otherwise it is plain text (default: always focusable)",
+      "With a source, the caption is shown as an uppercase title (text-transform only, the accessible text is unchanged) and the source is plain text after it",
       "A bad line shows a visible ✕ marker and a visible note; the note is also read by assistive technology",
       "The copy button announces \"Copied\" or \"Copy failed\" through a polite live region (copy-button)"
     ],
@@ -42,7 +44,7 @@
       "2.4.7",
       "4.1.2"
     ],
-    "notes": "Pass lines for per-line markers, or code for plain text. Long lines scroll inside the region (no loss of content at 320px)."
+    "notes": "Pass lines for per-line markers, or code for plain text. Long lines scroll inside the region (no loss of content at 320px). variant=\"bare\" drops the frame, header and padding for a <pre> inside a card; headerTone=\"raised\" puts the header on --raised."
   },
   "stories": [
     "Components/CodeBlock"

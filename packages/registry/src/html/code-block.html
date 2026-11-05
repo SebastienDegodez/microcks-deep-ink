@@ -29,6 +29,23 @@
   <pre tabindex="0" role="region" aria-label="contract-tests.yml"><code><span class="code-line"><span class="code-mark" data-kind="changed" aria-hidden="true"></span><span class="code-text">jobs:</span></span><span class="code-line" data-changed><span class="code-mark" data-kind="changed" aria-hidden="true">+</span><span class="sr-only">Changed: </span><span class="code-text">  - name: Contract test API Pastry 2.0</span></span></code></pre>
 </figure>
 
+<!-- Header with a source: the caption gets data-title (uppercase title) and <span class="code-source"> sits at the end (mono).
+     data-header-tone="raised": the header on the raised fill. -->
+<figure class="code" data-language="json" data-variant="framed" data-header-tone="raised">
+  <figcaption>
+    <span class="code-caption" data-title>Expected</span>
+    <span class="code-source">Pastry.json</span>
+  </figcaption>
+  <pre tabindex="0" role="region" aria-label="Expected, Pastry.json"><code class="language-json">{"name": "string", "price": "number"}</code></pre>
+</figure>
+
+<!-- Bare: no frame, no header, no padding — a <pre> inside a card that draws the frame.
+     Focusable only when it scrolls (RGAA 7.3): measure the <pre> (scrollWidth > clientWidth or scrollHeight > clientHeight)
+     and set tabindex="0" role="region" aria-label="…" only then; without overflow it is plain text, as below. -->
+<figure class="code" data-variant="bare">
+  <pre><code>{"name": "Millefeuille"}</code></pre>
+</figure>
+
 <!-- Other hooks:
      - The caption text sits in <span class="code-caption" id="…"> inside the figcaption, between the tabs and Copy.
        It wraps long text and is hidden when empty.
