@@ -28,5 +28,6 @@ describe('Import review options', () => {
     render(<DropZone heading="Drop a contract" hint="OpenAPI, AsyncAPI" onFiles={() => {}} />);
     const status = screen.getByRole('status');
     expect(status.hasAttribute('data-empty')).toBe(true);
+    expect(status.classList.contains('sr-only')).toBe(true);
   });
 });

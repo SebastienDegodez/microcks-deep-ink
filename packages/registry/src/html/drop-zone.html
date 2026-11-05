@@ -8,7 +8,7 @@
   <div class="drop-zone-actions">
     <label for="dz-input" class="button drop-zone-choose" data-variant="primary">Choose files</label>
   </div>
-  <p class="drop-zone-status" role="status"></p>
+  <p class="drop-zone-status sr-only" role="status" data-empty></p>
 </div>
 
 <!-- Small (data-size="sm"): a compact zone in a panel, a bare 28px icon, a secondary Choose and extra actions. -->
@@ -21,7 +21,7 @@
     <label for="dz-sm-input" class="button drop-zone-choose" data-variant="secondary">Choose a file</label>
     <button type="button" class="button" data-variant="link">Use a sample snapshot</button>
   </div>
-  <p class="drop-zone-status" role="status"></p>
+  <p class="drop-zone-status sr-only" role="status" data-empty></p>
 </div>
 
 <script>
@@ -31,6 +31,8 @@
     var status = zone.querySelector('.drop-zone-status');
     function take(list) {
       if (!list || !list.length) return;
+      status.classList.remove('sr-only');
+      status.removeAttribute('data-empty');
       status.textContent = list.length + (list.length === 1 ? ' file ready' : ' files ready');
       zone.dispatchEvent(new CustomEvent('files', { detail: Array.from(list), bubbles: true }));
     }
@@ -41,5 +43,5 @@
   })();
 </script>
 
-<!-- The status paragraph (role="status") stays in the page while it is empty: data-empty (or no text) hides it
-     visually, and the words are announced when your script fills it and removes data-empty. -->
+<!-- The status paragraph (role="status") stays in the page while it is empty: .sr-only hides it visually (data-empty
+     flags it), and the words are announced when your script fills it and removes .sr-only and data-empty. -->
