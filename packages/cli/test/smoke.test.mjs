@@ -32,7 +32,23 @@ describe('smoke: a fresh react app', () => {
   temp.push(dir);
   writeFileSync(join(dir, 'package.json'), JSON.stringify({ name: 'smoke-react', private: true, dependencies: { react: '^19.0.0' } }));
 
-  for (const args of [['init'], ['add', 'button'], ['add', '--all'], ['view', 'button'], ['init', '--framework', 'react'], ['list', '--framework', 'react']]) {
+  const missing = join(dir, 'no-such-registry.json');
+  for (const args of [
+    ['init'],
+    ['add', 'button'],
+    ['add', '--all'],
+    ['view', 'button'],
+    ['list'],
+    ['status'],
+    ['diff', 'button'],
+    ['init', '--framework', 'react'],
+    ['list', '--framework', 'react'],
+    ['status', '--framework', 'react'],
+    ['list', '--framework', 'react', '--registry', missing],
+    ['status', '--framework', 'react', '--registry', missing],
+    ['diff', 'button', '--framework', 'react', '--registry', missing],
+    ['status', '--registry', missing],
+  ]) {
     it(`${args.join(' ')} points at the package and copies nothing`, () => {
       const r = run([...args, '--cwd', dir]);
       assert.equal(r.status, 0, r.stderr);

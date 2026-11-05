@@ -39,6 +39,19 @@ describe('list', () => {
     assert.ok(json.every((i) => i.tier === 'natural'));
     assert.ok(json.some((i) => i.name === 'tabs'));
   });
+
+  it('lists the registry for an angular or html --cwd, and points a react --cwd at the package', () => {
+    for (const pkg of [{ dependencies: { '@angular/core': '22' } }, {}]) {
+      const r = run(['list', '--cwd', project(pkg)]);
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(r.stdout, /button\s+natural/);
+      assert.doesNotMatch(r.stdout, /pnpm add @microcks\/deep-ink/);
+    }
+    const r = run(['list', '--cwd', project({ dependencies: { react: '19' } })]);
+    assert.equal(r.status, 0, r.stderr);
+    assert.match(r.stdout, /pnpm add @microcks\/deep-ink/);
+    assert.doesNotMatch(r.stdout, /button\s+natural/);
+  });
 });
 
 describe('init', () => {

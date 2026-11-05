@@ -31,7 +31,15 @@ function reactNotice() {
   return 0;
 }
 
-const isReact = (cwd, values, lock) => (parseFramework(values.framework) ?? lock?.framework ?? detectFramework(cwd)) === 'react';
+/**
+ * True when the target is React (flag, else lockfile, else detection). Every command calls it before loading the
+ * registry or requiring a lockfile: a React project has neither to offer. The lockfile is read only without a flag.
+ */
+function isReact(cwd, values) {
+  const flag = parseFramework(values.framework);
+  if (flag) return flag === 'react';
+  return (readLock(cwd)?.framework ?? detectFramework(cwd)) === 'react';
+}
 
 function parseTiers(value) {
   if (value === undefined) return undefined;
@@ -253,8 +261,8 @@ function installFlags(values) {
 export function init({ values }) {
   const cwd = targetCwd(values);
   if (values['markup-only']) throw new CliError('init copies only stylesheets (tokens and base). --markup-only is for `add`.');
+  if (isReact(cwd, values)) return reactNotice();
   const lock = readLock(cwd);
-  if (isReact(cwd, values, lock)) return reactNotice();
   const registry = loadRegistry(values.registry);
   const cfg = resolveConfig(cwd, values, lock);
   const code = install({ cwd, registry, names: ['tokens', 'base'], cfg, lock, ...installFlags(values) });
@@ -275,7 +283,7 @@ export function init({ values }) {
 
 export function add({ values, positionals }) {
   const cwd = targetCwd(values);
-  if (isReact(cwd, values, readLock(cwd))) return reactNotice();
+  if (isReact(cwd, values)) return reactNotice();
   const registry = loadRegistry(values.registry);
   const tiers = parseTiers(values.tier);
   let names = positionals;
@@ -290,9 +298,9 @@ export function add({ values, positionals }) {
 }
 
 export function list({ values }) {
+  if (isReact(targetCwd(values), values)) return reactNotice();
   const registry = loadRegistry(values.registry);
   const framework = parseFramework(values.framework);
-  if (framework === 'react') return reactNotice();
   const tiers = parseTiers(values.tier);
   const rows = registry.items
     .filter((i) => !tiers || tiers.includes(i.tier))
@@ -318,7 +326,7 @@ export function list({ values }) {
 export function view({ values, positionals }) {
   if (positionals.length !== 1) throw new CliError('Usage: deep-ink view <item> [--framework angular|html]');
   const cwd = targetCwd(values);
-  if (isReact(cwd, values, readLock(cwd))) return reactNotice();
+  if (isReact(cwd, values)) return reactNotice();
   const registry = loadRegistry(values.registry);
   const item = findItem(registry, positionals[0]);
   const cfg = resolveConfig(cwd, values, readLock(cwd));
@@ -349,10 +357,10 @@ function lockedItems({ cwd, registry, lock, cfg, names }) {
 export function diff({ values, positionals }) {
   if (positionals.length !== 1) throw new CliError('Usage: deep-ink diff <item> [--exit-code] [--cwd DIR]');
   const cwd = targetCwd(values);
+  if (isReact(cwd, values)) return reactNotice();
   const registry = loadRegistry(values.registry);
   const item = findItem(registry, positionals[0]);
   const lock = readLock(cwd);
-  if (isReact(cwd, values, lock)) return reactNotice();
   const cfg = resolveConfig(cwd, values, lock);
   const entry = lock?.items?.[item.name];
   let differing = 0;
@@ -404,10 +412,10 @@ const STATUS_LABEL = {
 /** Reports, for each item of deep-ink.json: up to date, upstream changed, locally modified, or both (conflict). */
 export function status({ values, positionals }) {
   const cwd = targetCwd(values);
+  if (isReact(cwd, values)) return reactNotice();
   const registry = loadRegistry(values.registry);
   const lock = readLock(cwd);
   if (!lock) throw new CliError(`No ${LOCK_NAME} in ${cwd}. Run \`deep-ink init\` or \`deep-ink add\` first.`);
-  if (isReact(cwd, values, lock)) return reactNotice();
   for (const n of positionals) if (!lock.items[n]) throw new CliError(`"${n}" is not in ${LOCK_NAME}.`);
   const cfg = resolveConfig(cwd, values, lock);
   const rows = [];

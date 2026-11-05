@@ -10,7 +10,7 @@ Usage
   deep-ink init   [--framework angular|html] [--out DIR] [--css-out DIR] [--no-fonts] [--cwd DIR]
   deep-ink add    <item...> | --all [--tier natural,microcks,element] [--framework ...] [--out DIR] [--css-out DIR]
                   [--overwrite | --merge] [--prune] [--markup-only] [--dry-run] [--cwd DIR] [--registry FILE]
-  deep-ink list   [--framework ...] [--tier ...] [--json]
+  deep-ink list   [--framework ...] [--tier ...] [--json] [--cwd DIR]
   deep-ink status [item...] [--exit-code] [--json] [--cwd DIR]
   deep-ink diff   <item> [--exit-code] [--cwd DIR]
   deep-ink view   <item> [--framework ...]
