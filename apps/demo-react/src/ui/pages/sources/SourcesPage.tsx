@@ -15,6 +15,7 @@ import { FilterRow, FilterSearch } from '@/ui/components/ui/filter-bar';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { FactRow, Facts, type Fact as RegistryFact } from '@/ui/components/ui/facts';
 import { Segmented } from '@/ui/components/ui/segmented';
+import { SummaryStrip, SummaryStripSep } from '@/ui/components/ui/summary-strip';
 import { Switch } from '@/ui/components/ui/switch';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 
@@ -172,7 +173,7 @@ export default function SourcesPage() {
           actions={<Button asChild variant="primary" icon="plus"><RouterLink to="/sources/new">Add source</RouterLink></Button>}
         />
 
-        <div className="scan-strip" role="group" aria-label="Scan schedule">
+        <SummaryStrip variant="canvas" className="scan-strip" role="group" aria-label="Scan schedule">
           <span className="scan-strip-group">
             <Icon name="clock" size={15} />
             <span className="muted">Scan schedule</span>
@@ -180,14 +181,14 @@ export default function SourcesPage() {
             <span className="secondary">{schedule.description}</span>
             <span className="scan-strip-env">{schedule.envVar}</span>
           </span>
-          <span className="scan-strip-sep" aria-hidden="true" />
+          <SummaryStripSep />
           <span className="scan-strip-pair"><span className="muted">Last scan</span><span className="mono">{formatHourMinute(schedule.lastScanAt)}</span><span className="muted">{schedule.minutesSinceLast} min ago</span></span>
           <span className="scan-strip-pair"><span className="muted">Next scan</span><span className="mono">{formatHourMinute(schedule.nextScanAt)}</span><span className="muted">in {schedule.minutesUntilNext} min</span></span>
           <span className="scan-strip-counts">
             <ApiBadge label="sources" value={String(counts.all)} />
             {failing ? <ApiBadge label="failing" value={String(failing)} status="danger" /> : null}
           </span>
-        </div>
+        </SummaryStrip>
       </div>
 
       <section aria-label="Filter sources">
