@@ -26,6 +26,22 @@
   .code > figcaption { flex-wrap: wrap; }
   .code-caption { min-width: 0; padding-inline: 8px; overflow-wrap: anywhere; }
   .code-caption:empty { display: none; }
+  /* Raised header (data-header-tone="raised"): the header on the raised fill. */
+  .code[data-header-tone="raised"] > figcaption { background: var(--raised); }
+  /* With a source, the caption is an uppercase title and the source sits at the end of the header (mono). */
+  .code-caption[data-title] {
+    font: var(--type-label);
+    letter-spacing: var(--type-label-tracking);
+    text-transform: uppercase;
+  }
+  .code-source {
+    min-width: 0;
+    margin-inline-start: auto;
+    padding-inline: var(--space-2) 6px;
+    color: var(--text-secondary);
+    font-family: var(--font-mono);
+    overflow-wrap: anywhere;
+  }
 
   /* Header tabs: switch the format of the snippet (curl, HTTPie...). Toggle buttons with aria-pressed. */
   .code-tabs { display: flex; flex-wrap: wrap; align-self: stretch; min-width: 0; }
@@ -51,6 +67,9 @@
   /* Copy is the small link-style button (button variant="link"), 12px in the header. */
   .code > figcaption :is(.code-copy.button, .code-copy .button) { min-width: 0; margin-inline-start: auto; font-size: 12px; }
   .code > figcaption :is(.code-copy.button, .code-copy .button) .icon { width: 13px; height: 13px; }
+  /* After a source, Copy follows it instead of splitting the free space. */
+  .code > figcaption > .code-source ~ .code-copy.button,
+  .code > figcaption > .code-source ~ .code-copy .button { margin-inline-start: 0; }
 
   .code > pre {
     margin: 0;
@@ -100,6 +119,10 @@
   .code[data-diff] .code-line { margin: 0; padding: 0 14px 0 0; }
   .code-mark[data-kind="changed"] { width: 22px; color: var(--link); }
   .code-line[data-changed] { background: var(--selected); color: var(--text); }
+
+  /* Bare (data-variant="bare"): no frame and no padding, for a <pre> inside a card that draws the frame. */
+  .code[data-variant="bare"] { border: 0; border-radius: 0; }
+  .code[data-variant="bare"] > pre { padding: 0; }
 
   /* Inline note, after the text on the same row. */
   .code-note {

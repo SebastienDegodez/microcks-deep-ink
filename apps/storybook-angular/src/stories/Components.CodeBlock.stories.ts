@@ -1,7 +1,7 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { CodeBlockComponent } from '@microcks-deep-ink/registry/angular/code-block';
 import { RUN14_FAILURE } from '@microcks-deep-ink/storybook-shared/fixtures';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/CodeBlock',
@@ -115,3 +115,45 @@ export const RegionLabel: StoryObj = {
     `,
   }),
 };
+
+export const SourceRaisedHeader: StoryObj = {
+  name: 'Source and raised header',
+  render: () => ({
+    props: { code: '{\n  "name": "string",\n  "price": "number"\n}' },
+    template: `
+      <div style="max-width:480px">
+        <figure mkCodeBlock caption="Expected" source="Pastry.json" headerTone="raised" [copy]="false" lineNumbers gutter="narrow" [code]="code"></figure>
+      </div>
+    `,
+  }),
+};
+
+export const Bare: StoryObj = {
+  render: () => ({
+    props: { short: '{"name": "Millefeuille"}', long: `curl -X PATCH http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille -d '{"price": 3.9}'` },
+    template: `
+      <div class="stack" style="max-width:360px">
+        <div style="padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-panel);background:var(--bg)">
+          <figure mkCodeBlock variant="bare" caption="Sample body" focusable="overflow" [code]="short"></figure>
+        </div>
+        <div style="padding:10px 12px;border:1px solid var(--border);border-radius:var(--radius-panel);background:var(--bg)">
+          <figure mkCodeBlock variant="bare" caption="Long sample" focusable="overflow" [code]="long"></figure>
+        </div>
+      </div>
+    `,
+  }),
+};
+
+export const Playground: StoryObj = playground('code-block', 'CodeBlockComponent', {
+  code: 'GET /pastries/{name}\nAccept: application/json\n\n200 OK\n{ "name": "Millefeuille", "price": 3.9 }',
+  language: 'http',
+  caption: 'Request and response',
+  label: 'Example exchange',
+  source: 'pastry.http',
+  copy: true,
+  variant: 'framed',
+  headerTone: 'raised',
+  focusable: 'always',
+  lineNumbers: true,
+  gutter: 'wide',
+});

@@ -140,6 +140,30 @@ export const RegionLabel: StoryObj = {
   ),
 };
 
+/** `source` at the end of the header, the caption as an uppercase title, on the raised fill (`headerTone="raised"`). */
+export const SourceRaisedHeader: StoryObj = {
+  name: 'Source and raised header',
+  render: () => (
+    <div style={{ maxWidth: 480 }}>
+      <CodeBlock caption="Expected" source="Pastry.json" headerTone="raised" copy={false} lineNumbers gutter="narrow" code={'{\n  "name": "string",\n  "price": "number"\n}'} />
+    </div>
+  ),
+};
+
+/** `bare`: no frame, no header, no padding, for a `<pre>` inside a card. `focusable="overflow"`: a region only when it scrolls. */
+export const Bare: StoryObj = {
+  render: () => (
+    <div className="stack" style={{ maxWidth: 360 }}>
+      <div style={{ padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-panel)', background: 'var(--bg)' }}>
+        <CodeBlock variant="bare" caption="Sample body" focusable="overflow" code={'{"name": "Millefeuille"}'} />
+      </div>
+      <div style={{ padding: '10px 12px', border: '1px solid var(--border)', borderRadius: 'var(--radius-panel)', background: 'var(--bg)' }}>
+        <CodeBlock variant="bare" caption="Long sample" focusable="overflow" code={'curl -X PATCH http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille -d \'{"price": 3.9}\''} />
+      </div>
+    </div>
+  ),
+};
+
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof CodeBlock> = {
   args: {
@@ -154,9 +178,14 @@ export const Playground: StoryObj<typeof CodeBlock> = {
     gutter: 'wide',
     tone: undefined,
     maxHeight: 240,
+    source: 'pastry.http',
+    headerTone: undefined,
+    focusable: 'always',
   },
   argTypes: {
-    variant: { control: 'inline-radio', options: ['framed', 'plain'] },
+    variant: { control: 'inline-radio', options: ['framed', 'plain', 'bare'] },
+    headerTone: { control: 'inline-radio', options: [undefined, 'raised'] },
+    focusable: { control: 'inline-radio', options: ['always', 'overflow'] },
     gutter: { control: 'inline-radio', options: ['wide', 'narrow'] },
     tone: { control: 'inline-radio', options: [undefined, 'danger'] },
   },

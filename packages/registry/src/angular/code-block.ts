@@ -1,4 +1,17 @@
-import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input, model } from '@angular/core';
+import {
+  afterRenderEffect,
+  booleanAttribute,
+  ChangeDetectionStrategy,
+  Component,
+  computed,
+  DestroyRef,
+  ElementRef,
+  inject,
+  input,
+  model,
+  signal,
+  viewChild,
+} from '@angular/core';
 import { CopyButtonComponent } from './copy-button';
 import { IconComponent } from './icon';
 
@@ -25,6 +38,7 @@ export interface CodeTab {
 /**
  * Code in a `<figure>`. The scroll container is focusable and named (WCAG 2.1.1). A bad line has a
  * visible cross marker and note, not color alone. Use `code` for plain text or `lines` for markers.
+ * With `focusable="overflow"` the `<pre>` is focusable and named only while it actually scrolls (RGAA 7.3).
  * Keep the `<pre>` template on one line: whitespace inside `<pre>` is preserved.
  */
 @Component({
@@ -38,6 +52,7 @@ export interface CodeTab {
     '[attr.data-numbered]': "lineNumbers() ? '' : null",
     '[attr.data-gutter]': "lineNumbers() && gutter() === 'narrow' ? 'narrow' : null",
     '[attr.data-tone]': 'tone() ?? null',
+    '[attr.data-header-tone]': 'header() && headerTone() ? headerTone() : null',
     '[attr.data-diff]': "diff() ? '' : null",
   },
   template: `
@@ -50,13 +65,16 @@ export interface CodeTab {
             }
           </span>
         }
-        <span class="code-caption" [id]="captionId">{{ caption() ?? '' }}</span>
+        <span class="code-caption" [id]="captionId" [attr.data-title]="source() ? '' : null">{{ caption() ?? '' }}</span>
+        @if (source()) {
+          <span class="code-source">{{ source() }}</span>
+        }
         @if (copy()) {
           <mk-copy-button class="code-copy" variant="link" [value]="value()" />
         }
       </figcaption>
     }
-    <pre tabindex="0" role="region" [attr.aria-label]="name()" [style.max-height]="maxHeight() ?? null"><code [class]="language() ? 'language-' + language() : ''">@if (rows(); as ls) {@for (line of ls; track $index) {<span class="code-line" [attr.data-bad]="line.bad ? '' : null" [attr.data-selected]="line.selected ? '' : null" [attr.data-changed]="line.changed ? '' : null">@if (lineNumbers()) {<span class="code-ln" aria-hidden="true">{{ startLine() + $index }}</span>}@if (diff()) {<span class="code-mark" data-kind="changed" aria-hidden="true">{{ line.changed ? '+' : '' }}</span>@if (line.changed) {<span class="sr-only">Changed: </span>}}@if (line.bad) {<span class="code-mark" aria-hidden="true"><svg mkIcon name="close" [size]="11"></svg></span><span class="sr-only">Problem: </span>}<span class="code-text">{{ line.text }}</span>@if (line.note) {<span class="code-note">{{ line.note }}</span>}</span>}} @else {{{ code() }}}</code></pre>
+    <pre #pre [attr.tabindex]="region() ? 0 : null" [attr.role]="region() ? 'region' : null" [attr.aria-label]="region() ? name() : null" [style.max-height]="maxHeight() ?? null"><code [class]="language() ? 'language-' + language() : ''">@if (rows(); as ls) {@for (line of ls; track $index) {<span class="code-line" [attr.data-bad]="line.bad ? '' : null" [attr.data-selected]="line.selected ? '' : null" [attr.data-changed]="line.changed ? '' : null">@if (lineNumbers()) {<span class="code-ln" aria-hidden="true">{{ startLine() + $index }}</span>}@if (diff()) {<span class="code-mark" data-kind="changed" aria-hidden="true">{{ line.changed ? '+' : '' }}</span>@if (line.changed) {<span class="sr-only">Changed: </span>}}@if (line.bad) {<span class="code-mark" aria-hidden="true"><svg mkIcon name="close" [size]="11"></svg></span><span class="sr-only">Problem: </span>}<span class="code-text">{{ line.text }}</span>@if (line.note) {<span class="code-note">{{ line.note }}</span>}</span>}} @else {{{ code() }}}</code></pre>
   `,
 })
 export class CodeBlockComponent {
@@ -73,8 +91,20 @@ export class CodeBlockComponent {
   /** Show the copy button. */
   readonly copy = input(true, { transform: booleanAttribute });
   readonly maxHeight = input<string>();
-  /** `plain`: just the bordered code, no header (no caption, tabs or copy). */
-  readonly variant = input<'framed' | 'plain'>('framed');
+  /**
+   * `plain`: just the bordered code, no header (no caption, tabs or copy).
+   * `bare`: no frame, no header and no padding, for a `<pre>` inside a card that already draws the frame.
+   */
+  readonly variant = input<'framed' | 'plain' | 'bare'>('framed');
+  /** Source written at the end of the header (mono), next to the caption shown as an uppercase title. */
+  readonly source = input<string>();
+  /** `raised`: the header on the raised fill (--raised). */
+  readonly headerTone = input<'raised'>();
+  /**
+   * `always` (default): the `<pre>` is always a focusable named region. `overflow`: it is focusable and named
+   * (role="region" + aria-label) only while its content actually scrolls (RGAA 7.3); otherwise it is plain text.
+   */
+  readonly focusable = input<'always' | 'overflow'>('always');
   /** Format switch in the header (curl, HTTPie, MCP tool call): toggle buttons with aria-pressed. */
   readonly tabs = input<CodeTab[]>();
   readonly tab = model<string>();
@@ -97,7 +127,30 @@ export class CodeBlockComponent {
   });
   protected readonly diff = computed(() => this.rows()?.some((l) => l.changed) ?? false);
   protected header(): boolean {
-    return this.variant() !== 'plain' && Boolean(this.caption() || this.copy() || this.tabs()?.length);
+    return this.variant() === 'framed' && Boolean(this.caption() || this.copy() || this.tabs()?.length || this.source());
+  }
+
+  private readonly pre = viewChild<ElementRef<HTMLPreElement>>('pre');
+  private readonly overflows = signal(true);
+  protected readonly region = computed(() => this.focusable() !== 'overflow' || this.overflows());
+
+  constructor() {
+    let ro: ResizeObserver | undefined;
+    inject(DestroyRef).onDestroy(() => ro?.disconnect());
+    afterRenderEffect(() => {
+      const el = this.pre()?.nativeElement;
+      this.code();
+      this.lines();
+      this.maxHeight();
+      ro?.disconnect();
+      ro = undefined;
+      if (this.focusable() !== 'overflow' || !el) return;
+      const measure = () => this.overflows.set(el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight);
+      measure();
+      if (typeof ResizeObserver === 'undefined') return;
+      ro = new ResizeObserver(measure);
+      ro.observe(el);
+    });
   }
 
   private static nextId = 0;

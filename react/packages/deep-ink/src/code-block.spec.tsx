@@ -96,3 +96,47 @@ describe('CodeBlock changed lines', () => {
     expect(container.querySelector('.code-mark')).toBeNull();
   });
 });
+
+describe('CodeBlock bare, source and raised header', () => {
+  it('writes the source next to the caption in a raised header, keeping the region name', async () => {
+    const { container } = render(<CodeBlock caption="Expected" source="Pastry.json" headerTone="raised" copy={false} code='{"price": "number"}' />);
+    const figure = container.querySelector('figure')!;
+    expect(figure.getAttribute('data-header-tone')).toBe('raised');
+    expect(screen.getByText('Expected').hasAttribute('data-title')).toBe(true);
+    expect(screen.getByText('Pastry.json')).toBeTruthy();
+    expect(screen.getByRole('region', { name: 'Expected' })).toBeTruthy();
+    expect(await axeViolations(container)).toEqual([]);
+  });
+
+  it('has no header in the bare variant and keeps the named region by default', async () => {
+    const { container } = render(<CodeBlock variant="bare" caption="Response" source="Pastry.json" code="{}" />);
+    expect(container.querySelector('figure')!.getAttribute('data-variant')).toBe('bare');
+    expect(container.querySelector('figcaption')).toBeNull();
+    expect(screen.queryByRole('button', { name: /copy/i })).toBeNull();
+    expect(screen.getByRole('region', { name: 'Response' }).getAttribute('tabindex')).toBe('0');
+    expect(await axeViolations(container)).toEqual([]);
+  });
+
+  it('focusable="overflow": not a region while the code fits', async () => {
+    const { container } = render(<CodeBlock variant="bare" caption="Response" focusable="overflow" code="{}" />);
+    expect(screen.queryByRole('region')).toBeNull();
+    const pre = container.querySelector('pre')!;
+    expect(pre.hasAttribute('tabindex')).toBe(false);
+    expect(pre.hasAttribute('aria-label')).toBe(false);
+    expect(await axeViolations(container)).toEqual([]);
+  });
+
+  it('focusable="overflow": a focusable named region when the code scrolls', async () => {
+    const scrollWidth = vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockReturnValue(800);
+    const clientWidth = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(300);
+    try {
+      const { container } = render(<CodeBlock caption="Long line" focusable="overflow" copy={false} code="curl -X PATCH http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille" />);
+      const region = screen.getByRole('region', { name: 'Long line' });
+      expect(region.getAttribute('tabindex')).toBe('0');
+      expect(await axeViolations(container)).toEqual([]);
+    } finally {
+      scrollWidth.mockRestore();
+      clientWidth.mockRestore();
+    }
+  });
+});
