@@ -26,7 +26,17 @@ describe('RunProgress', () => {
     const note = screen.getByText('Paused: the run waits for Step forward.');
     const step = screen.getByRole('button', { name: 'Step forward' });
     expect(note.compareDocumentPosition(step) & Node.DOCUMENT_POSITION_FOLLOWING).toBeTruthy();
+    expect(screen.getByRole('region', { name: 'Progress' }).hasAttribute('aria-busy')).toBe(false);
     expect(await axeViolations(container)).toEqual([]);
+  });
+
+  it('names the region by label and sets aria-busy only when busy', async () => {
+    const { container, rerender } = render(<RunProgress label="Run #120 progress" busy done={1} total={3} caption="steps done" now="GET /pastries" segments={['done', 'current', 'queued']} />);
+    const region = screen.getByRole('region', { name: 'Run #120 progress' });
+    expect(region.getAttribute('aria-busy')).toBe('true');
+    expect(await axeViolations(container)).toEqual([]);
+    rerender(<RunProgress label="Run #120 progress" busy={false} done={1} total={3} caption="steps done" segments={['done', 'current', 'queued']} />);
+    expect(screen.getByRole('region', { name: 'Run #120 progress' }).hasAttribute('aria-busy')).toBe(false);
   });
 });
 

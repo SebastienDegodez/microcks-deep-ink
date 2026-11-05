@@ -9,8 +9,10 @@ export interface RunCount {
 }
 
 export interface RunProgressProps extends HTMLAttributes<HTMLElement> {
-  /** Accessible name of the section. */
+  /** Accessible name of the section (the only naming API: it wins over a passed `aria-label`). */
   label?: string;
+  /** The run is updating: sets aria-busy="true" on the section so assistive tech waits for the region to settle. Absent by default. */
+  busy?: boolean;
   done: number;
   total: number;
   /** "test steps done", "matrix cells filled". */
@@ -32,10 +34,10 @@ export interface RunProgressProps extends HTMLAttributes<HTMLElement> {
 const COUNT_ICON = { pass: 'check', fail: 'cross', warn: 'warning', pending: 'circle' } as const;
 
 /** Progress of a running test: the count done, what runs now, one segment per step, the counts by result. */
-export function RunProgress({ label = 'Progress', done, total, caption, nowLabel, now, segments, counts, action, note, gap, className, style, ...rest }: RunProgressProps) {
+export function RunProgress({ label = 'Progress', busy = false, done, total, caption, nowLabel, now, segments, counts, action, note, gap, className, style, ...rest }: RunProgressProps) {
   const summary = `${done} of ${total} ${caption}`;
   return (
-    <section {...rest} aria-label={label} className={['run-progress', className].filter(Boolean).join(' ')} style={gap !== undefined ? ({ ...style, '--run-gap': `${gap}px` } as CSSProperties) : style}>
+    <section {...rest} aria-label={label} aria-busy={busy || undefined} className={['run-progress', className].filter(Boolean).join(' ')} style={gap !== undefined ? ({ ...style, '--run-gap': `${gap}px` } as CSSProperties) : style}>
       <div className="run-progress-top">
         <p className="run-progress-count">
           <span className="run-progress-done">

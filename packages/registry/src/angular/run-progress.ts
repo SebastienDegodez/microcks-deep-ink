@@ -1,4 +1,4 @@
-import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 import { IconComponent } from './icon';
 
 export type RunSegment = 'done' | 'failed' | 'warn' | 'current' | 'queued';
@@ -12,13 +12,14 @@ const COUNT_ICON = { pass: 'check', fail: 'cross', warn: 'warning', pending: 'ci
 
 /**
  * Progress of a running test: the count done, what runs now, one segment per step, the counts by result.
+ * `label` is the accessible name of the section; `busy` sets aria-busy="true" on it while the run updates.
  * Project a control for the end of the counts row with `[mkRunProgressAction]`.
  */
 @Component({
   selector: 'section[mkRunProgress]',
   changeDetection: ChangeDetectionStrategy.OnPush,
   imports: [IconComponent],
-  host: { class: 'run-progress', '[attr.aria-label]': 'label()', '[style.--run-gap]': "gap() !== undefined ? gap() + 'px' : null" },
+  host: { class: 'run-progress', '[attr.aria-label]': 'label()', '[attr.aria-busy]': "busy() ? 'true' : null", '[style.--run-gap]': "gap() !== undefined ? gap() + 'px' : null" },
   template: `
     <div class="run-progress-top">
       <p class="run-progress-count">
@@ -50,7 +51,10 @@ const COUNT_ICON = { pass: 'check', fail: 'cross', warn: 'warning', pending: 'ci
   `,
 })
 export class RunProgressComponent {
+  /** Accessible name of the section. */
   readonly label = input('Progress');
+  /** The run is updating: aria-busy="true" on the section. Absent by default. */
+  readonly busy = input(false, { transform: booleanAttribute });
   readonly done = input.required<number>();
   readonly total = input.required<number>();
   /** "test steps done", "matrix cells filled". */

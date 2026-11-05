@@ -445,7 +445,8 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
   ],
   "run-progress": [
     { className: "RunProgressComponent", selector: "section[mkRunProgress]", inputs: [
-      {"name":"label","type":"string","control":"text","required":false,"default":"'Progress'","model":false,"description":""},
+      {"name":"label","type":"string","control":"text","required":false,"default":"'Progress'","model":false,"description":"Accessible name of the section."},
+      {"name":"busy","type":"boolean","control":"boolean","required":false,"default":"false","model":false,"description":"The run is updating: aria-busy=\"true\" on the section. Absent by default."},
       {"name":"done","type":"number","control":"number","required":true,"model":false,"description":""},
       {"name":"total","type":"number","control":"number","required":true,"model":false,"description":""},
       {"name":"caption","type":"string","control":"text","required":true,"model":false,"description":"\"test steps done\", \"matrix cells filled\"."},

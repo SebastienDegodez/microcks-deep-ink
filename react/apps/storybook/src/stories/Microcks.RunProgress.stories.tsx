@@ -60,7 +60,7 @@ export const LabelAndGap: StoryObj = {
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof RunProgress> = {
   args: {
-    label: 'Progress', done: 7, total: 12, caption: '7 of 12 operations', nowLabel: 'Now', now: 'PATCH /pastries/{name}',
+    label: 'Progress', busy: false, done: 7, total: 12, caption: '7 of 12 operations', nowLabel: 'Now', now: 'PATCH /pastries/{name}',
     segments: ['done', 'done', 'done', 'failed', 'done', 'warn', 'done', 'current', 'queued', 'queued', 'queued', 'queued'],
     counts: [{ kind: 'pass', text: '5 passed' }, { kind: 'fail', text: '1 failed' }, { kind: 'warn', text: '1 warning' }, { kind: 'pending', text: '5 pending' }],
     note: 'Started 09:10.', gap: undefined,
