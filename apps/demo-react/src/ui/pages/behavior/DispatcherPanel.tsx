@@ -102,7 +102,7 @@ export function DispatcherPanel({ draft, examples, pathParams, pathPrefix, edit 
           ))}
         </div>
       </fieldset>
-      <p className="dispatcher-raw">Also available as raw rules: <span className="ex-mono">URI_ELEMENTS · QUERY_HEADER · QUERY_MATCH · PROXY · SEQUENCE</span></p>
+      <p className="dispatcher-raw">Also available as raw rules: <span className="demo-mono">URI_ELEMENTS · QUERY_HEADER · QUERY_MATCH · PROXY · SEQUENCE</span></p>
 
       <div className="rules">
         <div className="rules-head">
@@ -132,7 +132,7 @@ export function DispatcherPanel({ draft, examples, pathParams, pathPrefix, edit 
                 );
               })}
             </div>
-            <span className="rules-help">Click a path parameter to include or exclude it. Several parameters are joined with <span className="ex-mono">&amp;&amp;</span>.</span>
+            <span className="rules-help">Click a path parameter to include or exclude it. Several parameters are joined with <span className="demo-mono">&amp;&amp;</span>.</span>
           </div>
         ) : null}
 
@@ -160,7 +160,7 @@ export function DispatcherPanel({ draft, examples, pathParams, pathPrefix, edit 
               onChange={(e) => edit({ rule: e.target.value })}
             />
             {jsonCheck && 'error' in jsonCheck ? <span id="json-error" className="rules-error"><Icon name="cross" size={13} />{jsonCheck.error}</span> : null}
-            <span className="rules-help">Operators: <span className="ex-mono">equals · range · size · regexp · presence</span>. A <span className="ex-mono">default</span> case is required. GET requests carry no body here, so only the default case can apply.</span>
+            <span className="rules-help">Operators: <span className="demo-mono">equals · range · size · regexp · presence</span>. A <span className="demo-mono">default</span> case is required. GET requests carry no body here, so only the default case can apply.</span>
           </div>
         ) : null}
 
@@ -189,7 +189,7 @@ export function DispatcherPanel({ draft, examples, pathParams, pathPrefix, edit 
                 onChange={(e) => edit({ script: e.target.value })}
               />
             </div>
-            <span className="rules-help">The script returns the name of the example to serve. Use <span className="ex-mono">log.info()</span> to trace it in the mock logs.</span>
+            <span className="rules-help">The script returns the name of the example to serve. Use <span className="demo-mono">log.info()</span> to trace it in the mock logs.</span>
           </div>
         ) : null}
 

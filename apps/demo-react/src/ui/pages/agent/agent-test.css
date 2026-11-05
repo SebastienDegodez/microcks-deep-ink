@@ -1,7 +1,6 @@
 /* Agent test run (19). The registry items (matrix, lanes, progress, log) keep their own look; this file lays out the page. */
 .agent-test { display: flex; flex-direction: column; gap: 22px; line-height: normal; }
-.agent-test .mono { font-family: var(--font-mono); }
-.agent-test code.mono { font-size: inherit; background: none; padding: 0; }
+.agent-test code.demo-mono { font-size: inherit; background: none; padding: 0; }
 .agent-test .muted { color: var(--text-muted); }
 
 /* Header: badges centred on the title row; the meta line is the description, at full width. */
@@ -47,8 +46,8 @@
 .conversation-option-id { flex: 1 1 200px; min-width: 0; font: 600 13px/normal var(--font-mono); overflow-wrap: anywhere; }
 .conversation-option-skill, .conversation-option-expect { display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; }
 .conversation-option-skill { flex: 0 1 170px; }
-.conversation-option-skill .mono { color: var(--text-secondary); }
-.conversation-option-skill .mono[data-none] { color: var(--text-muted); }
+.conversation-option-skill .demo-mono { color: var(--text-secondary); }
+.conversation-option-skill .demo-mono[data-none] { color: var(--text-muted); }
 .conversation-option-turns { flex: 0 1 90px; color: var(--text-secondary); }
 .conversation-option-expect { flex: 0 1 150px; }
 

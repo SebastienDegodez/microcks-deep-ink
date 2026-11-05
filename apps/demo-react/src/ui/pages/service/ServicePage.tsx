@@ -401,7 +401,7 @@ function ApiServicePage() {
                       <SplitPaneMain className="example-detail">
                         {selected.reviewState === 'pending' ? (
                           <Callout tone="ai" variant="outline" title="">
-                            Proposed by AI from the contract's <span className="ex-mono">{schemaName}</span> schema. The mock only serves it once accepted.
+                            Proposed by AI from the contract's <span className="demo-mono">{schemaName}</span> schema. The mock only serves it once accepted.
                           </Callout>
                         ) : null}
                         <Exchange>
@@ -462,7 +462,7 @@ function ApiServicePage() {
                   </div>
                   <CopyButton value={det.mcp.clientConfig} label="Copy MCP config" size="md" variant="primary" />
                 </div>
-                <p className="agent-card-lead">Every mock operation is published as an MCP tool. An AI agent discovers it via <span className="ex-mono">tools/list</span> and calls it with arguments derived from the contract's schemas: path, query and body grouped under <span className="ex-mono">params.arguments</span>.</p>
+                <p className="agent-card-lead">Every mock operation is published as an MCP tool. An AI agent discovers it via <span className="demo-mono">tools/list</span> and calls it with arguments derived from the contract's schemas: path, query and body grouped under <span className="demo-mono">params.arguments</span>.</p>
                 <div className="agent-card-block">
                   <SectionLabel as="h3">Endpoints</SectionLabel>
                   {[
@@ -483,7 +483,7 @@ function ApiServicePage() {
                       <div className="tool-card-main">
                         <span className="tool-card-name">{t.name}</span>
                         <span className="tool-card-desc">{t.description}</span>
-                        <span className="tool-card-op"><MethodTag method={t.method} protocol={svc.protocol} className="tool-card-method" /><span className="ex-mono">{t.path}</span></span>
+                        <span className="tool-card-op"><MethodTag method={t.method} protocol={svc.protocol} className="tool-card-method" /><span className="demo-mono">{t.path}</span></span>
                       </div>
                       <ScrollPre aria-label={`Input schema of ${t.name}`} className="tool-card-schema">{t.inputSchema}</ScrollPre>
                     </div>
@@ -506,7 +506,7 @@ function ApiServicePage() {
             <div className="runs-card-head">
               <div className="runs-card-title">
                 <h2 id="runs-title">Latest test runs</h2>
-                {latestRun ? <span><span className="ex-mono">{latestRun.runner}</span> against <span className="ex-mono">{latestRun.endpoint}</span></span> : null}
+                {latestRun ? <span><span className="demo-mono">{latestRun.runner}</span> against <span className="demo-mono">{latestRun.endpoint}</span></span> : null}
               </div>
               <div className="runs-card-actions">
                 <Button asChild variant="secondary" className="runs-card-all"><RouterLink to={`/tests/service/${svc.id}`}>All runs</RouterLink></Button>

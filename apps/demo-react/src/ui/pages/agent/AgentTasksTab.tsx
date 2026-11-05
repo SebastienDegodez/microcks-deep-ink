@@ -44,7 +44,7 @@ export function AgentTasksTab({ serviceId, initial, onChanged }: { serviceId: st
           {/* Updates every second: a pause control keeps it under the user's control (WCAG 2.2.2). */}
           <Button variant="link" size="sm" onClick={live.toggle}>{live.paused ? 'Resume' : 'Pause'}</Button>
         </div>
-        <span className="agent-tasks-kept">Kept 24 h · same list as <span className="ex-mono">ListTasks</span> on any transport</span>
+        <span className="agent-tasks-kept">Kept 24 h · same list as <span className="demo-mono">ListTasks</span> on any transport</span>
       </div>
       <div className="agent-task-table-wrap">
         <table className="agent-task-table">

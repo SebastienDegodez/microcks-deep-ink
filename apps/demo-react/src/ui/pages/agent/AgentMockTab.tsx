@@ -17,8 +17,8 @@ export function AgentMockTab({ agent }: { agent: AgentProfile }) {
     <div className="agent-mock">
       <div className="agent-mock-intro">
         <p>
-          The three bindings of <span className="ex-mono">a2a.proto</span> are served at once, from the same conversations. Every request carries{' '}
-          <span className="agent-mock-version">A2A-Version: 1.0</span>; another version gets <span className="ex-mono">VersionNotSupportedError</span>.
+          The three bindings of <span className="demo-mono">a2a.proto</span> are served at once, from the same conversations. Every request carries{' '}
+          <span className="agent-mock-version">A2A-Version: 1.0</span>; another version gets <span className="demo-mono">VersionNotSupportedError</span>.
         </p>
         <Segmented
           variant="joined"
@@ -61,7 +61,7 @@ export function AgentMockTab({ agent }: { agent: AgentProfile }) {
           <div className="agent-panel-head">
             <h2 id="agent-stream-title">What the stream returns</h2>
             <span className="agent-panel-note">
-              HTTP+JSON shape for <span className="ex-mono">ord-2417-ready</span>, paced by the task script. JSON-RPC wraps each event in <span className="ex-mono">result</span>.
+              HTTP+JSON shape for <span className="demo-mono">ord-2417-ready</span>, paced by the task script. JSON-RPC wraps each event in <span className="demo-mono">result</span>.
             </span>
           </div>
           <CodeBlock code={SSE_SAMPLE} variant="plain" copy={false} caption="text/event-stream" />
@@ -85,12 +85,12 @@ export function AgentMockTab({ agent }: { agent: AgentProfile }) {
           <h2 id="agent-answers-title">How the mock answers</h2>
           <div role="note" className="agent-note">
             <Icon name="ban" size={15} />
-            <span>Unmatched messages answer a task in state <span className="ex-mono">rejected</span>, not an HTTP error.</span>
+            <span>Unmatched messages answer a task in state <span className="demo-mono">rejected</span>, not an HTTP error.</span>
           </div>
           <ul className="agent-answers-list">
-            <li>A transport success can carry a task in state <span className="ex-mono">failed</span>. Check the HTTP status and the task state separately.</li>
-            <li>An <span className="ex-mono">input-required</span> task resumes when the next message carries the same <span className="ex-mono">taskId</span> and <span className="ex-mono">contextId</span>.</li>
-            <li><span className="ex-mono">CancelTask</span> moves a live task to <span className="ex-mono">canceled</span>; on a terminal task it returns <span className="ex-mono">TaskNotCancelableError</span>.</li>
+            <li>A transport success can carry a task in state <span className="demo-mono">failed</span>. Check the HTTP status and the task state separately.</li>
+            <li>An <span className="demo-mono">input-required</span> task resumes when the next message carries the same <span className="demo-mono">taskId</span> and <span className="demo-mono">contextId</span>.</li>
+            <li><span className="demo-mono">CancelTask</span> moves a live task to <span className="demo-mono">canceled</span>; on a terminal task it returns <span className="demo-mono">TaskNotCancelableError</span>.</li>
           </ul>
         </section>
       </div>

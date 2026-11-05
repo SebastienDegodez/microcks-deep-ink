@@ -214,7 +214,7 @@ export default function ImportPage() {
                     </div>
                     <div className="note-box">
                       <Icon name="clock" size={16} />
-                      <span>Scheduled source: Microcks re-scans the file on the global <span className="mono">services.update.interval</span> (every hour by default) and resolves external references. <RouterLink to="/sources">Manage sources</RouterLink></span>
+                      <span>Scheduled source: Microcks re-scans the file on the global <span className="demo-mono">services.update.interval</span> (every hour by default) and resolves external references. <RouterLink to="/sources">Manage sources</RouterLink></span>
                     </div>
                     <div className="source-actions"><Button type="submit" variant="primary" loading={step === 'analyzing'}>Analyze repository</Button></div>
                   </form>

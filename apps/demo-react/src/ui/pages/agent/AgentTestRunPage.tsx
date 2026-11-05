@@ -68,7 +68,7 @@ const CLI = "microcks test 'Pastry concierge:1.0' https://concierge.staging.acme
 function Coded({ text }: { text: string }) {
   return (
     <>
-      {text.split('`').map((part, i) => (i % 2 === 1 ? <code key={i} className="mono">{part}</code> : <Fragment key={i}>{part}</Fragment>))}
+      {text.split('`').map((part, i) => (i % 2 === 1 ? <code key={i} className="demo-mono">{part}</code> : <Fragment key={i}>{part}</Fragment>))}
     </>
   );
 }
@@ -87,8 +87,8 @@ function Setup({ defaults, initial, onRun }: { defaults: AgentTestDefaults; init
       <div className="setup-card-head">
         <h2 id="setup-title">Test a real agent against its card</h2>
         <p>
-          Microcks reads the Agent Card, checks it, then replays each conversation of the <span className="mono">APIExamples</span> artifact on every selected transport.
-          The transport result and the task state are judged separately: a <span className="mono">200 OK</span> carrying a <span className="mono">failed</span> task is
+          Microcks reads the Agent Card, checks it, then replays each conversation of the <span className="demo-mono">APIExamples</span> artifact on every selected transport.
+          The transport result and the task state are judged separately: a <span className="demo-mono">200 OK</span> carrying a <span className="demo-mono">failed</span> task is
           still a failure.
         </p>
       </div>
@@ -99,7 +99,7 @@ function Setup({ defaults, initial, onRun }: { defaults: AgentTestDefaults; init
           </Field>
           <fieldset className="setup-fieldset">
             <legend>
-              Transports to test <span className="setup-legend-hint">· read from <span className="mono">supportedInterfaces</span></span>
+              Transports to test <span className="setup-legend-hint">· read from <span className="demo-mono">supportedInterfaces</span></span>
             </legend>
             <div className="transport-choices">
               {defaults.transports.map((t) => (
@@ -119,7 +119,7 @@ function Setup({ defaults, initial, onRun }: { defaults: AgentTestDefaults; init
             <legend>
               Conversations to replay{' '}
               <span className="setup-legend-hint">
-                · {setup.conversations.length} of {defaults.conversations.length} selected · from <span className="mono">pastry-concierge-1.0-examples.yaml</span>
+                · {setup.conversations.length} of {defaults.conversations.length} selected · from <span className="demo-mono">pastry-concierge-1.0-examples.yaml</span>
               </span>
             </legend>
             <div className="conversation-list">
@@ -132,9 +132,9 @@ function Setup({ defaults, initial, onRun }: { defaults: AgentTestDefaults; init
                     onChange={() => setSetup({ ...setup, conversations: toggle(setup.conversations, c.id) })}
                   />
                   <span className="conversation-option-id">{c.id}</span>
-                  <span className="conversation-option-skill"><span className="muted">skill</span><span className="mono" data-none={c.skillId === '(none)' ? '' : undefined}>{c.skillId}</span></span>
+                  <span className="conversation-option-skill"><span className="muted">skill</span><span className="demo-mono" data-none={c.skillId === '(none)' ? '' : undefined}>{c.skillId}</span></span>
                   <span className="conversation-option-turns">{c.turns}</span>
-                  <span className="conversation-option-expect"><span className="muted">expects</span><span className="mono">{c.expect}</span></span>
+                  <span className="conversation-option-expect"><span className="muted">expects</span><span className="demo-mono">{c.expect}</span></span>
                 </label>
               ))}
             </div>
@@ -170,7 +170,7 @@ function Setup({ defaults, initial, onRun }: { defaults: AgentTestDefaults; init
                   name="text-mode"
                   value={m.value}
                   label={m.label}
-                  description={<span className="mono">{m.example}</span>}
+                  description={<span className="demo-mono">{m.example}</span>}
                   checked={setup.textMode === m.value}
                   onChange={() => setSetup({ ...setup, textMode: m.value })}
                 />
@@ -178,8 +178,8 @@ function Setup({ defaults, initial, onRun }: { defaults: AgentTestDefaults; init
             </div>
             <Checkbox
               variant="card"
-              label={<>Validate <span className="mono">data</span> parts with JSON Schema</>}
-              description={<>Structured answers such as <span className="mono">{'{name, price, reason}'}</span> are checked for shape, not for exact values.</>}
+              label={<>Validate <span className="demo-mono">data</span> parts with JSON Schema</>}
+              description={<>Structured answers such as <span className="demo-mono">{'{name, price, reason}'}</span> are checked for shape, not for exact values.</>}
               checked={setup.dataSchema}
               onChange={(e) => setSetup({ ...setup, dataSchema: e.target.checked })}
             />
@@ -390,9 +390,9 @@ function Results({ run, phase, tick, conversationSubs, onStep, onReplay, onEdit 
         <SectionLabel lineHeight="normal">Setup</SectionLabel>
         <span className="setup-strip-text">{transports.map((t) => AGENT_TRANSPORT_NAMES[t]).join(' · ')}</span>
         <span className="setup-strip-text">{conversations.length} {conversations.length === 1 ? 'conversation' : 'conversations'}</span>
-        <span><span className="muted">secret</span> <span className="mono">{run.setup.secret || 'none'}</span></span>
-        <span><span className="muted">timeout</span> <span className="mono">{run.setup.timeoutMs} ms</span></span>
-        <span><span className="muted">text</span> <span className="mono">{run.setup.textMode}{run.setup.dataSchema ? ' + JSON Schema' : ''}</span></span>
+        <span><span className="muted">secret</span> <span className="demo-mono">{run.setup.secret || 'none'}</span></span>
+        <span><span className="muted">timeout</span> <span className="demo-mono">{run.setup.timeoutMs} ms</span></span>
+        <span><span className="muted">text</span> <span className="demo-mono">{run.setup.textMode}{run.setup.dataSchema ? ' + JSON Schema' : ''}</span></span>
         {!running ? <Button size="sm" icon="pencil" className="edit-setup" onClick={onEdit}>Edit setup</Button> : null}
       </SummaryStrip>
       <div className="run-top">
@@ -413,7 +413,7 @@ function Results({ run, phase, tick, conversationSubs, onStep, onReplay, onEdit 
               { kind: 'pending', text: `${count('queued') + count('running')} queued` },
             ]}
             action={<Button size="sm" icon="chevron" className="step-forward" onClick={onStep}>Step forward</Button>}
-            note={<>Agent Card checks run first. Each conversation then runs once per transport, with a fresh <span className="mono">contextId</span> per run and the OAuth2 token from the secret.</>}
+            note={<>Agent Card checks run first. Each conversation then runs once per transport, with a fresh <span className="demo-mono">contextId</span> per run and the OAuth2 token from the secret.</>}
           />
         ) : (
           <section aria-label="Summary" className="run-summary run-top-main">
@@ -477,14 +477,14 @@ function Results({ run, phase, tick, conversationSubs, onStep, onReplay, onEdit 
                 pill={<ApiBadge label="cli" value="proposed" status="warning" size="sm" />}
                 hint={
                   <>
-                    Proposed, not available today: the existing <span className="mono">microcks test</span> command, unchanged, with the new runner name{' '}
-                    <span className="mono">A2A_CONFORMANCE</span> that the A2A module would register. It exits non-zero when a check fails.
+                    Proposed, not available today: the existing <span className="demo-mono">microcks test</span> command, unchanged, with the new runner name{' '}
+                    <span className="demo-mono">A2A_CONFORMANCE</span> that the A2A module would register. It exits non-zero when a check fails.
                   </>
                 }
                 command={CLI}
                 footnote={
                   <>
-                    Add <span className="mono">--keycloakClientId</span> and <span className="mono">--keycloakClientSecret</span> when your Microcks instance has authentication on.
+                    Add <span className="demo-mono">--keycloakClientId</span> and <span className="demo-mono">--keycloakClientSecret</span> when your Microcks instance has authentication on.
                     The agent's OAuth2 token comes from the secret bound to the test, as in this run.
                   </>
                 }

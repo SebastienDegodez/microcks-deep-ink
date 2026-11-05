@@ -237,11 +237,11 @@ function RunView({ base }: { base: TestRun }) {
             </span>
             <span>
               <span className="tr-meta-key">{done ? 'Duration' : 'Elapsed'}</span>
-              <span className="tr-meta-mono">{elapsed} ms</span>
+              <span className="demo-mono">{elapsed} ms</span>
             </span>
             <span>
               <span className="tr-meta-key">Timeout</span>
-              <span className="tr-meta-mono">{waitSec} s</span>
+              <span className="demo-mono">{waitSec} s</span>
             </span>
             {base.launchedBy ? (
               <span>
@@ -308,7 +308,7 @@ function RunView({ base }: { base: TestRun }) {
                   {base.result === 'passed' ? 'Passed' : base.result === 'failed' ? 'Failed' : 'Timed out'}
                 </span>
                 <span className="tr-verdict-summary">
-                  <span className="tr-mono-strong">
+                  <span className="demo-mono-strong">
                     {passCount}/{total}
                   </span>{' '}
                   test steps passed ·{' '}
@@ -318,10 +318,10 @@ function RunView({ base }: { base: TestRun }) {
                 </span>
                 {brokenOps[0] && base.result === 'failed' && failedSchema ? (
                   <span className="tr-verdict-detail">
-                    <span className="tr-mono">
+                    <span className="demo-mono">
                       {brokenOps[0].method} {brokenOps[0].path}
                     </span>{' '}
-                    returns a body that does not match the <span className="tr-mono">{failedSchema}</span> schema.
+                    returns a body that does not match the <span className="demo-mono">{failedSchema}</span> schema.
                   </span>
                 ) : base.reason ? (
                   <span className="tr-verdict-detail">{base.reason}</span>
@@ -331,7 +331,7 @@ function RunView({ base }: { base: TestRun }) {
                     <Icon name="dispatcher" size={14} />
                     <span>
                       Same contract violation breaks workflow <strong>{related.workflowTitle}</strong> (run #{related.number}, schema validation) at step{' '}
-                      <span className="tr-mono">{related.stepId}</span>
+                      <span className="demo-mono">{related.stepId}</span>
                     </span>
                   </RouterLink>
                 ) : null}
@@ -370,7 +370,7 @@ function RunView({ base }: { base: TestRun }) {
                 copyLabel="Copy command"
                 footnote={
                   <>
-                    Set <span className="tr-mono">MICROCKS_CLIENT_SECRET</span> from the <span className="tr-mono">microcks-serviceaccount</span> credentials. The
+                    Set <span className="demo-mono">MICROCKS_CLIENT_SECRET</span> from the <span className="demo-mono">microcks-serviceaccount</span> credentials. The
                     same parameters work with the GitHub Action, GitLab CI, Jenkins and Tekton integrations.
                   </>
                 }
@@ -571,11 +571,11 @@ function StepDiff({ id, step, run, serviceId }: { id: string; step: TestStepResu
             ))}
           </ul>
           <p className="tr-diff-note">
-            The endpoint answered <span className="tr-mono">{code}</span> as the contract declares, but its body breaks the <span className="tr-mono">{schema}</span>{' '}
+            The endpoint answered <span className="demo-mono">{code}</span> as the contract declares, but its body breaks the <span className="demo-mono">{schema}</span>{' '}
             schema on {step.violations.length} {step.violations.length === 1 ? 'property' : 'properties'}. Fix the implementation
             {newEnum ? (
               <>
-                , or if <span className="tr-mono">{newEnum}</span> is an intended new status, add it to the contract and re-import
+                , or if <span className="demo-mono">{newEnum}</span> is an intended new status, add it to the contract and re-import
               </>
             ) : null}
             .{' '}

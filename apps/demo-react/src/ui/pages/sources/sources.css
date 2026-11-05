@@ -16,7 +16,6 @@
 .scan-strip-counts .api-badge-name > .icon { display: none; }
 .sources-page .muted { color: var(--text-muted); }
 .sources-page .secondary { color: var(--text-secondary); }
-.sources-page .mono { font-family: var(--font-mono); }
 
 /* List (jobs) and detail side by side, wrapping under 980px. */
 .sources-split { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; min-width: 0; }

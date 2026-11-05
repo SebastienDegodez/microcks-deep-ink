@@ -15,7 +15,6 @@
 .hb-empty-reset { padding: 0; border: 0; background: transparent; color: var(--link); font: 600 14px/20px var(--font-ui); cursor: pointer; }
 .hb-installed { display: inline-flex; align-items: center; gap: 6px; padding: 0 4px; color: var(--success); font-size: 14px; font-weight: 600; }
 .hb-installed > .icon { stroke-width: 2.4; }
-.hb-mono { font-family: var(--font-mono); }
 
 .hb-detail > * { display: flex; flex-direction: column; gap: 18px; }
 .hb-detail-head { display: flex; flex-direction: column; gap: 6px; }

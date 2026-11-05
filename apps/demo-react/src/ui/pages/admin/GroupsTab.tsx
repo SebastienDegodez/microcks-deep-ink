@@ -61,7 +61,7 @@ export function GroupsTab({ users, groups, draft, setDraft, notify, onChanged }:
         <div className="ad-section-title">
           <h2 ref={headingRef} tabIndex={-1}>Manager groups</h2>
           <p>
-            One group per value of the master label <span className="ad-mono">domain</span>. A member manages the Services carrying that value. Click a cell to add or remove a membership, then apply.
+            One group per value of the master label <span className="demo-mono">domain</span>. A member manages the Services carrying that value. Click a cell to add or remove a membership, then apply.
           </p>
         </div>
         <span className="ad-meta">

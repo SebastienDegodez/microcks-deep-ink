@@ -277,7 +277,7 @@ function Detail({
         </div>
         <p className="hb-detail-desc">{pkg.description}</p>
         <span className="hb-detail-meta">
-          maintained by community · {metaOf(pkg)} · <span className="hb-mono">hub.microcks.io/package/{pkg.id}</span>
+          maintained by community · {metaOf(pkg)} · <span className="demo-mono">hub.microcks.io/package/{pkg.id}</span>
         </span>
       </div>
 
@@ -301,7 +301,7 @@ function Detail({
                 <span>
                   {plural(a.operations[v] ?? 0, 'operation')} · {a.examples[v] ?? 0} examples
                 </span>
-                <span className="hb-mono">{a.contracts}</span>
+                <span className="demo-mono">{a.contracts}</span>
                 {a.inCatalogue.includes(v) ? (
                   <span className="hb-exists">
                     <Icon name="check" size={12} />
