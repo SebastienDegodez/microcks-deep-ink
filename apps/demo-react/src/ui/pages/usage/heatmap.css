@@ -1,5 +1,4 @@
 /* Usage · daily heatmap. Heat steps are the action colour at 18 / 38 / 62 / 92 % (no text sits on them). */
-.us-heat-card { flex: 1 1 380px; max-width: 560px; }
 .us-heat-card > .panel-body { display: flex; flex-direction: column; gap: 12px; padding: 18px; }
 .us-heat-head { display: flex; flex-direction: column; gap: 4px; }
 .us-heat-head h2 { margin: 0; font: 600 16px/1.3 var(--font-ui); }
