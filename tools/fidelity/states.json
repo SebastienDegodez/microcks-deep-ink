@@ -44,5 +44,8 @@
  { "id": "sources-new-done", "route": "/sources/new", "focus": { "role": "button", "name": "Sample: API Pastry" }, "keys": ["Enter", "Shift", "Shift", "Shift", "Shift", "Shift", "Tab", "Tab", "Tab", "Enter"] },
  { "id": "sources-new-a2a-preview", "route": "/sources/new", "focus": { "role": "button", "name": "Example: Pastry concierge (A2A Agent Card)" }, "keys": ["Enter"] },
  { "id": "sources-new-a2a-done", "route": "/sources/new", "focus": { "role": "button", "name": "Example: Pastry concierge (A2A Agent Card)" }, "keys": ["Enter", "Shift", "Shift", "Shift", "Shift", "Shift", "Tab", "Enter"] },
- { "id": "sources-new-arazzo-done", "route": "/sources/new", "focus": { "role": "button", "name": "Example: Pastry workflows (Arazzo)" }, "keys": ["Enter", "Shift", "Shift", "Shift", "Shift", "Shift", "Tab", "Enter"] }
+ { "id": "sources-new-arazzo-done", "route": "/sources/new", "focus": { "role": "button", "name": "Example: Pastry workflows (Arazzo)" }, "keys": ["Enter", "Shift", "Shift", "Shift", "Shift", "Shift", "Tab", "Enter"] },
+ { "id": "test-run-119-running", "route": "/tests/runner/119" },
+ { "id": "test-run-119-skip", "route": "/tests/runner/119", "focus": { "role": "button", "name": "Skip to result" }, "keys": ["Enter"] },
+ { "id": "test-run-118-replay", "route": "/tests/runner/118", "focus": { "role": "button", "name": "Replay run" }, "keys": ["Enter"] }
 ]
