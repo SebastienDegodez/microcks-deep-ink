@@ -19,8 +19,8 @@ export interface FactsProps extends Omit<HTMLAttributes<HTMLDListElement>, 'chil
   items?: Fact[];
   /** `rows` (default): term column + separators. `inline`: two-column grid. `columns`: term over value. */
   layout?: 'rows' | 'inline' | 'columns';
-  /** Frames the list on the page background (padding 12px 14px, radius 6); `surface`: on the surface fill, padding 12px. */
-  boxed?: boolean | 'surface';
+  /** Frames the list on the page background (padding 12px 14px, radius 6); `surface`: on the surface fill, padding 12px; `compact`: padding 8px 12px, radius 4 (request bodies). */
+  boxed?: boolean | 'surface' | 'compact';
   /** 14px 600 values (figures). */
   strong?: boolean;
   /** Width of the term column in `rows` (130px) and `inline` (92px): `150px`. */
@@ -35,6 +35,10 @@ export interface FactsProps extends Omit<HTMLAttributes<HTMLDListElement>, 'chil
   values?: 'text' | 'secondary';
   /** `relaxed`: values at line height 1.6 (Agent test cell facts). Default `inherit`. */
   lineHeight?: 'inherit' | 'relaxed';
+  /** Terms and values in 12px/1.6 monospace (request bodies). */
+  mono?: boolean;
+  /** `pre`: terms and values keep line breaks and spaces and break anywhere; in `inline` the term column is capped at `termWidth` (request bodies). Default `normal`. */
+  wrap?: 'normal' | 'pre';
   /** Extra `FactRow`s after the items. */
   children?: ReactNode;
 }
@@ -67,7 +71,7 @@ export function FactRow({ term, sub, mono, tone, className, children, ...rest }:
 }
 
 /** Key/value facts of an object in a native `<dl>`. */
-export function Facts({ items = [], layout = 'rows', boxed, strong, termWidth, columns, gap, size = 'md', values = 'text', lineHeight = 'inherit', className, style, children, ...rest }: FactsProps) {
+export function Facts({ items = [], layout = 'rows', boxed, strong, termWidth, columns, gap, size = 'md', values = 'text', lineHeight = 'inherit', mono, wrap = 'normal', className, style, children, ...rest }: FactsProps) {
   const vars: Record<string, string> = {};
   if (termWidth) vars['--facts-term'] = termWidth;
   if (gap) vars['--facts-gap'] = gap;
@@ -77,11 +81,13 @@ export function Facts({ items = [], layout = 'rows', boxed, strong, termWidth, c
       {...rest}
       className={['facts', className].filter(Boolean).join(' ')}
       data-layout={layout === 'rows' ? undefined : layout}
-      data-boxed={boxed === 'surface' ? 'surface' : boxed ? '' : undefined}
+      data-boxed={boxed === 'surface' || boxed === 'compact' ? boxed : boxed ? '' : undefined}
       data-strong={strong ? '' : undefined}
       data-size={size === 'md' ? undefined : size}
       data-values={values === 'text' ? undefined : values}
       data-line-height={lineHeight === 'inherit' ? undefined : lineHeight}
+      data-mono={mono ? '' : undefined}
+      data-wrap={wrap === 'normal' ? undefined : wrap}
       style={{ ...(vars as CSSProperties), ...style }}
     >
       {items.map((f, i) => (

@@ -114,17 +114,34 @@ export const SecondaryRelaxed: StoryObj = {
   ),
 };
 
+/** Request body (WorkflowRun step): compact frame, 12px/1.6 mono, 32ch term column, pre-wrapped terms and values that break anywhere instead of scrolling. */
+export const RequestBody: StoryObj = {
+  name: 'Request body (compact, mono, pre-wrap)',
+  render: () => (
+    <Facts
+      layout="inline" boxed="compact" mono wrap="pre" termWidth="32ch" gap="2px 0" style={{ maxWidth: 560 }}
+      items={[
+        { term: 'pastryName', value: 'Eclair Cafe' },
+        { term: 'newPrice', value: '3.9' },
+        { term: 'a.very.long.parameter.name.that.wraps.at.the.term.width', value: 'https://microcks.acme.io/rest/API+Pastry/2.0/pastries/Eclair%20Cafe?withSomeVeryLongQueryString=true' },
+        { term: 'note', value: 'Restock before 7am.\nKeep the cold chain.' },
+      ]}
+    />
+  ),
+};
+
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof Facts> = {
   args: {
     items: [{ term: 'Service', value: 'API Pastry' }, { term: 'Version', value: '2.0.0', mono: true }, { term: 'Status', value: 'Healthy', tone: 'success', sub: 'Last check 2 min ago' }],
-    layout: 'rows', boxed: false, strong: false, size: 'md', termWidth: undefined, columns: undefined, gap: undefined, values: 'text', lineHeight: 'inherit',
+    layout: 'rows', boxed: false, strong: false, size: 'md', termWidth: undefined, columns: undefined, gap: undefined, values: 'text', lineHeight: 'inherit', mono: false, wrap: 'normal',
   },
   argTypes: {
     layout: { control: 'inline-radio', options: ['rows', 'inline', 'columns'] },
-    boxed: { control: 'inline-radio', options: [false, true, 'surface'] },
+    boxed: { control: 'inline-radio', options: [false, true, 'surface', 'compact'] },
     size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] },
     values: { control: 'inline-radio', options: ['text', 'secondary'] },
     lineHeight: { control: 'inline-radio', options: ['inherit', 'relaxed'] },
+    wrap: { control: 'inline-radio', options: ['normal', 'pre'] },
   },
 };

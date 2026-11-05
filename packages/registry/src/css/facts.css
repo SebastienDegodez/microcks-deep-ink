@@ -66,6 +66,17 @@
   /* Boxed on the surface fill (Traces call detail). */
   .facts[data-boxed="surface"] { padding: 12px; background: var(--surface); }
 
+  /* Compact frame (request bodies): padding 8px 12px, radius 4px, on the page background. */
+  .facts[data-boxed="compact"] { padding: 8px 12px; border-radius: 4px; }
+
+  /* Mono list (request bodies): terms and values in 12px/1.6 monospace. */
+  .facts[data-mono] { font-family: var(--font-mono); font-size: 12px; line-height: 1.6; }
+
+  /* Preformatted wrap (request bodies): terms and values keep their line breaks and spaces, and break anywhere
+     instead of scrolling (RGAA 7.3). In inline, the term column is capped at --facts-term so long terms wrap. */
+  .facts[data-wrap="pre"] > .facts-row > :is(dt, dd) { white-space: pre-wrap; overflow-wrap: anywhere; }
+  .facts[data-layout="inline"][data-wrap="pre"] { grid-template-columns: minmax(0, var(--facts-term)) minmax(0, 1fr); }
+
   /* Small terms (Traces call detail, Usage totals): 11px with a normal line height. lg is below. */
   .facts[data-size="sm"] > .facts-row > dt { font-size: 11px; line-height: normal; }
   .facts[data-size="sm"] > .facts-row > dd { line-height: normal; }
