@@ -141,7 +141,8 @@ time, on every CSS file of the bundle, before it enables the plugin:
 
 ```bash
 node packages/plugin-sdk/scripts/check-plugin-css.mjs --manifest microcks-plugin.json dist/plugin.css
-# or: --prefix acme-    and    --tokens path/to/tokens.json|tokens.css   (default: packages/tokens/tokens.json)
+# or give the tag prefix instead of the manifest: --prefix acme-   (the plugin's custom-element tagPrefix, not a CSS class prefix)
+# optional: --tokens path/to/tokens.json|tokens.css   (default: packages/tokens/tokens.json)
 ```
 
 It prints `file:line: code: message` and exits 1 when it finds a violation:
