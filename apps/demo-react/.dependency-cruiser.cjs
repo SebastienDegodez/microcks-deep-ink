@@ -4,6 +4,7 @@
  *   domain          <- application (ports, use cases) <- ui (pages, hooks)
  *   infrastructure  --implements ports of--> application
  *   composition-root.ts / main.tsx          the only places that wire infrastructure to the rest
+ *   infrastructure/http   adapters calling /api/... with fetch; infrastructure/msw   the mock API (MSW), main.tsx and tests only
  *
  * Every rule has severity "error". Test files follow the same rules as the code they test: write
  * use-case tests that need the in-memory adapters next to the adapters
@@ -16,6 +17,9 @@ const UI_PACKAGES = '(^|/)node_modules/(@types/)?(react|react-dom|react-router|s
 const DESIGN_SYSTEM = '(^|/)(node_modules/@microcks/deep-ink|react/packages/deep-ink)/';
 // The test runner and Testing Library are allowed anywhere; `test-runner-only-in-tests` keeps it out of production code.
 const TEST_RUNNER = '(^|/)node_modules/(vitest|@testing-library/[^/]+)(/|$)';
+// Mock Service Worker: the mock API of the `http` backend.
+const MSW = '(^|/)node_modules/msw(/|$)';
+const TEST_FILE = '\\.test\\.tsx?$';
 
 /** @type {import('dependency-cruiser').IConfiguration} */
 module.exports = {
@@ -36,10 +40,32 @@ module.exports = {
     },
     {
       name: 'infrastructure-implements-ports',
-      comment: 'src/infrastructure imports src/domain and src/application (ports) only. Never src/ui.',
+      comment: 'src/infrastructure imports src/domain and src/application (ports) only (plus msw, see msw-only-in-infrastructure-msw). Never src/ui.',
       severity: 'error',
       from: { path: '^src/infrastructure/' },
-      to: { pathNot: ['^src/(domain|application|infrastructure)/', TEST_RUNNER] },
+      to: { pathNot: ['^src/(domain|application|infrastructure)/', TEST_RUNNER, MSW] },
+    },
+    {
+      name: 'msw-only-in-infrastructure-msw',
+      comment: 'The msw package is imported by src/infrastructure/msw and by tests only, never by adapters, ui or the composition root.',
+      severity: 'error',
+      from: { pathNot: ['^src/infrastructure/msw/', TEST_FILE] },
+      to: { path: MSW },
+    },
+    {
+      name: 'infrastructure-msw-only-from-main-and-tests',
+      comment:
+        'src/infrastructure/msw (the mock API) is started by src/main.tsx and used by tests only. Adapters and the composition root never know the API is mocked.',
+      severity: 'error',
+      from: { pathNot: ['^src/main\\.tsx$', '^src/infrastructure/msw/', TEST_FILE] },
+      to: { path: '^src/infrastructure/msw/' },
+    },
+    {
+      name: 'msw-node-only-in-tests',
+      comment: 'src/infrastructure/msw/node.ts (msw/node) is for vitest: only test files import it, so it never reaches the browser bundle.',
+      severity: 'error',
+      from: { pathNot: [TEST_FILE] },
+      to: { path: '^src/infrastructure/msw/node\\.ts$' },
     },
     {
       name: 'ui-does-not-know-infrastructure',
@@ -48,6 +74,13 @@ module.exports = {
       severity: 'error',
       from: { path: '^src/ui/' },
       to: { path: '^src/infrastructure/' },
+    },
+    {
+      name: 'ui-does-not-know-http-or-msw',
+      comment: 'src/ui never imports the HTTP adapters, the HttpClient or the mock API: pages only see the UseCases.',
+      severity: 'error',
+      from: { path: '^src/ui/' },
+      to: { path: ['^src/infrastructure/(http|msw)/', MSW] },
     },
     {
       name: 'ui-allowed-imports',

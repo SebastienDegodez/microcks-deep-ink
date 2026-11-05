@@ -27,12 +27,25 @@ Useful URLs: `#/map` (screen map with a link to every screen), `#/workflows/past
 `?fast` in the hash query (`#/workflows?fast`) or `localStorage['deep-ink-demo-fast'] = '1'` removes the
 simulated latency (120 to 350 ms, deterministic). The Playwright smoke run uses it. Streams tick every 1200 ms.
 
+## Backends
+
+`createComposition({ backend })` in `src/composition-root.ts` picks the adapters; `main.tsx` reads `VITE_DEMO_BACKEND`.
+
+- `memory` (default): the in-memory adapters, no network.
+- `http` (`VITE_DEMO_BACKEND=http pnpm --filter demo-react dev`): features with adapters in `src/infrastructure/http/<feature>`
+  call `api/...` (next to `index.html`) through `HttpClient` (`src/infrastructure/http/client.ts`, errors mapped to
+  `NotFoundError`, `ValidationError`, `BackendError`). Mock Service Worker answers them: `src/infrastructure/msw/handlers/<feature>.ts`,
+  served by `browser.ts` (the worker `public/mockServiceWorker.js`, registered with a relative URL so its scope is the demo's
+  folder, quiet; an unhandled `/api/` request logs a console error, everything else bypasses it) and by `node.ts` in vitest.
+  The first render waits for `worker.start()`. A feature without HTTP adapters falls back to memory (`httpFeatures` lists
+  the others). The `memory` build does not contain MSW.
+
 ## Layers
 
 ```
  domain  <──  application (ports, use cases)  <──  ui (pages, hooks)
                    ▲
- infrastructure/in-memory ── implements the ports
+ infrastructure/in-memory, infrastructure/http ── implement the ports   (infrastructure/msw: the mock API)
  composition-root.ts ── the only place that wires infrastructure to the application layer (with main.tsx)
 ```
 
@@ -58,6 +71,8 @@ Enforced by `.dependency-cruiser.cjs` (every rule has severity `error`, `pnpm li
 - `src/ui/**` imports `src/application` (types, `UseCases`), `src/domain` (types, pure functions), `src/ui`, `react`, `react-dom` and
   `react-router`. Never `src/infrastructure`.
 - Only `src/main.tsx` and `src/composition-root.ts` import `src/infrastructure`.
+- `src/ui/**` never imports `src/infrastructure/http`, `src/infrastructure/msw` or `msw` (also an ESLint rule). `msw` is imported by
+  `src/infrastructure/msw` and tests only; `src/infrastructure/msw` by `src/main.tsx` and tests only; `msw/node.ts` by tests only.
 - No module imports `@microcks-deep-ink/*`.
 - No circular dependency (dynamic imports count), no `domain/<a>` to `domain/<b>` (except `shared`), no `application/<a>` to `application/<b>`.
 - `vitest` and Testing Library only appear in `*.test.ts(x)` files.

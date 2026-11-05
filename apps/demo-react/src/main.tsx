@@ -1,7 +1,7 @@
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { RouterProvider } from 'react-router/dom';
-import { createComposition } from '@/composition-root';
+import { createComposition, parseBackend } from '@/composition-root';
 import { UseCasesProvider } from '@/ui/app';
 import { createAppRouter } from '@/ui/app/router';
 import { restoreTheme } from '@/ui/components/ui/theme-toggle.theme';
@@ -11,13 +11,26 @@ import '@/ui/app/app.css';
 
 restoreTheme();
 
-const { useCases, clock } = createComposition();
-const router = createAppRouter();
+// `memory` unless the build sets VITE_DEMO_BACKEND=http.
+const backend = parseBackend(import.meta.env.VITE_DEMO_BACKEND);
 
-createRoot(document.getElementById('root') as HTMLElement).render(
-  <StrictMode>
-    <UseCasesProvider useCases={useCases} clock={clock}>
-      <RouterProvider router={router} />
-    </UseCasesProvider>
-  </StrictMode>,
-);
+async function boot(): Promise<void> {
+  // With `http`, the first render waits for the mock worker: no `/api/` request may leave before it intercepts.
+  // The test reads the env value itself (not `backend`) so Vite folds it and the `memory` build drops MSW entirely.
+  if (import.meta.env.VITE_DEMO_BACKEND === 'http') {
+    const { startWorker } = await import('@/infrastructure/msw/browser');
+    await startWorker();
+  }
+  const { useCases, clock } = createComposition({ backend });
+  const router = createAppRouter();
+
+  createRoot(document.getElementById('root') as HTMLElement).render(
+    <StrictMode>
+      <UseCasesProvider useCases={useCases} clock={clock}>
+        <RouterProvider router={router} />
+      </UseCasesProvider>
+    </StrictMode>,
+  );
+}
+
+void boot();

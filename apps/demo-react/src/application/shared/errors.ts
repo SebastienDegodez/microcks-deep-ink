@@ -16,3 +16,17 @@ export class ValidationError extends Error {
     this.name = 'ValidationError';
   }
 }
+
+/**
+ * Thrown when the backend cannot answer: an unexpected HTTP status (`status` set) or no response at all
+ * (`status` is `null`: network failure, CORS, offline). Pages show their error state.
+ */
+export class BackendError extends Error {
+  constructor(
+    message: string,
+    public readonly status: number | null,
+  ) {
+    super(message);
+    this.name = 'BackendError';
+  }
+}
