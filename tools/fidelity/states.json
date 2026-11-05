@@ -39,5 +39,10 @@
  { "id": "agent-run-cell-signature", "route": "/tests/agent/3", "focus": { "role": "button", "name": "Signature (JWS): Absent 4 ms" }, "keys": ["Enter"] },
  { "id": "agent-run-cell-iface-http", "route": "/tests/agent/3", "focus": { "role": "button", "name": "HTTP+JSON × Interfaces reachable: Passed 88 ms" }, "keys": ["Enter"] },
  { "id": "agent-run-conversation-grpc", "route": "/tests/agent/3", "focus": { "role": "button", "name": "gRPC × ord-2417-ready · stream closed without lastChunk: true" }, "keys": ["Enter"] },
- { "id": "agent-setup-conversation-off", "route": "/tests/agent", "focus": { "role": "checkbox", "name": "eclair-size-m", "exact": false }, "keys": ["Space"] }
+ { "id": "agent-setup-conversation-off", "route": "/tests/agent", "focus": { "role": "checkbox", "name": "eclair-size-m", "exact": false }, "keys": ["Space"] },
+ { "id": "sources-new-preview", "route": "/sources/new", "focus": { "role": "button", "name": "Sample: API Pastry" }, "keys": ["Enter"] },
+ { "id": "sources-new-done", "route": "/sources/new", "focus": { "role": "button", "name": "Sample: API Pastry" }, "keys": ["Enter", "Shift", "Shift", "Shift", "Shift", "Shift", "Tab", "Tab", "Tab", "Enter"] },
+ { "id": "sources-new-a2a-preview", "route": "/sources/new", "focus": { "role": "button", "name": "Example: Pastry concierge (A2A Agent Card)" }, "keys": ["Enter"] },
+ { "id": "sources-new-a2a-done", "route": "/sources/new", "focus": { "role": "button", "name": "Example: Pastry concierge (A2A Agent Card)" }, "keys": ["Enter", "Shift", "Shift", "Shift", "Shift", "Shift", "Tab", "Enter"] },
+ { "id": "sources-new-arazzo-done", "route": "/sources/new", "focus": { "role": "button", "name": "Example: Pastry workflows (Arazzo)" }, "keys": ["Enter", "Shift", "Shift", "Shift", "Shift", "Shift", "Tab", "Enter"] }
 ]
