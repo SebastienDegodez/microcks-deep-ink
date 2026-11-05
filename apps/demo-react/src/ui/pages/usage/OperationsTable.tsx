@@ -2,6 +2,7 @@ import { useId } from 'react';
 import { Link as RouterLink } from 'react-router';
 import { formatCount, formatTrend, type UsageTableRow, type UsageView } from '@/domain/observe';
 import { ApiBadge } from '@/ui/components/ui/api-badge';
+import { LiveIndicator } from '@/ui/components/ui/live-indicator';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { Panel } from '@/ui/components/ui/panel';
 import './table.css';
@@ -58,7 +59,7 @@ export function OperationsTable({ view }: { view: UsageView }) {
                   {formatTrend(r.trend)}
                 </td>
                 <td className="us-ops-last" data-live={r.live ? '' : undefined}>
-                  {r.live ? <span className="us-ops-live" aria-hidden="true" /> : null}
+                  {r.live ? <LiveIndicator className="us-ops-live" variant="dot" aria-hidden="true" /> : null}
                   {r.last}
                   {r.live ? <span className="sr-only">, live</span> : null}
                 </td>
