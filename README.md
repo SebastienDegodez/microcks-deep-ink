@@ -17,18 +17,22 @@ Every page is marked **DEMO**, the data is in memory and nothing is saved. Acces
 
 ## The idea: copy the code, own the code
 
-Deep Ink works like shadcn/ui. You do not install a component library; you **copy the source** of the components you need
-into your app and edit it. Three tiers:
+Deep Ink works like shadcn/ui for Angular, plain HTML and CSS: you do not install a component library; you **copy the
+source** of the components you need into your app and edit it. **React does not copy**: React apps add the
+`@microcks/deep-ink` package (`react/packages/deep-ink`, built from a clone, see [react/README.md](react/README.md)) and
+import it. Three tiers:
 
 | Tier | What it is | What you copy |
 | --- | --- | --- |
-| **natural** | Native HTML styled by a CSS class API (`button`, `field`, `input`, `tabs`, `table`, `dialog`...) | CSS + a thin React or Angular file |
-| **microcks** | Microcks-specific but presentational (`api-badge`, `status-badge`, `operation-row`, `conformance-band`...) | CSS + React or Angular file + HTML recipe |
-| **element** | Two Web Components kept for heavy logic: `<workflow-loom>` (Arazzo) and `<plugin-slot>` | A self-contained bundle + a thin wrapper |
+| **natural** | Native HTML styled by a CSS class API (`button`, `field`, `input`, `tabs`, `table`, `dialog`...) | CSS + a thin Angular file (React: in the package) |
+| **microcks** | Microcks-specific but presentational (`api-badge`, `status-badge`, `operation-row`, `conformance-band`...) | CSS + Angular file + HTML recipe (React: in the package) |
+| **element** | Two Web Components kept for heavy logic: `<workflow-loom>` (Arazzo) and `<plugin-slot>` | A self-contained bundle + a thin Angular wrapper (React: `WorkflowLoom`, `PluginSlot` in the package) |
 
 Plain class names, no prefix: `.button`, `.tabs`, `.sr-only`, `.skip-link`; custom properties are `--action`, `--surface`...
 Angular alone keeps a `mk-` selector prefix (`<mk-tabs>`, `<button mkButton>`) because the Angular style guide and its lint
-rules require one; the reasoning is in the Angular Storybook introduction and at the top of `base.css`.
+rules require one; the reasoning is in the Angular Storybook introduction and at the top of `base.css`. There is no CSS
+prefix option (`--css-prefix` was rejected): isolation comes from the cascade layers `@layer deep-ink.base, deep-ink.components`,
+so unlayered app CSS always wins. The command bar is native React and Angular code, not a Web Component.
 
 ## Architecture (v0.2)
 
@@ -64,7 +68,7 @@ rules require one; the reasoning is in the Angular Storybook introduction and at
 | `packages/cli` | `deep-ink`, a zero-dependency CLI that copies items into an app. See its [README](packages/cli/README.md) |
 | `packages/plugin-sdk` | Plugin manifest, extension points, shared plugin host |
 | `react/apps/storybook`, `apps/storybook-angular` | The two Storybooks, each with a Copy panel (React: the `@microcks/deep-ink` package docs) |
-| `apps/demo-react` | The clickable demo: 19 screens, clean architecture, built only from copied components |
+| `apps/demo-react` | The clickable demo: 19 screens, clean architecture, built on the `@microcks/deep-ink` React package |
 | `tools/a11y` | The RGAA audit runner and the accessibility smoke run |
 | `tools/site` | The landing page and the script that assembles the Pages site |
 
@@ -83,12 +87,14 @@ pnpm deep-ink diff button --cwd ../my-app        # your edits vs the registry
 pnpm deep-ink add --all --cwd ../my-app          # everything; modified files are skipped (exit 2) unless --overwrite
 ```
 
-The framework (React, Angular or plain HTML) is detected from the target `package.json`. `add` resolves dependencies,
+The framework (Angular or plain HTML) is detected from the target `package.json`. In a React project the CLI copies
+nothing and prints `pnpm add @microcks/deep-ink` and the imports instead. `add` resolves dependencies,
 copies the files with a header, and records a hash of each file in `deep-ink.json` so an upgrade never overwrites your edits
 silently. Details and exit codes: [packages/cli/README.md](packages/cli/README.md).
 
-**From Storybook:** every story has a **Copy** panel (selected by default) listing the exact files the CLI would copy,
-the registry dependencies, a Copy button per file and the matching `pnpm deep-ink add ...` command. The demo uses the
+**From Storybook:** in the Angular Storybook every story has a **Copy** panel (selected by default) listing the exact files
+the CLI would copy, the registry dependencies, a Copy button per file and the matching `pnpm deep-ink add ...` command; the
+React Storybook panel shows the `@microcks/deep-ink` import (and the HTML recipe). The demo uses the
 React package, `@microcks/deep-ink`; its `@/ui/components/ui/<item>` imports resolve to it (Vite alias and tsconfig paths).
 
 ```tsx
