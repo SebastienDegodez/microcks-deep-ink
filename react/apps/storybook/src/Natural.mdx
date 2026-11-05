@@ -1,0 +1,51 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { TierItems, UsageExample } from '../.storybook/docs/TierItems';
+import ImportFromUrl from './usage/natural-form.example';
+import importFromUrlCode from './usage/natural-form.example.tsx?raw';
+import UnsavedChanges from './usage/natural-callout.example';
+import unsavedChangesCode from './usage/natural-callout.example.tsx?raw';
+
+<Meta title="Usage/Natural components" />
+
+> **DEMO.** A design system proposal for the Microcks UI v2, not an official release. `@microcks/deep-ink` is not published on npm: see **Getting started**.
+
+# Natural components
+
+The **natural** tier holds the generic UI primitives: buttons, form controls, tables, dialogs, tabs, menus, panels, plus the tokens, the base styles and the icons.
+Each one is a native HTML element (`<button>`, `<input>`, `<table>`, `<dialog>`) styled by a plain class (`.button`, `.input`, `.table`).
+The React components only add the wiring: labels and `aria-describedby` in `Field`, roving focus in `Tabs` and `Menu`, focus return in `Dialog`.
+None of them knows about Microcks.
+
+## When to use it
+
+- For any screen chrome, form, list or dialog, in the Microcks UI or in a plugin.
+- When a component does not exist yet: compose natural components before writing new CSS.
+- In plain HTML or Angular, the same class names apply: copy the recipe from the **Copy** panel of each story.
+
+Reach for the **Microcks** tier when the UI shows a Microcks concept (an API, an operation, a test run).
+
+## Items
+
+The list is generated at build time from the registry (`packages/registry/items/*.json`, `"tier": "natural"`). Each name links to its Docs page.
+
+<TierItems tier="natural" caption="Natural items in the registry" />
+
+## Examples
+
+Live examples rendered with `@microcks/deep-ink`; the code below each one is the full source.
+
+### A form in a panel
+
+`Panel`, `Field`, `Input` and `Button`: the field wires its label, help and error to the input, and the error is announced in words, not color alone.
+
+<UsageExample code={importFromUrlCode}>
+  <ImportFromUrl />
+</UsageExample>
+
+### A callout with actions
+
+`Callout` with a title and two `Button`s: one primary action per region.
+
+<UsageExample code={unsavedChangesCode}>
+  <UnsavedChanges />
+</UsageExample>

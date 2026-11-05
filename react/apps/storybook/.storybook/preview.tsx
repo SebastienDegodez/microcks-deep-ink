@@ -4,6 +4,7 @@ import { setTheme } from '@microcks/deep-ink';
 // The package stylesheet: tokens, base and every component, layered (the same file the demo loads).
 import '@microcks/deep-ink/styles.css';
 import '@microcks-deep-ink/storybook-shared/foundations.css';
+import './docs/docs.css';
 import { theme } from './theme';
 import { DocsPage } from './docs/DocsPage';
 
@@ -50,7 +51,7 @@ const preview: Preview = {
     docs: { theme, page: DocsPage },
     options: {
       selectedPanel: 'deep-ink/copy',
-      storySort: { order: ['Introduction', 'Getting started', 'Foundations', 'Components', 'Microcks', 'Elements', 'Patterns', 'Plugins'] },
+      storySort: { order: ['Introduction', 'Getting started', 'Usage', ['Natural components', 'Microcks components', 'Elements'], 'Foundations', 'Components', 'Microcks', 'Elements', 'Patterns', 'Plugins'] },
     },
     a11y: { test: 'error' },
   },

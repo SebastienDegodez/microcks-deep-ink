@@ -1,0 +1,49 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+import { TierItems, UsageExample } from '../.storybook/docs/TierItems';
+import ServiceHeader from './usage/microcks-header.example';
+import serviceHeaderCode from './usage/microcks-header.example.tsx?raw';
+import Operations from './usage/microcks-operations.example';
+import operationsCode from './usage/microcks-operations.example.tsx?raw';
+
+<Meta title="Usage/Microcks components" />
+
+> **DEMO.** A design system proposal for the Microcks UI v2, not an official release. `@microcks/deep-ink` is not published on npm: see **Getting started**.
+
+# Microcks components
+
+The **microcks** tier holds the domain components: they draw Microcks concepts such as an API and its version, an operation and its mock URL,
+a conformance score, a test run and its steps. They are native React code over the same layered stylesheet as the natural tier,
+and most of them reuse natural components inside (`OperationRow` uses `MethodTag` and `MockUrl`).
+
+## When to use it
+
+- When the UI shows a Microcks object: use `ApiBadge` for an API, `StatusBadge` for a test outcome, `OperationRow` for an operation.
+  They keep the same words, icons and colors on every screen.
+- In plugins, to look native next to the core screens: every item also has an HTML recipe.
+- Not for generic chrome: a plain button, form or table belongs to the **Natural** tier.
+
+## Items
+
+The list is generated at build time from the registry (`packages/registry/items/*.json`, `"tier": "microcks"`). Each name links to its Docs page.
+
+<TierItems tier="microcks" caption="Microcks items in the registry" />
+
+## Examples
+
+Live examples rendered with `@microcks/deep-ink`; the code below each one is the full source.
+
+### A service header
+
+`ApiBadge` for the API and a proof value, `StatusBadge` for the last test outcome (an icon and a word, never color alone).
+
+<UsageExample code={serviceHeaderCode}>
+  <ServiceHeader />
+</UsageExample>
+
+### An operation list
+
+`OperationList` and `OperationRow`: with `onSelect` each row is a button, and the selected row reveals its mock URL.
+
+<UsageExample code={operationsCode}>
+  <Operations />
+</UsageExample>
