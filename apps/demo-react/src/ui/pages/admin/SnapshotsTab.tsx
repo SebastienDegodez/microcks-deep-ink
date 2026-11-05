@@ -6,6 +6,8 @@ import { ApiBadge, type Protocol } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { DropZone } from '@/ui/components/ui/drop-zone';
 import { Icon } from '@/ui/components/ui/icon';
+import { SectionLabel } from '@/ui/components/ui/section-label';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
 import './snapshots.css';
@@ -18,10 +20,12 @@ export function SnapshotsTab({ notify }: { notify: Notify }) {
   return (
     <div className="ad-tab">
       <p className="ad-intro">A Snapshot holds Services &amp; APIs definitions: operations, examples, contracts and their resources. Test runs and usage metrics are not included.</p>
-      <div className="ad-snapshots">
+      <SplitPane mainWidth="520px" sideWidth="380px" sideMax="none">
         <ExportCard />
-        <ImportCard notify={notify} />
-      </div>
+        <SplitPaneSide>
+          <ImportCard notify={notify} />
+        </SplitPaneSide>
+      </SplitPane>
     </div>
   );
 }
@@ -44,7 +48,7 @@ function ExportCard() {
   };
 
   return (
-    <section className="ad-snap-card ad-snap-export" aria-labelledby="ad-export-title">
+    <SplitPaneMain as="section" className="ad-snap-card" aria-labelledby="ad-export-title">
       <div className="ad-snap-head">
         <h2 id="ad-export-title">Export</h2>
         <div className="ad-snap-select">
@@ -82,7 +86,7 @@ function ExportCard() {
           ) : null}
         </span>
       </div>
-    </section>
+    </SplitPaneMain>
   );
 }
 
@@ -117,7 +121,7 @@ function ImportCard({ notify }: { notify: Notify }) {
   };
 
   return (
-    <section ref={sectionRef} className="ad-snap-card ad-snap-import" aria-labelledby="ad-import-title">
+    <section ref={sectionRef} className="ad-snap-card" aria-labelledby="ad-import-title">
       <h2 id="ad-import-title">Import</h2>
       {!fileName ? (
         <DropZone
@@ -140,7 +144,7 @@ function ImportCard({ notify }: { notify: Notify }) {
           </div>
           {preview ? (
             <>
-              <h3 className="ad-snap-label">Preview · {plural(preview.length, 'service')} detected</h3>
+              <SectionLabel as="h3" size="sm" lineHeight="normal">Preview · {plural(preview.length, 'service')} detected</SectionLabel>
               <ul className="ad-snap-items">
                 {preview.map((p) => (
                   <li key={p.name}>
