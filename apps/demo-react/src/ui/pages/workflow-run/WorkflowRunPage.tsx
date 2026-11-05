@@ -49,7 +49,7 @@ export default function WorkflowRunPage() {
     initial: [],
     reduce: (frames, frame) => [...frames, frame],
   });
-  const replay = useReplay(stream.value);
+  const replay = useReplayFrames(stream.value);
   const run = live ? replay.frame : stored.data;
 
   const detail = useQuery(
@@ -98,7 +98,7 @@ const REPLAY_TICK_MS = 1000;
  * Plays the buffered frames of a live run one by one. Pause stops the replay clock where it is (WCAG 2.2.2):
  * Resume continues from that frame, one frame per tick, and Step forward shows the next frame while paused.
  */
-function useReplay(frames: readonly WorkflowRun[]) {
+function useReplayFrames(frames: readonly WorkflowRun[]) {
   const [index, setIndex] = useState(0);
   const [paused, setPaused] = useState(false);
   // Set by a pause, cleared once the replay has caught up with the stream.
