@@ -90,13 +90,27 @@ order (`<out>/leak/<safe>--<theme>--css.png`), then
 
 - **LEAK** (fails, exit 1) when the swap changes the pixels AND at least one rule from a stylesheet the route does not
   load itself matches an element whose computed value changed for a property that rule declares. LEAKs are grouped by
-  that set of foreign rules: `LEAK <Chunk>.css <selector> [+ …] -> <n> route-theme(s): …`.
+  that set of foreign rules: `LEAK <Chunk>.css <selector> [+ …] -> <n> route-theme(s): …`. Computed styles are
+  per-element maps of every property the element exposes, custom properties included, compared on the union of keys:
+  a foreign `.x { --c: red }` read by the route's own `color: var(--c, black)` changes `--c` on the element the rule
+  matches, so it is attributed even when `--c` is unknown to `:root`.
 - **LEAK-NOISE** (reported, never fails) otherwise: `(no CSS-caused pixel change)` or `(no foreign rule involved)`.
   Gate on the exit code; read the noise lines when a page's own state behaviour is under change.
 
 `--tolerant` skips NEAR differences at both steps. On main (110 routes) it reports exactly 3 LEAKs: `.exchange`
 (AgentTestRunPage.css) on service and copilot pages, `.demo-page-header-text:has(.run-meta)` (AgentTestRunPage.css) on
 workflow run pages, `.agent-split > :first-child / :last-child` (ImportPage.css) on the concierge pages.
+
+Self-test (custom-property-only leak, must fail as LEAK):
+
+```sh
+python3 -I tools/fidelity/snap.py leak-selftest . ../pix/selftest [--no-build] [--app …]   # exit 0 = PASS
+```
+
+It copies `dist/` to `<out>/selftest/app/dist`, makes the ServicePage chunk read
+`outline: 3px solid var(--selftest-leak, transparent)` on `.ex-stack`, appends `.ex-stack { --selftest-leak: #ff0000 }`
+to the AdminPage chunk, runs `leak` on `/admin,/services/pastry2` and expects exit 1 with
+`LEAK AdminPage.css .ex-stack`. The real `dist/` is never modified.
 
 Chromium quirk: once a document took a full-page screenshot taller than the viewport, its fallback monospace text
 measures wider (`Ctrl K` kbd 50 → 57 px) until reload. The single leak page is in that state after its first tall

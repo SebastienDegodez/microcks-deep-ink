@@ -21,6 +21,8 @@ usage:
       fresh-page capture (<out>/fresh/). A difference is `LEAK <foreign rules> -> <routes>` (exit 1) only when swapping
       the accumulated stylesheets into the fresh page changes its pixels and a rule from a sheet the route does not load
       matches an element whose computed value of a declared property changed; otherwise `LEAK-NOISE` (non-failing).
+  python3 -I snap.py leak-selftest <worktree> <out-dir> [--no-build] [--app ...]
+      Injects a custom-property-only leak into a copy of dist/ and checks leak reports it as LEAK (exit 0 = pass).
   states and leak run on a paused fake clock (Playwright clock), advanced by fixed amounts.
   probe and leak default to routes.txt next to this script.
 
@@ -214,10 +216,14 @@ def probe(wt, out, build=True, routes=None, app='apps/demo-react'):
                 json.dump(found, f, indent=1, sort_keys=True); f.write('\n')
     print(f'{animated}/{len(routes)} routes have animations -> {out}/anim')
 
-CS_BEFORE_JS = """() => {
+# Per-element map of every computed property, custom properties (--*) included: Chromium enumerates the ones that
+# apply to each element, so a --var only set by a foreign rule appears in the "after" map only (union of keys compared).
+STYLE_MAP_JS = """const styleMap = e => { const c = getComputedStyle(e), m = new Map();
+  for (const p of c) m.set(p, c.getPropertyValue(p)); return m; };"""
+
+CS_BEFORE_JS = """() => { """ + STYLE_MAP_JS + """
   const els = [document.documentElement, ...document.querySelectorAll('body, body *')];
-  const props = Array.from(getComputedStyle(document.documentElement));
-  window.__leak = { props, els, before: els.map(e => { const c = getComputedStyle(e); return props.map(p => c.getPropertyValue(p)); }),
+  window.__leak = { els, before: els.map(styleMap),
                     own: new Set([...document.querySelectorAll('link[rel=stylesheet]')].map(l => l.href)) };
 }"""
 
@@ -233,9 +239,10 @@ SWAP_JS = """hs => new Promise(done => {
 })"""
 
 # Rules from stylesheets the route does not load itself that match an element whose computed value changed, for a
-# property the rule declares (shorthands are expanded by CSSOM, so longhand names match).
-CS_RULES_JS = """() => {
-  const { props, els, before, own } = window.__leak;
+# property the rule declares (shorthands are expanded by CSSOM, so longhand names match; custom properties count too, so
+# a foreign `.x { --c: red }` read by a route's own `color: var(--c)` is attributed on the element the rule matches).
+CS_RULES_JS = """() => { """ + STYLE_MAP_JS + """
+  const { els, before, own } = window.__leak;
   const foreign = [...document.styleSheets].filter(s => s.href && !own.has(s.href));
   const rules = [];
   const walk = (list, sheet) => { for (const r of list) {
@@ -246,8 +253,8 @@ CS_RULES_JS = """() => {
   const hits = new Set();
   els.forEach((e, i) => {
     if (!e.isConnected) return;
-    const c = getComputedStyle(e);
-    const changed = props.filter((p, j) => c.getPropertyValue(p) !== before[i][j]);
+    const now = styleMap(e), was = before[i];
+    const changed = [...new Set([...now.keys(), ...was.keys()])].filter(p => (now.get(p) ?? '') !== (was.get(p) ?? ''));
     if (!changed.length) return;
     for (const [r, sheet] of rules) {
       let m = false; try { m = e.matches(r.selectorText); } catch (x) {}
@@ -303,6 +310,28 @@ def leak(wt, out, build=True, routes=None, app='apps/demo-react', tolerant=False
         print(f'LEAK {" + ".join(rules)} -> {len(hit)} route-theme(s): {", ".join(hit)}')
     print(f'{len(groups)} leak(s), {noise} LEAK-NOISE over {len(routes)} routes x 2 themes')
     sys.exit(1 if groups else 0)
+
+def leak_selftest(wt, out, build=True, app='apps/demo-react'):
+    """Proves leak catches a custom-property-only leak: copies <app>/dist to <out>/selftest/app/dist; the service
+    page's own chunk reads `outline: 3px solid var(--selftest-leak, transparent)` on .ex-stack and the AdminPage chunk
+    gets `.ex-stack { --selftest-leak: #ff0000 }` (a --var unknown to :root, no regular property). Runs leak on
+    /admin,/services/pastry2 and expects exit 1 with a LEAK attributed to AdminPage.css .ex-stack."""
+    import glob, shutil
+    if build: build_demo(wt, app)
+    root = os.path.join(out, 'selftest'); dist = os.path.join(root, 'app', 'dist')
+    shutil.rmtree(root, ignore_errors=True)
+    shutil.copytree(os.path.join(wt, app, 'dist'), dist)
+    for name, rule in (('ServicePage', '.ex-stack{outline:3px solid var(--selftest-leak,transparent)}'),
+                       ('AdminPage', '.ex-stack{--selftest-leak:#ff0000}')):
+        chunk = glob.glob(os.path.join(dist, 'assets', f'{name}-*.css'))
+        if len(chunk) != 1: print(f'selftest: {name}-*.css not found exactly once'); sys.exit(2)
+        with open(chunk[0], 'a') as f: f.write('\n' + rule + '\n')
+    r = subprocess.run([sys.executable, '-I', os.path.abspath(__file__), 'leak', root, os.path.join(root, 'out'), '--no-build',
+                        '--app', 'app', '--routes', '/admin,/services/pastry2'], capture_output=True, text=True)
+    print(r.stdout.strip())
+    ok = r.returncode == 1 and any(l.startswith('LEAK AdminPage.css .ex-stack') for l in r.stdout.splitlines())
+    print('selftest PASS: the --var leak fails as LEAK' if ok else f'selftest FAIL (exit {r.returncode}): {r.stderr[-500:]}')
+    sys.exit(0 if ok else 1)
 
 def default_routes():
     with open(os.path.join(HERE, 'routes.txt')) as f: return [l.strip() for l in f if l.strip()]
@@ -370,6 +399,8 @@ if __name__ == '__main__':
         probe(sys.argv[2], sys.argv[3], build, rt, app)
     elif cmd == 'leak':
         leak(sys.argv[2], sys.argv[3], build, rt, app, '--tolerant' in sys.argv)
+    elif cmd == 'leak-selftest':
+        leak_selftest(sys.argv[2], sys.argv[3], build, app)
     elif cmd == 'diff':
         diff(sys.argv[2], sys.argv[3], '--tolerant' in sys.argv)
     else:
