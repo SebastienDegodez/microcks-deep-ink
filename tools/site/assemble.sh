@@ -25,6 +25,9 @@ need() {
 need "$REACT_SB/index.html" "pnpm build:storybooks"
 need "$ANGULAR_SB/index.html" "pnpm build:storybooks"
 need "$DEMO/index.html" "pnpm build:demo"
+# The MSW worker of the demo's `http` backend (apps/demo-react/public/, copied by Vite). It must sit next to the demo's
+# index.html: it is registered with a relative URL, so its scope is /demo/ only.
+need "$DEMO/mockServiceWorker.js" "pnpm build:demo"
 need "$ROOT/tools/site/index.html" "git checkout tools/site/index.html"
 
 rm -rf "$SITE"
