@@ -275,7 +275,7 @@ export function Actions() {
         </Button>
         <Button variant="danger">Delete service</Button>
         <CopyButton value={`${MOCK_BASE}/pastries`} label="Copy mock URL" />
-        <Link href="#actions">A link</Link>
+        <Link href="#05-actions">Back to 05 Actions</Link>
       </div>
     </Showcase>
   );
