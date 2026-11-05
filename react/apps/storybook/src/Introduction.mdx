@@ -1,13 +1,56 @@
 import { Meta } from '@storybook/addon-docs/blocks';
+import { Actions, ApiBadges, Colours, CommandBarShowcase, DomainComponents, ShapesAndDepth, Typography } from '../.storybook/docs/Foundations';
 
 <Meta title="Introduction" />
 
 > **DEMO.** This Storybook demonstrates a design system proposal for the Microcks UI v2. It is not an official Microcks release, and nothing is published on npm.
 
-# Microcks Deep Ink
+# Deep Ink
 
-The Microcks UI v2 design system, a proposal for the maintainers.
 **The contract is the source of truth; the interface makes it alive.**
+
+The Microcks UI v2 design system, a proposal for the maintainers. This page is its showcase (the "Main" board of the prototype):
+everything below is rendered live with the real tokens (`packages/tokens`) and the real components. Use the **Theme** toolbar button to switch between Deep Ink (dark) and Paper (light).
+
+## 01 Colours
+
+Inks for the grounds and the text, the brand, the protocol spectrum and the statuses. Every swatch shows its token name and its value in the active theme. Details: **Foundations/Colors**.
+
+<Colours />
+
+## 02 Typography
+
+**Alegreya Sans SC** is the brand, **IBM Plex Sans** sets the headings and the text, **JetBrains Mono** sets the data. All roles: **Foundations/Typography**.
+
+<Typography />
+
+## 03 Shapes and depth
+
+Radii 4, 8 and 12. Depth comes from light, not from shadows; the blue halo means focus. Details: **Foundations/Spacing and radius** and **Foundations/Focus and motion**.
+
+<ShapesAndDepth />
+
+## 04 API badges
+
+The signature of Deep Ink: every API is named by its protocol, its name and its version.
+
+<ApiBadges />
+
+## 05 Actions
+
+<Actions />
+
+## 06 Command bar ⌘K
+
+<CommandBarShowcase />
+
+## 07 Domain components
+
+The Microcks components: key figures, operations, the mock URL made copyable.
+
+<DomainComponents />
+
+## About this Storybook
 
 This Storybook documents **`@microcks/deep-ink`**, the React package (private for now: built from a clone, not on npm).
 The Angular Storybook shows the same items; Angular, plain HTML and CSS are still copied with the `deep-ink` CLI, in the spirit of shadcn.
