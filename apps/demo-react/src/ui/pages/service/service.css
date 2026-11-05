@@ -8,9 +8,8 @@
 .service-ai-action .icon { color: var(--warning); }
 
 /* ---- Operations tab -------------------------------------------------------------------------------------- */
-/* Operations and examples are registry split-panes. The side panes keep their cap on narrow screens too (the
-   registry lifts it below 720px). */
-.op-rail { max-width: 360px; display: flex; flex-direction: column; gap: 6px; }
+/* Operations and examples are registry split-panes (keepSideMax: the side panes keep their cap on narrow screens). */
+.op-rail { display: flex; flex-direction: column; gap: 6px; }
 .op-rail-head { padding: 0 4px 4px; }
 .op-rail-note { margin: 6px 4px 0; font-size: 12px; line-height: 1.5; color: var(--text-muted); }
 
@@ -93,7 +92,7 @@
 .op-examples-head h3 { margin: 0; font-size: 16px; font-weight: 600; }
 .op-examples-head > span { font-size: 13px; color: var(--text-muted); }
 
-.example-col { max-width: 300px; display: flex; flex-direction: column; gap: 6px; }
+.example-col { display: flex; flex-direction: column; gap: 6px; }
 .example-list { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 6px; }
 .example-pick { display: flex; flex-direction: column; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
 .example-pick[data-selected] { border-color: var(--action); background: var(--selected); }
