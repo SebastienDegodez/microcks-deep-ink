@@ -60,14 +60,18 @@ export const Proof: StoryObj = {
 
 export const PageHeader: StoryObj = {
   name: 'Page header sizes',
-  render: () => (
-    <div className="stack">
-      <h1 style={{ margin: 0 }}>
-        <ApiBadge size="xl" protocol="REST" name="API Pastry" version="2.0" />
-      </h1>
-      <ApiBadge size="lg" protocol="REST" name="API Pastry" version="2.0" />
-    </div>
-  ),
+  // A page has one h1: on the Docs page (under the story h3), the header badge sits in an h4.
+  render: (_args, { viewMode }) => {
+    const Heading = viewMode === 'docs' ? 'h4' : 'h1';
+    return (
+      <div className="stack">
+        <Heading style={{ margin: 0 }}>
+          <ApiBadge size="xl" protocol="REST" name="API Pastry" version="2.0" />
+        </Heading>
+        <ApiBadge size="lg" protocol="REST" name="API Pastry" version="2.0" />
+      </div>
+    );
+  },
 };
 
 export const ProofValues: StoryObj = {
