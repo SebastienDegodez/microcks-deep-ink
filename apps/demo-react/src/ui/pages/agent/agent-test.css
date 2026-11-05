@@ -127,17 +127,6 @@
 .cell-detail-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .cell-detail-close { background: transparent; border-color: var(--border-strong); }
 .cell-detail-note { margin: 0; max-width: 80ch; font-size: 13px; line-height: 1.55; color: var(--text-secondary); }
-.cell-facts {
-  display: grid; grid-template-columns: minmax(120px, max-content) minmax(0, 1fr); gap: 8px 16px; margin: 0; padding: 12px 14px;
-  border: 1px solid var(--border); border-radius: 6px; background: var(--bg); font-size: 13px;
-}
-.cell-facts > div { display: contents; }
-.cell-facts dt { color: var(--text-muted); }
-.cell-facts dd { margin: 0; font: 400 12px/1.6 var(--font-mono); color: var(--text-secondary); overflow-wrap: anywhere; }
-.cell-facts dd[data-tone='ok'] { color: var(--success); }
-.cell-facts dd[data-tone='bad'] { color: var(--danger); }
-.cell-facts dd[data-tone='warn'] { color: var(--warning); }
-.cell-facts dd[data-tone='muted'] { color: var(--text-muted); }
 
 .detail-block { display: flex; flex-direction: column; gap: 6px; }
 .detail-block > .exchange + .exchange { margin-top: 2px; }

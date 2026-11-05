@@ -6,6 +6,7 @@ import { Chip } from '@/ui/components/ui/chip';
 import { Icon, type IconName } from '@/ui/components/ui/icon';
 import { SectionLabel } from '@/ui/components/ui/section-label';
 import { SkillList, type SkillItem } from '@/ui/components/ui/skill-list';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { TaskStateTag, TaskTimeline, type TaskTimelineNode } from '@/ui/components/ui/task-timeline';
 
 const FALLBACK_ID = '__fallback';
@@ -180,15 +181,15 @@ export function AgentSkillsTab({ agent }: { agent: AgentProfile }) {
     setConvId(undefined);
   };
   return (
-    <div className="agent-split">
-      <div className="agent-rail">
+    <SplitPane sideMax="340px" mainWidth="560px" keepSideMax>
+      <SplitPaneSide className="agent-rail">
         <SectionLabel as="p" size="sm" weight="regular" split lineHeight="snug" className="agent-rail-head"><span>{agent.skills.length} skills</span><span>calls · 24 h</span></SectionLabel>
         <SkillList label={`Skills of ${agent.name} ${agent.version}`} skills={items} selectedId={skillId} onSelectSkill={pick} />
         <p className="agent-rail-note">
           Each skill of the Agent Card is served as an operation. Its conversations come from the <span className="ex-mono">APIExamples</span> artifact, keyed by skill id.
         </p>
-      </div>
-      <section className="agent-detail" aria-label="Skill detail">
+      </SplitPaneSide>
+      <SplitPaneMain as="section" className="agent-detail" aria-label="Skill detail">
         <div className="agent-skill-head">
           <div className="agent-skill-title">
             <span className="agent-kind" data-fallback={fallbackSelected ? '' : undefined}>{fallbackSelected ? 'fallback' : 'skill'}</span>
@@ -275,7 +276,7 @@ export function AgentSkillsTab({ agent }: { agent: AgentProfile }) {
             <span className="ex-secondary">No match answers a task in state <span className="ex-mono">rejected</span>, not an HTTP error.</span>
           ) : null}
         </div>
-      </section>
-    </div>
+      </SplitPaneMain>
+    </SplitPane>
   );
 }

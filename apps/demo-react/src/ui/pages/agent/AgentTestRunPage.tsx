@@ -31,6 +31,7 @@ import { Callout } from '@/ui/components/ui/callout';
 import { Checkbox, Radio } from '@/ui/components/ui/checkbox';
 import { ConformanceMatrix, type CheckResult, type MatrixGroup, type MatrixRow } from '@/ui/components/ui/conformance-matrix';
 import { CiPanel } from '@/ui/components/ui/ci-panel';
+import { FactRow, Facts, type FactTone } from '@/ui/components/ui/facts';
 import { Field } from '@/ui/components/ui/field';
 import { ProjectionPill } from '@/ui/components/ui/projection-pill';
 import { ResultBox } from '@/ui/components/ui/result-box';
@@ -60,6 +61,7 @@ const RESULT_WORD: Record<'pass' | 'fail' | 'warn', string> = { pass: 'passed', 
 const SEGMENT: Record<CheckResult, RunSegment> = { pass: 'done', fail: 'failed', warn: 'warn', running: 'current', queued: 'queued' };
 const fmtMs = (ms: number): string => (ms >= 1000 ? `${(ms / 1000).toFixed(2)} s` : `${ms} ms`);
 const TONE_WORD: Record<DetailTone, string> = { ok: 'ok', bad: 'problem', warn: 'warning', muted: '', plain: '' };
+const FACT_TONE: Record<DetailTone, FactTone | undefined> = { ok: 'success', bad: 'danger', warn: 'warning', muted: 'muted', plain: undefined };
 const CLI = "microcks test 'Pastry concierge:1.0' https://concierge.staging.acme.io A2A_CONFORMANCE --microcksURL=http://microcks.local:8080/api/ --waitFor=30sec";
 
 /** Text with `code` segments between backticks. */
@@ -224,14 +226,13 @@ function Detail({ detail, check, onClose }: { detail: AgentCheckDetail; check: A
       </div>
       {detail.kind === 'summary' ? (
         <>
-          <dl className="cell-facts">
+          <Facts layout="inline" boxed termWidth="120px" values="secondary" lineHeight="relaxed">
             {detail.rows.map((r) => (
-              <div key={r.label}>
-                <dt>{r.label}</dt>
-                <dd data-tone={r.tone}>{r.value}{TONE_WORD[r.tone] ? <span className="sr-only"> ({TONE_WORD[r.tone]})</span> : null}</dd>
-              </div>
+              <FactRow key={r.label} term={r.label} mono tone={FACT_TONE[r.tone]}>
+                {r.value}{TONE_WORD[r.tone] ? <span className="sr-only"> ({TONE_WORD[r.tone]})</span> : null}
+              </FactRow>
             ))}
-          </dl>
+          </Facts>
           {detail.note ? <p className="cell-detail-note">{detail.note}</p> : null}
         </>
       ) : null}
