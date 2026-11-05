@@ -6,6 +6,7 @@ import { useQuery, useRelativeTime, useReturnFocus, useUseCases } from '@/ui/app
 import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
 import { Icon } from '@/ui/components/ui/icon';
+import { SplitPane, SplitPaneMain } from '@/ui/components/ui/split-pane';
 import type { WorkflowLoomElement } from '@/ui/components/ui/workflow-loom';
 import { workflowPath } from '../../workflows/shared';
 import { LoomHost } from '../LoomHost';
@@ -61,8 +62,8 @@ export function LoomTab({ detail, runs, run, step, sessions, serviceLabel, onPic
   const sourceNames = props.sources.map((s) => s.name).join(', ');
 
   return (
-    <div className="wf-loom-tab">
-      <section aria-label="Workflow loom" className="wf-loom">
+    <SplitPane gap="16px" mainWidth="760px" sideWidth={selected ? '320px' : '260px'} sideMax={selected ? '460px' : '320px'} keepSideMax>
+      <SplitPaneMain as="section" aria-label="Workflow loom" className="wf-loom">
         <div className="wf-loom-toolbar">
           <RunPicker runs={runs} run={run} onPick={onPickRun} label="Show results and resolved values from a run" caption="Results & values from" />
           <div aria-label="Legend" role="group" className="wf-loom-legend">
@@ -194,7 +195,7 @@ export function LoomTab({ detail, runs, run, step, sessions, serviceLabel, onPic
             .
           </p>
         ) : null}
-      </section>
+      </SplitPaneMain>
 
       <StepInspector
         workflow={workflow}
@@ -215,7 +216,7 @@ export function LoomTab({ detail, runs, run, step, sessions, serviceLabel, onPic
           if (step) focusNode(step);
         }}
       />
-    </div>
+    </SplitPane>
   );
 }
 
