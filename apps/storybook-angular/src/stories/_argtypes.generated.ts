@@ -267,7 +267,7 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
     { className: "FactsComponent", selector: "dl[mkFacts]", inputs: [
       {"name":"items","type":"Fact[]","control":"object","required":false,"default":"[]","model":false,"description":""},
       {"name":"layout","type":"\"rows\" | \"inline\" | \"columns\"","control":"select","options":["rows","inline","columns"],"required":false,"default":"'rows'","model":false,"description":"`rows` (default): term column + separators. `inline`: two-column grid. `columns`: term over value."},
-      {"name":"boxed","type":"boolean | \"surface\"","control":"select","options":["surface",false,true],"required":false,"default":"false","model":false,"description":"Frames the list on the page background; `surface`: on the surface fill, padding 12px."},
+      {"name":"boxed","type":"boolean | \"compact\" | \"surface\"","control":"select","options":["compact","surface",false,true],"required":false,"default":"false","model":false,"description":"Frames the list on the page background; `surface`: on the surface fill, padding 12px; `compact`: padding 8px 12px, radius 4 (request bodies)."},
       {"name":"strong","type":"boolean","control":"boolean","required":false,"default":"false","model":false,"description":"14px 600 values (figures)."},
       {"name":"termWidth","type":"string | undefined","control":"text","required":false,"model":false,"description":"Width of the term column: `150px`."},
       {"name":"columns","type":"number | undefined","control":"number","required":false,"model":false,"description":"`columns` only: a fixed number of equal columns."},
@@ -275,6 +275,8 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"gap","type":"string | undefined","control":"text","required":false,"model":false,"description":"`inline` and `columns`: the grid gap, row then column (default `8px 16px`; WorkflowRun `9px 12px`)."},
       {"name":"values","type":"\"secondary\" | \"text\"","control":"select","options":["secondary","text"],"required":false,"default":"'text'","model":false,"description":"`secondary`: values in --text-secondary, and the `muted` tone drops to --text-muted (Agent test cell facts). Default `text`."},
       {"name":"lineHeight","type":"\"inherit\" | \"relaxed\"","control":"select","options":["inherit","relaxed"],"required":false,"default":"'inherit'","model":false,"description":"`relaxed`: values at line height 1.6 (Agent test cell facts). Default `inherit`."},
+      {"name":"mono","type":"boolean","control":"boolean","required":false,"default":"false","model":false,"description":"Terms and values in 12px/1.6 monospace (request bodies)."},
+      {"name":"wrap","type":"\"normal\" | \"pre\"","control":"select","options":["normal","pre"],"required":false,"default":"'normal'","model":false,"description":"`pre`: terms and values keep line breaks and spaces and break anywhere; in `inline` the term column is capped at `termWidth` (request bodies). Default `normal`."},
     ] },
     { className: "FactRowComponent", selector: "div[mkFactRow]", inputs: [
       {"name":"term","type":"string","control":"text","required":true,"model":false,"description":""},

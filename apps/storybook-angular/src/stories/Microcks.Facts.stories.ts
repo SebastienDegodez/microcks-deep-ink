@@ -1,6 +1,6 @@
 import { type Meta, type StoryObj, moduleMetadata } from '@storybook/angular';
 import { FACTS } from '@microcks-deep-ink/registry/angular/facts';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Microcks/Facts',
@@ -106,3 +106,25 @@ export const SecondaryRelaxed: StoryObj = {
     template: `<dl mkFacts layout="inline" [boxed]="true" values="secondary" lineHeight="relaxed" termWidth="120px" [items]="items" style="max-width: 560px"></dl>`,
   }),
 };
+
+/** Request body (WorkflowRun step): compact frame, 12px/1.6 mono, 32ch term column, pre-wrapped terms and values that break anywhere instead of scrolling. */
+export const RequestBody: StoryObj = {
+  name: 'Request body (compact, mono, pre-wrap)',
+  render: () => ({
+    props: {
+      items: [
+        { term: 'pastryName', value: 'Eclair Cafe' },
+        { term: 'newPrice', value: '3.9' },
+        { term: 'a.very.long.parameter.name.that.wraps.at.the.term.width', value: 'https://microcks.acme.io/rest/API+Pastry/2.0/pastries/Eclair%20Cafe?withSomeVeryLongQueryString=true' },
+        { term: 'note', value: 'Restock before 7am.\nKeep the cold chain.' },
+      ],
+    },
+    template: `<dl mkFacts layout="inline" boxed="compact" mono wrap="pre" termWidth="32ch" gap="2px 0" [items]="items" style="max-width: 560px"></dl>`,
+  }),
+};
+
+/** Interactive: every input of the component is a control in the Controls panel. */
+export const Playground: StoryObj = playground('facts', 'FactsComponent', {
+  items: [{ term: 'Service', value: 'API Pastry' }, { term: 'Version', value: '2.0.0', mono: true }, { term: 'Status', value: 'Healthy', tone: 'success', sub: 'Last check 2 min ago' }],
+  layout: 'rows', boxed: false, strong: false, size: 'md', values: 'text', lineHeight: 'inherit', mono: false, wrap: 'normal',
+}, '', 'style="max-width: 560px"');

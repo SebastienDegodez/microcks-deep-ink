@@ -9,6 +9,9 @@
   style="--facts-cols: repeat(3, minmax(0, 1fr))".
   data-values="secondary": values in --text-secondary, dd[data-tone="muted"] then in --text-muted (Agent test cell facts).
   data-line-height="relaxed": values at line height 1.6.
+  Request bodies: data-boxed="compact" (padding 8px 12px, radius 4px), data-mono (terms and values in 12px/1.6 monospace),
+  data-wrap="pre" (terms and values keep line breaks and spaces and break anywhere; in inline the term column is capped
+  at --facts-term so long terms wrap instead of scrolling).
   dd[data-mono] for code values, dd[data-tone="success|warning|danger|muted"], <span class="facts-sub"> for a muted line.
 -->
 <dl class="facts">
@@ -33,4 +36,10 @@
   <div class="facts-row"><dt>Expected</dt><dd data-mono data-tone="success">state = canceled</dd></div>
   <div class="facts-row"><dt>Received</dt><dd data-mono data-tone="danger">state = working</dd></div>
   <div class="facts-row"><dt>Retries</dt><dd data-mono data-tone="muted">none</dd></div>
+</dl>
+
+<dl class="facts" data-layout="inline" data-boxed="compact" data-mono data-wrap="pre" style="--facts-term: 32ch; --facts-gap: 2px 0">
+  <div class="facts-row"><dt>pastryName</dt><dd>Eclair Cafe</dd></div>
+  <div class="facts-row"><dt>newPrice</dt><dd>3.9</dd></div>
+  <div class="facts-row"><dt>note</dt><dd>Restock before 7am.&#10;Keep the cold chain.</dd></div>
 </dl>

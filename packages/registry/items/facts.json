@@ -14,9 +14,9 @@
       "In the inline layout the row is display: contents, so the grid does not change the reading order",
       "A value tone (success, danger) is secondary: the words carry the meaning"
     ],
-    "rgaa": ["9.3", "3.1"],
-    "wcag": ["1.3.1", "1.4.1"],
-    "notes": "Static item: not focusable. Muted terms stay at 4.5:1 on the canvas, surface and bg backgrounds in both themes. values=\"secondary\" (secondary values, muted tone in --text-muted) and lineHeight=\"relaxed\" only change colours and spacing: --text-secondary and --text-muted keep 4.5:1 on those backgrounds."
+    "rgaa": ["9.3", "3.1", "7.3"],
+    "wcag": ["1.3.1", "1.4.1", "1.4.10"],
+    "notes": "Static item: not focusable. Muted terms stay at 4.5:1 on the canvas, surface and bg backgrounds in both themes. values=\"secondary\" (secondary values, muted tone in --text-muted) and lineHeight=\"relaxed\" only change colours and spacing: --text-secondary and --text-muted keep 4.5:1 on those backgrounds. The request-body variant (boxed=\"compact\", mono, wrap=\"pre\") only changes fonts, spacing and wrapping: roles, names and reading order stay those of the <dl>; terms and values wrap anywhere instead of scrolling, so nothing needs a keyboard-reachable scroll area (RGAA 7.3, WCAG 1.4.10)."
   },
   "stories": ["Microcks/Facts"]
 }

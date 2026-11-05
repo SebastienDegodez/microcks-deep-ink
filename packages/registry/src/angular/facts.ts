@@ -24,11 +24,13 @@ export interface Fact {
   host: {
     class: 'facts',
     '[attr.data-layout]': "layout() === 'rows' ? null : layout()",
-    '[attr.data-boxed]': "boxed() === 'surface' ? 'surface' : boxed() ? '' : null",
+    '[attr.data-boxed]': "boxed() === 'surface' || boxed() === 'compact' ? boxed() : boxed() ? '' : null",
     '[attr.data-strong]': "strong() ? '' : null",
     '[attr.data-size]': "size() === 'md' ? null : size()",
     '[attr.data-values]': "values() === 'text' ? null : values()",
     '[attr.data-line-height]': "lineHeight() === 'inherit' ? null : lineHeight()",
+    '[attr.data-mono]': "mono() ? '' : null",
+    '[attr.data-wrap]': "wrap() === 'normal' ? null : wrap()",
     '[style.--facts-term]': 'termWidth() ?? null',
     '[style.--facts-gap]': 'gap() ?? null',
     '[style.--facts-cols]': "columns() ? 'repeat(' + columns() + ', minmax(0, 1fr))' : null",
@@ -39,8 +41,8 @@ export class FactsComponent {
   readonly items = input<Fact[]>([]);
   /** `rows` (default): term column + separators. `inline`: two-column grid. `columns`: term over value. */
   readonly layout = input<'rows' | 'inline' | 'columns'>('rows');
-  /** Frames the list on the page background; `surface`: on the surface fill, padding 12px. */
-  readonly boxed = input<boolean | 'surface'>(false);
+  /** Frames the list on the page background; `surface`: on the surface fill, padding 12px; `compact`: padding 8px 12px, radius 4 (request bodies). */
+  readonly boxed = input<boolean | 'surface' | 'compact'>(false);
   /** 14px 600 values (figures). */
   readonly strong = input(false);
   /** Width of the term column: `150px`. */
@@ -55,6 +57,10 @@ export class FactsComponent {
   readonly values = input<'text' | 'secondary'>('text');
   /** `relaxed`: values at line height 1.6 (Agent test cell facts). Default `inherit`. */
   readonly lineHeight = input<'inherit' | 'relaxed'>('inherit');
+  /** Terms and values in 12px/1.6 monospace (request bodies). */
+  readonly mono = input(false, { transform: booleanAttribute });
+  /** `pre`: terms and values keep line breaks and spaces and break anywhere; in `inline` the term column is capped at `termWidth` (request bodies). Default `normal`. */
+  readonly wrap = input<'normal' | 'pre'>('normal');
 }
 
 /** One term/value pair, for rich values (links, badges, buttons): `<div mkFactRow term="Statistics" mono>…</div>`. */

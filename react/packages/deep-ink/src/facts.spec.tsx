@@ -76,3 +76,34 @@ describe('Facts size', () => {
     expect(container.querySelector('dl')?.getAttribute('data-size')).toBe('lg');
   });
 });
+
+describe('Facts request body variant', () => {
+  it('boxes compact, mono and pre-wrapped, keeping the dl terms and values', async () => {
+    const { container } = render(
+      <div>
+        <Facts
+          layout="inline"
+          boxed="compact"
+          mono
+          wrap="pre"
+          termWidth="32ch"
+          gap="2px 0"
+          items={[{ term: 'pastryName', value: 'Eclair Cafe' }, { term: 'note', value: 'Restock before 7am.\nKeep the cold chain.' }]}
+        />
+        <Facts items={[{ term: 'Version', value: '2.0' }]} />
+      </div>,
+    );
+    const [body, plain] = Array.from(container.querySelectorAll('dl'));
+    expect(body!.getAttribute('data-boxed')).toBe('compact');
+    expect(body!.hasAttribute('data-mono')).toBe(true);
+    expect(body!.getAttribute('data-wrap')).toBe('pre');
+    expect(body!.style.getPropertyValue('--facts-term')).toBe('32ch');
+    expect(body!.style.getPropertyValue('--facts-gap')).toBe('2px 0');
+    expect(screen.getAllByRole('term').map((t) => t.textContent)).toEqual(['pastryName', 'note', 'Version']);
+    expect(screen.getAllByRole('definition')[1]!.textContent).toBe('Restock before 7am.\nKeep the cold chain.');
+    expect(plain!.hasAttribute('data-mono')).toBe(false);
+    expect(plain!.hasAttribute('data-wrap')).toBe(false);
+    expect(plain!.hasAttribute('data-boxed')).toBe(false);
+    expect(await axeViolations(container)).toEqual([]);
+  });
+});
