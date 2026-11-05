@@ -47,8 +47,15 @@ export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLElement>, 'child
   /**
    * `always` (default): the `<pre>` is always a focusable named region. `overflow`: it is focusable and named
    * (role="region" + aria-label) only while its content actually scrolls (RGAA 7.3); otherwise it is plain text.
+   * `never`: always a plain `<pre>`; only when the code cannot scroll or an ancestor already gives keyboard access.
    */
-  focusable?: 'always' | 'overflow';
+  focusable?: 'always' | 'overflow' | 'never';
+  /**
+   * `figure` (default): the code in a `<figure>` with its header. `none`: only the `<pre class="code-pre">`, no figure,
+   * header or copy button; the props go on the `<pre>`. Combine with `variant="bare"` for zero chrome (the page
+   * keeps its own padding class) and with `focusable` for its name and focusability.
+   */
+  frame?: 'figure' | 'none';
   /** Format switch in the header (curl, HTTPie, MCP tool call): toggle buttons with aria-pressed. */
   tabs?: CodeTab[];
   tab?: string;
@@ -88,7 +95,9 @@ export function CodeBlock({
   source,
   headerTone,
   focusable = 'always',
+  frame = 'figure',
   className,
+  style,
   ...rest
 }: CodeBlockProps) {
   const captionId = useId();
@@ -97,13 +106,14 @@ export function CodeBlock({
   const tabLabel = tabs?.find((t) => t.id === tab)?.label;
   const label = regionLabel ?? caption ?? (tabLabel ? `${tabLabel} code` : language ? `${language} code` : 'Code');
   const diff = rows?.some((l) => l.changed) ?? false;
-  const header = variant === 'framed' && (caption || copy || tabs?.length || source);
+  const preOnly = frame === 'none';
+  const header = !preOnly && variant === 'framed' && (caption || copy || tabs?.length || source);
   const preRef = useRef<HTMLPreElement>(null);
   const [overflows, setOverflows] = useState(true);
   // Remeasure on every rendered-content change: notes, markers and the gutter change the width without changing the text.
   useLayoutEffect(() => {
     if (focusable === 'overflow' && preRef.current) setOverflows(scrolls(preRef.current));
-  }, [focusable, code, lines, lineNumbers, startLine, gutter, variant, maxHeight]);
+  }, [focusable, frame, code, lines, lineNumbers, startLine, gutter, variant, maxHeight]);
   // ...and when the box itself is resized (container width, max height).
   useLayoutEffect(() => {
     const pre = preRef.current;
@@ -111,20 +121,67 @@ export function CodeBlock({
     const ro = new ResizeObserver(() => setOverflows(scrolls(pre)));
     ro.observe(pre);
     return () => ro.disconnect();
-  }, [focusable]);
-  const region = focusable !== 'overflow' || overflows;
+  }, [focusable, frame]);
+  const region = focusable === 'always' || (focusable === 'overflow' && overflows);
+  const data = {
+    'data-language': language,
+    'data-variant': variant,
+    'data-numbered': lineNumbers ? '' : undefined,
+    'data-gutter': lineNumbers && gutter === 'narrow' ? 'narrow' : undefined,
+    'data-tone': tone,
+    'data-diff': diff ? '' : undefined,
+  };
+  const body = (
+    <code className={language ? `language-${language}` : undefined}>
+      {rows
+        ? rows.map((line, i) => (
+            <span className="code-line" data-bad={line.bad ? '' : undefined} data-selected={line.selected ? '' : undefined} data-changed={line.changed ? '' : undefined} key={i}>
+              {lineNumbers ? (
+                <span className="code-ln" aria-hidden="true">
+                  {startLine + i}
+                </span>
+              ) : null}
+              {diff ? (
+                <>
+                  <span className="code-mark" data-kind="changed" aria-hidden="true">
+                    {line.changed ? '+' : ''}
+                  </span>
+                  {line.changed ? <span className="sr-only">Changed: </span> : null}
+                </>
+              ) : null}
+              {line.bad ? (
+                <>
+                  <span className="code-mark" aria-hidden="true">
+                    <Icon name="close" size={11} />
+                  </span>
+                  <span className="sr-only">Problem: </span>
+                </>
+              ) : null}
+              <span className="code-text">{line.text}</span>
+              {line.note ? <span className="code-note">{line.note}</span> : null}
+            </span>
+          ))
+        : code}
+    </code>
+  );
+  // The scroll container must be keyboard reachable (WCAG 2.1.1), so it is focusable and named.
+  const regionProps = region ? { tabIndex: 0, role: 'region', 'aria-label': label } : null;
+  if (preOnly) {
+    return (
+      <pre
+        {...rest}
+        {...data}
+        ref={preRef}
+        {...regionProps}
+        className={['code-pre', className].filter(Boolean).join(' ')}
+        style={maxHeight !== undefined ? { ...style, maxHeight } : style}
+      >
+        {body}
+      </pre>
+    );
+  }
   return (
-    <figure
-      {...rest}
-      className={['code', className].filter(Boolean).join(' ')}
-      data-language={language}
-      data-variant={variant}
-      data-numbered={lineNumbers ? '' : undefined}
-      data-gutter={lineNumbers && gutter === 'narrow' ? 'narrow' : undefined}
-      data-tone={tone}
-      data-header-tone={header && headerTone ? headerTone : undefined}
-      data-diff={diff ? '' : undefined}
-    >
+    <figure {...rest} style={style} className={['code', className].filter(Boolean).join(' ')} {...data} data-header-tone={header && headerTone ? headerTone : undefined}>
       {header ? (
         <figcaption>
           {tabs?.length ? (
@@ -143,43 +200,8 @@ export function CodeBlock({
           {copy ? <CopyButton value={value} variant="link" className="code-copy" /> : null}
         </figcaption>
       ) : null}
-      {/* The scroll container must be keyboard reachable (WCAG 2.1.1), so it is focusable and named. */}
-      <pre
-        ref={preRef}
-        {...(region ? { tabIndex: 0, role: 'region', 'aria-label': label } : null)}
-        style={maxHeight !== undefined ? { maxHeight } : undefined}
-      >
-        <code className={language ? `language-${language}` : undefined}>
-          {rows
-            ? rows.map((line, i) => (
-                <span className="code-line" data-bad={line.bad ? '' : undefined} data-selected={line.selected ? '' : undefined} data-changed={line.changed ? '' : undefined} key={i}>
-                  {lineNumbers ? (
-                    <span className="code-ln" aria-hidden="true">
-                      {startLine + i}
-                    </span>
-                  ) : null}
-                  {diff ? (
-                    <>
-                      <span className="code-mark" data-kind="changed" aria-hidden="true">
-                        {line.changed ? '+' : ''}
-                      </span>
-                      {line.changed ? <span className="sr-only">Changed: </span> : null}
-                    </>
-                  ) : null}
-                  {line.bad ? (
-                    <>
-                      <span className="code-mark" aria-hidden="true">
-                        <Icon name="close" size={11} />
-                      </span>
-                      <span className="sr-only">Problem: </span>
-                    </>
-                  ) : null}
-                  <span className="code-text">{line.text}</span>
-                  {line.note ? <span className="code-note">{line.note}</span> : null}
-                </span>
-              ))
-            : code}
-        </code>
+      <pre ref={preRef} {...regionProps} style={maxHeight !== undefined ? { maxHeight } : undefined}>
+        {body}
       </pre>
     </figure>
   );

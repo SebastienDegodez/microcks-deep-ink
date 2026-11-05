@@ -71,7 +71,8 @@
   .code > figcaption > .code-source ~ .code-copy.button,
   .code > figcaption > .code-source ~ .code-copy .button { margin-inline-start: 0; }
 
-  .code > pre {
+  .code > pre,
+  .code-pre {
     margin: 0;
     padding: 12px 14px;
     overflow: auto;
@@ -80,7 +81,8 @@
     font: 400 12px/1.6 var(--font-mono);
     tab-size: 2;
   }
-  .code code { font: inherit; }
+  .code code,
+  .code-pre code { font: inherit; }
   .code-line { display: block; padding-inline: var(--space-2); margin-inline: calc(var(--space-2) * -1); white-space: pre; }
   .code-line[data-selected] { background: var(--selected); }
   .code-line[data-bad] {
@@ -89,8 +91,10 @@
   }
 
   /* Numbered: gutter, marker column, text. The pre has no side padding so rows span the width. */
-  .code[data-numbered] > pre { padding: 6px 0; line-height: 20px; }
-  .code[data-numbered] .code-line { margin: 0; padding: 0 14px 0 0; }
+  .code[data-numbered] > pre,
+  .code-pre[data-numbered] { padding: 6px 0; line-height: 20px; }
+  .code[data-numbered] .code-line,
+  .code-pre[data-numbered] .code-line { margin: 0; padding: 0 14px 0 0; }
   .code-ln {
     display: inline-block;
     box-sizing: border-box;
@@ -101,7 +105,8 @@
     user-select: none;
   }
   /* Narrow gutter: 28px with 6px before the marker column (WorkflowRun response, TestRun). */
-  .code[data-gutter="narrow"] .code-ln { width: 28px; padding-inline-end: 6px; }
+  .code[data-gutter="narrow"] .code-ln,
+  .code-pre[data-gutter="narrow"] .code-ln { width: 28px; padding-inline-end: 6px; }
   .code-line[data-selected] > .code-ln { color: var(--link); }
 
   .code-mark {
@@ -113,10 +118,13 @@
   }
   /* The bad-line marker is an 11px cross (stroke 3), centred in the 16px column. */
   .code-mark > .icon { display: inline-block; vertical-align: -1px; stroke-width: 3; }
-  .code[data-numbered] .code-line:not([data-bad]) > .code-ln + .code-text { padding-inline-start: 16px; }
+  .code[data-numbered] .code-line:not([data-bad]) > .code-ln + .code-text,
+  .code-pre[data-numbered] .code-line:not([data-bad]) > .code-ln + .code-text { padding-inline-start: 16px; }
   /* Diff: a 22px mark column ("+" in --link on changed lines, empty elsewhere), changed lines on --selected. */
-  .code[data-diff] > pre { padding: 10px 0; line-height: 1.65; }
-  .code[data-diff] .code-line { margin: 0; padding: 0 14px 0 0; }
+  .code[data-diff] > pre,
+  .code-pre[data-diff] { padding: 10px 0; line-height: 1.65; }
+  .code[data-diff] .code-line,
+  .code-pre[data-diff] .code-line { margin: 0; padding: 0 14px 0 0; }
   .code-mark[data-kind="changed"] { width: 22px; color: var(--link); }
   .code-line[data-changed] { background: var(--selected); color: var(--text); }
 
@@ -125,7 +133,18 @@
   /* The figure clips (overflow: hidden) and has no border, so the focus ring is drawn inside the pre. */
   .code[data-variant="bare"] > pre { padding: 0; --focus-offset: -2px; }
   /* Rows span the pre exactly: no bleed margins (they would make a short snippet scroll). */
-  .code[data-variant="bare"]:not([data-numbered], [data-diff]) .code-line { margin-inline: 0; padding-inline: 0; }
+  .code[data-variant="bare"]:not([data-numbered], [data-diff]) .code-line,
+  .code-pre[data-variant="bare"]:not([data-numbered], [data-diff]) .code-line { margin-inline: 0; padding-inline: 0; }
+
+  /* Pre only (frame="none", <pre class="code-pre">): no figure, header or copy. framed and plain draw the hairline
+     frame on the pre itself; bare is zero chrome (no border, radius or padding) so the page keeps its own padding class.
+     There is no clipping figure, so the focus ring stays outside the pre. */
+  .code-pre:not([data-variant="bare"]) {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-badge);
+  }
+  .code-pre[data-tone="danger"] { border-color: var(--danger); }
+  .code-pre[data-variant="bare"] { padding: 0; }
 
   /* Inline note, after the text on the same row. */
   .code-note {

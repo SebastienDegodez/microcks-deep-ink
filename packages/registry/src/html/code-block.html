@@ -46,6 +46,13 @@
   <pre><code>{"name": "Millefeuille"}</code></pre>
 </figure>
 
+<!-- Pre only (React frame="none", Angular <pre mkCodeBlock>): just the <pre class="code-pre">, no figure, header or copy.
+     The data-* hooks move onto the <pre>. framed/plain draw the hairline frame on the pre; bare is zero chrome
+     (no border, radius or padding: the page keeps its own padding class).
+     focusable="always": tabindex="0" role="region" aria-label="…"; "overflow": those only while it scrolls; "never": a plain <pre>. -->
+<pre class="code-pre" data-variant="bare" tabindex="0" role="region" aria-label="Input schema of getPastry"><code>{"type": "object", "properties": {"name": {"type": "string"}}}</code></pre>
+<pre class="code-pre" data-variant="plain"><code>{"dispatcher": "URI_PARTS"}</code></pre>
+
 <!-- Other hooks:
      - The caption text sits in <span class="code-caption" id="…"> inside the figcaption, between the tabs and Copy.
        It wraps long text and is hidden when empty.

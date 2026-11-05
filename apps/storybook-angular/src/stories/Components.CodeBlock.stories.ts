@@ -144,7 +144,25 @@ export const Bare: StoryObj = {
   }),
 };
 
-export const Playground: StoryObj = playground('code-block', 'CodeBlockComponent', {
+export const PreOnly: StoryObj = {
+  name: 'Pre only (<pre mkCodeBlock>)',
+  render: () => ({
+    props: {
+      schema: '{\n  "type": "object",\n  "properties": { "name": { "type": "string" } }\n}',
+      long: `curl -X PATCH http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille -d '{"price": 3.9}'`,
+      short: '{"dispatcher": "URI_PARTS"}',
+    },
+    template: `
+      <div class="stack" style="max-width:360px">
+        <pre mkCodeBlock variant="bare" label="Input schema of getPastry" style="padding:10px 12px;border-radius:4px" [code]="schema"></pre>
+        <pre mkCodeBlock variant="plain" focusable="overflow" label="Long command" [code]="long"></pre>
+        <pre mkCodeBlock variant="plain" focusable="never" [code]="short"></pre>
+      </div>
+    `,
+  }),
+};
+
+const playgroundBase = playground('code-block', 'CodeBlockComponent', {
   code: 'GET /pastries/{name}\nAccept: application/json\n\n200 OK\n{ "name": "Millefeuille", "price": 3.9 }',
   language: 'http',
   caption: 'Request and response',
@@ -157,3 +175,15 @@ export const Playground: StoryObj = playground('code-block', 'CodeBlockComponent
   lineNumbers: true,
   gutter: 'wide',
 });
+
+/** `frame` is a story control only: in Angular the host picks the mode (`<figure mkCodeBlock>` or `<pre mkCodeBlock>`). */
+export const Playground: StoryObj = {
+  ...playgroundBase,
+  args: { ...playgroundBase.args, frame: 'figure' },
+  argTypes: { ...playgroundBase.argTypes, frame: { control: 'inline-radio', options: ['figure', 'none'], description: '`none`: `<pre mkCodeBlock>`, only the pre (no figure, header or copy).' } },
+  render: (a, ctx) => {
+    const { frame, ...rest } = a;
+    const out = playgroundBase.render!(rest as typeof a, ctx) as { props: Record<string, unknown>; template: string };
+    return frame === 'none' ? { props: rest, template: out.template.replace(/^<figure/, '<pre').replace(/<\/figure>$/, '</pre>') } : { props: rest, template: out.template };
+  },
+};

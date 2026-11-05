@@ -159,3 +159,68 @@ describe('CodeBlock bare, source and raised header', () => {
     }
   });
 });
+
+describe('CodeBlock frame="none" (pre only)', () => {
+  it('renders only the pre, no figure, header or copy; always a named region by default', async () => {
+    const { container } = render(<CodeBlock frame="none" variant="bare" caption="Schema" label="Input schema of getPastry" className="tool-card-schema" code='{"type": "object"}' />);
+    expect(container.querySelector('figure')).toBeNull();
+    expect(container.querySelector('figcaption')).toBeNull();
+    expect(screen.queryByRole('button')).toBeNull();
+    const pre = container.firstElementChild!;
+    expect(pre.tagName).toBe('PRE');
+    expect(pre.className).toBe('code-pre tool-card-schema');
+    expect(pre.getAttribute('data-variant')).toBe('bare');
+    const region = screen.getByRole('region', { name: 'Input schema of getPastry' });
+    expect(region).toBe(pre);
+    expect(region.getAttribute('tabindex')).toBe('0');
+    expect(await axeViolations(container)).toEqual([]);
+  });
+
+  it('focusable="never": a plain pre, not focusable nor named', async () => {
+    const { container } = render(<CodeBlock frame="none" focusable="never" label="Config" code="{}" />);
+    const pre = container.querySelector('pre')!;
+    expect(screen.queryByRole('region')).toBeNull();
+    expect(pre.hasAttribute('tabindex')).toBe(false);
+    expect(pre.hasAttribute('role')).toBe(false);
+    expect(pre.hasAttribute('aria-label')).toBe(false);
+    expect(await axeViolations(container)).toEqual([]);
+  });
+
+  it('focusable="overflow": plain while it fits, a named region when it scrolls', async () => {
+    const { container, unmount } = render(<CodeBlock frame="none" focusable="overflow" label="Config" code="{}" />);
+    expect(container.querySelector('figure')).toBeNull();
+    expect(screen.queryByRole('region')).toBeNull();
+    expect(container.querySelector('pre')!.hasAttribute('tabindex')).toBe(false);
+    unmount();
+    const scrollWidth = vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockReturnValue(800);
+    const clientWidth = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(300);
+    try {
+      const r = render(<CodeBlock frame="none" focusable="overflow" label="Config" code={'x'.repeat(200)} />);
+      expect(screen.getByRole('region', { name: 'Config' }).getAttribute('tabindex')).toBe('0');
+      expect(await axeViolations(r.container)).toEqual([]);
+    } finally {
+      scrollWidth.mockRestore();
+      clientWidth.mockRestore();
+    }
+  });
+
+  it('keeps the data hooks, line markup and max height on the pre', () => {
+    const { container } = render(
+      <CodeBlock frame="none" variant="plain" tone="danger" lineNumbers gutter="narrow" maxHeight={120} style={{ marginTop: 4 }} lines={[{ text: 'a' }, { text: 'b', bad: true, note: 'schema: number' }]} />,
+    );
+    const pre = container.querySelector('pre')!;
+    expect(pre.getAttribute('data-numbered')).toBe('');
+    expect(pre.getAttribute('data-gutter')).toBe('narrow');
+    expect(pre.getAttribute('data-tone')).toBe('danger');
+    expect(pre.style.maxHeight).toBe('120px');
+    expect(pre.style.marginTop).toBe('4px');
+    expect(container.querySelectorAll('.code-ln')).toHaveLength(2);
+    expect(screen.getByRole('region', { name: 'Code' })).toBe(pre);
+  });
+
+  it('focusable="never" also applies in the default figure', () => {
+    const { container } = render(<CodeBlock variant="plain" focusable="never" caption="Stored as" code="{}" />);
+    expect(container.querySelector('figure')).not.toBeNull();
+    expect(screen.queryByRole('region')).toBeNull();
+  });
+});
