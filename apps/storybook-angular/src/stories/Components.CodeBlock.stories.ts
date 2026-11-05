@@ -144,6 +144,10 @@ export const Bare: StoryObj = {
   }),
 };
 
+/**
+ * `<pre mkCodeBlock>`: only the pre. `focusable`: `always` (named region), `overflow` (region only while it scrolls) or
+ * `never` (plain pre, only for content that never scrolls: a scrolling pre must stay keyboard reachable, WCAG 2.1.1).
+ */
 export const PreOnly: StoryObj = {
   name: 'Pre only (<pre mkCodeBlock>)',
   render: () => ({
@@ -159,6 +163,15 @@ export const PreOnly: StoryObj = {
         <pre mkCodeBlock variant="plain" focusable="never" [code]="short"></pre>
       </div>
     `,
+  }),
+};
+
+/** Figure mode keeps the role, aria-label and tabindex written on the host (the component does not own them there). */
+export const ConsumerHostAttributes: StoryObj = {
+  name: 'Consumer host attributes kept',
+  render: () => ({
+    props: { code: '{"name": "Millefeuille"}' },
+    template: `<figure mkCodeBlock id="consumer-host" role="group" aria-label="Pastry sample" tabindex="-1" variant="plain" caption="Sample" [code]="code"></figure>`,
   }),
 };
 

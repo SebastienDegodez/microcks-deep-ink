@@ -47,7 +47,8 @@ export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLElement>, 'child
   /**
    * `always` (default): the `<pre>` is always a focusable named region. `overflow`: it is focusable and named
    * (role="region" + aria-label) only while its content actually scrolls (RGAA 7.3); otherwise it is plain text.
-   * `never`: always a plain `<pre>`; only when the code cannot scroll or an ancestor already gives keyboard access.
+   * `never`: always a plain `<pre>`. Only for content that never scrolls (wrapped or short): a scrolling `<pre>` that
+   * is not focusable cannot be scrolled with the keyboard (WCAG 2.1.1); use `overflow` when it may scroll.
    */
   focusable?: 'always' | 'overflow' | 'never';
   /**

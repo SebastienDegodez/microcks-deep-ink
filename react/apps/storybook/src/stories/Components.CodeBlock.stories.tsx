@@ -167,7 +167,8 @@ export const Bare: StoryObj = {
 /**
  * `frame="none"`: only the `<pre class="code-pre">`, no figure, header or copy. With `variant="bare"` it has no border,
  * radius or padding, so the page keeps its own padding class. `focusable`: `always` (named region), `overflow`
- * (region only while it scrolls) or `never` (plain `<pre>`).
+ * (region only while it scrolls) or `never` (plain `<pre>`, only for content that never scrolls: a scrolling pre must stay
+ * keyboard reachable, WCAG 2.1.1; use `overflow` when it may scroll).
  */
 export const PreOnly: StoryObj = {
   name: 'Pre only (frame="none")',
