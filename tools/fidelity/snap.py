@@ -5,9 +5,11 @@ usage:
       Builds the @microcks/deep-ink package when the worktree has it, then the demo (vite build), crawls every in-app hash link from "/" (max 120 routes),
       screenshots each route at 1440 px, full page, in dark AND light. Writes <out>/routes.txt.
       --app is the demo app directory relative to the worktree (default apps/demo-react); its dist/ is served.
-  python3 -I snap.py diff <baseline-dir> <after-dir>
+  python3 -I snap.py diff <baseline-dir> <after-dir> [--tolerant]
       Compares every PNG pair; prints the routes whose pixels differ (with % of changed pixels)
       and writes <after>/diff-<name>.png highlighting changes. Exit code 1 if anything differs.
+      A small change (<= 200 px, every channel within +-2) is reported as NEAR and still fails,
+      unless --tolerant is given (opt-in, for known anti-aliasing jitter only).
 
 Typical refactor loop: shoot the baseline BEFORE editing (or from origin/main), edit,
 shoot again with --routes from the baseline's routes.txt, then diff.
@@ -73,9 +75,9 @@ def shoot(wt, out, build=True, routes=None, app='apps/demo-react'):
         srv.kill()
     print(f'{len(routes)} routes x 2 themes -> {out}')
 
-def diff(a, b):
+def diff(a, b, tolerant=False):
     from PIL import Image, ImageChops
-    bad = 0
+    bad = near = 0
     for n in sorted(os.listdir(a)):
         if not n.endswith('.png') or n.startswith('diff-'): continue
         pb = os.path.join(b, n)
@@ -91,12 +93,16 @@ def diff(a, b):
             px = sum(1 for p in d.get_flattened_data() if p != (0, 0, 0))
             peak = max(hi for _, hi in d.getextrema())
             if peak <= 2 and px <= 200:
-                # Rasterizer jitter: a few anti-aliased edge pixels off by 1-2 per channel.
-                print(f'NOISE {n}: anti-aliasing {px} px, max delta {peak} at {box} (ignored)'); continue
-            print(f'DIFF {n}: {100*px/(ia.size[0]*ia.size[1]):.3f}% bbox={box}'); bad += 1
+                # Looks like anti-aliasing jitter, but a real 1-step colour change looks the same: fail unless --tolerant.
+                print(f'NEAR {n}: {px} px, max channel delta {peak} at {box}' + (' (tolerated)' if tolerant else ''))
+                near += 1
+                if not tolerant: bad += 1
+            else:
+                print(f'DIFF {n}: {100*px/(ia.size[0]*ia.size[1]):.3f}% bbox={box}'); bad += 1
             ib.paste((255, 0, 255), mask=d.convert('L').point(lambda v: 255 if v else 0))
             ib.save(os.path.join(b, 'diff-' + n))
-    print('identical' if not bad else f'{bad} screenshot(s) differ')
+    if bad: print(f'{bad} screenshot(s) differ')
+    else: print('identical' + (f' ({near} NEAR tolerated)' if near else ''))
     sys.exit(1 if bad else 0)
 
 if __name__ == '__main__':
@@ -107,4 +113,4 @@ if __name__ == '__main__':
         app = sys.argv[sys.argv.index('--app') + 1] if '--app' in sys.argv else 'apps/demo-react'
         shoot(sys.argv[2], sys.argv[3], '--no-build' not in sys.argv, rt, app)
     elif cmd == 'diff':
-        diff(sys.argv[2], sys.argv[3])
+        diff(sys.argv[2], sys.argv[3], '--tolerant' in sys.argv)

@@ -16,7 +16,7 @@ done
 end=$((SECONDS+budget))
 while :; do
   open=$(gh api "$R/pulls?state=open&sort=created&direction=asc&per_page=100" --jq '.[] | select([.labels[].name] | index("hold") | not) | .number') || exit 1
-  [ -z "$open" ] && echo "$(date +%T) none open (or all on hold)"
+  [ -z "$open" ] && { echo "$(date +%T) none open (or all on hold)"; exit 0; }
   for n in $open; do
     read -r st sha < <(gh api "$R/pulls/$n" --jq '"\(.mergeable_state) \(.head.sha)"')
     checks=$(gh api "$R/commits/$sha/check-runs?per_page=100" --jq '"\([.check_runs[]|select(.status!="completed" or (.conclusion!="success" and .conclusion!="skipped"))]|length) \(.total_count)"')

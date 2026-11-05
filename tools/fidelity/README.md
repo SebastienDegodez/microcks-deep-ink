@@ -10,12 +10,22 @@ automerge. No package.json: run the scripts directly from the repo root. Paths b
 python3 -I tools/fidelity/snap.py shoot . ../pix/base --routes "$(paste -sd, tools/fidelity/routes.txt)"
 # after the change (add --no-build if nothing was rebuilt-relevant)
 python3 -I tools/fidelity/snap.py shoot . ../pix/after --routes "$(paste -sd, tools/fidelity/routes.txt)"
-python3 -I tools/fidelity/snap.py diff ../pix/base ../pix/after   # prints `identical`, exit 1 on any DIFF/SIZE/MISSING
+python3 -I tools/fidelity/snap.py diff ../pix/base ../pix/after   # prints `identical`, exit 1 on any DIFF/NEAR/SIZE/MISSING
 ```
 
 Without `--routes` it crawls every in-app `#/` link from `/` (max 120) and writes `<out>/routes.txt`.
 `--app <dir>` picks the demo app (default `apps/demo-react`); its `dist/` is served.
-`routes.txt` is the crawl of main (one route per line); `routes-by-page.json` maps the same routes to page folders.
+`routes.txt` (one route per line) is the crawl of main (108 routes) plus supplemental routes the crawler does not
+reliably discover, all of which render:
+
+- `/workflows/pastry/compare-prices/runs`
+- `/workflows/pastry/compare-prices/source`
+
+`routes-by-page.json` maps the same 110 routes to page folders.
+
+`diff` is strict by default. A change of ≤200 px with every channel within ±2 is reported as
+`NEAR <file>: … px, max channel delta …` and still fails (a real 1-step border colour change looks exactly like
+anti-aliasing jitter). `--tolerant` makes NEAR non-failing; use it only after inspecting the `diff-*.png`.
 
 Captures: 1440 px wide, full page, dark and light, `reduced_motion=reduce` and `animations=disabled`. Query strings are
 stripped from crawled links (states/probe/leak captures come later).
@@ -46,7 +56,8 @@ bash tools/fidelity/automerge.sh [seconds]          # loop every 90 s (default 5
 ```
 
 Merges open PRs (oldest first) only when `mergeable_state=clean` and every check run on the head is completed with
-success/skipped. Squash, pinned on the checked head sha. PRs labelled `hold` are skipped. Exits cleanly when none is open.
+success/skipped. Squash, pinned on the checked head sha. PRs labelled `hold` are skipped. Exits 0 as soon as no PR is open
+(with or without `--once`).
 
 ## registry-selectors.py
 
@@ -60,6 +71,7 @@ Counts page CSS selectors (`apps/demo-react/src/ui/pages`) that reach into regis
 ## Known flaky
 
 - Caret-sized change (≤3 px wide × ≤40 px tall) is reported as `NOISE` and ignored.
-- Anti-aliasing jitter (≤200 changed px, every channel within ±2) is reported as `NOISE` and ignored.
+- Anti-aliasing jitter (a few edge pixels, ±1) occurs occasionally on rounded corners: it shows as `NEAR` and fails;
+  re-shoot, or pass `--tolerant` once the `diff-*.png` is checked.
 - `/tests` light: full-page height varies between 1766 and 1795 px.
 - `/tests/runner/119`: a11y counts are unstable.
