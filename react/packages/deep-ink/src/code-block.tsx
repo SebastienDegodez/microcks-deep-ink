@@ -66,6 +66,8 @@ export interface CodeBlockProps extends Omit<HTMLAttributes<HTMLElement>, 'child
   maxHeight?: string | number;
 }
 
+const scrolls = (el: HTMLElement) => el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight;
+
 export function CodeBlock({
   code,
   lines,
@@ -98,16 +100,18 @@ export function CodeBlock({
   const header = variant === 'framed' && (caption || copy || tabs?.length || source);
   const preRef = useRef<HTMLPreElement>(null);
   const [overflows, setOverflows] = useState(true);
+  // Remeasure on every rendered-content change: notes, markers and the gutter change the width without changing the text.
+  useLayoutEffect(() => {
+    if (focusable === 'overflow' && preRef.current) setOverflows(scrolls(preRef.current));
+  }, [focusable, code, lines, lineNumbers, startLine, gutter, variant, maxHeight]);
+  // ...and when the box itself is resized (container width, max height).
   useLayoutEffect(() => {
     const pre = preRef.current;
-    if (focusable !== 'overflow' || !pre) return;
-    const measure = () => setOverflows(pre.scrollWidth > pre.clientWidth || pre.scrollHeight > pre.clientHeight);
-    measure();
-    if (typeof ResizeObserver === 'undefined') return;
-    const ro = new ResizeObserver(measure);
+    if (focusable !== 'overflow' || !pre || typeof ResizeObserver === 'undefined') return;
+    const ro = new ResizeObserver(() => setOverflows(scrolls(pre)));
     ro.observe(pre);
     return () => ro.disconnect();
-  }, [focusable, value, maxHeight, lineNumbers]);
+  }, [focusable]);
   const region = focusable !== 'overflow' || overflows;
   return (
     <figure

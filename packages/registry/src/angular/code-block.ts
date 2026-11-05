@@ -1,5 +1,5 @@
 import {
-  afterRenderEffect,
+  afterEveryRender,
   booleanAttribute,
   ChangeDetectionStrategy,
   Component,
@@ -137,19 +137,21 @@ export class CodeBlockComponent {
   constructor() {
     let ro: ResizeObserver | undefined;
     inject(DestroyRef).onDestroy(() => ro?.disconnect());
-    afterRenderEffect(() => {
+    // Remeasure after every render: notes, markers, gutter or tabs change the content width without changing the text.
+    afterEveryRender(() => {
       const el = this.pre()?.nativeElement;
-      this.code();
-      this.lines();
-      this.maxHeight();
-      ro?.disconnect();
-      ro = undefined;
-      if (this.focusable() !== 'overflow' || !el) return;
+      if (this.focusable() !== 'overflow' || !el) {
+        ro?.disconnect();
+        ro = undefined;
+        return;
+      }
       const measure = () => this.overflows.set(el.scrollWidth > el.clientWidth || el.scrollHeight > el.clientHeight);
       measure();
-      if (typeof ResizeObserver === 'undefined') return;
-      ro = new ResizeObserver(measure);
-      ro.observe(el);
+      // ...and when the box itself is resized (container width, max height).
+      if (!ro && typeof ResizeObserver !== 'undefined') {
+        ro = new ResizeObserver(measure);
+        ro.observe(el);
+      }
     });
   }
 

@@ -139,4 +139,23 @@ describe('CodeBlock bare, source and raised header', () => {
       clientWidth.mockRestore();
     }
   });
+
+  it('focusable="overflow": remeasures when a note makes the same text overflow', () => {
+    // Width follows the rendered text (notes included), the box stays 300px wide.
+    const scrollWidth = vi.spyOn(HTMLElement.prototype, 'scrollWidth', 'get').mockImplementation(function (this: HTMLElement) {
+      return (this.textContent ?? '').length * 8;
+    });
+    const clientWidth = vi.spyOn(HTMLElement.prototype, 'clientWidth', 'get').mockReturnValue(300);
+    try {
+      const { rerender } = render(<CodeBlock variant="bare" caption="Body" focusable="overflow" lines={[{ text: '{}' }]} />);
+      expect(screen.queryByRole('region')).toBeNull();
+      rerender(<CodeBlock variant="bare" caption="Body" focusable="overflow" lines={[{ text: '{}', note: 'x'.repeat(100) }]} />);
+      expect(screen.getByRole('region', { name: 'Body' }).getAttribute('tabindex')).toBe('0');
+      rerender(<CodeBlock variant="bare" caption="Body" focusable="overflow" lines={[{ text: '{}' }]} />);
+      expect(screen.queryByRole('region')).toBeNull();
+    } finally {
+      scrollWidth.mockRestore();
+      clientWidth.mockRestore();
+    }
+  });
 });

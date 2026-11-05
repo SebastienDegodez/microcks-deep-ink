@@ -110,6 +110,12 @@ describe('CSS rules', () => {
     }
   });
 
+  // The bare code block has no border and its figure clips (overflow: hidden): an outward ring would be invisible.
+  it('draws the bare code block focus ring inside the pre', () => {
+    const css = strip(cssFiles.find((c) => c.f === 'code-block.css')!.text);
+    expect(css).toMatch(/\.code\[data-variant="bare"\] > pre \{[^}]*--focus-offset:\s*-2px/);
+  });
+
   it('never removes the outline without a replacement', () => {
     for (const { f, text } of cssFiles) expect(strip(text), f).not.toMatch(/outline\s*:\s*(none|0)\b/);
   });

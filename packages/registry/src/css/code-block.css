@@ -122,7 +122,10 @@
 
   /* Bare (data-variant="bare"): no frame and no padding, for a <pre> inside a card that draws the frame. */
   .code[data-variant="bare"] { border: 0; border-radius: 0; }
-  .code[data-variant="bare"] > pre { padding: 0; }
+  /* The figure clips (overflow: hidden) and has no border, so the focus ring is drawn inside the pre. */
+  .code[data-variant="bare"] > pre { padding: 0; --focus-offset: -2px; }
+  /* Rows span the pre exactly: no bleed margins (they would make a short snippet scroll). */
+  .code[data-variant="bare"]:not([data-numbered], [data-diff]) .code-line { margin-inline: 0; padding-inline: 0; }
 
   /* Inline note, after the text on the same row. */
   .code-note {
