@@ -5,7 +5,7 @@
   "tier": "natural",
   "description": "Sturdy, near-square action. One primary per task region.",
   "registryDependencies": ["base", "icon"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "Native <button> (or <a> for navigation)",
     "keyboard": [

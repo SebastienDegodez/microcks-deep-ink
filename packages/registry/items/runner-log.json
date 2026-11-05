@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "The runner's log of a test run: a small heading with a live or completed status, and a scrolling role=\"log\" of time, level and message lines.",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "<section> named by its heading; the body is role=\"log\" (implicit polite live region), focusable so keyboard users can scroll it",
     "keyboard": [["Tab", "Focuses the log"], ["Arrow keys", "Scroll the log when it has focus"]],

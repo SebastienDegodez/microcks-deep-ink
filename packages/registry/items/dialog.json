@@ -5,7 +5,7 @@
   "tier": "natural",
   "description": "Modal dialog on the native dialog element, with focus return and a described title.",
   "registryDependencies": ["base", "button", "icon"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "Native <dialog> opened with showModal()",
     "keyboard": [

@@ -9,7 +9,6 @@
     "method-tag"
   ],
   "npmDependencies": {
-    "react": [],
     "angular": []
   },
   "elements": [],

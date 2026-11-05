@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
 import { assertInside, planFile, relPath, writeFilePlan } from './copy.mjs';
-import { DEFAULT_DIRS, FRAMEWORKS, detectFramework } from './detect.mjs';
+import { DEFAULT_DIRS, FRAMEWORKS, REACT_PACKAGE, detectFramework } from './detect.mjs';
 import { unifiedDiff } from './diff.mjs';
 import { BASE_DIR, LOCK_NAME, newLock, readBase, readLock, removeBase, sha256, writeBase, writeLock } from './lockfile.mjs';
 import { log } from './log.mjs';
@@ -13,9 +13,25 @@ const TIERS = ['natural', 'microcks', 'element'];
 
 function parseFramework(value) {
   if (value === undefined) return undefined;
-  if (!FRAMEWORKS.includes(value)) throw new CliError(`Unknown framework "${value}". Use react, angular or html.`);
+  if (value !== 'react' && !FRAMEWORKS.includes(value)) throw new CliError(`Unknown framework "${value}". Use angular or html (React: the ${REACT_PACKAGE} package).`);
   return value;
 }
+
+/** React projects install the package: nothing to copy. Printed instead of copying; exit code 0. */
+function reactNotice() {
+  log.line(`React uses the ${REACT_PACKAGE} package instead of copied files:`);
+  log.line('');
+  log.line(`  pnpm add ${REACT_PACKAGE}`);
+  log.line('');
+  log.line(`  import '${REACT_PACKAGE}/styles.css';   // once, in your entry file`);
+  log.line(`  import { Button } from '${REACT_PACKAGE}';`);
+  log.line('');
+  log.line('Not on npm yet: build it from a clone of the Deep Ink repo (react/README.md).');
+  log.line('For the HTML recipes in a React project, pass --framework html.');
+  return 0;
+}
+
+const isReact = (cwd, values, lock) => (parseFramework(values.framework) ?? lock?.framework ?? detectFramework(cwd)) === 'react';
 
 function parseTiers(value) {
   if (value === undefined) return undefined;
@@ -237,8 +253,9 @@ function installFlags(values) {
 export function init({ values }) {
   const cwd = targetCwd(values);
   if (values['markup-only']) throw new CliError('init copies only stylesheets (tokens and base). --markup-only is for `add`.');
-  const registry = loadRegistry(values.registry);
   const lock = readLock(cwd);
+  if (isReact(cwd, values, lock)) return reactNotice();
+  const registry = loadRegistry(values.registry);
   const cfg = resolveConfig(cwd, values, lock);
   const code = install({ cwd, registry, names: ['tokens', 'base'], cfg, lock, ...installFlags(values) });
   if (!values['dry-run']) {
@@ -248,7 +265,6 @@ export function init({ values }) {
     log.line(`  styles      ${cfg.cssOut}`);
     log.line('Next steps:');
     if (cfg.framework === 'angular') log.line(`  1. Add "${cfg.cssOut}/index.css" to the "styles" array of angular.json`);
-    else if (cfg.framework === 'react') log.line(`  1. Import "${cfg.cssOut}/index.css" once, in your entry file`);
     else log.line(`  1. Link "${cfg.cssOut}/index.css" (or tokens.css and base.css) in your <head>`);
     log.line('  2. Put lang on <html> and a skip link as the first element: <a class="skip-link" href="#main">');
     log.line('  3. Run `deep-ink add button tabs` to copy components');
@@ -259,6 +275,7 @@ export function init({ values }) {
 
 export function add({ values, positionals }) {
   const cwd = targetCwd(values);
+  if (isReact(cwd, values, readLock(cwd))) return reactNotice();
   const registry = loadRegistry(values.registry);
   const tiers = parseTiers(values.tier);
   let names = positionals;
@@ -275,6 +292,7 @@ export function add({ values, positionals }) {
 export function list({ values }) {
   const registry = loadRegistry(values.registry);
   const framework = parseFramework(values.framework);
+  if (framework === 'react') return reactNotice();
   const tiers = parseTiers(values.tier);
   const rows = registry.items
     .filter((i) => !tiers || tiers.includes(i.tier))
@@ -298,8 +316,9 @@ export function list({ values }) {
 }
 
 export function view({ values, positionals }) {
-  if (positionals.length !== 1) throw new CliError('Usage: deep-ink view <item> [--framework react|angular|html]');
+  if (positionals.length !== 1) throw new CliError('Usage: deep-ink view <item> [--framework angular|html]');
   const cwd = targetCwd(values);
+  if (isReact(cwd, values, readLock(cwd))) return reactNotice();
   const registry = loadRegistry(values.registry);
   const item = findItem(registry, positionals[0]);
   const cfg = resolveConfig(cwd, values, readLock(cwd));
@@ -333,6 +352,7 @@ export function diff({ values, positionals }) {
   const registry = loadRegistry(values.registry);
   const item = findItem(registry, positionals[0]);
   const lock = readLock(cwd);
+  if (isReact(cwd, values, lock)) return reactNotice();
   const cfg = resolveConfig(cwd, values, lock);
   const entry = lock?.items?.[item.name];
   let differing = 0;
@@ -387,6 +407,7 @@ export function status({ values, positionals }) {
   const registry = loadRegistry(values.registry);
   const lock = readLock(cwd);
   if (!lock) throw new CliError(`No ${LOCK_NAME} in ${cwd}. Run \`deep-ink init\` or \`deep-ink add\` first.`);
+  if (isReact(cwd, values, lock)) return reactNotice();
   for (const n of positionals) if (!lock.items[n]) throw new CliError(`"${n}" is not in ${LOCK_NAME}.`);
   const cfg = resolveConfig(cwd, values, lock);
   const rows = [];

@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "Lifecycle of an A2A task: state tags, a chain of states that can select the steps of a script, and a state-machine diff of lanes (expected versus actual).",
   "registryDependencies": ["base", "icon"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "elements": [],
   "a11y": {
     "pattern": "<ol aria-label> of <li>; each state is a <span> (read-only) or a <button aria-pressed> (selects a step). Lanes are named <ol>s inside a group",

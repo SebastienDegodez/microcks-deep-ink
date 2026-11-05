@@ -3,10 +3,11 @@ import { parseArgs } from 'node:util';
 import { add, diff, init, list, status, view } from '../src/commands.mjs';
 import { log } from '../src/log.mjs';
 
-const HELP = `deep-ink: copy Deep Ink components into your app (shadcn-style).
+const HELP = `deep-ink: copy Deep Ink components into your Angular or HTML app (shadcn-style).
+React apps use the @microcks/deep-ink package instead: --framework react prints how.
 
 Usage
-  deep-ink init   [--framework react|angular|html] [--out DIR] [--css-out DIR] [--no-fonts] [--cwd DIR]
+  deep-ink init   [--framework angular|html] [--out DIR] [--css-out DIR] [--no-fonts] [--cwd DIR]
   deep-ink add    <item...> | --all [--tier natural,microcks,element] [--framework ...] [--out DIR] [--css-out DIR]
                   [--overwrite | --merge] [--prune] [--markup-only] [--dry-run] [--cwd DIR] [--registry FILE]
   deep-ink list   [--framework ...] [--tier ...] [--json]

@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "Small uppercase muted label that names a block: a section heading (\"Endpoints\", \"1 · Operation\"), a field label (\"Mock URL\") or a list header (\"3 operations\"). Used on Service, Copilot, Behavior, TestCreate, TestRun, Traces, Usage and more.",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "A class on the right native element: <h2>-<h6> for a section heading, <label for> for a field, <span> for a plain caption",
     "keyboard": [],

@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "Progress card of a running test (TestRun, AgentTestRun): the big count done, what runs now, one segment per step, the counts by result and a step control.",
   "registryDependencies": ["base", "icon"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "<section aria-label=\"Progress\"> with the count as text, a role=\"img\" bar named by the count and a polite live region for the current step",
     "keyboard": [["Tab", "Reaches the step control"]],

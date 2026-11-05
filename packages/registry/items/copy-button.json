@@ -5,7 +5,7 @@
   "tier": "natural",
   "description": "Copies a value to the clipboard and announces the result.",
   "registryDependencies": ["base", "button", "icon"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "Native <button> plus a polite live region",
     "keyboard": [

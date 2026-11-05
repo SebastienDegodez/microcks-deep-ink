@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "The meta line under a run header: muted key + value pairs that wrap (Endpoint, Runner, Started, Duration, Launched by). Used on TestRun, AgentTestRun and WorkflowRun.",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "Native <dl>: each pair is a <div> with a <dt> and one or two <dd>",
     "keyboard": [],

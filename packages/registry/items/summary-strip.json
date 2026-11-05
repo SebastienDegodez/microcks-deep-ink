@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "Key facts in one bordered row: a muted label, mono values and 1px vertical separators, wrapping on narrow screens. Used for the Behavior \"Saved\" strip, the Service and Agent dispatcher summaries and the Sources schedule strip.",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "A <div> (role=\"note\" when it sums up the page state) holding text spans; the separators are aria-hidden",
     "keyboard": [["Tab", "Reaches links or buttons placed in the strip"]],

@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "Dashed muted pill that marks a screen or a block as a projection (\"Projection · v2 module\"): a proposed feature, not available today. Used on Agent, AgentTestRun, Import and Sources.",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "A plain <span> with visible text; the title attribute only adds detail",
     "keyboard": [],

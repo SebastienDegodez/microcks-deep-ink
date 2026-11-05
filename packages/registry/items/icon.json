@@ -5,7 +5,7 @@
   "tier": "natural",
   "description": "Inline stroke icons in currentColor. Decorative by default, named when informative.",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "Inline SVG, aria-hidden unless a label is given",
     "keyboard": [],

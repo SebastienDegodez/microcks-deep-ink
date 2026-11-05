@@ -7,7 +7,7 @@
     "resolveJsonModule": true,
     "paths": {
       "@microcks/deep-ink": [
-        "../../../react/packages/deep-ink/src/index.ts"
+        "../../../react/packages/deep-ink/dist/index.d.ts"
       ],
       "react": [
         "../node_modules/@types/react"

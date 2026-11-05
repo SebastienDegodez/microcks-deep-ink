@@ -3,8 +3,7 @@
 //
 //   node scripts/build.mjs [--strict] [--quiet]
 //
-// Reads items/<name>.json, discovers source files by name (see README.md; the React sources are in
-// react/packages/deep-ink/src), validates
+// Reads items/<name>.json, discovers source files by name (see README.md), validates
 // everything and writes dist/registry.json, dist/registry.full.json and
 // dist/deep-ink-components.css. Only writes inside packages/registry.
 import { createHash } from 'node:crypto';
@@ -15,8 +14,9 @@ import Ajv from 'ajv';
 import { CORE_ELEMENTS, PKG_ROOT, sourceDir, syncElements } from './sync-elements.mjs';
 
 const TOKENS_DIST = resolve(PKG_ROOT, '..', 'tokens', 'dist');
-const FRAMEWORKS = ['react', 'angular'];
-const EXT = { react: ['tsx', 'ts'], angular: ['ts'], html: ['html'], css: ['css'] };
+// React is a package (@microcks/deep-ink, react/packages/deep-ink): it is not copied, so the registry has no React files.
+const FRAMEWORKS = ['angular'];
+const EXT = { angular: ['ts'], html: ['html'], css: ['css'] };
 
 /** Header written at the top of every copied file. */
 export function fileHeader(name, target, version) {
@@ -140,7 +140,7 @@ export function buildRegistry(options = {}) {
   const claimed = new Set();
   const generatedTokens = {};
   for (const m of metas) {
-    const entry = { ...m, version, files: { react: [], angular: [], html: [] }, css: [] };
+    const entry = { ...m, version, files: { angular: [], html: [] }, css: [] };
     const add = (list, rel, target, kind) => {
       claimed.add(rel);
       list.push({ target, kind, source: rel, content: undefined });
@@ -180,7 +180,6 @@ export function buildRegistry(options = {}) {
     } else {
       if (m.tier !== 'element' && entry.css.length === 0) errors.push(`${m.name}: missing CSS file src/css/${m.name}.css`);
       const missing = [];
-      if (entry.files.react.length === 0) missing.push('react');
       if (entry.files.angular.length === 0) missing.push('angular');
       if (entry.files.html.length === 0) missing.push('html');
       if (missing.length) warn(`${m.name}: no ${missing.join(', ')} files yet`);
@@ -195,14 +194,12 @@ export function buildRegistry(options = {}) {
   }
 
   // Orphan sources (a file nobody claims) usually mean a typo in the name.
-  for (const [dir, exts] of [['react', EXT.react], ['angular', EXT.angular], ['html', EXT.html], ['css', EXT.css]]) {
+  for (const [dir, exts] of [['angular', EXT.angular], ['html', EXT.html], ['css', EXT.css]]) {
     const abs = sourceDir(root, dir);
     const src = relative(root, abs);
     if (!existsSync(abs)) continue;
     for (const d of readdirSync(abs, { withFileTypes: true })) {
       if (!d.isFile() || /\.(spec|stories)\./.test(d.name)) continue;
-      // The React package barrel (generated) is not a copyable file.
-      if (dir === 'react' && d.name === 'index.ts') continue;
       if (!exts.some((e) => d.name.endsWith('.' + e))) continue;
       if (!claimed.has(`${src}/${d.name}`)) warn(`${src}/${d.name}: not owned by any item (name must start with an item name)`);
     }
@@ -220,14 +217,14 @@ export function buildRegistry(options = {}) {
     const withContent = (f) => ({ ...f, content: fileHeader(e.name, f.target, version) + rawOf(f) });
     const strip = (f) => ({ target: f.target, kind: f.kind });
     const hashed = [
-      ...['react', 'angular', 'html'].flatMap((k) => e.files[k].map((f) => [`${k}:${f.target}`, rawOf(f)])),
+      ...['angular', 'html'].flatMap((k) => e.files[k].map((f) => [`${k}:${f.target}`, rawOf(f)])),
       ...e.css.map((f) => [`css:${f.target}`, rawOf(f)]),
       ...(e.name === 'tokens' ? [['css:tokens.no-fonts.css', generatedTokens.cssNoFonts ?? '']] : []),
     ];
     const base = { ...e, hash: itemHash(hashed), files: undefined, css: undefined };
     const fullItem = { ...base, files: {}, css: e.css.map(withContent) };
     const indexItem = { ...base, files: {}, css: e.css.map(strip) };
-    for (const k of ['react', 'angular', 'html']) {
+    for (const k of ['angular', 'html']) {
       fullItem.files[k] = e.files[k].map(withContent);
       indexItem.files[k] = e.files[k].map(strip);
     }

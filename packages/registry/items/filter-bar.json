@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "Box of filter rows for lists (Catalogue, Workflows, Traces): a search field with an icon, titled rows of chips or segmented controls, a trailing group and a link-style Reset (n).",
   "registryDependencies": ["base", "icon"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "<section aria-label> with rows; titled rows are role=\"group\" named by their title; native search input inside its label",
     "keyboard": [["Tab", "Moves through the search field, the filter controls and Reset in reading order"]],

@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "Selectable bar chart: one button per bar (height = value, colour = tone), dashed gridlines, a y axis on one or both sides, x labels, an optional overlay (a line), and a visually hidden table as its text equivalent. Used for the Tests conformance timeline (one bar per run) and the Usage invocations per hour.",
   "registryDependencies": ["base"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "role=group of <button aria-pressed> with a roving tabindex (one tab stop), plus a visually hidden <table> with a caption that holds every value",
     "keyboard": [

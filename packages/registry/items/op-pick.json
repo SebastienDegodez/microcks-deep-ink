@@ -5,7 +5,7 @@
   "tier": "microcks",
   "description": "Operation picker: a stack of cards, one per operation (method tag, mono path, muted summary and meta, an end figure), one of them selected. It works as toggle buttons (Service operation rail) or as a radio group (Copilot \"1 · Operation\").",
   "registryDependencies": ["base", "method-tag"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "toggle: <ul> of <button aria-pressed>; radio: role=radiogroup of <button role=radio aria-checked> with a roving tabindex",
     "keyboard": [

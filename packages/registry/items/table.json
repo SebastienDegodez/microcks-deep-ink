@@ -5,7 +5,7 @@
   "tier": "natural",
   "description": "Dense data table with a caption, sortable headers, row links and a scroll region.",
   "registryDependencies": ["base", "icon"],
-  "npmDependencies": { "react": [], "angular": [] },
+  "npmDependencies": { "angular": [] },
   "a11y": {
     "pattern": "Native <table> with <caption>, th scope=col, aria-sort and a focusable scroll region",
     "keyboard": [

@@ -1,6 +1,9 @@
 # @microcks-deep-ink/cli
 
-Copies Deep Ink components from the registry into your app, shadcn-style. You own the copied files.
+Copies Deep Ink components from the registry into your Angular or plain HTML app, shadcn-style. You own the copied files.
+**React apps do not copy:** they use the `@microcks/deep-ink` package (`react/packages/deep-ink`). In a React project, or with
+`--framework react`, the CLI prints `pnpm add @microcks/deep-ink` and the imports, and copies nothing (`--framework html`
+still copies the HTML recipes).
 Zero dependencies (Node 22 built-ins only). DEMO tooling, private, not published to npm.
 The item names are the registry names (`button`, `tabs`, `workflow-loom`...); `deep-ink list` prints them.
 
@@ -19,7 +22,7 @@ The CLI reads `packages/registry/dist/registry.full.json`. If it is missing it s
 ## Commands
 
 ```
-deep-ink init   [--framework react|angular|html] [--out DIR] [--css-out DIR] [--no-fonts] [--cwd DIR]
+deep-ink init   [--framework angular|html] [--out DIR] [--css-out DIR] [--no-fonts] [--cwd DIR]
 deep-ink add    <item...> | --all [--tier natural,microcks,element] [--framework …] [--out DIR] [--css-out DIR]
                 [--overwrite | --merge] [--prune] [--markup-only] [--dry-run] [--cwd DIR] [--registry FILE]
 deep-ink list   [--framework …] [--tier …] [--json]
@@ -31,7 +34,7 @@ deep-ink view   <item> [--framework …]                        # prints the fil
 | Framework | Detected when `package.json` has | `--out` | `--css-out` |
 |---|---|---|---|
 | angular | `@angular/core` | `src/app/ui` | `src/styles/deep-ink` |
-| react | `react` | `src/components/ui` | `src/styles/deep-ink` |
+| react | `react` (and no `@angular/core`) | nothing copied: use `@microcks/deep-ink` | |
 | html | neither | `deep-ink` | `deep-ink/css` |
 
 `init` copies `tokens.css` (or the variant without web fonts with `--no-fonts`) and `base.css`, writes

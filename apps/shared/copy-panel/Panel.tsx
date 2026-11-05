@@ -17,7 +17,8 @@ import {
 } from './model';
 
 const registry = registryJson as unknown as Registry;
-const FRAMEWORKS: CopyFramework[] = ['react', 'angular', 'html'];
+// React is the @microcks/deep-ink package (nothing to copy): its Storybook has its own panel.
+const FRAMEWORKS: CopyFramework[] = ['angular', 'html'];
 
 async function writeClipboard(text: string): Promise<boolean> {
   try {

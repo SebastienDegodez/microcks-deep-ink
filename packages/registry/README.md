@@ -6,7 +6,6 @@ panel read the JSON this package builds. DEMO, private, Apache-2.0.
 ```
 items/<name>.json     metadata, accessibility contract (validated by registry.schema.json)
 src/css/<name>.css    styles, wrapped in @layer deep-ink.components
-../../react/packages/deep-ink/src/<name>.tsx  React, in the React workspace (siblings imported relatively, files land flat in the target)
 src/angular/<name>.ts Angular (standalone components and attribute directives)
 src/html/<name>.html  HTML recipe for plugins and vanilla use
 ```
@@ -32,8 +31,8 @@ Element items list `"elements": ["workflow-loom"]` (or `plugin-slot`); `scripts/
 `scripts/a11y-table.mjs` prints the component to RGAA table used by `docs/accessibility.md`.
 
 Checks: `test` (build and CSS rules), `typecheck` (ngc for Angular), `lint` (angular-eslint template a11y).
-The React sources, their specs (Vitest + jsdom + axe-core), typecheck and lint (jsx-a11y strict, react-hooks) live in
-`react/packages/deep-ink`: `pnpm -C react install && pnpm -C react test`.
+React is not in the registry: it is the `@microcks/deep-ink` package (`react/packages/deep-ink`), which ships the same
+class API and `dist/deep-ink.css` as `styles.css`. Its sources, specs, typecheck and lint live there.
 
 ## CSS class API
 
