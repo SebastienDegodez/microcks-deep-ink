@@ -107,4 +107,63 @@ describe('DataTable', () => {
     const th = screen.getByRole('columnheader', { name: 'Open' });
     expect(th.querySelector('.sr-only')?.textContent).toBe('Open');
   });
+
+  it('scroll={false} drops the focusable region; the table keeps its name', () => {
+    const { container } = render(<DataTable caption="Services" scroll={false} columns={columns} rows={rows} rowKey="id" />);
+    expect(screen.queryByRole('region')).toBeNull();
+    expect(screen.getByRole('table', { name: 'Services' })).toBeTruthy();
+    const wrap = container.querySelector('.table-wrap')!;
+    expect(wrap.hasAttribute('tabindex')).toBe(false);
+    expect(wrap.getAttribute('data-scroll')).toBe('false');
+  });
+
+  it('defaults keep the scroll region, the auto layout and no column width', () => {
+    const { container } = render(<DataTable caption="Services" columns={columns} rows={rows} rowKey="id" />);
+    expect(screen.getByRole('region', { name: 'Services' }).hasAttribute('data-scroll')).toBe(false);
+    expect(container.querySelector('table')!.hasAttribute('data-layout')).toBe(false);
+    for (const th of screen.getAllByRole('columnheader')) expect(th.getAttribute('style')).toBeNull();
+    expect(screen.queryByRole('button', { pressed: false })).toBeNull();
+  });
+
+  it('layout="fixed" sets the column widths on the headers', () => {
+    const { container } = render(
+      <DataTable caption="Services" layout="fixed" columns={[{ ...columns[0]!, width: '116px' }, { ...columns[1]!, width: '31%' }, columns[2]!]} rows={rows} rowKey="id" />,
+    );
+    expect(container.querySelector('table')!.getAttribute('data-layout')).toBe('fixed');
+    expect((screen.getByRole('columnheader', { name: /Name/ }) as HTMLElement).style.width).toBe('116px');
+    expect((screen.getByRole('columnheader', { name: 'Version' }) as HTMLElement).style.width).toBe('31%');
+    expect((screen.getByRole('columnheader', { name: /Calls/ }) as HTMLElement).style.width).toBe('');
+  });
+
+  it('a selectable row header is a toggle button named by the row, pressed on the selected row', async () => {
+    const onRowSelect = vi.fn();
+    const cols: DataTableColumn<Svc>[] = [{ key: 'name', header: 'Name', rowHeader: true }, columns[1]!];
+    const { container } = render(
+      <DataTable caption="Services" scroll={false} layout="fixed" columns={cols} rows={rows} rowKey="id" selectedKey="orders" onRowSelect={onRowSelect} />,
+    );
+    const orders = within(screen.getByRole('rowheader', { name: 'Orders API' })).getByRole('button', { name: 'Orders API' });
+    expect(orders.getAttribute('aria-pressed')).toBe('true');
+    const pastry = screen.getByRole('button', { name: 'API Pastry', pressed: false });
+    // No hidden "Selected:" prefix: aria-pressed carries the state and the button keeps the row name.
+    expect(container.textContent).not.toContain('Selected:');
+    pastry.focus();
+    expect(document.activeElement).toBe(pastry);
+    fireEvent.click(pastry);
+    expect(onRowSelect).toHaveBeenCalledWith(rows[0]);
+    expect(await axeViolations(container)).toEqual([]);
+  });
+
+  it('keyboard: the tab order is the toggles in row order, never the wrapper, when scroll={false}', () => {
+    const onRowSelect = vi.fn();
+    const { container } = render(
+      <DataTable caption="Services" scroll={false} columns={[{ key: 'name', header: 'Name', rowHeader: true }, columns[1]!]} rows={rows} rowKey="id" onRowSelect={onRowSelect} />,
+    );
+    const tabbable = [...container.querySelectorAll<HTMLElement>('a[href], button, [tabindex]')].filter((el) => el.tabIndex >= 0);
+    expect(tabbable.map((el) => el.textContent)).toEqual(['API Pastry', 'Orders API']);
+    for (const el of tabbable) expect(el.tagName).toBe('BUTTON');
+    // A native button: Enter and Space activate it (a click), no key handler of its own.
+    tabbable[1]!.focus();
+    fireEvent.click(document.activeElement!);
+    expect(onRowSelect).toHaveBeenLastCalledWith(rows[1]);
+  });
 });

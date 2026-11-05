@@ -3,7 +3,7 @@ import { DataTableComponent, CellDirective, TableDirective } from '@microcks-dee
 import { IconComponent } from '@microcks-deep-ink/registry/angular/icon';
 import { type CatalogueRow, CATALOGUE_COLUMNS, CATALOGUE_ROWS } from '@microcks-deep-ink/storybook-shared/fixtures';
 import { type SortState, sortRows } from '@microcks-deep-ink/registry/angular/table';
-import { argTypesFor, itemParams } from './_meta';
+import { argTypesFor, itemParams, playground } from './_meta';
 
 const meta: Meta = {
   title: 'Components/Data table',
@@ -111,3 +111,40 @@ export const SentenceCase: StoryObj = {
     `,
   }),
 };
+
+/** `layout="fixed"` with column `width`, `[scroll]="false"` (no region, no tab stop) and `selectable`: the row header is a toggle button with `aria-pressed`; `(rowSelect)` emits the row. */
+export const SelectableRowHeader: StoryObj = {
+  name: 'Fixed layout, no scroll region, selectable row header',
+  render: () => ({
+    props: {
+      columns: [
+        { key: 'id', header: 'Task', mono: true, rowHeader: true, width: '116px' },
+        { key: 'skill', header: 'Skill' },
+        { key: 'updated', header: 'Updated', align: 'end', width: '100px' },
+      ],
+      rows: [
+        { id: 'task-7f3a', skill: 'restock-pastry', updated: 'now' },
+        { id: 'task-41c2', skill: 'compare-prices', updated: '2 min ago' },
+        { id: 'task-09be', skill: '— no match', updated: '1 h ago' },
+      ],
+      selected: 'task-7f3a',
+    },
+    template: `
+<mk-data-table caption="Tasks" layout="fixed" [scroll]="false" selectable [columns]="columns" [rows]="rows" rowKey="id" [selectedKey]="selected" (rowSelect)="selected = $event.id" />
+    `,
+  }),
+};
+
+/** Interactive: the inputs of the component are controls in the Controls panel. */
+export const Playground: StoryObj = playground('table', 'DataTableComponent', {
+  caption: 'Services',
+  captionHidden: false,
+  columns: CATALOGUE_COLUMNS,
+  rows: CATALOGUE_ROWS,
+  rowKey: 'id',
+  density: 'comfortable',
+  headerCase: 'upper',
+  emptyText: 'No service matches.',
+  scroll: true,
+  layout: 'auto',
+});

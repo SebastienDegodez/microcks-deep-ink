@@ -1,4 +1,4 @@
-import { booleanAttribute, ChangeDetectionStrategy, Component, contentChildren, Directive, input, model, TemplateRef, inject } from '@angular/core';
+import { booleanAttribute, ChangeDetectionStrategy, Component, contentChildren, Directive, input, model, output, TemplateRef, inject } from '@angular/core';
 import { NgTemplateOutlet } from '@angular/common';
 import { IconComponent } from './icon';
 
@@ -20,6 +20,8 @@ export interface DataTableColumn<T> {
   nowrap?: boolean;
   /** The cells of this column are row headers (`<th scope="row">`) that name their row. */
   rowHeader?: boolean;
+  /** Column width (any CSS length: `116px`, `31%`), set on its header. Pair it with `layout="fixed"`. */
+  width?: string;
   /** Custom cell text. Defaults to `String(row[key])`. For rich cells use `<ng-template mkCell="key">`. */
   render?: (row: T) => string;
   /** Renders the header as a sort button. */
@@ -65,12 +67,19 @@ export function sortRows<T>(rows: readonly T[], sort: SortState | undefined, val
 /** Styles a plain native table: `<table mkTable density="compact">` with your own `<caption>` and `<th scope>`. */
 @Directive({
   selector: 'table[mkTable]',
-  host: { class: 'table', '[attr.data-density]': 'density()', '[attr.data-header]': "headerCase() === 'sentence' ? 'sentence' : null" },
+  host: {
+    class: 'table',
+    '[attr.data-density]': 'density()',
+    '[attr.data-header]': "headerCase() === 'sentence' ? 'sentence' : null",
+    '[attr.data-layout]': "layout() === 'fixed' ? 'fixed' : null",
+  },
 })
 export class TableDirective {
   readonly density = input<'comfortable' | 'compact'>('comfortable');
   /** `sentence`: sentence-case 12px headers, top-aligned cells, tabular figures. Row tones: `data-tone="failed | idle"` on a `<tr>`. */
   readonly headerCase = input<'upper' | 'sentence'>('upper');
+  /** `fixed`: `table-layout: fixed`, columns take the width of their header; long cell content wraps anywhere. */
+  readonly layout = input<'auto' | 'fixed'>('auto');
 }
 
 /**
@@ -83,13 +92,19 @@ export class TableDirective {
   imports: [IconComponent, NgTemplateOutlet],
   styles: [':host { display: block; }'],
   template: `
-    <div class="table-wrap" role="region" [attr.aria-labelledby]="captionId" tabindex="0">
-      <table class="table" [attr.data-density]="density()" [attr.data-header]="headerCase() === 'sentence' ? 'sentence' : null">
+    <div
+      class="table-wrap"
+      [attr.role]="scroll() ? 'region' : null"
+      [attr.aria-labelledby]="scroll() ? captionId : null"
+      [attr.tabindex]="scroll() ? 0 : null"
+      [attr.data-scroll]="scroll() ? null : 'false'"
+    >
+      <table class="table" [attr.data-density]="density()" [attr.data-header]="headerCase() === 'sentence' ? 'sentence' : null" [attr.data-layout]="layout() === 'fixed' ? 'fixed' : null">
         <caption [id]="captionId" [class.sr-only]="captionHidden()">{{ caption() }}</caption>
         <thead>
           <tr>
             @for (c of columns(); track c.key) {
-              <th scope="col" [attr.data-align]="c.align === 'end' ? 'end' : null" [attr.aria-sort]="c.sortable ? activeDirection(c.key) : null">
+              <th scope="col" [attr.data-align]="c.align === 'end' ? 'end' : null" [attr.aria-sort]="c.sortable ? activeDirection(c.key) : null" [style.width]="c.width ?? null">
                 @if (c.sortable) {
                   <button type="button" class="table-sort" (click)="sort.set(nextSort(c.key))">
                     {{ c.header }}
@@ -138,6 +153,10 @@ export class TableDirective {
                           <ng-container [ngTemplateOutlet]="cell" [ngTemplateOutletContext]="{ $implicit: row, column: c }" />
                         </a>
                       }
+                    } @else if (c.rowHeader && selectable()) {
+                      <button type="button" class="table-pick" [attr.aria-pressed]="isSelected(row)" (click)="rowSelect.emit(row)">
+                        <ng-container [ngTemplateOutlet]="cell" [ngTemplateOutletContext]="{ $implicit: row, column: c }" />
+                      </button>
                     } @else {
                       @if (i === 0 && isSelected(row)) {
                         <span class="sr-only">Selected: </span>
@@ -176,6 +195,17 @@ export class DataTableComponent<T> {
   readonly headerCase = input<'upper' | 'sentence'>('upper');
   /** Tone of a row: `failed` sits on the surface fill, `danger` on the danger tint (an unmet row), `idle` is dimmed with the muted text colour. Write the state in a cell too. */
   readonly rowTone = input<(row: T) => 'failed' | 'danger' | 'idle' | undefined>();
+  /** `true` (default): the wrapper is a focusable region that scrolls. `false`: a plain wrapper, no region and no
+   * tab stop, for a table that never overflows (usually `layout="fixed"`); overflowing content is clipped. */
+  readonly scroll = input(true, { transform: booleanAttribute });
+  /** `auto` (default) sizes columns from their content. `fixed`: `table-layout: fixed`, columns take their `width`
+   * and long cell content wraps anywhere. */
+  readonly layout = input<'auto' | 'fixed'>('auto');
+  /** Makes the row header of each row a toggle button (`aria-pressed`, true on `selectedKey`); activating it emits
+   * `rowSelect`. Needs a `rowHeader` column; ignored on a cell that holds the row link. */
+  readonly selectable = input(false, { transform: booleanAttribute });
+  /** Emits the row whose row header toggle was activated. The caller updates `selectedKey`. */
+  readonly rowSelect = output<T>();
 
   protected readonly captionId = `mk-table-caption-${++nextId}`;
   private readonly cells = contentChildren(CellDirective);

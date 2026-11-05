@@ -7,6 +7,11 @@
   Cells wrap; add data-nowrap on a cell (or column) to keep it on one line. Only thead th is uppercase.
   data-header="sentence" on the table: sentence-case 12px headers, top-aligned cells, tabular figures.
   data-tone="failed" (surface fill), "danger" (danger tint) or "idle" (muted text, never opacity) on a body <tr>; the row still writes its state.
+  data-layout="fixed" on the table: table-layout fixed, columns take the width set on their <th scope="col">, cells wrap anywhere.
+  A table that never overflows can drop the scroll region: <div class="table-wrap" data-scroll="false"> without role,
+  aria-labelledby or tabindex (no tab stop on something that does not scroll).
+  Selectable row: the row header holds <button type="button" class="table-pick" aria-pressed="true|false">; the
+  pressed row also carries data-selected.
 -->
 <div class="table-wrap" role="region" aria-labelledby="svc-caption" tabindex="0">
   <table class="table" data-density="comfortable">
@@ -39,3 +44,29 @@
 
 <!-- No rows: one row whose single cell spans every column.
      <tbody><tr><td class="table-empty" colspan="4">No tests yet.</td></tr></tbody> -->
+
+<!-- Fixed layout, no scroll region, selectable row headers (toggle buttons with aria-pressed). -->
+<div class="table-wrap" data-scroll="false">
+  <table class="table" data-density="comfortable" data-layout="fixed">
+    <caption>Tasks</caption>
+    <thead>
+      <tr>
+        <th scope="col" style="width: 116px">Task</th>
+        <th scope="col">Skill</th>
+        <th scope="col" style="width: 100px" data-align="end">Updated</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr data-selected>
+        <th scope="row" data-mono><button type="button" class="table-pick" aria-pressed="true">task-7f3a</button></th>
+        <td>restock-pastry</td>
+        <td data-align="end">now</td>
+      </tr>
+      <tr>
+        <th scope="row" data-mono><button type="button" class="table-pick" aria-pressed="false">task-41c2</button></th>
+        <td>compare-prices</td>
+        <td data-align="end">2 min ago</td>
+      </tr>
+    </tbody>
+  </table>
+</div>

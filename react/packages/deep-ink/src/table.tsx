@@ -18,6 +18,8 @@ export interface DataTableColumn<T> {
   nowrap?: boolean;
   /** The cells of this column are row headers (`<th scope="row">`) that name their row. */
   rowHeader?: boolean;
+  /** Column width (any CSS length: `116px`, `31%`), set on its header. Pair it with `layout="fixed"`. */
+  width?: string;
   /** Custom cell content. Defaults to `String(row[key])`. */
   render?: (row: T) => ReactNode;
   /** Renders the header as a sort button. */
@@ -54,6 +56,15 @@ export interface DataTableProps<T> {
   headerCase?: 'upper' | 'sentence';
   /** Tone of a row: `failed` sits on the surface fill, `danger` on the danger tint (an unmet row), `idle` is dimmed with the muted text colour. Write the state in a cell too. */
   rowTone?: (row: T) => 'failed' | 'danger' | 'idle' | undefined;
+  /** `true` (default): the wrapper is a focusable region that scrolls. `false`: a plain wrapper, no region and no
+   * tab stop, for a table that never overflows (usually `layout="fixed"`); overflowing content is clipped. */
+  scroll?: boolean;
+  /** `auto` (default) sizes columns from their content. `fixed`: `table-layout: fixed`, columns take their `width`
+   * and long cell content wraps anywhere. */
+  layout?: 'auto' | 'fixed';
+  /** Makes the row header of each row a toggle button (`aria-pressed`, true on `selectedKey`) that selects the row.
+   * Needs a `rowHeader` column; ignored on a cell that holds the row link. */
+  onRowSelect?: (row: T) => void;
   className?: string;
 }
 
@@ -89,6 +100,9 @@ export function DataTable<T>({
   density = 'comfortable',
   headerCase = 'upper',
   rowTone,
+  scroll = true,
+  layout = 'auto',
+  onRowSelect,
   className,
 }: DataTableProps<T>) {
   const captionId = useId();
@@ -108,8 +122,8 @@ export function DataTable<T>({
   const sortedColumn = sort ? columns.find((c) => c.key === sort.key) : undefined;
 
   return (
-    <div className={['table-wrap', className].filter(Boolean).join(' ')} role="region" aria-labelledby={captionId} tabIndex={0}>
-      <table className="table" data-density={density} data-header={headerCase === 'sentence' ? 'sentence' : undefined}>
+    <div className={['table-wrap', className].filter(Boolean).join(' ')} {...(scroll ? { role: 'region', 'aria-labelledby': captionId, tabIndex: 0 } : { 'data-scroll': 'false' })}>
+      <table className="table" data-density={density} data-header={headerCase === 'sentence' ? 'sentence' : undefined} data-layout={layout === 'fixed' ? 'fixed' : undefined}>
         <caption id={captionId} className={captionHidden ? 'sr-only' : undefined}>
           {caption}
         </caption>
@@ -118,7 +132,7 @@ export function DataTable<T>({
             {columns.map((c) => {
               const active = sort?.key === c.key ? sort.direction : undefined;
               return (
-                <th key={c.key} scope="col" data-align={c.align === 'end' ? 'end' : undefined} aria-sort={c.sortable ? active : undefined}>
+                <th key={c.key} scope="col" data-align={c.align === 'end' ? 'end' : undefined} aria-sort={c.sortable ? active : undefined} style={c.width ? { width: c.width } : undefined}>
                   {c.sortable ? (
                     <button type="button" className="table-sort" onClick={() => onSortChange?.(nextSort(c.key))}>
                       {c.header}
@@ -164,6 +178,12 @@ export function DataTable<T>({
                         <a className={props.className} href={props.href} aria-current={props['aria-current']}>
                           {content}
                         </a>
+                      );
+                    } else if (c.rowHeader && onRowSelect) {
+                      inner = (
+                        <button type="button" className="table-pick" aria-pressed={selected} onClick={() => onRowSelect(row)}>
+                          {content}
+                        </button>
                       );
                     } else if (i === 0 && selected) {
                       inner = (

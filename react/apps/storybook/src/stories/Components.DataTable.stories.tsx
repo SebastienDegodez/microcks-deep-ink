@@ -87,6 +87,38 @@ export const SentenceCase: StoryObj = {
   ),
 };
 
+type TaskRow = { id: string; skill: string; updated: string };
+const TASK_ROWS: TaskRow[] = [
+  { id: 'task-7f3a', skill: 'restock-pastry', updated: 'now' },
+  { id: 'task-41c2', skill: 'compare-prices', updated: '2 min ago' },
+  { id: 'task-09be', skill: '— no match', updated: '1 h ago' },
+];
+const TASK_COLUMNS = [
+  { key: 'id', header: 'Task', mono: true, rowHeader: true, width: '116px' },
+  { key: 'skill', header: 'Skill' },
+  { key: 'updated', header: 'Updated', align: 'end' as const, width: '100px' },
+];
+
+/** `layout="fixed"` with column `width`, `scroll={false}` (no region, no tab stop) and `onRowSelect`: the row header is a toggle button with `aria-pressed`. */
+export const SelectableRowHeader: StoryObj = {
+  name: 'Fixed layout, no scroll region, selectable row header',
+  render: () => {
+    const [selected, setSelected] = useState('task-7f3a');
+    return (
+      <DataTable<TaskRow>
+        caption="Tasks"
+        layout="fixed"
+        scroll={false}
+        columns={TASK_COLUMNS}
+        rows={TASK_ROWS}
+        rowKey="id"
+        selectedKey={selected}
+        onRowSelect={(r) => setSelected(r.id)}
+      />
+    );
+  },
+};
+
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof DataTable> = {
   args: {
@@ -98,9 +130,13 @@ export const Playground: StoryObj<typeof DataTable> = {
     density: 'comfortable',
     headerCase: 'upper',
     emptyText: 'No service matches.',
+    scroll: true,
+    layout: 'auto',
   },
   argTypes: {
     density: { control: 'inline-radio', options: ['comfortable', 'compact'] },
     headerCase: { control: 'inline-radio', options: ['upper', 'sentence'] },
+    scroll: { control: 'boolean' },
+    layout: { control: 'inline-radio', options: ['auto', 'fixed'] },
   },
 };
