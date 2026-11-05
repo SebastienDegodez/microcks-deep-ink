@@ -1,0 +1,19 @@
+[
+ { "id": "workflow-loom-step", "route": "/workflows/pastry/restock-pastry/loom?run=14&step=patchPastry" },
+ { "id": "cockpit-cmdk", "route": "/", "keys": ["Control+k"] },
+ { "id": "services-filter", "route": "/services", "focus": { "role": "searchbox", "name": "Filter by name" }, "type": "pastry" },
+ { "id": "admin-secrets-tab", "route": "/admin", "focus": { "role": "tab", "name": "Secrets , 5" }, "keys": ["Enter"] },
+ { "id": "service-operations", "route": "/services/pastry2/operations" },
+ { "id": "copilot-op-hint", "route": "/services/pastry2/copilot?op=get-name&hint=Tarte%20Tatin" },
+ { "id": "tests-create-service", "route": "/tests/create?service=pastry2" },
+ { "id": "traces-service", "route": "/traces?service=pastry2" },
+ { "id": "admin-users", "route": "/admin/users" },
+ { "id": "workflow-run-impl14", "route": "/workflows/pastry/restock-pastry/run?scenario=impl14" },
+ { "id": "hub-banking", "route": "/hub/banking" },
+ { "id": "not-found", "route": "/does-not-exist" },
+ { "id": "services-cmdk-query", "route": "/services", "keys": ["Meta+k"], "type": "pastry" },
+ { "id": "sources-new-url-tab", "route": "/sources/new", "focus": { "role": "tab", "name": "URL" }, "keys": ["Enter"] },
+ { "id": "service-properties-tab", "route": "/services/pastry2", "focus": { "role": "tab", "name": "Properties & MCP" }, "keys": ["Enter"] },
+ { "id": "agent-card-tab", "route": "/services/concierge", "focus": { "role": "tab", "name": "Agent Card" }, "keys": ["Enter"] },
+ { "id": "workflow-steps-tab", "route": "/workflows/pastry/restock-pastry", "focus": { "role": "tab", "name": "Steps , 4" }, "keys": ["Enter"] }
+]

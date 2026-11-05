@@ -28,7 +28,63 @@ reliably discover, all of which render:
 anti-aliasing jitter). `--tolerant` makes NEAR non-failing; use it only after inspecting the `diff-*.png`.
 
 Captures: 1440 px wide, full page, dark and light, `reduced_motion=reduce` and `animations=disabled`. Query strings are
-stripped from crawled links (states/probe/leak captures come later).
+stripped from crawled links: use `states` for query-string routes.
+
+All commands below accept `--app <dir>` and `--no-build` like `shoot`; `probe` and `leak` default to `routes.txt`.
+
+### states — interaction states
+
+```sh
+python3 -I tools/fidelity/snap.py states . ../pix/st-base [--only cockpit-cmdk,services-filter] [--file states.json]
+python3 -I tools/fidelity/snap.py states . ../pix/st-after --no-build
+python3 -I tools/fidelity/snap.py diff ../pix/st-base ../pix/st-after
+```
+
+Why: `shoot` only sees the default render of each route; an open ⌘K palette, a filtered list, a non-default tab or a
+query-string route (`?run=14&step=patchPastry`) are never captured. `states.json` lists them:
+
+```json
+{ "id": "admin-secrets-tab", "route": "/admin", "focus": { "role": "tab", "name": "Secrets , 5" }, "keys": ["Enter"] }
+```
+
+`route` is opened as-is (query kept), then `focus` (`page.get_by_role(role, name=…, exact=true)`; add `"exact": false`
+for a substring), then each `keys` entry (`keyboard.press`), then `type` (`keyboard.type`). Targets are by role +
+accessible name only: read them with `page.locator('body').aria_snapshot()`, don't guess. Same capture settings as
+`shoot`, written to `<id>--<theme>.png`; a state whose target is missing prints `FAILED <id>` and exits 1.
+
+### probe — animation inventory
+
+```sh
+python3 -I tools/fidelity/snap.py probe . ../pix/base [--routes /,/services]
+```
+
+Why: `shoot` disables animations and reduces motion, so a refactor that drops or renames a keyframe (e.g. the cockpit
+`.top-live` dot using `deep-ink-pulse`) is invisible to pixels. `probe` loads each route in dark WITHOUT reduced motion and
+writes `<out>/anim/<safe-route>.json`: the sorted `{path, animationName, animationDuration}` of every element (and
+`::before`/`::after`) whose computed `animation-name` is not `none` (`path` is a short CSS path, ≤4 levels or up to an id).
+When both dirs have `anim/`, `diff` compares the JSON files too: any difference, missing or extra file is `ANIM <file>`
+and fails.
+
+### leak — page CSS bleeding across routes
+
+```sh
+python3 -I tools/fidelity/snap.py leak . ../pix/leak [--routes …] [--tolerant]
+```
+
+Why: the demo is code-split; Vite injects each page's CSS chunk on first visit and never removes it. Unlayered page CSS
+(`.facts`, `.projection-pill`, …) can then restyle components on pages visited later, which a fresh-page `shoot` never
+sees. In ONE page per theme `leak` visits every route by hash navigation (no reload), then re-visits each one and
+captures `<out>/leak/<safe>--<theme>.png`, compared (same strict rules as `diff`) with a fresh-page capture in
+`<out>/fresh/`. Each difference is re-checked on a fresh page whose stylesheets are replaced by the accumulated ones (same
+order, `<out>/leak/<safe>--<theme>--css.png`): `LEAK <route> <theme> css: …` means the CSS alone reproduces it,
+`state` means it comes from in-memory app state instead. Exit 1 on any LEAK (NEAR included unless `--tolerant`). Before
+judging, a second fresh capture is taken: if the two fresh captures already differ (live counters, e.g. `/traces`), the
+route prints `FLAKY <route> <theme>` and is not judged (does not fail).
+
+Chromium quirk: once a document took a full-page screenshot taller than the viewport, its fallback monospace text
+measures wider (`Ctrl K` kbd 50 → 57 px) until reload. The single leak page is in that state after its first tall
+route, so every leak page and fresh reference is "primed" with one throwaway tall full-page screenshot first; the
+`fresh/` captures are therefore not byte-identical to `shoot`'s.
 
 ## compare.py — prototype vs demo
 
