@@ -1,8 +1,6 @@
 /* Loom tab of the Workflow page: the loom box (toolbar, run summary, stage, lens, footer) and the step inspector. */
 
-.wf-loom-tab { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; min-width: 0; }
 .wf-loom {
-  flex: 999 1 760px; min-width: 0; box-sizing: border-box;
   display: flex; flex-direction: column; gap: 12px;
   padding: 12px; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas);
 }
@@ -69,12 +67,10 @@
 
 /* Step inspector */
 .wf-step-inspector {
-  flex: 1 1 320px; max-width: 460px; min-width: 0; box-sizing: border-box;
   display: flex; flex-direction: column; gap: 0; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas);
   font: 400 13px/1.4 var(--font-ui);
 }
 .wf-inspector-empty {
-  flex: 1 1 260px; max-width: 320px; min-width: 0; box-sizing: border-box;
   display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 16px;
   border: 1px dashed var(--border-strong); border-radius: 8px; color: var(--text-muted); font: 400 13px/1.5 var(--font-ui);
 }

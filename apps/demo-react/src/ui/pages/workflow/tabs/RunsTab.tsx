@@ -4,6 +4,7 @@ import { formatClock, formatDuration } from '@/domain/shared';
 import { callTotals, matchesRunKind, stoppedStep, verdictExplanation, type RunKindFilter, type Session, type StepStatus, type WorkflowRun } from '@/domain/arazzo';
 import type { WorkflowDetail } from '@/application/arazzo';
 import { useRelativeTime } from '@/ui/app';
+import { RUN_STATUS_ICON, RUN_STATUS_WORD } from '@/ui/app/outcomes';
 import { Chip } from '@/ui/components/ui/chip';
 import { Button } from '@/ui/components/ui/button';
 import { Icon, type IconName } from '@/ui/components/ui/icon';
@@ -163,7 +164,7 @@ export function RunsTab({ detail, runs, sessions = [], initialFilter }: RunsTabP
               </li>
               {shown.map((r) => {
                 const passed = r.status === 'SUCCESS';
-                const word = passed ? 'Passed' : r.status === 'FAILURE' ? 'Failed' : 'Running';
+                const word = RUN_STATUS_WORD[r.status];
                 const ms = callTotals(r).ms;
                 const when = `${cap(relative(r.startedAt))} · ${formatClock(r.startedAt).replace(/, \d{4} (\d\d:\d\d):\d\d$/, ', $1')}`;
                 const note = noteOf(r, sessions);
@@ -176,7 +177,7 @@ export function RunsTab({ detail, runs, sessions = [], initialFilter }: RunsTabP
                         #{r.number}
                       </span>
                       <span data-col="result" className="wf-runs-result" data-tone={passed ? 'pass' : r.status === 'FAILURE' ? 'fail' : 'off'}>
-                        <Icon name={passed ? 'check-circle' : r.status === 'FAILURE' ? 'x-circle' : 'running'} size={14} strokeWidth={2.2} />
+                        <Icon name={RUN_STATUS_ICON[r.status]} size={14} strokeWidth={2.2} />
                         {word}
                       </span>
                       <span data-col="origin" className="wf-runs-origin">

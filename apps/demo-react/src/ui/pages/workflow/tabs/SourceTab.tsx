@@ -7,6 +7,7 @@ import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { Checkbox } from '@/ui/components/ui/checkbox';
 import { Icon } from '@/ui/components/ui/icon';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { syncedText } from '../WorkflowHeader';
 import './source.css';
@@ -187,8 +188,8 @@ export function SourceTab({ detail, step, onSelectStep, serviceLabel }: SourceTa
   }
 
   return (
-    <div className="wf-source-tab">
-      <nav aria-labelledby="wf-outline-title" className="wf-src-outline">
+    <SplitPane gap="16px" sideWidth="220px" sideMax="280px" mainWidth="560px" keepSideMax>
+      <SplitPaneSide as="nav" aria-labelledby="wf-outline-title" className="wf-src-outline">
         <h2 id="wf-outline-title">Outline</h2>
         <span className="wf-outline-file">{document.file}</span>
         {blocks.map((b) => (
@@ -202,9 +203,9 @@ export function SourceTab({ detail, step, onSelectStep, serviceLabel }: SourceTa
         <div className="wf-outline-fold">
           <Checkbox label="Fold the other steps" checked={fold} onChange={(e) => setFold(e.target.checked)} />
         </div>
-      </nav>
+      </SplitPaneSide>
 
-      <section aria-label="Arazzo source" className="wf-src">
+      <SplitPaneMain as="section" aria-label="Arazzo source" className="wf-src">
         <div className="wf-src-toolbar">
           <div className="wf-src-caption">
             <ApiBadge arazzo name={document.arazzoVersion} size="sm" />
@@ -274,7 +275,7 @@ export function SourceTab({ detail, step, onSelectStep, serviceLabel }: SourceTa
         <div className="wf-src-code" role="region" aria-label={`${document.file}, lines`} tabIndex={0}>
           <div className="wf-src-lines">{rows}</div>
         </div>
-      </section>
-    </div>
+      </SplitPaneMain>
+    </SplitPane>
   );
 }

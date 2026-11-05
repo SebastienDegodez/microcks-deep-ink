@@ -1,8 +1,7 @@
 import type { WorkflowRun } from '@/domain/arazzo';
+import { RUN_STATUS_ICON, RUN_STATUS_WORD } from '@/ui/app/outcomes';
 import { Icon } from '@/ui/components/ui/icon';
 import { runPick } from './loom-model';
-
-const WORD = { SUCCESS: 'Passed', FAILURE: 'Failed', RUNNING: 'Running' } as const;
 
 /** "Results & values from" run picker shared by the Loom and Steps tabs: the last four runs, as pressed buttons. */
 export function RunPicker({ runs, run, onPick, label, caption }: { runs: WorkflowRun[]; run?: WorkflowRun; onPick: (n: number) => void; label: string; caption?: string }) {
@@ -28,13 +27,13 @@ export function RunPicker({ runs, run, onPick, label, caption }: { runs: Workflo
             data-status={r.status}
             onClick={() => onPick(r.number)}
           >
-            <Icon name={r.status === 'SUCCESS' ? 'check-circle' : r.status === 'FAILURE' ? 'x-circle' : 'running'} size={13} strokeWidth={2.2} />
+            <Icon name={RUN_STATUS_ICON[r.status]} size={13} strokeWidth={2.2} />
             {n}
             <span className="wf-run-pick-target">
               <span className="sr-only"> </span>
               {target}
             </span>
-            <span className="sr-only">, {WORD[r.status].toLowerCase()}</span>
+            <span className="sr-only">, {RUN_STATUS_WORD[r.status].toLowerCase()}</span>
           </button>
         );
       })}

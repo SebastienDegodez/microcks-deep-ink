@@ -6,6 +6,7 @@ import { STATUS_ICON } from '@/ui/app/outcomes';
 import { Button } from '@/ui/components/ui/button';
 import { Icon } from '@/ui/components/ui/icon';
 import { MethodTag } from '@/ui/components/ui/method-tag';
+import { SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { bodyPointer, expressionsOf, formatValue, stepResultLine, threadsOf, valueIn, wrongValue } from './loom-model';
 import { httpLine, originWord, runNoun, stepChecksOf, stepStatusOf, type Tone } from './run-facts';
 
@@ -148,7 +149,7 @@ function actionRows(workflow: Workflow, step: Step, result: StepResult | undefin
 export function StepInspector({ workflow, document, run, step, failedStepId, serviceLabel, lens, onTrace, onSelectFailed, onClose }: StepInspectorProps) {
   if (!step) {
     return (
-      <aside aria-label="Step inspector" className="wf-inspector-empty">
+      <SplitPaneSide as="aside" aria-label="Step inspector" className="wf-inspector-empty">
         <span className="wf-inspector-empty-title">No step selected</span>
         <span>
           Select a step on the loom to inspect its operation, parameters, criteria, actions and outputs
@@ -159,7 +160,7 @@ export function StepInspector({ workflow, document, run, step, failedStepId, ser
             Inspect the failed step of #{run.number}
           </Button>
         ) : null}
-      </aside>
+      </SplitPaneSide>
     );
   }
 
@@ -196,7 +197,7 @@ export function StepInspector({ workflow, document, run, step, failedStepId, ser
   const producedWhy = result?.status === 'failed' ? `not produced: ${step.stepId} failed${session ? ' the verification' : ''}` : notRun ? 'not run' : '';
 
   return (
-    <aside aria-label="Step inspector" className="wf-step-inspector">
+    <SplitPaneSide as="aside" aria-label="Step inspector" className="wf-step-inspector">
       <div className="wf-ins-head">
         <div className="wf-ins-title">
           <span className="wf-ins-n" aria-hidden="true">
@@ -422,6 +423,6 @@ export function StepInspector({ workflow, document, run, step, failedStepId, ser
           );
         })}
       </section>
-    </aside>
+    </SplitPaneSide>
   );
 }

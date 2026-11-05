@@ -1,8 +1,6 @@
 /* Source tab of the Workflow page: outline nav and the YAML with line numbers, syntax colours and folding. */
 
-.wf-source-tab { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; min-width: 0; }
 .wf-src-outline {
-  flex: 1 1 220px; max-width: 280px; min-width: 0; box-sizing: border-box;
   display: flex; flex-direction: column; gap: 4px; padding: 12px;
   border: 1px solid var(--border); border-radius: 8px; background: var(--canvas);
 }
@@ -21,7 +19,7 @@
 .wf-outline-fold { margin-top: 8px; padding: 8px 6px 0; border-top: 1px solid var(--border); font-size: 13px; color: var(--text-secondary); }
 
 .wf-src {
-  flex: 999 1 560px; min-width: 0; box-sizing: border-box; display: flex; flex-direction: column;
+  display: flex; flex-direction: column;
   border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); overflow: hidden;
 }
 .wf-src-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px; padding: 10px 12px; border-bottom: 1px solid var(--border); }

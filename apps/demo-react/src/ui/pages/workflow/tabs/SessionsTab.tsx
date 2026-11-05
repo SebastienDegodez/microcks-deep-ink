@@ -8,11 +8,13 @@ import { STATUS_ICON } from '@/ui/app/outcomes';
 import { Button } from '@/ui/components/ui/button';
 import { Callout } from '@/ui/components/ui/callout';
 import { Checkbox } from '@/ui/components/ui/checkbox';
+import { Facts } from '@/ui/components/ui/facts';
 import { Field } from '@/ui/components/ui/field';
 import { Icon } from '@/ui/components/ui/icon';
 import { Input } from '@/ui/components/ui/input';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { Select } from '@/ui/components/ui/select';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
 import { runPath } from '../../workflows/shared';
 import './sessions.css';
@@ -34,10 +36,11 @@ const clockOf = (iso: string) => {
 
 type Tone = 'pass' | 'fail' | 'off' | 'pending';
 
-function Mark({ tone, children, size = 12 }: { tone: Tone; children: ReactNode; size?: number }) {
+/** `strong`: 13px 600 with a 13px icon (the session verification fact). */
+function Mark({ tone, children, strong }: { tone: Tone; children: ReactNode; strong?: boolean }) {
   return (
-    <span className="wf-se-mark" data-tone={tone}>
-      <Icon name={STATUS_ICON[tone]} size={size} strokeWidth={2.4} />
+    <span className="wf-se-mark" data-tone={tone} data-strong={strong ? '' : undefined}>
+      <Icon name={STATUS_ICON[tone]} size={strong ? 13 : 12} strokeWidth={2.4} />
       {children}
     </span>
   );
@@ -309,120 +312,121 @@ export function SessionsTab({ detail, sessions, runs }: SessionsTabProps) {
         </Callout>
       )}
 
-      <section aria-labelledby="wf-recent-title" className="wf-se-panel wf-se-recent">
-        <div className="wf-se-list">
-          <h2 id="wf-recent-title">Recent sessions</h2>
-          {sessions.length === 0 ? (
-            <p className="wf-se-sub">No session yet for this workflow.</p>
-          ) : (
-            <ul>
-              {sessions.map((s) => {
-                const v = verdictOf(s);
-                return (
-                  <li key={s.id}>
-                    <button type="button" className="wf-se-item" aria-pressed={s.id === selected?.id} onClick={() => setSelectedId(s.id)}>
-                      <span className="wf-se-item-head">
-                        <span className="wf-se-mono wf-se-strong">{s.id}</span>
-                        <span className="wf-se-state" data-state={s.state}>
-                          <span aria-hidden="true" className="wf-se-dot" />
-                          {s.state}
+      <section aria-labelledby="wf-recent-title" className="wf-se-panel">
+        <SplitPane gap="16px" sideWidth="300px" sideMax="380px" mainWidth="520px" keepSideMax>
+          <SplitPaneSide className="wf-se-list">
+            <h2 id="wf-recent-title">Recent sessions</h2>
+            {sessions.length === 0 ? (
+              <p className="wf-se-sub">No session yet for this workflow.</p>
+            ) : (
+              <ul>
+                {sessions.map((s) => {
+                  const v = verdictOf(s);
+                  return (
+                    <li key={s.id}>
+                      <button type="button" className="wf-se-item" aria-pressed={s.id === selected?.id} onClick={() => setSelectedId(s.id)}>
+                        <span className="wf-se-item-head">
+                          <span className="wf-se-mono wf-se-strong">{s.id}</span>
+                          <span className="wf-se-state" data-state={s.state}>
+                            <span aria-hidden="true" className="wf-se-dot" />
+                            {s.state}
+                          </span>
                         </span>
-                      </span>
-                      <span className="wf-se-sub">{s.app}</span>
-                      <span className="wf-se-item-foot">
-                        <span className="wf-se-muted">
-                          {s.calls.length} {s.calls.length === 1 ? 'call' : 'calls'} received
+                        <span className="wf-se-sub">{s.app}</span>
+                        <span className="wf-se-item-foot">
+                          <span className="wf-se-muted">
+                            {s.calls.length} {s.calls.length === 1 ? 'call' : 'calls'} received
+                          </span>
+                          <Mark tone={v.tone}>{v.text}</Mark>
                         </span>
-                        <Mark tone={v.tone}>{v.text}</Mark>
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          )}
-        </div>
-
-        {selected ? (
-          <div className="wf-se-detail">
-            <div className="wf-se-detail-head">
-              <h3>
-                Session <span className="wf-se-mono">{selected.id}</span>
-              </h3>
-              <span className="wf-se-muted">{metaOf(selected)}</span>
-            </div>
-            <dl className="wf-se-facts">
-              <div>
-                <dt>Inputs</dt>
-                <dd className="wf-se-mono">{Object.entries(selected.inputs).map(([k, v]) => `${k}=${String(v)}`).join(' · ') || 'none'}</dd>
-              </div>
-              <div>
-                <dt>Steps set to fail</dt>
-                <dd className="wf-se-mono">{selected.failureInjection ? `${selected.failureInjection.stepId} → ${selected.failureInjection.example}` : 'none'}</dd>
-              </div>
-              <div>
-                <dt>Verification</dt>
-                <dd>
-                  {selected.verification ? (
-                    <Mark tone={selected.verification.result === 'SUCCESS' ? 'pass' : 'fail'} size={13}>
-                      {selected.verification.result === 'SUCCESS' ? 'Passed' : 'Failed'} · #{selected.verification.runNumber}
-                    </Mark>
-                  ) : (
-                    <Mark tone="pending" size={13}>
-                      Not verified yet
-                    </Mark>
-                  )}
-                </dd>
-              </div>
-            </dl>
-            {selected.verification?.result === 'FAILURE' ? (
-              <div className="wf-se-alert">
-                <span className="wf-se-alert-title">
-                  <Icon name="x-circle" size={15} strokeWidth={2.2} />
-                  The calls of the session do not follow the workflow
-                </span>
-                <ul>
-                  {selected.verification.problems.map((p) => (
-                    <li key={p.lead + p.text}>
-                      {p.lead} <span className="wf-se-problem">{p.text}</span>
+                      </button>
                     </li>
-                  ))}
-                </ul>
+                  );
+                })}
+              </ul>
+            )}
+          </SplitPaneSide>
+
+          {selected ? (
+            <SplitPaneMain className="wf-se-detail">
+              <div className="wf-se-detail-head">
+                <h3>
+                  Session <span className="wf-se-mono">{selected.id}</span>
+                </h3>
+                <span className="wf-se-muted">{metaOf(selected)}</span>
               </div>
-            ) : null}
-            <div className="wf-se-calls">
-              <span aria-hidden="true" className="wf-se-caption">
-                Received calls, in the order of receipt, each mapped to its step
-              </span>
-              <DataTable<SessionCall>
-                captionHidden
-                headerCase="sentence"
-                density="compact"
-                caption="Received calls, in the order of receipt, each mapped to its step"
-                columns={callColumns}
-                rows={selected.calls}
-                rowKey="n"
-                emptyText="No call received yet."
+              <Facts
+                layout="columns"
+                items={[
+                  { term: 'Inputs', mono: true, value: Object.entries(selected.inputs).map(([k, v]) => `${k}=${String(v)}`).join(' · ') || 'none' },
+                  { term: 'Steps set to fail', mono: true, value: selected.failureInjection ? `${selected.failureInjection.stepId} → ${selected.failureInjection.example}` : 'none' },
+                  {
+                    term: 'Verification',
+                    value: (
+                      <span className="wf-se-fact-line">
+                        {selected.verification ? (
+                          <Mark tone={selected.verification.result === 'SUCCESS' ? 'pass' : 'fail'} strong>
+                            {selected.verification.result === 'SUCCESS' ? 'Passed' : 'Failed'} · #{selected.verification.runNumber}
+                          </Mark>
+                        ) : (
+                          <Mark tone="pending" strong>
+                            Not verified yet
+                          </Mark>
+                        )}
+                      </span>
+                    ),
+                  },
+                ]}
               />
-            </div>
-            <div className="wf-se-foot">
-              {(() => {
-                const run = runOf(selected);
-                return run ? (
-                  <Button asChild size="sm">
-                    <Link to={runPath(run.id)}>Open verification #{run.number}</Link>
-                  </Button>
-                ) : null;
-              })()}
-              {selected.state === 'open' ? <span className="wf-se-mono wf-se-sub">POST /api/arazzo/sessions/{selected.id}/verification</span> : null}
-              <span className="wf-se-muted">
-                {selected.verification
-                  ? `Verified ${relative(runOf(selected)?.startedAt ?? selected.closedAt ?? selected.openedAt)} against the Microcks mocks.`
-                  : `Not verified yet · ${selected.calls.length} of 1000 calls recorded.`}
-              </span>
-            </div>
-          </div>
-        ) : null}
+              {selected.verification?.result === 'FAILURE' ? (
+                <div className="wf-se-alert">
+                  <span className="wf-se-alert-title">
+                    <Icon name="x-circle" size={15} strokeWidth={2.2} />
+                    The calls of the session do not follow the workflow
+                  </span>
+                  <ul>
+                    {selected.verification.problems.map((p) => (
+                      <li key={p.lead + p.text}>
+                        {p.lead} <span className="wf-se-problem">{p.text}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : null}
+              <div className="wf-se-calls">
+                <span aria-hidden="true" className="wf-se-caption">
+                  Received calls, in the order of receipt, each mapped to its step
+                </span>
+                <DataTable<SessionCall>
+                  captionHidden
+                  headerCase="sentence"
+                  density="compact"
+                  caption="Received calls, in the order of receipt, each mapped to its step"
+                  columns={callColumns}
+                  rows={selected.calls}
+                  rowKey="n"
+                  emptyText="No call received yet."
+                />
+              </div>
+              <div className="wf-se-foot">
+                {(() => {
+                  const run = runOf(selected);
+                  return run ? (
+                    <Button asChild size="sm">
+                      <Link to={runPath(run.id)}>Open verification #{run.number}</Link>
+                    </Button>
+                  ) : null;
+                })()}
+                {selected.state === 'open' ? <span className="wf-se-mono wf-se-sub">POST /api/arazzo/sessions/{selected.id}/verification</span> : null}
+                <span className="wf-se-muted">
+                  {selected.verification
+                    ? `Verified ${relative(runOf(selected)?.startedAt ?? selected.closedAt ?? selected.openedAt)} against the Microcks mocks.`
+                    : `Not verified yet · ${selected.calls.length} of 1000 calls recorded.`}
+                </span>
+              </div>
+            </SplitPaneMain>
+          ) : null}
+        </SplitPane>
       </section>
     </div>
   );
