@@ -17,6 +17,7 @@ import { Field } from '@/ui/components/ui/field';
 import { Icon } from '@/ui/components/ui/icon';
 import { Input, Textarea } from '@/ui/components/ui/input';
 import { Select } from '@/ui/components/ui/select';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
 import { ImportDone } from './ImportDone';
 import { ImportPreviewCard } from './ImportPreview';
@@ -153,8 +154,8 @@ export default function ImportPage() {
       />
       {error ? <Callout tone="danger" live="assertive" title="Something went wrong">{error}</Callout> : null}
 
-      <div className="import-layout">
-        <section aria-label="Add a source" className="import-workspace" aria-busy={step === 'analyzing' || step === 'importing'}>
+      <SplitPane gap="24px" sideWidth="302px" sideMax="none" mainWidth="560px">
+        <SplitPaneMain as="section" aria-label="Add a source" className="import-workspace" aria-busy={step === 'analyzing' || step === 'importing'}>
           {step === 'idle' || step === 'analyzing' ? (
             <div className="source-box">
               <Tabs
@@ -271,10 +272,10 @@ export default function ImportPage() {
           {step === 'importing' && !preview ? <p role="status">Creating the mock…</p> : null}
 
           {step === 'done' && result ? <ImportDone result={result} onReset={reset} nextScanMinutes={uc.importing.getScanSchedule().minutesUntilNext} /> : null}
-        </section>
+        </SplitPaneMain>
 
         <RecentSources items={recent.data ?? []} />
-      </div>
+      </SplitPane>
     </div>
   );
 }
@@ -282,7 +283,7 @@ export default function ImportPage() {
 function RecentSources({ items }: { items: RecentImport[] }) {
   const relative = useRelativeTime();
   return (
-    <aside aria-labelledby="recent-title" className="recent">
+    <SplitPaneSide as="aside" aria-labelledby="recent-title" className="recent">
       <div className="recent-head">
         <h2 id="recent-title">Recent sources</h2>
         <RouterLink to="/services">Full catalog</RouterLink>
@@ -306,6 +307,6 @@ function RecentSources({ items }: { items: RecentImport[] }) {
         ))}
       </ul>
       <p className="recent-foot">Every upload, URL and repository is listed in Sources. <RouterLink to="/sources">Back to Sources</RouterLink></p>
-    </aside>
+    </SplitPaneSide>
   );
 }
