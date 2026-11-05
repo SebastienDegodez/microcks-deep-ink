@@ -2,6 +2,7 @@ import '../tests/page-kit.css';
 import type { FlowCounts, TopologyEdge, TraceCall, TraceTopology } from '@/domain/observe';
 import { fmt } from '@/ui/app/format';
 import { Icon } from '@/ui/components/ui/icon';
+import { SectionLabel } from '@/ui/components/ui/section-label';
 
 /** Graph geometry of the prototype: 56px nodes on a 72px slot, six slots per 416px column. */
 const SLOT = 72;
@@ -115,11 +116,11 @@ export function CallGraph({ topology, counts, filter, focus, onFocus, flash }: P
       </div>
       <div className="tr2-graph-scroll">
         <div className="tr2-graph-grid">
-          <span className="tr2-graph-caption">Clients</span>
+          <SectionLabel size="sm">Clients</SectionLabel>
           <span aria-hidden="true" />
-          <span className="tr2-graph-caption">Mock endpoints</span>
+          <SectionLabel size="sm">Mock endpoints</SectionLabel>
           <span aria-hidden="true" />
-          <span className="tr2-graph-caption">Dispatched example</span>
+          <SectionLabel size="sm">Dispatched example</SectionLabel>
 
           <div className="tr2-graph-col" data-col="clients">
             {clients.map((c) => (
