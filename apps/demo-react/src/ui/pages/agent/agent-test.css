@@ -9,7 +9,7 @@
 .run-badge-link { display: inline-flex; border-radius: var(--radius-badge); text-decoration: none; }
 .run-badge-link:hover { text-decoration: none; }
 
-.demo-page-header-text:has(.run-meta) { gap: 12px; flex-basis: 520px; }
+.agent-test .demo-page-header-text:has(.run-meta) { gap: 12px; flex-basis: 520px; }
 
 /* Setup form */
 .setup-card { display: flex; flex-direction: column; gap: 18px; padding: 20px; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); }
@@ -148,8 +148,8 @@
 }
 .lifecycle-note > .icon { flex: none; margin-top: 2px; stroke-width: 2.4; }
 
-.exchange { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border); border-radius: 6px; }
-.exchange[data-highlight] { border-color: var(--danger); }
+.agent-test .exchange { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border); border-radius: 6px; }
+.agent-test .exchange[data-highlight] { border-color: var(--danger); }
 .exchange-head {
   display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px 12px; padding: 7px 12px;
   border-bottom: 1px solid var(--border); background: var(--raised); font: 400 12px/normal var(--font-mono);

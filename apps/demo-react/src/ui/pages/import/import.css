@@ -118,9 +118,9 @@
 .boxed-list-op { display: inline-flex; align-items: center; gap: 6px; font: 400 12px/16px var(--font-mono); color: var(--text-secondary); }
 
 /* A2A interfaces beside the capabilities. */
-.agent-split { display: flex; flex-wrap: wrap; gap: 16px; }
-.agent-split > :first-child { flex: 2 1 340px; }
-.agent-split > :last-child { flex: 1 1 220px; }
+.import .agent-split { display: flex; flex-wrap: wrap; gap: 16px; }
+.import .agent-split > :first-child { flex: 2 1 340px; }
+.import .agent-split > :last-child { flex: 1 1 220px; }
 .capabilities { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 10px 14px; list-style: none; border: 1px solid var(--border); border-radius: 4px; }
 .capabilities > li { display: flex; align-items: center; gap: 8px; font: 400 12px/16px var(--font-mono); color: var(--text); }
 .capabilities > li[data-on='false'] { color: var(--text-muted); }
