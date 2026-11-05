@@ -3,7 +3,6 @@
 .conf-section-head { display: flex; flex-direction: column; gap: 6px; padding-top: 6px; }
 .conf-section-head h2 { margin: 0; font: 800 26px/1.1 var(--font-brand); }
 .conf-section-head p { margin: 0; max-width: 760px; font-size: 14px; color: var(--text-muted); }
-.conf-row { display: flex; flex-wrap: wrap; gap: 16px; align-items: flex-start; }
 
 /* Bands: ok >= 80, partial 50..79, risk < 50, untested. */
 .conf-section [data-band='ok'] { --band: var(--success); --band-tint: var(--success-tint); }
@@ -11,8 +10,6 @@
 .conf-section [data-band='risk'] { --band: var(--danger); --band-tint: var(--danger-tint); }
 .conf-section [data-band='untested'] { --band: var(--text-muted); --band-tint: var(--canvas); }
 
-.treemap-card { flex: 999 1 560px; }
-.index-card { flex: 1 1 360px; }
 .treemap-card > .panel-body, .index-card > .panel-body { display: flex; flex-direction: column; padding: 18px; }
 .treemap-card > .panel-body { gap: 12px; }
 .index-card > .panel-body { gap: 14px; }

@@ -6,6 +6,7 @@ import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { SectionLabel } from '@/ui/components/ui/section-label';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { Select } from '@/ui/components/ui/select';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { ConformanceSection } from './ConformanceSection';
 import { HourlyChart } from './HourlyChart';
@@ -74,10 +75,14 @@ export default function UsagePage() {
           <div className="us-page" aria-busy={usage.status === 'loading'}>
             <UsageKpis view={view} />
             <HourlyChart key={`${view.scope}-${view.period}`} view={view} />
-            <div className="us-split">
-              <UsageHeatmap key={`h-${view.scope}`} view={view} />
-              <OperationsTable view={view} />
-            </div>
+            <SplitPane sideWidth="380px" sideMax="560px" mainWidth="480px" gap="16px" keepSideMax>
+              <SplitPaneSide>
+                <UsageHeatmap key={`h-${view.scope}`} view={view} />
+              </SplitPaneSide>
+              <SplitPaneMain>
+                <OperationsTable view={view} />
+              </SplitPaneMain>
+            </SplitPane>
           </div>
         ) : null}
         {domains.data ? <ConformanceSection domains={domains.data} view={view} selected={scope} /> : null}
