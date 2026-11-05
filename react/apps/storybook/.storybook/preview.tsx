@@ -48,7 +48,7 @@ const preview: Preview = {
     docs: { theme },
     options: {
       selectedPanel: 'deep-ink/copy',
-      storySort: { order: ['Introduction', 'Foundations', 'Components', 'Microcks', 'Elements', 'Patterns', 'Plugins'] },
+      storySort: { order: ['Introduction', 'Getting started', 'Foundations', 'Components', 'Microcks', 'Elements', 'Patterns', 'Plugins'] },
     },
     a11y: { test: 'error' },
   },
