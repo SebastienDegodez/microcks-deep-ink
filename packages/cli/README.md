@@ -1,8 +1,8 @@
 # @microcks-deep-ink/cli
 
 Copies Deep Ink components from the registry into your Angular or plain HTML app, shadcn-style. You own the copied files.
-**React apps do not copy:** they use the `@microcks/deep-ink` package (`react/packages/deep-ink`). In a React project, or with
-`--framework react`, the CLI prints `pnpm add @microcks/deep-ink` and the imports, and copies nothing (`--framework html`
+**React apps do not copy:** they use the `@microcks/deep-ink` package (`react/packages/deep-ink`). In a React project (unless its `deep-ink.json` says
+angular or html, see below), or with `--framework react`, the CLI prints `pnpm add @microcks/deep-ink` and the imports, and copies nothing (`--framework html`
 still copies the HTML recipes).
 Zero dependencies (Node 22 built-ins only). DEMO tooling, private, not published to npm.
 The item names are the registry names (`button`, `tabs`, `workflow-loom`...); `deep-ink list` prints them.
@@ -36,6 +36,10 @@ deep-ink view   <item> [--framework …]                        # prints the fil
 | angular | `@angular/core` | `src/app/ui` | `src/styles/deep-ink` |
 | react | `react` (and no `@angular/core`) | nothing copied: use `@microcks/deep-ink` | |
 | html | neither | `deep-ink` | `deep-ink/css` |
+
+The framework comes from `--framework`, else from `framework` in an existing `deep-ink.json`, else from detection.
+So a project whose `deep-ink.json` says `angular` or `html` keeps copying that framework even if `package.json` has
+`react`; pass `--framework react` to get the package notice there instead (nothing is read or written).
 
 `init` copies `tokens.css` (or the variant without web fonts with `--no-fonts`) and `base.css`, writes
 `<css-out>/index.css` (the `@import` lines in dependency order, rewritten after every `add`) and `deep-ink.json`.

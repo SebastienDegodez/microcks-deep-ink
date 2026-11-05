@@ -5,6 +5,7 @@ import { log } from '../src/log.mjs';
 
 const HELP = `deep-ink: copy Deep Ink components into your Angular or HTML app (shadcn-style).
 React apps use the @microcks/deep-ink package instead: --framework react prints how.
+Framework: --framework, else deep-ink.json, else detected from package.json.
 
 Usage
   deep-ink init   [--framework angular|html] [--out DIR] [--css-out DIR] [--no-fonts] [--cwd DIR]
