@@ -52,6 +52,12 @@ for a substring), then each `keys` entry (`keyboard.press`), then `type` (`keybo
 accessible name only: read them with `page.locator('body').aria_snapshot()`, don't guess. Same capture settings as
 `shoot`, written to `<id>--<theme>.png`; a state whose target is missing prints `FAILED <id>` and exits 1.
 
+Time is frozen: each page gets a paused Playwright fake clock (`Date`, timers, rAF) at a fixed instant, advanced only by
+fixed steps (2 s after load in 4 rounds of real wait + fake step, 200 ms after each key, 800 ms after typing). The
+cockpit traffic ticker (a JS interval, untouched by `animations=disabled`) therefore shows the same rows on every run.
+Chromium runs with software raster on one thread and no partial raster (`DETERMINISTIC_ARGS`), which removes the
+1-step anti-aliasing jitter (`NEAR` on table borders, tab underlines) seen with the default raster; `shoot` is unchanged.
+
 ### probe — animation inventory
 
 ```sh
@@ -75,11 +81,22 @@ Why: the demo is code-split; Vite injects each page's CSS chunk on first visit a
 (`.facts`, `.projection-pill`, …) can then restyle components on pages visited later, which a fresh-page `shoot` never
 sees. In ONE page per theme `leak` visits every route by hash navigation (no reload), then re-visits each one and
 captures `<out>/leak/<safe>--<theme>.png`, compared (same strict rules as `diff`) with a fresh-page capture in
-`<out>/fresh/`. Each difference is re-checked on a fresh page whose stylesheets are replaced by the accumulated ones (same
-order, `<out>/leak/<safe>--<theme>--css.png`): `LEAK <route> <theme> css: …` means the CSS alone reproduces it,
-`state` means it comes from in-memory app state instead. Exit 1 on any LEAK (NEAR included unless `--tolerant`). Before
-judging, a second fresh capture is taken: if the two fresh captures already differ (live counters, e.g. `/traces`), the
-route prints `FLAKY <route> <theme>` and is not judged (does not fail).
+`<out>/fresh/`. Both run on the frozen clock and raster flags of `states`.
+
+A pixel difference alone also comes from in-memory app state (runner progress, visited filters) or 1-step
+anti-aliasing, so each difference is judged by a deterministic CSS-only rule, in the fresh page itself (same DOM, app
+state and clock): its computed styles are recorded, its stylesheets are replaced by the accumulated ones in the same
+order (`<out>/leak/<safe>--<theme>--css.png`), then
+
+- **LEAK** (fails, exit 1) when the swap changes the pixels AND at least one rule from a stylesheet the route does not
+  load itself matches an element whose computed value changed for a property that rule declares. LEAKs are grouped by
+  that set of foreign rules: `LEAK <Chunk>.css <selector> [+ …] -> <n> route-theme(s): …`.
+- **LEAK-NOISE** (reported, never fails) otherwise: `(no CSS-caused pixel change)` or `(no foreign rule involved)`.
+  Gate on the exit code; read the noise lines when a page's own state behaviour is under change.
+
+`--tolerant` skips NEAR differences at both steps. On main (110 routes) it reports exactly 3 LEAKs: `.exchange`
+(AgentTestRunPage.css) on service and copilot pages, `.demo-page-header-text:has(.run-meta)` (AgentTestRunPage.css) on
+workflow run pages, `.agent-split > :first-child / :last-child` (ImportPage.css) on the concierge pages.
 
 Chromium quirk: once a document took a full-page screenshot taller than the viewport, its fallback monospace text
 measures wider (`Ctrl K` kbd 50 → 57 px) until reload. The single leak page is in that state after its first tall
