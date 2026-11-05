@@ -15,6 +15,21 @@
     color: var(--text);
   }
 
+  /* scroll=false: a table that never overflows. Not a scroll container, so no region and no tab stop;
+     the rounded border still clips the corner cells. */
+  .table-wrap[data-scroll="false"] {
+    overflow: clip;
+  }
+
+  /* Fixed layout: columns take the width set on their header; long cell content wraps anywhere. */
+  .table[data-layout="fixed"] {
+    table-layout: fixed;
+  }
+  .table[data-layout="fixed"] :is(th, td) {
+    box-sizing: border-box;
+    overflow-wrap: anywhere;
+  }
+
   .table caption {
     padding: var(--space-3) var(--space-4);
     text-align: start;
@@ -105,7 +120,8 @@
   }
   /* Controls inside other cells stay clickable above the stretched link. */
   .table td a:not(.table-rowlink),
-  .table td button {
+  .table td button,
+  .table .table-pick {
     position: relative;
     z-index: 1;
   }
@@ -139,6 +155,30 @@
   }
   .table th[aria-sort] .table-sort {
     color: var(--text);
+  }
+
+  /* Selectable row header: a toggle button (aria-pressed) that reads like the row header text. */
+  .table-pick {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 0;
+    padding: 0;
+    font: inherit;
+    text-align: start;
+    color: inherit;
+    background: transparent;
+    border: 0;
+    cursor: pointer;
+  }
+  .table th[data-mono] .table-pick {
+    font-family: var(--font-mono);
+  }
+  .table-pick:hover {
+    text-decoration: underline;
+  }
+  .table-pick:focus-visible {
+    border-radius: 2px;
   }
 
   .table-empty {

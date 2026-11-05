@@ -567,6 +567,7 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
     { className: "TableDirective", selector: "table[mkTable]", inputs: [
       {"name":"density","type":"\"compact\" | \"comfortable\"","control":"select","options":["compact","comfortable"],"required":false,"default":"'comfortable'","model":false,"description":""},
       {"name":"headerCase","type":"\"upper\" | \"sentence\"","control":"select","options":["upper","sentence"],"required":false,"default":"'upper'","model":false,"description":"`sentence`: sentence-case 12px headers, top-aligned cells, tabular figures. Row tones: `data-tone=\"failed | idle\"` on a `<tr>`."},
+      {"name":"layout","type":"\"fixed\" | \"auto\"","control":"select","options":["fixed","auto"],"required":false,"default":"'auto'","model":false,"description":"`fixed`: `table-layout: fixed`, columns take the width of their header; long cell content wraps anywhere."},
     ] },
     { className: "DataTableComponent", selector: "mk-data-table", inputs: [
       {"name":"caption","type":"string","control":"text","required":true,"model":false,"description":"Visible table title (a real `<caption>`)."},
@@ -582,6 +583,9 @@ export const REGISTRY_INPUTS: Record<string, ClassDoc[]> = {
       {"name":"density","type":"\"compact\" | \"comfortable\"","control":"select","options":["compact","comfortable"],"required":false,"default":"'comfortable'","model":false,"description":""},
       {"name":"headerCase","type":"\"upper\" | \"sentence\"","control":"select","options":["upper","sentence"],"required":false,"default":"'upper'","model":false,"description":"`upper` (default): uppercase 11px headers. `sentence`: sentence-case 12px headers, top-aligned cells, tabular figures."},
       {"name":"rowTone","type":"((row: T) => \"danger\" | \"failed\" | \"idle\" | undefined) | undefined","control":"object","required":false,"model":false,"description":"Tone of a row: `failed` sits on the surface fill, `danger` on the danger tint (an unmet row), `idle` is dimmed with the muted text colour. Write the state in a cell too."},
+      {"name":"scroll","type":"boolean","control":"boolean","required":false,"default":"true","model":false,"description":"`true` (default): the wrapper is a focusable region that scrolls. `false`: a plain wrapper, no region and no tab stop, for a table that never overflows (usually `layout=\"fixed\"`); overflowing content is clipped."},
+      {"name":"layout","type":"\"fixed\" | \"auto\"","control":"select","options":["fixed","auto"],"required":false,"default":"'auto'","model":false,"description":"`auto` (default) sizes columns from their content. `fixed`: `table-layout: fixed`, columns take their `width` and long cell content wraps anywhere."},
+      {"name":"selectable","type":"boolean","control":"boolean","required":false,"default":"false","model":false,"description":"Makes the row header of each row a toggle button (`aria-pressed`, true on `selectedKey`); activating it emits `rowSelect`. Needs a `rowHeader` column; ignored on a cell that holds the row link."},
     ] },
   ],
   "tabs": [
