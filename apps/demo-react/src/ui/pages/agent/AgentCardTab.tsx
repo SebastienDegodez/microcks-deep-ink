@@ -6,6 +6,7 @@ import { Icon } from '@/ui/components/ui/icon';
 import { Input } from '@/ui/components/ui/input';
 import { SectionLabel } from '@/ui/components/ui/section-label';
 import { Segmented } from '@/ui/components/ui/segmented';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 
 type Tok = { v: string; k: 'key' | 'colon' | 'str' | 'num' | 'lit' | 'punct' | 'plain' };
 
@@ -43,8 +44,8 @@ export function AgentCardTab({ agent }: { agent: AgentProfile }) {
   const missing = missingCardFields(agent.card);
 
   return (
-    <div className="agent-card-split">
-      <aside className="agent-outline" aria-label="Card outline">
+    <SplitPane sideWidth="240px" sideMax="320px" keepSideMax>
+      <SplitPaneSide as="aside" className="agent-outline" aria-label="Card outline">
         <SectionLabel as="h2" size="sm" weight="regular" className="agent-outline-title">Outline</SectionLabel>
         <ul className="agent-outline-list" aria-label="Sections of the Agent Card">
           {CARD_SECTIONS.map((s) => {
@@ -73,8 +74,8 @@ export function AgentCardTab({ agent }: { agent: AgentProfile }) {
           <span className="agent-card-check" data-tone="warning"><Icon name="warning" size={13} />No signatures</span>
           <span>Optional JWS. The card cannot be verified, reported as a warning by the last test.</span>
         </div>
-      </aside>
-      <section className="agent-card-json" aria-label="Agent Card JSON">
+      </SplitPaneSide>
+      <SplitPaneMain as="section" className="agent-card-json" aria-label="Agent Card JSON">
         <div className="agent-card-bar">
           <Segmented
             label="Card version"
@@ -118,7 +119,7 @@ export function AgentCardTab({ agent }: { agent: AgentProfile }) {
             })}
           </ol>
         </div>
-      </section>
-    </div>
+      </SplitPaneMain>
+    </SplitPane>
   );
 }

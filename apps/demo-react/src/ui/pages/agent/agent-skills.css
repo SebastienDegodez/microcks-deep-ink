@@ -1,11 +1,10 @@
 /* Screen 18 · Skills tab. Layout and page-only looks; components keep their own look. */
 
-/* Rail + detail (future split-pane). */
-.agent-split { display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-start; }
-.agent-rail { flex: 1 1 260px; max-width: 340px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
+/* Rail + detail (SplitPane). */
+.agent-rail { display: flex; flex-direction: column; gap: 6px; }
 .agent-rail-head { padding: 0 4px 4px; }
 .agent-rail-note { margin: 6px 4px 0; font: 400 12px/1.5 var(--font-ui); color: var(--text-muted); }
-.agent-detail { flex: 999 1 560px; min-width: 0; box-sizing: border-box; display: flex; flex-direction: column; gap: 20px; padding: 20px; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); }
+.agent-detail { display: flex; flex-direction: column; gap: 20px; padding: 20px; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); }
 
 /* Skill heading. */
 .agent-skill-head { display: flex; flex-direction: column; gap: 8px; }
