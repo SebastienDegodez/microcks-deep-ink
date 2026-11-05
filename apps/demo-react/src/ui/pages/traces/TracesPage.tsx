@@ -24,6 +24,7 @@ import { FactRow, Facts } from '@/ui/components/ui/facts';
 import { Field } from '@/ui/components/ui/field';
 import { Icon } from '@/ui/components/ui/icon';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
+import { SectionLabel } from '@/ui/components/ui/section-label';
 import { Select } from '@/ui/components/ui/select';
 import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
@@ -537,7 +538,7 @@ function CallDetail({ call: c, replayNote, onClose, onReplay }: { call: TraceCal
       </div>
 
       <div className="tr2-events">
-        <h3>Span events</h3>
+        <SectionLabel as="h3">Span events</SectionLabel>
         {traceEvents(c).map((e, i) => (
           <div key={i} className="tr2-event">
             <span className="tr2-event-at">{e.at}</span>
