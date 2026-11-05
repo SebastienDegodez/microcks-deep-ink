@@ -21,6 +21,7 @@ import { Menu } from '@/ui/components/ui/menu';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { OpPickList } from '@/ui/components/ui/op-pick';
 import { SectionLabel } from '@/ui/components/ui/section-label';
+import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import AgentPage from '../agent/AgentPage';
@@ -255,8 +256,8 @@ function ApiServicePage() {
         ]}
       >
         <TabPanel id="operations" idPrefix="svc" value={tabId}>
-          <div className="service-ops">
-            <div className="op-rail">
+          <SplitPane>
+            <SplitPaneSide className="op-rail">
               <SectionLabel as="p" size="sm" weight="regular" split className="op-rail-head"><span>{pluralize(ops.data?.length ?? 0, 'operation')}</span><span>calls · 7 d</span></SectionLabel>
               <OpPickList
                 label={`Operations of ${svc.name} ${svc.version}`}
@@ -278,9 +279,9 @@ function ApiServicePage() {
                 })}
               />
               <p className="op-rail-note">Every operation is served as soon as the contract is imported. No code, no deployment.</p>
-            </div>
+            </SplitPaneSide>
             {currentOp ? (
-              <section aria-label="Operation detail" className="op-detail">
+              <SplitPaneMain as="section" aria-label="Operation detail" className="op-detail">
                 <div className="op-detail-head">
                   <div className="op-detail-title">
                     <div className="op-detail-title-row">
@@ -360,8 +361,8 @@ function ApiServicePage() {
                       {aiAccepted.length ? ` · ${pluralize(aiAccepted.length, 'AI example')} accepted` : ''}
                     </span>
                   </div>
-                  <div className="op-examples-body">
-                    <div className="example-col">
+                  <SplitPane sideWidth="220px" sideMax="300px" mainWidth="420px" gap="16px">
+                    <SplitPaneSide className="example-col">
                     <ul className="example-list" aria-label="Examples of the operation">
                       {ordered.map((e) => {
                         const ghost = e.reviewState === 'pending';
@@ -395,9 +396,9 @@ function ApiServicePage() {
                         <button type="button" onClick={() => void undo()}>Undo</button>
                       </div>
                     ) : null}
-                    </div>
+                    </SplitPaneSide>
                     {selected && spec ? (
-                      <div className="example-detail">
+                      <SplitPaneMain className="example-detail">
                         {selected.reviewState === 'pending' ? (
                           <Callout tone="ai" variant="outline" title="">
                             Proposed by AI from the contract's <span className="ex-mono">{schemaName}</span> schema. The mock only serves it once accepted.
@@ -426,13 +427,13 @@ function ApiServicePage() {
                             ]}
                           />
                         </Exchange>
-                      </div>
+                      </SplitPaneMain>
                     ) : null}
-                  </div>
+                  </SplitPane>
                 </div>
-              </section>
+              </SplitPaneMain>
             ) : null}
-          </div>
+          </SplitPane>
         </TabPanel>
 
         <TabPanel id="properties" idPrefix="svc" value={tabId}>
