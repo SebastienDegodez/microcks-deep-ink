@@ -1,0 +1,13 @@
+/* Mini step strip of a workflow run (StepStrip.tsx). Colors are tokens. */
+.wf-strip { display: inline-flex; gap: 2px; vertical-align: middle; }
+.wf-strip-cell {
+  display: inline-flex; align-items: center; justify-content: center;
+  inline-size: 20px; block-size: 20px; border-radius: 4px;
+  border: 1.5px solid var(--border-control);
+  font: 700 12px/1 var(--font-ui); color: var(--text);
+  background: var(--canvas);
+}
+.wf-strip-cell[data-status="passed"] { background: var(--success-tint); border-color: var(--success); }
+.wf-strip-cell[data-status="failed"] { background: var(--danger-tint); border-color: var(--danger); }
+.wf-strip-cell[data-status="not-run"] { border-style: dashed; color: var(--text-secondary); }
+.wf-strip-cell[data-status="never"] { border-style: dashed; border-color: var(--text-secondary); }

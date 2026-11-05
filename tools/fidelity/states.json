@@ -15,5 +15,7 @@
  { "id": "sources-new-url-tab", "route": "/sources/new", "focus": { "role": "tab", "name": "URL" }, "keys": ["Enter"] },
  { "id": "service-properties-tab", "route": "/services/pastry2", "focus": { "role": "tab", "name": "Properties & MCP" }, "keys": ["Enter"] },
  { "id": "agent-card-tab", "route": "/services/concierge", "focus": { "role": "tab", "name": "Agent Card" }, "keys": ["Enter"] },
- { "id": "workflow-steps-tab", "route": "/workflows/pastry/restock-pastry", "focus": { "role": "tab", "name": "Steps , 4" }, "keys": ["Enter"] }
+ { "id": "workflow-steps-tab", "route": "/workflows/pastry/restock-pastry", "focus": { "role": "tab", "name": "Steps , 4" }, "keys": ["Enter"] },
+ { "id": "workflows-loading", "route": "/workflows", "focus": { "role": "button", "name": "Show loading" }, "keys": ["Enter"] },
+ { "id": "workflows-empty", "route": "/workflows", "focus": { "role": "button", "name": "Show empty state" }, "keys": ["Enter"] }
 ]
