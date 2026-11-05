@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { spawnSync } from 'node:child_process';
 import { createHash } from 'node:crypto';
-import { existsSync, mkdtempSync, readFileSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
+import { existsSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync, mkdirSync } from 'node:fs';
 import { tmpdir } from 'node:os';
 import { dirname, join, resolve } from 'node:path';
 import { after, before, describe, it } from 'node:test';
@@ -51,6 +51,76 @@ describe('list', () => {
     assert.equal(r.status, 0, r.stderr);
     assert.match(r.stdout, /pnpm add @microcks\/deep-ink/);
     assert.doesNotMatch(r.stdout, /button\s+natural/);
+  });
+});
+
+describe('framework precedence: --framework, then deep-ink.json, then detection', () => {
+  const NOTICE = /pnpm add @microcks\/deep-ink/;
+  const snapshot = (dir) =>
+    Object.fromEntries(
+      readdirSync(dir, { recursive: true, withFileTypes: true })
+        .filter((e) => e.isFile())
+        .map((e) => {
+          const rel = join(e.parentPath, e.name);
+          return [rel, readFileSync(rel, 'utf8')];
+        }),
+    );
+  const GUARDED = [['init'], ['add', 'button'], ['list'], ['view', 'button'], ['status'], ['diff', 'button']];
+
+  it('--framework react beats an angular deep-ink.json: notice, nothing touched, registry not read', () => {
+    const dir = project();
+    assert.equal(run(['add', 'button', '--cwd', dir]).status, 0);
+    assert.equal(JSON.parse(read(dir, 'deep-ink.json')).framework, 'angular');
+    const before = snapshot(dir);
+    for (const args of GUARDED) {
+      for (const extra of [[], ['--registry', join(dir, 'missing.json')]]) {
+        const r = run([...args, '--framework', 'react', ...extra, '--cwd', dir]);
+        assert.equal(r.status, 0, `${args.join(' ')} ${extra.join(' ')}: ${r.stderr}`);
+        assert.match(r.stdout, NOTICE);
+      }
+    }
+    assert.deepEqual(snapshot(dir), before);
+  });
+
+  it('an angular deep-ink.json beats react detection: normal angular behaviour', () => {
+    const dir = project({ dependencies: { react: '19' } });
+    assert.equal(run(['add', 'button', '--framework', 'angular', '--cwd', dir]).status, 0);
+    assert.equal(JSON.parse(read(dir, 'deep-ink.json')).framework, 'angular');
+
+    const list = run(['list', '--cwd', dir]);
+    assert.equal(list.status, 0, list.stderr);
+    assert.match(list.stdout, /button\s+natural/);
+    assert.doesNotMatch(list.stdout, NOTICE);
+
+    const status = run(['status', '--exit-code', '--cwd', dir]);
+    assert.equal(status.status, 0, status.stderr);
+    assert.match(status.stdout, /button\s+up to date/);
+    assert.doesNotMatch(status.stdout, NOTICE);
+
+    const diff = run(['diff', 'button', '--cwd', dir]);
+    assert.equal(diff.status, 0, diff.stderr);
+    assert.match(diff.stdout, /button: identical to the registry/);
+
+    const add = run(['add', 'tabs', '--cwd', dir]);
+    assert.equal(add.status, 0, add.stderr);
+    assert.doesNotMatch(add.stdout, NOTICE);
+    assert.ok(readdirSync(join(dir, 'src/app/ui'), { recursive: true }).some((f) => /tabs.*\.ts$/.test(f)));
+
+    for (const args of [['list'], ['status']]) {
+      const r = run([...args, '--framework', 'react', '--cwd', dir]);
+      assert.equal(r.status, 0, r.stderr);
+      assert.match(r.stdout, NOTICE);
+    }
+  });
+
+  it('without flag or deep-ink.json, react detection prints the notice', () => {
+    const dir = project({ dependencies: { react: '19' } });
+    for (const args of GUARDED) {
+      const r = run([...args, '--cwd', dir]);
+      assert.equal(r.status, 0, `${args.join(' ')}: ${r.stderr}`);
+      assert.match(r.stdout, NOTICE);
+    }
+    assert.equal(existsSync(join(dir, 'deep-ink.json')), false);
   });
 });
 
