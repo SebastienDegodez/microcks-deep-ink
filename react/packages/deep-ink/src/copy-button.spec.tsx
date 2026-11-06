@@ -54,6 +54,26 @@ describe('CopyButton', () => {
     expect(screen.getByRole('button', { name: 'Copied' })).toBeTruthy();
   });
 
+  it('uses an injected copy function and reports the result', async () => {
+    const copy = vi.fn().mockResolvedValue(false);
+    const onCopied = vi.fn();
+    render(<CopyButton value="x" copy={copy} onCopied={onCopied} failedLabel="Échec" />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Copy' }));
+    });
+    expect(copy).toHaveBeenCalledWith('x');
+    expect(onCopied).toHaveBeenCalledWith(false);
+    expect(screen.getByRole('status').textContent).toBe('Échec');
+  });
+
+  it('treats a rejected copy function as a failure', async () => {
+    render(<CopyButton value="x" copy={() => Promise.reject(new Error('no'))} />);
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: 'Copy' }));
+    });
+    expect(screen.getByRole('status').textContent).toBe('Copy failed');
+  });
+
   it('has no axe violations', async () => {
     vi.useRealTimers();
     const { container } = render(<CopyButton value="x" />);
