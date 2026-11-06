@@ -125,6 +125,11 @@ describe('WP7 pages', () => {
     expect(screen.getByText('api-pastry-2.0-examples.yaml')).toBeTruthy();
     expect(screen.getByRole('link', { name: /Add 1 example to API Pastry 2.0/ })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Generate again' }));
+    await waitFor(() => {
+      const indicator = document.querySelector('.copilot-generating .live');
+      expect(indicator?.getAttribute('data-size')).toBe('compact');
+      expect(indicator?.getAttribute('data-pulse')).toBe('false');
+    });
     await waitFor(() => expect(screen.queryByRole('article', { name: 'Paris-Brest, rejected' })).toBeNull());
     expect(screen.getByRole('article', { name: 'Tartelette Framboise, accepted' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Cancel generation' }));

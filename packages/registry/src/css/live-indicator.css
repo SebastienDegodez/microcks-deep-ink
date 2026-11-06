@@ -11,6 +11,7 @@
     white-space: nowrap;
   }
   .live[data-size="sm"] { gap: 6px; padding: 2px 8px; font-size: 11px; }
+  .live[data-size="compact"] { padding: 3px 10px; line-height: 1.3; }
   /* Inline: no pill, just the dot and the word (KPI cards). */
   .live[data-variant="inline"] { gap: 6px; padding: 0; border: 0; font-size: 11px; }
   /* Box: a dashed control-sized frame that stands in for a button while a job runs (Hub Install). md 36px, lg 44px. */
@@ -35,6 +36,7 @@
   .live[data-size="sm"] .live-dot,
   .live[data-variant="inline"] .live-dot,
   .live[data-variant="dot"] .live-dot { width: 7px; height: 7px; }
+  .live[data-pulse="false"] .live-dot { animation: none; }
   /* Paused: neutral colours and a pause glyph instead of the dot; the word "paused" is also written. */
   .live[data-paused] { border-color: var(--border-strong); color: var(--text-secondary); }
   .live[data-paused] > .icon { flex: none; stroke-width: 3; }

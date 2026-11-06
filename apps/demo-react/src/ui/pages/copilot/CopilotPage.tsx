@@ -8,6 +8,7 @@ import { ApiBadge } from '@/ui/components/ui/api-badge';
 import { Button } from '@/ui/components/ui/button';
 import { CopyButton } from '@/ui/components/ui/copy-button';
 import { Icon } from '@/ui/components/ui/icon';
+import { LiveIndicator } from '@microcks/deep-ink';
 import { Textarea } from '@/ui/components/ui/input';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { OpPickList } from '@/ui/components/ui/op-pick';
@@ -327,7 +328,7 @@ export default function CopilotPage() {
             <>
             <div role="status" className="copilot-generating">
               <p className="copilot-generating-line">
-                <span className="copilot-live"><span aria-hidden="true" className="copilot-live-dot" />live</span>
+                <LiveIndicator size="compact" pulse={false} />
                 Generating {exWord(count)} for {op.method} {op.path}{hint.trim() ? ` · hint: "${hint.trim()}"` : ''}…
               </p>
               {Array.from({ length: count }, (_, i) => (
