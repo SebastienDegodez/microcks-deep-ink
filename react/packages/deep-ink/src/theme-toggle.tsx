@@ -12,19 +12,36 @@ function subscribe(onChange: () => void) {
 
 const serverTheme = (): Theme => 'dark';
 
-export type ThemeToggleProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'onClick' | 'aria-pressed' | 'aria-label'>;
+export interface ThemeToggleProps
+  extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, 'children' | 'onClick' | 'aria-pressed' | 'aria-label'> {
+  /** Controlled theme. When set, the toggle never touches `<html>` or storage: handle `onThemeChange`. */
+  theme?: Theme;
+  /** Called with the requested theme on each click. */
+  onThemeChange?: (theme: Theme) => void;
+  /** Accessible name. Defaults to "Light theme". */
+  label?: string;
+}
 
 /**
  * Toggle button for the light theme (a bordered square with the moon icon in both themes).
- * The label stays "Light theme"; `aria-pressed` tells whether it is on.
+ * The label stays the same; `aria-pressed` tells whether the light theme is on.
+ * Uncontrolled by default: it restores, applies and persists the theme on `<html>`.
  */
-export function ThemeToggle(props: ThemeToggleProps) {
-  const theme = useSyncExternalStore(subscribe, getTheme, serverTheme);
+export function ThemeToggle({ theme: controlled, onThemeChange, label = 'Light theme', ...props }: ThemeToggleProps) {
+  const stored = useSyncExternalStore(subscribe, getTheme, serverTheme);
+  const isControlled = controlled !== undefined;
+  const theme = controlled ?? stored;
 
-  // Applies the saved preference once; the event it dispatches updates `theme`.
+  // Applies the saved preference once; the event it dispatches updates `stored`.
   useEffect(() => {
-    restoreTheme();
-  }, []);
+    if (!isControlled) restoreTheme();
+  }, [isControlled]);
+
+  const toggle = () => {
+    const next: Theme = theme === 'light' ? 'dark' : 'light';
+    if (!isControlled) setTheme(next);
+    onThemeChange?.(next);
+  };
 
   return (
     <Button
@@ -33,9 +50,9 @@ export function ThemeToggle(props: ThemeToggleProps) {
       variant="secondary"
       iconOnly
       className="theme-toggle"
-      aria-label="Light theme"
+      aria-label={label}
       aria-pressed={theme === 'light'}
-      onClick={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+      onClick={toggle}
     >
       <Icon name="moon" size={18} />
     </Button>
