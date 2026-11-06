@@ -243,3 +243,15 @@
   padding: 0;
   list-style: none;
 }
+
+/*
+ * Inline monospace (ids, paths, header names, values) shared by every page. Only the family (and weight) changes:
+ * size, line height and colour stay those of the surrounding text. Page rules may refine it in their own scope.
+ */
+.demo-mono {
+  font-family: var(--font-mono);
+}
+.demo-mono-strong {
+  font-family: var(--font-mono);
+  font-weight: 600;
+}

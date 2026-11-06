@@ -176,11 +176,11 @@ export function LoomTab({ detail, runs, run, step, sessions, serviceLabel, onPic
 
         {unused.length ? (
           <p className="wf-loom-foot">
-            This workflow weaves {used.length} of the {document.sources.length} sourceDescriptions of <span className="wf-loom-mono">{document.file}</span>.{' '}
+            This workflow weaves {used.length} of the {document.sources.length} sourceDescriptions of <span className="demo-mono">{document.file}</span>.{' '}
             {unused.map((n, i) => (
               <span key={n}>
                 {i > 0 ? (i === unused.length - 1 ? ' and ' : ', ') : null}
-                <span className="wf-loom-mono">{n}</span>
+                <span className="demo-mono">{n}</span>
               </span>
             ))}{' '}
             {unused.length === 1 ? 'is' : 'are'} used by{' '}

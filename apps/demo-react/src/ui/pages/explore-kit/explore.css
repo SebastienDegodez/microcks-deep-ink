@@ -3,7 +3,6 @@
 .ex-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 12px; min-width: 0; }
 .ex-muted { color: var(--text-muted); }
 .ex-secondary { color: var(--text-secondary); }
-.ex-mono { font-family: var(--font-mono); }
 .ex-small { font: var(--type-small); }
 .ex-radio-cards { display: flex; flex-wrap: wrap; gap: 8px; }
 .ex-radio-cards > .ex-radio-card { flex: 1 1 150px; }

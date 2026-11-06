@@ -182,8 +182,8 @@ export default function SourcesPage() {
             <span className="scan-strip-env">{schedule.envVar}</span>
           </span>
           <SummaryStripSep />
-          <span className="scan-strip-pair"><span className="muted">Last scan</span><span className="mono">{formatHourMinute(schedule.lastScanAt)}</span><span className="muted">{schedule.minutesSinceLast} min ago</span></span>
-          <span className="scan-strip-pair"><span className="muted">Next scan</span><span className="mono">{formatHourMinute(schedule.nextScanAt)}</span><span className="muted">in {schedule.minutesUntilNext} min</span></span>
+          <span className="scan-strip-pair"><span className="muted">Last scan</span><span className="demo-mono">{formatHourMinute(schedule.lastScanAt)}</span><span className="muted">{schedule.minutesSinceLast} min ago</span></span>
+          <span className="scan-strip-pair"><span className="muted">Next scan</span><span className="demo-mono">{formatHourMinute(schedule.nextScanAt)}</span><span className="muted">in {schedule.minutesUntilNext} min</span></span>
           <span className="scan-strip-counts">
             <ApiBadge label="sources" value={String(counts.all)} />
             {failing ? <ApiBadge label="failing" value={String(failing)} status="danger" /> : null}
@@ -250,14 +250,14 @@ export default function SourcesPage() {
                 <div className="source-card-meta">
                   <span className="source-role" data-role={j.role}>{j.role.toUpperCase()}</span>
                   <span className="source-origin">{originLabel(j.origin)}</span>
-                  <span className="mono source-kind">{j.artifactLabel}</span>
-                  {j.secretName ? <span className="source-secret"><Icon name="lock" size={13} /><span className="sr-only">Secret </span><span className="mono">{j.secretName}</span></span> : null}
+                  <span className="demo-mono source-kind">{j.artifactLabel}</span>
+                  {j.secretName ? <span className="source-secret"><Icon name="lock" size={13} /><span className="sr-only">Secret </span><span className="demo-mono">{j.secretName}</span></span> : null}
                   <span>{upload ? 'no schedule · one-off' : j.active ? `next scan ${formatHourMinute(schedule.nextScanAt)}` : 'scans paused'}</span>
                   <ServiceLinks importer={j} className="source-card-services" />
                 </div>
                 {j.error ? (
                   <div role="alert" className="source-notice" data-tone="danger">
-                    <Icon name="cross" size={14} /><span className="mono source-notice-strong">{j.error.message}</span><span className="secondary">{j.error.since}</span>
+                    <Icon name="cross" size={14} /><span className="demo-mono source-notice-strong">{j.error.message}</span><span className="secondary">{j.error.since}</span>
                   </div>
                 ) : null}
                 {j.warning ? (
@@ -312,7 +312,7 @@ export default function SourcesPage() {
             {selected.error ? (
               <div role="note" className="source-failure">
                 <span className="source-failure-title"><Icon name="cross" size={14} />{selected.error.message.replace(' — ', ', ')}</span>
-                <span>{monoTokens(selected.error.detail, [selected.secretName, selected.secretType?.split(' ').pop()])} Mocks keep serving the version imported <span className="mono">{selected.error.servedSince}</span>.</span>
+                <span>{monoTokens(selected.error.detail, [selected.secretName, selected.secretType?.split(' ').pop()])} Mocks keep serving the version imported <span className="demo-mono">{selected.error.servedSince}</span>.</span>
                 <span className="source-failure-actions">
                   <Button asChild size="sm" icon="lock" className="source-failure-link"><RouterLink to="/admin/secrets">Update secret in Administration</RouterLink></Button>
                   <span className="source-failure-help">Secrets are managed by admins; this source only references the name.</span>
@@ -335,7 +335,7 @@ export default function SourcesPage() {
                 {selectedStatus === 'running' ? (
                   <li data-result="live" data-filled="">
                     <div className="sync-timeline-running">
-                      <span className="mono sync-live">now</span>
+                      <span className="demo-mono sync-live">now</span>
                       <span className="secondary">Forced by MA</span>
                       <LiveIndicator label="live · fetching and parsing" variant="inline" />
                     </div>
@@ -402,7 +402,7 @@ function monoTokens(text: string, tokens: readonly (string | undefined)[]): Reac
   const list = tokens.filter((t): t is string => Boolean(t));
   if (!list.length) return text;
   const re = new RegExp(`(${list.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`);
-  return text.split(re).map((part, i) => (list.includes(part) ? <span key={i} className={i === 1 ? 'mono source-failure-secret' : 'mono'}>{part}</span> : part));
+  return text.split(re).map((part, i) => (list.includes(part) ? <span key={i} className={i === 1 ? 'demo-mono source-failure-secret' : 'demo-mono'}>{part}</span> : part));
 }
 
 type Fact = Pick<RegistryFact, 'term' | 'value' | 'sub' | 'mono'>;
@@ -429,7 +429,7 @@ function TimelineLine({ entry, when }: { entry: Extract<SyncEntry, { kind: 'run'
   return (
     <>
       <span className="sync-entry-line">
-        <span className="mono sync-entry-clock">{formatShortClock(entry.at)}</span>
+        <span className="demo-mono sync-entry-clock">{formatShortClock(entry.at)}</span>
         <span className="muted sync-entry-when">{when}</span>
         <span className="secondary">{entry.trigger}</span>
         <span className="sync-entry-result" data-result={entry.result}><Icon name={RESULT_ICON[entry.result]} size={12} />{RESULT_WORD[entry.result]}</span>

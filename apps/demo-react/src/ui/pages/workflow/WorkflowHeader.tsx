@@ -101,12 +101,12 @@ export function WorkflowHeader({ document, workflow, runs, serviceLabel, onMockU
         <span>
           workflowId <span className="wf-facts-strong">{workflow.workflowId}</span>
         </span>
-        <span className="wf-facts-mono">
+        <span className="demo-mono">
           {document.file} · arazzo {document.arazzoVersion}
         </span>
         {document.overlay ? (
           <span>
-            overlay <span className="wf-facts-mono">{document.overlay}</span>
+            overlay <span className="demo-mono">{document.overlay}</span>
           </span>
         ) : null}
         {synced ? (
@@ -184,10 +184,10 @@ function failureText(run: WorkflowRun, workflow: Workflow): ReactNode {
     const step = workflow.steps.find((s) => s.stepId === stopped.stepId);
     return (
       <>
-        Its success criteria held (<span className="wf-note-mono">{stopped.criteria.map((c) => c.condition).join(', ')}</span>), but schema validation failed
+        Its success criteria held (<span className="demo-mono">{stopped.criteria.map((c) => c.condition).join(', ')}</span>), but schema validation failed
         {field && expected ? (
           <>
-            : {who} answers <span className="wf-note-mono">{field[1]}</span> as the string {field[2]} where the {schemaName(stopped.schema.ref) ?? step?.operationId} schema expects a {expected}.
+            : {who} answers <span className="demo-mono">{field[1]}</span> as the string {field[2]} where the {schemaName(stopped.schema.ref) ?? step?.operationId} schema expects a {expected}.
           </>
         ) : (
           <>: {stopped.schema.message}.</>

@@ -62,7 +62,6 @@
 
 /* Footer note */
 .wf-loom-foot { margin: 0; padding: 0 4px; font: 400 12px/1.5 var(--font-ui); color: var(--text-muted); }
-.wf-loom-mono { font-family: var(--font-mono); }
 .wf-loom-foot a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
 
 /* Step inspector */

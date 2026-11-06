@@ -7,7 +7,7 @@
 
 /* Header facts, description and proof strip (children of PageHeader, under the title badge) */
 .wf-facts { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 14px; font: 400 12px/1.4 var(--font-ui); color: var(--text-muted); }
-.wf-facts-mono, .wf-facts-strong { font-family: var(--font-mono); }
+.wf-facts-strong { font-family: var(--font-mono); }
 .wf-facts-strong { color: var(--text); }
 .wf-facts a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
 .wf-description { margin: 0; max-width: 760px; font: 400 15px/1.5 var(--font-ui); color: var(--text-secondary); }
@@ -27,7 +27,6 @@
 .wf-last-note-title { display: inline-flex; align-items: center; gap: 8px; color: var(--danger); font-weight: 600; }
 .wf-last-note-title .icon { flex: none; }
 .wf-last-note-text { flex: 1 1 360px; min-width: 0; color: var(--text-secondary); line-height: 1.5; }
-.wf-note-mono { font-family: var(--font-mono); }
 .wf-last-note-actions { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 12px; }
 .wf-note-link { font: 500 13px/1 var(--font-ui); color: var(--link); text-decoration: none; }
 .wf-note-link:hover { text-decoration: underline; text-underline-offset: 3px; }

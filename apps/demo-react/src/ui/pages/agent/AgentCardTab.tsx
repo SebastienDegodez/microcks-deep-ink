@@ -95,8 +95,8 @@ export function AgentCardTab({ agent }: { agent: AgentProfile }) {
         </div>
         {isMock ? (
           <p className="agent-card-mock-note">
-            Microcks serves this copy of the card. Only <span className="ex-mono">supportedInterfaces</span> changes: every transport points at the mock, in the same order, so JSON-RPC stays preferred.{' '}
-            <span className="ex-mono">securitySchemes</span> is kept as declared; the mock accepts any bearer token.
+            Microcks serves this copy of the card. Only <span className="demo-mono">supportedInterfaces</span> changes: every transport points at the mock, in the same order, so JSON-RPC stays preferred.{' '}
+            <span className="demo-mono">securitySchemes</span> is kept as declared; the mock accepts any bearer token.
           </p>
         ) : null}
         {/* The scroll container must be keyboard reachable (WCAG 2.1.1), so it is focusable and named, as in CodeBlock. */}

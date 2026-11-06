@@ -1,4 +1,3 @@
-import '../tests/page-kit.css';
 import type { FlowCounts, TopologyEdge, TraceCall, TraceTopology } from '@/domain/observe';
 import { fmt } from '@/ui/app/format';
 import { Icon } from '@/ui/components/ui/icon';

@@ -89,7 +89,7 @@ export default function BehaviorPage() {
           title={operation.path}
           variant="mono"
           align="start"
-          breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}`, to: `/services/${svc.id}` }, { label: <span className="ex-mono">{`${operation.method} ${operation.path}`}</span> }]}
+          breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}`, to: `/services/${svc.id}` }, { label: <span className="demo-mono">{`${operation.method} ${operation.path}`}</span> }]}
           leading={<MethodTag method={operation.method} protocol={svc.protocol} />}
           badge={<RouterLink to={`/services/${svc.id}`} className="behavior-api-link"><ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} size="sm" /></RouterLink>}
           description="Mock behavior: how Microcks picks a response for each incoming call, how long it waits, which parameters it checks and whether it keeps state. Try every change in the simulator before saving."

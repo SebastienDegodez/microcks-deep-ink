@@ -7,7 +7,6 @@
 .wf-se-panel h2 { margin: 0; font: 600 16px/1.3 var(--font-ui); }
 .wf-se-intro { display: flex; flex-direction: column; gap: 6px; }
 .wf-se-intro p { margin: 0; max-width: 80ch; font-size: 14px; line-height: 1.55; color: var(--text-secondary); }
-.wf-se-mono { font-family: var(--font-mono); }
 .wf-se-strong { font-weight: 600; }
 .wf-se-sub { color: var(--text-secondary); font-size: 13px; }
 .wf-se-muted { color: var(--text-muted); font-size: 12px; }
@@ -45,7 +44,7 @@
 .wf-se-item:hover { border-color: var(--border-strong); }
 .wf-se-item[aria-pressed='true'] { border-color: var(--action); background: var(--selected); }
 .wf-se-item-head { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 6px; }
-.wf-se-item-head .wf-se-mono { font-size: 13px; }
+.wf-se-item-head .demo-mono { font-size: 13px; }
 .wf-se-item .wf-se-sub { font-size: 12px; }
 .wf-se-state { display: inline-flex; align-items: center; gap: 5px; font-size: 12px; font-weight: 600; color: var(--text-muted); }
 .wf-se-dot { width: 7px; height: 7px; box-sizing: border-box; border-radius: 999px; border: 1.5px solid currentColor; }

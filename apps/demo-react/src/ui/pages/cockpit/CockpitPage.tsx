@@ -152,7 +152,7 @@ export default function CockpitPage() {
         size="lg"
         description={
           <>
-            <span className="ex-mono">microcks.local:8080</span> · {headerDate(data.asOf)} ·{' '}
+            <span className="demo-mono">microcks.local:8080</span> · {headerDate(data.asOf)} ·{' '}
             {empty ? 'fresh install, nothing imported yet' : `${live.length} mocks live, ${attention.length} items need attention`}
           </>
         }

@@ -14,7 +14,7 @@ export function ConfigurationTab() {
       <div role="note" className="ad-lock-note">
         <Icon name="lock" size={14} />
         <span>
-          Read-only. These values come from <span className="ad-mono">application.properties</span> and <span className="ad-mono">features.properties</span>, or from your Helm values or Operator resource. Change them there and restart Microcks.
+          Read-only. These values come from <span className="demo-mono">application.properties</span> and <span className="demo-mono">features.properties</span>, or from your Helm values or Operator resource. Change them there and restart Microcks.
         </span>
       </div>
       <ul className="ad-card ad-flags" aria-label="Features and their configuration">

@@ -127,7 +127,7 @@ function ImportCard({ notify }: { notify: Notify }) {
         <DropZone
           size="sm"
           heading="Drop a snapshot here"
-          hint={<>A <code className="ad-mono">microcks-repository.json</code> exported from any Microcks instance</>}
+          hint={<>A <code className="demo-mono">microcks-repository.json</code> exported from any Microcks instance</>}
           accept="application/json,.json"
           multiple={false}
           chooseLabel="Choose a file"

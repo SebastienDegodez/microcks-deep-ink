@@ -1,7 +1,6 @@
 /* Administration: shared pieces of the five tabs (prototype Admin.dc.html). */
 /* The prototype keeps the browser line-height (normal) except where it sets 1.5. */
 .ad-tab { display: flex; flex-direction: column; gap: 14px; line-height: normal; }
-.ad-mono { font-family: var(--font-mono); }
 .ad-meta { font-size: 13px; color: var(--text-muted); }
 .ad-note { font-size: 12px; color: var(--text-muted); }
 .ad-note-sm { font-size: 11px; color: var(--text-muted); }

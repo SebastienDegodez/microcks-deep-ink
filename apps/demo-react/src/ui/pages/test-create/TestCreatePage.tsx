@@ -1,4 +1,3 @@
-import '../tests/page-kit.css';
 import { useId, useRef, useState, type FormEvent } from 'react';
 import { Link as RouterLink, useNavigate, useSearchParams } from 'react-router';
 import type { CreateTestForm } from '@/application/testing';

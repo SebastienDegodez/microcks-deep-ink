@@ -15,9 +15,6 @@
 .tr-meta-endpoint { font-family: var(--font-mono); color: var(--link); overflow-wrap: anywhere; }
 .tr-meta-runner { padding: 1px 6px; border-radius: 4px; background: var(--raised); font: 400 12px/normal var(--font-mono); }
 .tr-meta-date { font: 400 12px/normal var(--font-mono); color: var(--text-muted); }
-.tr-meta-mono { font-family: var(--font-mono); }
-.tr-mono { font-family: var(--font-mono); }
-.tr-mono-strong { font-family: var(--font-mono); font-weight: 600; }
 
 /* Progress or verdict card | runner log card */
 .tr-top { display: flex; flex-wrap: wrap; align-items: stretch; gap: 20px; }
