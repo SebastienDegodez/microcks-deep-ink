@@ -29,21 +29,36 @@ export function useAdapters<T>(makeAdapters: MakeAdapters<T>): () => T {
   };
 }
 
-/** Fake timers (and `Date`, at the demo clock) for the stream tests of the enclosing `describe`. */
+/** Captured before any test fakes the timers: `settle()` needs real macrotasks. */
+const realSetTimeout = globalThis.setTimeout;
+
+/**
+ * Lets in-flight asynchronous work finish (an HTTP adapter's request answered by MSW takes a few real macrotasks),
+ * without moving the fake clock.
+ */
+export async function settle(): Promise<void> {
+  for (let i = 0; i < 20; i += 1) await new Promise<void>((resolve) => realSetTimeout(resolve, 0));
+}
+
+/**
+ * Fake timers (and `Date`, at the demo clock) for the stream tests of the enclosing `describe`. Only timeouts,
+ * intervals and `Date` are faked: `fetch` and MSW keep their real `setImmediate`/microtasks, so HTTP adapters work.
+ */
 export function useFakeTimers(): void {
   beforeEach(() => {
-    vi.useFakeTimers({ now: new Date('2026-11-03T09:10:04Z') });
+    vi.useFakeTimers({ now: new Date('2026-11-03T09:10:04Z'), toFake: ['setTimeout', 'clearTimeout', 'setInterval', 'clearInterval', 'Date'] });
   });
   afterEach(() => {
     vi.useRealTimers();
   });
 }
 
-/** Subscribes, lets `ms` of fake time pass, and returns what was emitted plus the `Unsubscribe`. */
+/** Subscribes, lets `ms` of fake time pass (then the work it started settle), and returns what was emitted plus the `Unsubscribe`. */
 export async function collect<T>(subscribe: (listener: Listener<T>) => Unsubscribe, ms: number): Promise<{ values: T[]; unsubscribe: Unsubscribe }> {
   const values: T[] = [];
   const unsubscribe = subscribe((value) => values.push(value));
   await vi.advanceTimersByTimeAsync(ms);
+  await settle();
   return { values, unsubscribe };
 }
 
@@ -52,6 +67,7 @@ export async function expectSilentAfterUnsubscribe<T>(values: T[], unsubscribe: 
   const count = values.length;
   unsubscribe();
   await vi.advanceTimersByTimeAsync(ms);
+  await settle();
   expect(values).toHaveLength(count);
 }
 

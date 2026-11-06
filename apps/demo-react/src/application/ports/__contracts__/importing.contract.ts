@@ -85,7 +85,7 @@ export function describeImportingPortContract(name: string, makeAdapters: MakeAd
       it('returns the seeded recent sources, newest first, limited', async () => {
         const recent = await history().recent(2);
         expect(recent.map((r) => r.id)).toEqual(['r1', 'r2']);
-        expect(recent[0]?.at > recent[1]!.at).toBe(true);
+        expect(recent[0]!.at > recent[1]!.at).toBe(true);
       });
     });
 
