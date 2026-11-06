@@ -21,6 +21,7 @@ import { Menu } from '@/ui/components/ui/menu';
 import { MethodTag } from '@/ui/components/ui/method-tag';
 import { OpPickList } from '@/ui/components/ui/op-pick';
 import { SectionLabel } from '@/ui/components/ui/section-label';
+import { SummaryStrip, SummaryStripSep } from '@/ui/components/ui/summary-strip';
 import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
 import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
@@ -312,12 +313,12 @@ function ApiServicePage() {
                   ) : null}
                 </div>
 
-                <div className="dispatch-strip">
+                <SummaryStrip gap="roomy" lineHeight="inherit">
                   <span className="dispatch-strip-item"><span className="dispatch-strip-key">Dispatcher</span><span className="dispatch-strip-value">{currentOp.dispatcher} · rule: {currentOp.rule}</span></span>
-                  <span className="dispatch-strip-sep" aria-hidden="true" />
+                  <SummaryStripSep />
                   <span className="dispatch-strip-item"><span className="dispatch-strip-key">Delay</span><span className="dispatch-strip-value">{currentOp.delayMs} ms</span><span className="dispatch-strip-key">fixed</span></span>
                   <Button asChild size="sm" variant="secondary" icon="pencil" className="dispatch-strip-edit"><RouterLink to={`/services/${svc.id}/operations/${currentOp.id}`}>Edit behavior</RouterLink></Button>
-                </div>
+                </SummaryStrip>
 
                 <div role="group" aria-labelledby="wf-used-title" className="wf-usage">
                   <div className="wf-usage-head">

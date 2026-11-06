@@ -74,6 +74,10 @@ describe('WP7 pages', () => {
     // The h1 is the api-badge: "REST API Pastry 2.0".
     await h1(/^REST\s+API Pastry 2\.0$/);
     expect(screen.getByRole('heading', { level: 3, name: 'Used in 4 workflows' })).toBeTruthy();
+    const dispatch = screen.getByRole('link', { name: 'Edit behavior' }).closest('.summary-strip') as HTMLElement;
+    expect(dispatch.getAttribute('data-line-height')).toBe('inherit');
+    expect(dispatch.getAttribute('data-gap')).toBe('roomy');
+    expect(dispatch.querySelectorAll('.summary-strip-sep[aria-hidden="true"]')).toHaveLength(1);
     await screen.findByRole('button', { name: /Accept Tartelette Framboise/ });
     expect(screen.getByRole('button', { name: /Accept Tartelette Framboise/ })).toBeTruthy();
     fireEvent.click(screen.getByRole('tab', { name: /Tests/ }));
