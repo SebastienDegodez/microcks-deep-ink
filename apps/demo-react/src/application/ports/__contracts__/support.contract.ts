@@ -53,11 +53,54 @@ export function useFakeTimers(): void {
   });
 }
 
-/** Subscribes, lets `ms` of fake time pass (then the work it started settle), and returns what was emitted plus the `Unsubscribe`. */
-export async function collect<T>(subscribe: (listener: Listener<T>) => Unsubscribe, ms: number): Promise<{ values: T[]; unsubscribe: Unsubscribe }> {
+/** How long a stream may take to deliver the awaited emissions (fake or real milliseconds). */
+export interface EmissionWait {
+  /** Defaults to 60 000 ms. */
+  timeoutMs?: number;
+  /** Time step between two checks. Defaults to 100 ms. */
+  stepMs?: number;
+}
+
+/**
+ * Subscribes and waits, without assuming WHEN values arrive (synchronously on subscribe, after a request, on a timer),
+ * until `until` holds: a number of emissions or a predicate on them. Fake time moves by `stepMs` when the test uses
+ * fake timers; otherwise real time passes. Fails after `timeoutMs`. Returns every value emitted so far (assert their
+ * order and content) and the `Unsubscribe`.
+ */
+export async function takeEmissions<T>(
+  subscribe: (listener: Listener<T>) => Unsubscribe,
+  until: number | ((values: readonly T[]) => boolean),
+  { timeoutMs = 60_000, stepMs = 100 }: EmissionWait = {},
+): Promise<{ values: T[]; unsubscribe: Unsubscribe }> {
+  const done = typeof until === 'number' ? (values: readonly T[]) => values.length >= until : until;
   const values: T[] = [];
   const unsubscribe = subscribe((value) => values.push(value));
-  await vi.advanceTimersByTimeAsync(ms);
+  await settle();
+  for (let waited = 0; !done(values); waited += stepMs) {
+    if (waited >= timeoutMs) {
+      unsubscribe();
+      throw new Error(`The stream did not deliver the expected emissions within ${timeoutMs} ms (${values.length} received).`);
+    }
+    if (vi.isFakeTimers()) await vi.advanceTimersByTimeAsync(stepMs);
+    else await new Promise<void>((resolve) => realSetTimeout(resolve, stepMs));
+    await settle();
+  }
+  return { values, unsubscribe };
+}
+
+/** Awaits the first emission of a stream, whenever it arrives. */
+export async function nextEmission<T>(subscribe: (listener: Listener<T>) => Unsubscribe, wait?: EmissionWait): Promise<{ value: T; values: T[]; unsubscribe: Unsubscribe }> {
+  const { values, unsubscribe } = await takeEmissions(subscribe, 1, wait);
+  return { value: values[0] as T, values, unsubscribe };
+}
+
+/** Subscribes for `ms` (fake or real) and returns what was emitted: for streams that must stay silent. */
+export async function collectFor<T>(subscribe: (listener: Listener<T>) => Unsubscribe, ms: number): Promise<{ values: T[]; unsubscribe: Unsubscribe }> {
+  const values: T[] = [];
+  const unsubscribe = subscribe((value) => values.push(value));
+  await settle();
+  if (vi.isFakeTimers()) await vi.advanceTimersByTimeAsync(ms);
+  else await new Promise<void>((resolve) => realSetTimeout(resolve, ms));
   await settle();
   return { values, unsubscribe };
 }
@@ -66,7 +109,9 @@ export async function collect<T>(subscribe: (listener: Listener<T>) => Unsubscri
 export async function expectSilentAfterUnsubscribe<T>(values: T[], unsubscribe: Unsubscribe, ms: number): Promise<void> {
   const count = values.length;
   unsubscribe();
-  await vi.advanceTimersByTimeAsync(ms);
+  await settle();
+  if (vi.isFakeTimers()) await vi.advanceTimersByTimeAsync(ms);
+  else await new Promise<void>((resolve) => realSetTimeout(resolve, ms));
   await settle();
   expect(values).toHaveLength(count);
 }

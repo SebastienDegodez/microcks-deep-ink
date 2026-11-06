@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { NotFoundError } from '@/application/shared';
 import type { TestingPorts } from '@/application/testing';
-import { collect, expectSilentAfterUnsubscribe, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
+import { collectFor, expectSilentAfterUnsubscribe, nextEmission, takeEmissions, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
 
 /** The ports the testing feature owns (catalogue and secrets come from other features). */
 export type TestingOwnPorts = Pick<TestingPorts, 'testRuns'>;
@@ -89,8 +89,8 @@ export function describeTestingPortContract(name: string, makeAdapters: MakeAdap
     describe('TestRunRepository.watch', () => {
       useFakeTimers();
 
-      it('emits one snapshot per step every tick; the last one carries the final result', async () => {
-        const { values, unsubscribe } = await collect(testRuns().watch('119'), 7 * TICK_MS);
+      it('emits one snapshot per step, in order; the last one carries the final result', async () => {
+        const { values, unsubscribe } = await takeEmissions(testRuns().watch('119'), (runs) => runs.at(-1)?.result !== undefined && runs.at(-1)?.result !== 'running');
         expect(values.map((r) => r.steps.length)).toEqual([1, 2, 3, 4, 5, 6, 7]);
         expect(values.slice(0, -1).every((r) => r.result === 'running')).toBe(true);
         expect(values.at(-1)).toMatchObject({ result: 'failed', passed: 6, total: 7 });
@@ -98,13 +98,21 @@ export function describeTestingPortContract(name: string, makeAdapters: MakeAdap
       });
 
       it('stops emitting once unsubscribed', async () => {
-        const { values, unsubscribe } = await collect(testRuns().watch('119'), 2 * TICK_MS);
-        expect(values).toHaveLength(2);
-        await expectSilentAfterUnsubscribe(values, unsubscribe, 5 * TICK_MS);
+        const { value, values, unsubscribe } = await nextEmission(testRuns().watch('119'));
+        expect(value.steps).toHaveLength(1);
+        await expectSilentAfterUnsubscribe(values, unsubscribe, 10 * TICK_MS);
       });
 
-      it('refuses to watch an unknown run with NotFoundError', () => {
-        expect(() => testRuns().watch('9999')).toThrow(NotFoundError);
+      it('never delivers a run for an unknown id (the in-memory adapter refuses synchronously with NotFoundError)', async () => {
+        let watched: { values: unknown[]; unsubscribe: () => void };
+        try {
+          watched = await collectFor(testRuns().watch('9999'), 3 * TICK_MS);
+        } catch (error) {
+          expect(error).toBeInstanceOf(NotFoundError);
+          return;
+        }
+        watched.unsubscribe();
+        expect(watched.values).toEqual([]);
       });
     });
   });

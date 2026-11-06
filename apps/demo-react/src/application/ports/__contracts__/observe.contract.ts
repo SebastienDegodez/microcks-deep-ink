@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { TraceCall } from '@/domain/observe';
 import type { ObservePorts } from '@/application/observe';
-import { collect, expectSilentAfterUnsubscribe, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
+import { expectSilentAfterUnsubscribe, takeEmissions, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
 
 /** The ports the observe feature owns (catalogue, test runs and clock come from elsewhere). */
 export type ObserveOwnPorts = Pick<ObservePorts, 'metrics' | 'traces' | 'traffic'>;
@@ -91,16 +91,15 @@ export function describeObservePortContract(name: string, makeAdapters: MakeAdap
     describe('TraceStream.subscribe', () => {
       useFakeTimers();
 
-      it('streams the calls that follow the history, one every 3.2 s', async () => {
-        const { values, unsubscribe } = await collect<TraceCall>((l) => adapters().traces.subscribe({}, l), 3 * TRACE_TICK_MS);
-        expect(values.map((c) => c.seq)).toEqual([11, 12, 13]);
+      it('streams the calls that follow the history, in order', async () => {
+        const { values, unsubscribe } = await takeEmissions<TraceCall>((l) => adapters().traces.subscribe({}, l), 3);
+        expect(values.slice(0, 3).map((c) => c.seq)).toEqual([11, 12, 13]);
         await expectSilentAfterUnsubscribe(values, unsubscribe, 3 * TRACE_TICK_MS);
       });
 
       it('only emits the calls that match the filter', async () => {
-        const { values, unsubscribe } = await collect<TraceCall>((l) => adapters().traces.subscribe({ runId: RUN_14 }, l), 14 * TRACE_TICK_MS);
+        const { values, unsubscribe } = await takeEmissions<TraceCall>((l) => adapters().traces.subscribe({ runId: RUN_14 }, l), 2);
         unsubscribe();
-        expect(values.length).toBeGreaterThanOrEqual(2);
         expect(values.every((c) => c.baggage?.includes(`microcks-arazzo-run=${RUN_14}`))).toBe(true);
       });
     });
@@ -114,9 +113,9 @@ export function describeObservePortContract(name: string, makeAdapters: MakeAdap
         expect(recent.map((c) => c.at)).toEqual([...recent.map((c) => c.at)].sort().reverse());
       });
 
-      it('streams a call every 1.2 s and stops on unsubscribe', async () => {
-        const { values, unsubscribe } = await collect(adapters().traffic.subscribe, 2 * TRAFFIC_TICK_MS);
-        expect(values.map((c) => c.seq)).toEqual([11, 12]);
+      it('streams the calls in order and stops on unsubscribe', async () => {
+        const { values, unsubscribe } = await takeEmissions(adapters().traffic.subscribe, 2);
+        expect(values.slice(0, 2).map((c) => c.seq)).toEqual([11, 12]);
         await expectSilentAfterUnsubscribe(values, unsubscribe, 3 * TRAFFIC_TICK_MS);
       });
     });

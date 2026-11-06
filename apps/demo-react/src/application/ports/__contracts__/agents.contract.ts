@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { cellKey, type AgentTask } from '@/domain/agents';
 import type { AgentPorts } from '@/application/agents';
-import { collect, expectNotFound, expectSilentAfterUnsubscribe, expectValidationError, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
+import { collectFor, expectNotFound, expectSilentAfterUnsubscribe, expectValidationError, takeEmissions, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
 
 const AGENT = 'concierge';
 
@@ -38,18 +38,21 @@ export function describeAgentsPortContract(name: string, makeAdapters: MakeAdapt
     });
 
     describe('AgentTaskGateway.watch', () => {
-      it('emits the whole list every second: task-9a04 completes at 5 s, task-d3a1 arrives at 8 s', async () => {
-        const { values, unsubscribe } = await collect<AgentTask[]>(adapters().tasks.watch(AGENT), 9000);
-        expect(values).toHaveLength(9);
-        expect(values[3]?.find((t) => t.id === 'task-9a04')?.state).toBe('working');
-        expect(values[4]?.find((t) => t.id === 'task-9a04')?.state).toBe('completed');
-        expect(values[7]?.[0]).toMatchObject({ id: 'task-d3a1', state: 'submitted' });
-        expect(values[8]?.[0]).toMatchObject({ id: 'task-d3a1', state: 'completed' });
+      it('emits the whole list at every change: task-9a04 completes, then task-d3a1 arrives first and completes', async () => {
+        const d3a1Completed = (lists: readonly AgentTask[][]) => lists.at(-1)?.find((t) => t.id === 'task-d3a1')?.state === 'completed';
+        const { values, unsubscribe } = await takeEmissions<AgentTask[]>(adapters().tasks.watch(AGENT), d3a1Completed);
+        const statesOf = (id: string) => values.flatMap((list) => list.filter((t) => t.id === id).map((t) => t.state)).filter((s, i, all) => s !== all[i - 1]);
+        expect(statesOf('task-9a04')).toEqual(['working', 'completed']);
+        expect(statesOf('task-d3a1')).toEqual(['submitted', 'completed']);
+        const firstD3a1 = values.findIndex((list) => list.some((t) => t.id === 'task-d3a1'));
+        expect(values[firstD3a1]?.[0]?.id).toBe('task-d3a1');
+        expect(values[firstD3a1]?.find((t) => t.id === 'task-9a04')?.state).toBe('completed');
+        expect(values.every((list) => list.some((t) => t.id === 'task-41b8'))).toBe(true);
         await expectSilentAfterUnsubscribe(values, unsubscribe, 3000);
       });
 
       it('never emits for a service that is not an agent', async () => {
-        const { values, unsubscribe } = await collect<AgentTask[]>(adapters().tasks.watch('pastry2'), 3000);
+        const { values, unsubscribe } = await collectFor<AgentTask[]>(adapters().tasks.watch('pastry2'), 3000);
         unsubscribe();
         expect(values).toEqual([]);
       });

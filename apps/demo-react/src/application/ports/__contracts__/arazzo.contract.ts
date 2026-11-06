@@ -2,7 +2,7 @@ import { describe, expect, it } from 'vitest';
 import type { WorkflowRun } from '@/domain/arazzo';
 import type { ArazzoPorts } from '@/application/arazzo';
 import type { StartRunRequest } from '@/application/ports/arazzo';
-import { collect, expectNotFound, expectSilentAfterUnsubscribe, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
+import { collectFor, expectNotFound, expectSilentAfterUnsubscribe, nextEmission, takeEmissions, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
 
 /** The ports the arazzo feature owns (secrets belong to the importing feature). */
 export type ArazzoOwnPorts = Pick<ArazzoPorts, 'documents' | 'runs' | 'runner' | 'sessions'>;
@@ -136,7 +136,7 @@ export function describeArazzoPortContract(name: string, makeAdapters: MakeAdapt
       useFakeTimers();
 
       it('emits one frame per attempt then the final run (run #14: 6 frames)', async () => {
-        const { values, unsubscribe } = await collect<WorkflowRun>(runner().watch(RUN_IDS[14]), 10 * TICK_MS);
+        const { values, unsubscribe } = await takeEmissions<WorkflowRun>(runner().watch(RUN_IDS[14]), (frames) => frames.some((f) => f.status !== 'RUNNING'));
         unsubscribe();
         expect(values.map((f) => (f.current ? `${f.current.stepId}#${f.current.attempt}` : 'done'))).toEqual([
           'listPastries#1', 'getPastry#1', 'patchPastry#1', 'patchPastry#2', 'patchPastry#3', 'done',
@@ -145,14 +145,13 @@ export function describeArazzoPortContract(name: string, makeAdapters: MakeAdapt
       });
 
       it('stops emitting once unsubscribed', async () => {
-        const values: WorkflowRun[] = [];
-        const unsubscribe = runner().watch(RUN_IDS[14])((run) => values.push(run));
-        expect(values).toHaveLength(1);
+        const { value, values, unsubscribe } = await nextEmission<WorkflowRun>(runner().watch(RUN_IDS[14]));
+        expect(value.current?.stepId).toBe('listPastries');
         await expectSilentAfterUnsubscribe(values, unsubscribe, 10 * TICK_MS);
       });
 
       it('emits nothing for an unknown run', async () => {
-        const { values, unsubscribe } = await collect<WorkflowRun>(runner().watch('nope'), 3 * TICK_MS);
+        const { values, unsubscribe } = await collectFor<WorkflowRun>(runner().watch('nope'), 3 * TICK_MS);
         unsubscribe();
         expect(values).toEqual([]);
       });

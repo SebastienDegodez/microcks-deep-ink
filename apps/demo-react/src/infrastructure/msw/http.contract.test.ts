@@ -3,9 +3,10 @@ import { http, HttpResponse, type AnyHandler } from 'msw';
 import { describe, expect, it } from 'vitest';
 import { NotFoundError, type Subscribe } from '@/application/shared';
 import {
-  collect,
   expectNotFound,
   expectSilentAfterUnsubscribe,
+  nextEmission,
+  takeEmissions,
   useAdapters,
   useFakeTimers,
   type MakeAdapters,
@@ -47,9 +48,17 @@ function describeGreetingContract(name: string, makeAdapters: MakeAdapters<Greet
     describe('watch', () => {
       useFakeTimers();
 
-      it('emits every second and stops once unsubscribed', async () => {
-        const { values, unsubscribe } = await collect(adapters().greetings.watch('fr'), 3000);
-        expect(values).toEqual(['Bonjour', 'Bonjour', 'Bonjour']);
+      it('delivers the first emission whenever it arrives (here after a request, never synchronously)', async () => {
+        const { value, unsubscribe } = await nextEmission(adapters().greetings.watch('fr'));
+        unsubscribe();
+        expect(value).toBe('Bonjour');
+      });
+
+      it('shows a rename in the next emissions, in order, and stops once unsubscribed', async () => {
+        const { values, unsubscribe } = await takeEmissions(adapters().greetings.watch('fr'), 1);
+        await adapters().greetings.rename('fr', 'Salut');
+        await takeEmissions(() => () => undefined, () => values.includes('Salut'));
+        expect(values.slice(0, values.indexOf('Salut') + 1)).toEqual([...values.slice(0, values.indexOf('Salut')).map(() => 'Bonjour'), 'Salut']);
         await expectSilentAfterUnsubscribe(values, unsubscribe, 3000);
       });
     });
@@ -70,9 +79,16 @@ function createHttpGreetingAdapters({ http: client }: HttpAdapterDeps): Greeting
     greetings: {
       get,
       rename: (id, text) => client.put(`greetings/${id}`, { text }),
+      // Polls: the first value comes from a request made on subscribe, so it always arrives asynchronously.
       watch: (id) => (listener) => {
-        const timer = setInterval(() => void get(id).then((text) => text !== undefined && listener(text)), 1000);
-        return () => clearInterval(timer);
+        let active = true;
+        const poll = () => void get(id).then((text) => active && text !== undefined && listener(text));
+        poll();
+        const timer = setInterval(poll, 1000);
+        return () => {
+          active = false;
+          clearInterval(timer);
+        };
       },
     },
   };

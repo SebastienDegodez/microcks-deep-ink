@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import type { ImportingPorts } from '@/application/importing';
-import { collect, expectNotFound, expectSilentAfterUnsubscribe, expectValidationError, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
+import { expectNotFound, expectSilentAfterUnsubscribe, expectValidationError, nextEmission, takeEmissions, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
 
 /** The ports the importing feature owns (the clock is a dependency, not a port to test). */
 export type ImportingOwnPorts = Pick<ImportingPorts, 'gateway' | 'importers' | 'secrets' | 'history'>;
@@ -140,9 +140,9 @@ export function describeImportingPortContract(name: string, makeAdapters: MakeAd
     describe('ImporterRepository.run', () => {
       useFakeTimers();
 
-      it('emits the progress 25, 50, 75, 100 one tick apart, then records the sync in the timeline', async () => {
+      it('emits the progress 25, 50, 75, 100 in order, then records the sync in the timeline', async () => {
         const before = (await importers().get('pastry-openapi'))!;
-        const { values, unsubscribe } = await collect(importers().run('pastry-openapi'), 4 * TICK_MS);
+        const { values, unsubscribe } = await takeEmissions(importers().run('pastry-openapi'), (progress) => progress.includes(100));
         expect(values).toEqual([25, 50, 75, 100]);
         unsubscribe();
         const after = await importers().get('pastry-openapi');
@@ -152,8 +152,8 @@ export function describeImportingPortContract(name: string, makeAdapters: MakeAd
       });
 
       it('stops emitting once unsubscribed', async () => {
-        const { values, unsubscribe } = await collect(importers().run('pastry-openapi'), 2 * TICK_MS);
-        expect(values).toEqual([25, 50]);
+        const { value, values, unsubscribe } = await nextEmission(importers().run('pastry-openapi'));
+        expect(value).toBe(25);
         await expectSilentAfterUnsubscribe(values, unsubscribe, 3 * TICK_MS);
       });
     });

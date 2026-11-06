@@ -45,6 +45,8 @@ simulated latency (120 to 350 ms, deterministic). The Playwright smoke run uses 
 Each feature has ONE contract suite, `src/application/ports/__contracts__/<feature>.contract.ts`
 (`describe<Feature>PortContract(name, makeAdapters)`): the observable behaviour of its ports, through their interface only
 (seed results, ordering, filters, not-found, mutations visible on re-read, stream subscribe/unsubscribe under fake timers).
+Stream checks are timing-agnostic (`takeEmissions`/`nextEmission` await emissions and assert their order and content, never that
+they arrive synchronously); `src/infrastructure/in-memory/async-streams.contract.test.ts` reruns the suites with asynchronous delivery.
 The in-memory adapters are the reference and pass it in `src/infrastructure/in-memory/<feature>/<feature>.contract.test.ts`.
 
 The same suites run over HTTP + MSW (`msw/node`) in `src/infrastructure/http/port-contracts.test.ts`, through
