@@ -18,6 +18,11 @@ describe('Progress', () => {
     expect(screen.getByRole('progressbar').hasAttribute('value')).toBe(false);
     expect(container.querySelector('.progress-value')!.textContent).toBe('In progress');
   });
+
+  it('takes a translated indeterminate label', () => {
+    const { container } = render(<Progress label="Import" indeterminateLabel="En cours" />);
+    expect(container.querySelector('.progress-value')!.textContent).toBe('En cours');
+  });
 });
 
 describe('Meter', () => {

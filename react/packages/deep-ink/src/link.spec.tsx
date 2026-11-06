@@ -20,4 +20,9 @@ describe('Link', () => {
     expect(a.hasAttribute('data-external')).toBe(true);
     expect(await axeViolations(container)).toEqual([]);
   });
+
+  it('takes a translated external notice', () => {
+    render(<Link href="https://microcks.io" external externalLabel="(nouvel onglet)">Docs</Link>);
+    expect(screen.getByRole('link', { name: /Docs.*nouvel onglet/ })).toBeTruthy();
+  });
 });
