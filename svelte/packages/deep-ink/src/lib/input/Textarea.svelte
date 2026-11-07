@@ -1,11 +1,13 @@
 <!--
   Native <textarea> with the same styling as Input. Same props as the React Textarea, with the same defaultValue and
-  React handlers (onChange on every keystroke, onInput, onFocus, onBlur) as Input; `value` is bindable.
+  React handlers (onChange on every keystroke, onInput, onKeyDown, onFocus...) as Input; `value` is bindable.
 -->
 <script lang="ts">
-  import type { FocusEventHandler, FormEventHandler, HTMLTextareaAttributes } from 'svelte/elements';
+  import type { FormEventHandler, HTMLTextareaAttributes } from 'svelte/elements';
+  import { reactEvents, type ReactHandlers } from '../react-events';
 
-  type Props = Omit<HTMLTextareaAttributes, 'class' | 'children'> & {
+  type Props = Omit<HTMLTextareaAttributes, 'class' | 'children'> &
+    Omit<ReactHandlers<HTMLTextAreaElement>, 'onChange' | 'onInput'> & {
     mono?: boolean;
     size?: 'md' | 'sm';
     surface?: 'surface' | 'bg';
@@ -15,8 +17,6 @@
     /** React name: called on every input event (not only on commit). */
     onChange?: FormEventHandler<HTMLTextAreaElement>;
     onInput?: FormEventHandler<HTMLTextAreaElement>;
-    onFocus?: FocusEventHandler<HTMLTextAreaElement>;
-    onBlur?: FocusEventHandler<HTMLTextAreaElement>;
   };
 
   let {
@@ -28,30 +28,18 @@
     value = $bindable(defaultValue),
     onChange,
     onInput,
-    onFocus,
-    onBlur,
     oninput,
-    onfocus,
-    onblur,
     ...rest
   }: Props = $props();
 </script>
 
 <textarea
   bind:value
-  {...rest}
+  {...reactEvents(rest)}
   oninput={(e) => {
     oninput?.(e);
     onInput?.(e);
     onChange?.(e);
-  }}
-  onfocus={(e) => {
-    onfocus?.(e);
-    onFocus?.(e);
-  }}
-  onblur={(e) => {
-    onblur?.(e);
-    onBlur?.(e);
   }}
   class={['input', className].filter(Boolean).join(' ')}
   data-mono={mono ? '' : undefined}

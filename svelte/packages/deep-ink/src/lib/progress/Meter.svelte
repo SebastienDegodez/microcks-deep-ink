@@ -1,11 +1,13 @@
 <!--
   Native <meter> with a visible label; the value is always written next to the bar. Same props as the React Meter:
-  label, value, min, max, low, high, optimum, valueText, className, id plus any <meter> attribute.
+  label, value, min, max, low, high, optimum, valueText, className, id plus any <meter> attribute and React handler (onClick...), on the <meter>.
 -->
 <script lang="ts">
   import type { HTMLMeterAttributes } from 'svelte/elements';
+  import { reactEvents, type ReactHandlers } from '../react-events';
 
-  type Props = Omit<HTMLMeterAttributes, 'class' | 'value' | 'min' | 'max' | 'low' | 'high' | 'optimum' | 'children'> & {
+  type Props = Omit<HTMLMeterAttributes, 'class' | 'value' | 'min' | 'max' | 'low' | 'high' | 'optimum' | 'children'> &
+    ReactHandlers<HTMLMeterElement> & {
     label: string;
     value: number;
     min?: number;
@@ -30,7 +32,7 @@
     <span class="progress-value">{valueText ?? `${value} / ${max}`}</span>
   </div>
   <meter
-    {...rest}
+    {...reactEvents(rest)}
     id={fieldId}
     class={['meter', className].filter(Boolean).join(' ')}
     {value}
