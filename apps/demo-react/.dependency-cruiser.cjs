@@ -20,6 +20,8 @@ const TEST_RUNNER = '(^|/)node_modules/(vitest|@testing-library/[^/]+)(/|$)';
 // Mock Service Worker: the mock API of the `http` backend.
 const MSW = '(^|/)node_modules/msw(/|$)';
 const TEST_FILE = '\\.test\\.tsx?$';
+// Port contract suites (`*.contract.ts`): test-only modules that tests import, so they follow the test-file exceptions.
+const CONTRACT_FILE = '\\.contract\\.ts$';
 
 /** @type {import('dependency-cruiser').IConfiguration} */
 module.exports = {
@@ -49,7 +51,7 @@ module.exports = {
       name: 'msw-only-in-infrastructure-msw',
       comment: 'The msw package is imported by src/infrastructure/msw and by tests only, never by adapters, ui or the composition root.',
       severity: 'error',
-      from: { pathNot: ['^src/infrastructure/msw/', TEST_FILE] },
+      from: { pathNot: ['^src/infrastructure/msw/', TEST_FILE, CONTRACT_FILE] },
       to: { path: MSW },
     },
     {
@@ -57,14 +59,14 @@ module.exports = {
       comment:
         'src/infrastructure/msw (the mock API) is started by src/main.tsx and used by tests only. Adapters and the composition root never know the API is mocked.',
       severity: 'error',
-      from: { pathNot: ['^src/main\\.tsx$', '^src/infrastructure/msw/', TEST_FILE] },
+      from: { pathNot: ['^src/main\\.tsx$', '^src/infrastructure/msw/', TEST_FILE, CONTRACT_FILE] },
       to: { path: '^src/infrastructure/msw/' },
     },
     {
       name: 'msw-node-only-in-tests',
       comment: 'src/infrastructure/msw/node.ts (msw/node) is for vitest: only test files import it, so it never reaches the browser bundle.',
       severity: 'error',
-      from: { pathNot: [TEST_FILE] },
+      from: { pathNot: [TEST_FILE, CONTRACT_FILE] },
       to: { path: '^src/infrastructure/msw/node\\.ts$' },
     },
     {
@@ -98,10 +100,17 @@ module.exports = {
     },
     {
       name: 'test-runner-only-in-tests',
-      comment: 'vitest and Testing Library may only be imported by *.test.ts(x) files and the test setup.',
+      comment: 'vitest and Testing Library may only be imported by *.test.ts(x) files, port contract suites (*.contract.ts) and the test setup.',
       severity: 'error',
-      from: { pathNot: ['\\.test\\.tsx?$', '^src/test-setup\\.ts$'] },
+      from: { pathNot: [TEST_FILE, CONTRACT_FILE, '^src/test-setup\\.ts$'] },
       to: { path: TEST_RUNNER },
+    },
+    {
+      name: 'contracts-only-in-tests',
+      comment: 'Port contract suites (*.contract.ts) are imported by tests and other contract suites only, never by production code.',
+      severity: 'error',
+      from: { pathNot: [TEST_FILE, CONTRACT_FILE] },
+      to: { path: CONTRACT_FILE },
     },
     {
       name: 'no-design-system-packages',
