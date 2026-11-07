@@ -24,6 +24,7 @@ import type { Clock } from '@/application/ports/shared';
 import type { UseCases } from '@/application/use-cases';
 import { createHttpCatalogAdapters } from '@/infrastructure/http/catalog';
 import { createHttpClient, defaultApiBaseUrl, type HttpClient } from '@/infrastructure/http/client';
+import { createHttpGovernAdapters } from '@/infrastructure/http/govern';
 import { createHttpImportingAdapters } from '@/infrastructure/http/importing';
 import { createHttpObserveAdapters } from '@/infrastructure/http/observe';
 import { createHttpTestingAdapters } from '@/infrastructure/http/testing';
@@ -92,6 +93,7 @@ const HTTP_ADAPTERS: { [F in Feature]?: (deps: HttpDeps) => InMemoryAdapters[F] 
   importing: createHttpImportingAdapters,
   testing: createHttpTestingAdapters,
   observe: createHttpObserveAdapters,
+  govern: createHttpGovernAdapters,
 };
 
 /** Builds every use case over the chosen backend. Call once at boot (or once per test). */
