@@ -15,9 +15,10 @@
  * the calls themselves: no call log, topology or replay).
  *
  * Live streams (Live traces, Cockpit ticker): Microcks has no feed of mock calls (no SSE, no WebSocket), and no new
- * one is invented. Each subscription polls `GET /api/demo/{traces,traffic}/calls?after=<last seq>&limit=1` once per
- * tick (3200 ms for traces, 1200 ms for the ticker, as the in-memory streams) and emits what comes back, in order;
- * the trace filter is applied on the client.
+ * one is invented. Each subscription polls `GET /api/demo/{traces,traffic}/calls?after=<last seq>&limit=1`, the next
+ * poll `intervalMs` (3200 ms for traces, 1200 ms for the ticker, as the in-memory streams) after the previous one
+ * settles: one request in flight at most, missed ticks skipped (no catch-up burst), see `pollingStream`. It emits what
+ * comes back, in order; the trace filter is applied on the client.
  */
 import { matchesTraceFilter, type Period, type TraceCall } from '@/domain/observe';
 import type { MetricsRepository, TraceStream, TrafficStream } from '@/application/ports/observe';
@@ -52,33 +53,37 @@ export const TRACE_POLL_MS = 3200;
 export const TRAFFIC_POLL_MS = 1200;
 
 /**
- * A stream that asks `fetchAfter(<seq of the last emitted call>)` every `intervalMs` (one request at a time, so calls
- * keep their order) and emits what it returns. A failed poll is skipped: the next tick asks again from the same seq.
+ * A stream that polls `fetchAfter(<seq of the last emitted call>, signal)` and emits what it returns, in order.
+ * Self-scheduling: the next poll is scheduled `intervalMs` after the previous one SETTLES, so at most one request is
+ * in flight and a stall (slow answer, throttled tab) never triggers a burst of catch-up requests: missed ticks are
+ * skipped, the stream simply resumes from the last seq. A failed poll is skipped the same way. Unsubscribing clears
+ * the pending tick and aborts the request in flight (its answer, if any, is dropped).
  */
-function pollingStream(fetchAfter: (after: number | undefined) => Promise<TraceCall[]>, intervalMs: number) {
+function pollingStream(fetchAfter: (after: number | undefined, signal: AbortSignal) => Promise<TraceCall[]>, intervalMs: number) {
   return (listener: Listener<TraceCall>): Unsubscribe => {
     let after: number | undefined;
     let stopped = false;
-    let queue = Promise.resolve();
+    let timer: ReturnType<typeof setTimeout> | undefined;
+    const controller = new AbortController();
     const poll = async () => {
-      if (stopped) return;
+      timer = undefined;
       try {
-        const calls = await fetchAfter(after);
+        const calls = await fetchAfter(after, controller.signal);
         for (const call of calls) {
           if (stopped) return;
           after = call.seq;
           listener(call);
         }
       } catch {
-        // Retried on the next tick.
+        // Skipped: the next tick asks again from the same seq.
       }
+      if (!stopped) timer = setTimeout(poll, intervalMs);
     };
-    const timer = setInterval(() => {
-      queue = queue.then(poll);
-    }, intervalMs);
+    timer = setTimeout(poll, intervalMs);
     return () => {
       stopped = true;
-      clearInterval(timer);
+      if (timer !== undefined) clearTimeout(timer);
+      controller.abort();
     };
   };
 }
@@ -145,8 +150,8 @@ export function createHttpObserveAdapters({ http, clock }: HttpObserveDeps): Htt
     usageScopes: () => http.get<DemoUsageScopes>('demo/usage/scopes'),
   };
 
-  const calls = (feed: 'traces' | 'traffic') => (after: number | undefined) =>
-    http.get<DemoTraceCalls>(`demo/${feed}/calls`, { query: { after, limit: 1 } });
+  const calls = (feed: 'traces' | 'traffic') => (after: number | undefined, signal: AbortSignal) =>
+    http.get<DemoTraceCalls>(`demo/${feed}/calls`, { query: { after, limit: 1 }, signal });
   const traceFeed = pollingStream(calls('traces'), TRACE_POLL_MS);
 
   const traces: TraceStream = {
