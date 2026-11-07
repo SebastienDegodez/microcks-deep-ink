@@ -1,0 +1,11 @@
+{
+  "component": "Icon",
+  "cases": [
+    { "name": "decorative", "props": { "name": "check" } },
+    { "name": "labelled", "props": { "name": "check", "label": "Passed", "size": 20 } },
+    { "name": "several-paths", "props": { "name": "warning", "size": 13 } },
+    { "name": "dashed", "props": { "name": "never-tested" } },
+    { "name": "unknown-name", "props": { "name": "not-an-icon" } },
+    { "name": "class-and-attributes", "props": { "name": "search", "className": "lead", "id": "find", "data-testid": "find" } }
+  ]
+}

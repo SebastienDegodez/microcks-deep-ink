@@ -1,0 +1,8 @@
+{
+  "component": "Select",
+  "cases": [
+    { "name": "default", "props": { "id": "runner" } },
+    { "name": "size-sm", "props": { "size": "sm", "aria-label": "Rows per page" } },
+    { "name": "class-and-attributes", "props": { "className": "wide", "name": "dispatcher", "disabled": true, "required": true, "aria-invalid": "true", "aria-label": "Dispatcher" } }
+  ]
+}

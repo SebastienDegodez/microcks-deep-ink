@@ -1,0 +1,12 @@
+{
+  "component": "Skeleton",
+  "cases": [
+    { "name": "default" },
+    { "name": "width-number", "props": { "width": 120 } },
+    { "name": "width-string", "props": { "width": "70%" } },
+    { "name": "lines", "props": { "lines": 3 } },
+    { "name": "lines-width", "props": { "lines": 3, "width": "60%" } },
+    { "name": "one-line", "props": { "lines": 1, "width": 80 } },
+    { "name": "class-and-attributes", "props": { "lines": 2, "className": "rows", "id": "sk", "data-testid": "sk" } }
+  ]
+}
