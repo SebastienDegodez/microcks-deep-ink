@@ -6,14 +6,14 @@ import CodeBlock from './CodeBlock.svelte';
 
 describe('CodeBlock', () => {
   it('switches format with toggle buttons in the header', async () => {
-    const onTabChange = vi.fn();
+    const ontabchange = vi.fn();
     const { container } = render(CodeBlock, {
-      props: { code: 'curl …', tabs: [{ id: 'curl', label: 'curl' }, { id: 'httpie', label: 'HTTPie' }], tab: 'curl', onTabChange },
+      props: { code: 'curl …', tabs: [{ id: 'curl', label: 'curl' }, { id: 'httpie', label: 'HTTPie' }], tab: 'curl', ontabchange },
     });
     expect(screen.getByRole('group', { name: 'Format' })).toBeTruthy();
     expect(screen.getByRole('button', { name: 'curl', pressed: true })).toBeTruthy();
     await fireEvent.click(screen.getByRole('button', { name: 'HTTPie', pressed: false }));
-    expect(onTabChange).toHaveBeenCalledWith('httpie');
+    expect(ontabchange).toHaveBeenCalledWith('httpie');
     expect(screen.getByRole('region', { name: 'curl code' })).toBeTruthy();
     expect(await axeViolations(container)).toEqual([]);
   });
@@ -186,7 +186,7 @@ describe('CodeBlock bare, source and raised header', () => {
 
 describe('CodeBlock frame="none" (pre only)', () => {
   it('renders only the pre, no figure, header or copy; always a named region by default', async () => {
-    const { container } = render(CodeBlock, { props: { frame: 'none', variant: 'bare', caption: 'Schema', label: 'Input schema of getPastry', className: 'tool-card-schema', code: '{"type": "object"}' } });
+    const { container } = render(CodeBlock, { props: { frame: 'none', variant: 'bare', caption: 'Schema', label: 'Input schema of getPastry', class: 'tool-card-schema', code: '{"type": "object"}' } });
     expect(container.querySelector('figure')).toBeNull();
     expect(container.querySelector('figcaption')).toBeNull();
     expect(screen.queryByRole('button')).toBeNull();

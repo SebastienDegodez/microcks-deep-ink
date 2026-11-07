@@ -2,17 +2,17 @@
 <script lang="ts" module>
   import type { Snippet } from 'svelte';
   import type { ChangeEventHandler, HTMLInputAttributes } from 'svelte/elements';
-  import { reactEvents, type ReactHandlers } from '../react-events';
+  import { eventProps, type NativeHandlers } from '../event-props';
 
   export type ChoiceProps = Omit<HTMLInputAttributes, 'class' | 'type' | 'children'> &
-    ReactHandlers<HTMLInputElement> & {
+    NativeHandlers<HTMLInputElement> & {
     /** Visible label. */
     label: string | Snippet;
     /** Secondary text, linked with aria-describedby. */
     description?: string | Snippet;
     /** `card`: a bordered card label, selected fill when checked. */
     variant?: 'plain' | 'card' | 'compact';
-    className?: string;
+    class?: string;
     /** Initial state of an uncontrolled input. */
     defaultChecked?: boolean;
     element?: HTMLInputElement;
@@ -25,14 +25,14 @@
     label,
     description,
     variant = 'plain',
-    className,
+    class: cssClass,
     defaultChecked,
     checked = $bindable(),
     element = $bindable(),
     ...rest
   }: ChoiceProps & { kind: 'checkbox' | 'radio' } = $props();
 
-  const events = $derived(reactEvents(rest));
+  const events = $derived(eventProps(rest));
   const uid = $props.id();
   const labelId = `${uid}-label`;
   const descId = $derived(description ? `${uid}-desc` : undefined);
@@ -51,7 +51,7 @@
       (events.onchange as ChangeEventHandler<HTMLInputElement> | undefined)?.(e);
     }}
     aria-labelledby={labelId}
-    class={[kind, className].filter(Boolean).join(' ')}
+    class={[kind, cssClass].filter(Boolean).join(' ')}
     aria-describedby={[rest['aria-describedby'], descId].filter(Boolean).join(' ') || undefined}
   /><span
     ><span class="choice-label" id={labelId}>{@render node(label)}</span

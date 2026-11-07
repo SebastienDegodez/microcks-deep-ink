@@ -7,7 +7,7 @@ import {
   type Importer, type SourceOrigin, type SourceStatus, type SyncEntry,
 } from '@/domain/importing';
 import { PageHeader, useAnnounce, useClock, useQuery, useRelativeTime, useReturnFocus, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge, Button, CopyButton, Icon, FilterRow, FilterSearch, LiveIndicator, FactRow, Facts, type Fact as RegistryFact, Segmented, SummaryStrip, SummaryStripSep, Switch } from '@microcks/deep-ink';
+import { ApiBadge, Button, CopyButton, Icon, FilterRow, FilterSearch, LiveIndicator, ResultBox, FactRow, Facts, type Fact as RegistryFact, Segmented, SummaryStrip, SummaryStripSep, Switch } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 
 const STATUS_WORD: Record<SourceStatus, string> = { imported: 'Imported', warning: 'Imported · 1 warning', failed: 'Failed', inactive: 'Inactive', running: 'Importing' };
@@ -213,10 +213,13 @@ export default function SourcesPage() {
       <div className="sources-split">
         <section aria-label="Sources" className="sources-list">
           {undoing ? (
-            <div role="status" className="undo-banner">
-              <span className="undo-banner-text"><strong>{undoing.importer.name}</strong> deleted. Services already discovered remain but are no longer updated.</span>
-              <button type="button" ref={undoRef} className="undo-banner-action" onClick={() => void undo()}>Undo</button>
-            </div>
+            <ResultBox
+              tone="info"
+              density="compact"
+              action={<Button ref={undoRef} variant="outline" size="xs" tone="link" onClick={() => void undo()}>Undo</Button>}
+            >
+              <strong>{undoing.importer.name}</strong> deleted. Services already discovered remain but are no longer updated.
+            </ResultBox>
           ) : null}
           {shown.map((j) => {
             const st = importerStatus(j);

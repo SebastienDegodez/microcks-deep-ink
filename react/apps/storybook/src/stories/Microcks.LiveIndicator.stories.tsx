@@ -17,6 +17,11 @@ export const Paused: StoryObj = {
   render: () => <LiveIndicator paused />,
 };
 
+export const CompactStatic: StoryObj = {
+  name: 'Compact, static dot',
+  render: () => <LiveIndicator size="compact" pulse={false} />,
+};
+
 export const CustomLabel: StoryObj = {
   name: 'Custom label',
   render: () => <LiveIndicator label="recording" />,
@@ -46,6 +51,6 @@ export const Box: StoryObj = {
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof LiveIndicator> = {
-  args: { label: 'live', paused: false, pausedLabel: 'paused', size: 'md', variant: 'pill' },
-  argTypes: { size: { control: 'inline-radio', options: ['sm', 'md', 'lg'] }, variant: { control: 'inline-radio', options: ['pill', 'inline', 'box', 'dot'] } },
+  args: { label: 'live', paused: false, pausedLabel: 'paused', size: 'md', variant: 'pill', pulse: true },
+  argTypes: { size: { control: 'inline-radio', options: ['sm', 'md', 'compact', 'lg'] }, variant: { control: 'inline-radio', options: ['pill', 'inline', 'box', 'dot'] } },
 };

@@ -1,13 +1,7 @@
-<!--
-  Page frame (registry item app-shell): skip link, top bar (banner landmark) with the Menu disclosure, main navigation
-  and main content. Same props as the React AppShell: brand, nav, activeId, topbarCenter, topbarActions, banner,
-  skipLinkLabel, navLabel, children, renderLink. ReactNode props take a string or a snippet. renderLink is a snippet
-  (item, props, content): spread `props` on your router link and render `content` inside it (React's props.children).
-  Below 768px the Menu button opens the nav; Escape closes it and returns focus to the button; a chosen link closes it.
--->
+
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import Button from '../button/Button.svelte';
+  import Button from '../Button.svelte';
   import Icon from '../icon/Icon.svelte';
   import type { ShellLinkProps, ShellNavItem } from './app-shell';
 
@@ -39,14 +33,14 @@
   // Escape closes the narrow-screen navigation and returns focus to the Menu button.
   $effect(() => {
     if (!open) return;
-    const onKey = (e: KeyboardEvent) => {
+    const onkey = (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
         open = false;
         menu?.focus();
       }
     };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    document.addEventListener('keydown', onkey);
+    return () => document.removeEventListener('keydown', onkey);
   });
 
   // Leaving the narrow layout resets the disclosure.
@@ -85,7 +79,7 @@
       bind:element={menu}
       type="button"
       variant="ghost"
-      className="shell-menu"
+      class="shell-menu"
       aria-expanded={open}
       aria-controls={navId}
       onclick={() => (open = !open)}><Icon name={open ? 'close' : 'menu'} size={18} />Menu</Button

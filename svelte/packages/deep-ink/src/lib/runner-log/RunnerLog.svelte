@@ -1,9 +1,4 @@
-<!--
-  The runner's log (registry item runner-log): a section named by its heading, over a focusable role="log" list (an
-  implicit polite live region; newest line at the bottom). Same props as the React RunnerLog: title, status, lines,
-  className plus any <section> attribute and React handler (onClick...). `status` (ReactNode in React) is a string or a
-  snippet. As in React, the log does not scroll itself.
--->
+
 <script lang="ts" module>
   export type RunnerLevel = 'INFO' | 'SEND' | 'PASS' | 'FAIL' | 'WARN' | 'WAIT';
   export interface RunnerLine {
@@ -20,24 +15,24 @@
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { HTMLAttributes } from 'svelte/elements';
-  import { reactEvents, type ReactHandlers } from '../react-events';
+  import { eventProps, type NativeHandlers } from '../event-props';
 
   type Props = Omit<HTMLAttributes<HTMLElement>, 'class' | 'title' | 'children'> &
-    ReactHandlers<HTMLElement> & {
+    NativeHandlers<HTMLElement> & {
     /** Visible heading, also the name of the log. */
     title?: string;
     /** End of the header: a LiveIndicator or "12 lines · completed". */
     status?: string | Snippet;
     lines: RunnerLine[];
-    className?: string;
+    class?: string;
   };
 
-  let { title = 'Runner log', status, lines, className, ...rest }: Props = $props();
+  let { title = 'Runner log', status, lines, class: cssClass, ...rest }: Props = $props();
 
   const id = $props.id();
 </script>
 
-<section {...reactEvents(rest)} aria-labelledby={id} class={['runner-log', className].filter(Boolean).join(' ')}
+<section {...eventProps(rest)} aria-labelledby={id} class={['runner-log', cssClass].filter(Boolean).join(' ')}
   ><div class="runner-log-head"
     ><h2 class="runner-log-title" {id}>{title}</h2
     >{#if status}<span class="runner-log-status"

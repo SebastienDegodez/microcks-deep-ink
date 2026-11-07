@@ -11,7 +11,7 @@
     "build": "pnpm -r --workspace-concurrency=1 --filter \"./packages/**\" build",
     "build:strict": "pnpm --filter @microcks-deep-ink/registry exec node scripts/build.mjs --strict",
     "build:storybooks": "pnpm -C react --filter storybook-react build-storybook && pnpm --filter storybook-angular build-storybook",
-    "build:demo": "pnpm --filter demo-react build",
+    "build:demo": "pnpm --filter demo-react... build",
     "build:site": "bash tools/site/assemble.sh",
     "test": "pnpm -r --if-present test",
     "lint": "pnpm --filter @microcks-deep-ink/registry lint && pnpm --filter demo-react lint && pnpm --filter demo-react lint:arch",

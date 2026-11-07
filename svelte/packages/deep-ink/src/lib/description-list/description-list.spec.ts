@@ -20,7 +20,7 @@ describe('DescriptionList', () => {
 
   it('takes a snippet or a number as value, and the dl attributes', () => {
     const link = createRawSnippet(() => ({ render: () => '<a href="/services/1">API Pastry</a>' }));
-    const { container } = render(DescriptionList, { props: { className: 'compact', 'aria-label': 'Facts', items: [{ term: 'Service', value: link }, { term: 'Examples', value: 3 }] } });
+    const { container } = render(DescriptionList, { props: { class: 'compact', 'aria-label': 'Facts', items: [{ term: 'Service', value: link }, { term: 'Examples', value: 3 }] } });
     expect(screen.getByRole('link', { name: 'API Pastry' }).closest('dd')).toBeTruthy();
     expect(screen.getByText('3').localName).toBe('dd');
     expect(container.querySelector('dl')!.className).toBe('dl compact');

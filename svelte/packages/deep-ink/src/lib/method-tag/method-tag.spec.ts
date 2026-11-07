@@ -1,7 +1,8 @@
 import { render, screen } from '@testing-library/svelte';
 import { describe, expect, it } from 'vitest';
 import { axeViolations } from '../../../test/axe';
-import MethodTag from './MethodTag.svelte';
+import { MethodTag, PROTOCOL_ATTR as canonicalProtocols } from '../index.js';
+import LegacyMethodTag from './MethodTag.svelte';
 import { PROTOCOL_ATTR, type Protocol } from './method-tag';
 
 describe('MethodTag', () => {
@@ -20,11 +21,23 @@ describe('MethodTag', () => {
   });
 
   it('sets the size and the minimum width, keeping the given style', () => {
-    render(MethodTag, { props: { method: 'PATCH', size: 'sm', minWidth: 52, style: 'opacity: 0.5', className: 'x' } });
+    render(MethodTag, { props: { method: 'PATCH', size: 'sm', minWidth: 52, style: 'opacity: 0.5', class: 'x' } });
     const tag = screen.getByText('PATCH');
     expect(tag.dataset.size).toBe('sm');
     expect(tag.className).toBe('method x');
     expect(tag.style.getPropertyValue('--method-min-width')).toBe('52px');
     expect(tag.style.opacity).toBe('0.5');
+  });
+
+  it('legacy paths share the canonical mapping and native class/style semantics', () => {
+    expect(PROTOCOL_ATTR).toBe(canonicalProtocols);
+    render(LegacyMethodTag, { props: {
+      method: 'POST', class: ['legacy', { selected: true }], minWidth: 0,
+      style: '--method-min-width: 99px', protocol: 'EVENT',
+    } });
+    const tag = screen.getByText('POST');
+    expect(tag.className).toBe('method legacy selected');
+    expect(tag.dataset.protocol).toBe('event');
+    expect(tag.style.getPropertyValue('--method-min-width')).toBe('99px');
   });
 });

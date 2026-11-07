@@ -1,6 +1,6 @@
-// Theme state, shared with React (react/packages/deep-ink/src/theme-toggle.theme.ts): data-theme on <html>, localStorage
+// Theme state, shared with the reference implementation (react/packages/deep-ink/src/theme-toggle.theme.ts): data-theme on <html>, localStorage
 // key microcks-theme, microcks-theme-change event on document. Dark is the default; prefers-color-scheme is not read,
-// as in React. Every function is a no-op on the server.
+// as in the reference implementation. Every function is a no-op on the server.
 export type Theme = 'dark' | 'light';
 
 export const THEME_STORAGE_KEY = 'microcks-theme';

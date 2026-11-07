@@ -1,1 +1,2 @@
-export { PROTOCOL_ATTR, type Protocol } from './MethodTag.svelte';
+export { PROTOCOL_ATTR } from '../contracts.js';
+export type { Protocol } from '../types.js';

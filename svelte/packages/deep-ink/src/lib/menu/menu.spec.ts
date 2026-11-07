@@ -5,12 +5,12 @@ import { axeViolations } from '../../../test/axe';
 import Menu from './Menu.svelte';
 
 const setup = () => {
-  const onCopy = vi.fn();
+  const oncopy = vi.fn();
   const utils = render(Menu, {
     props: {
       label: 'Actions',
       items: [
-        { id: 'copy', label: 'Copy service id', onSelect: onCopy },
+        { id: 'copy', label: 'Copy service id', onselect: oncopy },
         { id: 'test', label: 'Run a test', href: '/tests/create' },
         { id: 'off', label: 'Archive', disabled: true },
         { id: 'del', label: 'Delete service', danger: true },
@@ -19,7 +19,7 @@ const setup = () => {
   });
   const trigger = screen.getByRole('button', { name: 'Actions' });
   const menu = document.querySelector<HTMLElement>('[popover]')!;
-  return { ...utils, trigger, menu, onCopy };
+  return { ...utils, trigger, menu, oncopy };
 };
 
 const open = (menu: HTMLElement) => flushSync(() => menu.showPopover());
@@ -62,10 +62,10 @@ describe('Menu', () => {
   });
 
   it('runs the action and closes', async () => {
-    const { menu, trigger, onCopy } = setup();
+    const { menu, trigger, oncopy } = setup();
     open(menu);
     await fireEvent.click(screen.getByRole('button', { name: 'Copy service id' }));
-    expect(onCopy).toHaveBeenCalledTimes(1);
+    expect(oncopy).toHaveBeenCalledTimes(1);
     expect(trigger.getAttribute('aria-expanded')).toBe('false');
   });
 

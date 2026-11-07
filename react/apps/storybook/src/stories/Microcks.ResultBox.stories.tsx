@@ -20,7 +20,7 @@ export const Tones: StoryObj = {
         <ResultBox tone="neutral" title="checkout-beer cannot run until beerCatalog is linked" action={<Button size="sm" icon="link">Link source</Button>}>
           Beer Catalog API 1.0 is not in Microcks yet: import beer-catalog-1.0-openapi.yaml first, or pick the API to link in the dialog.
         </ResultBox>
-        <ResultBox tone="info" action={<Button size="sm">Undo</Button>}>
+        <ResultBox tone="info" density="compact" action={<Button variant="outline" size="xs" tone="link">Undo</Button>}>
           <strong>Pastry orders events</strong> deleted. Services already discovered remain but are no longer updated.
         </ResultBox>
         <ResultBox tone="danger">Export failed · the repository is read-only.</ResultBox>
@@ -58,12 +58,13 @@ export const FlatRaised: StoryObj = {
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof ResultBox> = {
-  args: { tone: 'success', size: 'md', title: 'Test passed', children: 'All 12 operations match the contract.', icon: undefined, dismissLabel: 'Dismiss', live: 'status', bordered: true, surface: 'surface' },
+  args: { tone: 'success', size: 'md', title: 'Test passed', children: 'All 12 operations match the contract.', icon: undefined, dismissLabel: 'Dismiss', live: 'status', bordered: true, surface: 'surface', density: 'regular' },
   argTypes: {
     tone: { control: 'select', options: ['success', 'warning', 'danger', 'neutral', 'info'] },
     size: { control: 'inline-radio', options: ['sm', 'md'] },
     live: { control: 'inline-radio', options: ['status', 'off'] },
     surface: { control: 'inline-radio', options: ['surface', 'raised'] },
+    density: { control: 'inline-radio', options: ['regular', 'compact'] },
     onDismiss: { table: { disable: true } },
   },
 };

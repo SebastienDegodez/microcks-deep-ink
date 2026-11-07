@@ -1,4 +1,4 @@
-<!-- Inline stroke icon (registry item icon). Same props as the React Icon: name, size, label, className plus any <svg> attribute and React handler (onClick...). -->
+
 <script lang="ts" module>
   /** One stroke of an icon: path data, or path data drawn with a dash pattern. */
   export type IconPath = string | { readonly d: string; readonly dash: string };
@@ -136,19 +136,19 @@
 
 <script lang="ts">
   import type { SVGAttributes } from 'svelte/elements';
-  import { reactEvents, type ReactHandlers } from '../react-events';
+  import { eventProps, type NativeHandlers } from '../event-props';
 
   type Props = Omit<SVGAttributes<SVGSVGElement>, 'class' | 'name' | 'children'> &
-    ReactHandlers<SVGSVGElement> & {
+    NativeHandlers<SVGSVGElement> & {
     name: IconName;
     /** Width and height in px. */
     size?: number;
     /** Accessible name. Without it the icon is decorative and hidden from assistive technology. */
     label?: string;
-    className?: string;
+    class?: string;
   };
 
-  let { name, size = 16, label, className, ...rest }: Props = $props();
+  let { name, size = 16, label, class: cssClass, ...rest }: Props = $props();
 
   const paths: readonly IconPath[] = $derived(PATHS[name] ?? PATHS.circle);
 </script>
@@ -170,8 +170,8 @@
   role={label ? 'img' : undefined}
   aria-label={label || undefined}
   aria-hidden={label ? undefined : 'true'}
-  {...reactEvents(rest)}
-  class={['icon', className].filter(Boolean).join(' ')}
+  {...eventProps(rest)}
+  class={['icon', cssClass].filter(Boolean).join(' ')}
 >
   {#each paths as p, i (i)}
     {#if typeof p === 'string'}<path d={p} />{:else}<path d={p.d} stroke-dasharray={p.dash} />{/if}

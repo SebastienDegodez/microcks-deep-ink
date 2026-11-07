@@ -7,8 +7,8 @@ import { fireEvent, render } from '@testing-library/svelte';
 import { createRawSnippet, type Component } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
 import AppShell from './app-shell/AppShell.svelte';
-import Button from './button/Button.svelte';
-import ButtonLink from './button/ButtonLink.svelte';
+import Button from './Button.svelte';
+import ButtonLink from './ButtonLink.svelte';
 import Callout from './callout/Callout.svelte';
 import Checkbox from './checkbox/Checkbox.svelte';
 import Chip from './chip/Chip.svelte';
@@ -19,9 +19,9 @@ import EmptyState from './empty-state/EmptyState.svelte';
 import Exchange from './exchange-card/Exchange.svelte';
 import ExchangeCard from './exchange-card/ExchangeCard.svelte';
 import Radio from './checkbox/Radio.svelte';
-import MethodTag from './method-tag/MethodTag.svelte';
+import MethodTag from './MethodTag.svelte';
 import ProjectionPill from './projection-pill/ProjectionPill.svelte';
-import { reactEvents } from './react-events';
+import { eventProps } from './event-props';
 import RunMeta from './run-meta/RunMeta.svelte';
 import RunOrigin from './run-origin/RunOrigin.svelte';
 import RunnerLog from './runner-log/RunnerLog.svelte';
@@ -58,29 +58,29 @@ const cases: Array<[string, Component<any>, Record<string, unknown>, string]> = 
   ['TileGrid', TileGrid, { label: 'L' }, 'section'],
 ];
 
-describe('React-named handlers and attributes', () => {
-  it.each(cases)('%s forwards them to the same element as React', (_, C, props, selector) => {
-    const spies = { onKeyDown: vi.fn(), onClick: vi.fn(), onFocus: vi.fn(), onBlur: vi.fn(), onMouseEnter: vi.fn(), onDoubleClick: vi.fn(), onDoubleClickCapture: vi.fn(), onKeyDownCapture: vi.fn() };
+describe('Native Svelte handlers and attributes', () => {
+  it.each(cases)('%s forwards them to the underlying native element', (_, C, props, selector) => {
+    const spies = { onkeydown: vi.fn(), onclick: vi.fn(), onfocus: vi.fn(), onblur: vi.fn(), onmouseenter: vi.fn(), ondblclick: vi.fn(), ondblclickcapture: vi.fn(), onkeydowncapture: vi.fn() };
     const { container } = render(C, { props: { ...props, ...spies, 'data-testid': 'x', 'aria-keyshortcuts': 'K' } });
     const el = container.querySelector<HTMLElement>(selector)!;
     expect([el.dataset.testid, el.getAttribute('aria-keyshortcuts')]).toEqual(['x', 'K']);
     fireEvent.keyDown(el, { key: 'a' });
     fireEvent.click(el);
-    fireEvent.focusIn(el);
-    fireEvent.focusOut(el);
+    fireEvent.focus(el);
+    fireEvent.blur(el);
     fireEvent.mouseEnter(el);
     fireEvent.dblClick(el);
     for (const [name, spy] of Object.entries(spies)) expect(spy, name).toHaveBeenCalledOnce();
     for (const name of Object.keys(spies)) expect(el.hasAttribute(name.toLowerCase())).toBe(false);
   });
 
-  it('a static Chip forwards them to its span, except onClick (as React)', () => {
-    const spies = { onKeyDown: vi.fn(), onClick: vi.fn(), onFocus: vi.fn(), onMouseEnter: vi.fn(), onDoubleClickCapture: vi.fn() };
+  it('a static Chip forwards them to its span, except onclick (as React)', () => {
+    const spies = { onkeydown: vi.fn(), onclick: vi.fn(), onfocus: vi.fn(), onmouseenter: vi.fn(), ondblclickcapture: vi.fn() };
     const { container } = render(Chip, { props: { ...spies, children: 'C', 'data-testid': 'x' } });
     const el = container.querySelector<HTMLElement>('span.chip')!;
     fireEvent.keyDown(el);
     fireEvent.click(el);
-    fireEvent.focusIn(el);
+    fireEvent.focus(el);
     fireEvent.mouseEnter(el);
     fireEvent.dblClick(el);
     expect(el.dataset.testid).toBe('x');
@@ -90,34 +90,34 @@ describe('React-named handlers and attributes', () => {
   it('CopyButton forwards them to its button, which still copies on click', () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
-    const spies = { onKeyDown: vi.fn(), onFocus: vi.fn(), onBlur: vi.fn(), onMouseEnter: vi.fn(), onDoubleClick: vi.fn(), onClickCapture: vi.fn() };
+    const spies = { onkeydown: vi.fn(), onfocus: vi.fn(), onblur: vi.fn(), onmouseenter: vi.fn(), ondblclick: vi.fn(), onclickcapture: vi.fn() };
     const { container } = render(CopyButton, { props: { value: 'v', ...spies, 'data-testid': 'x', 'aria-keyshortcuts': 'K' } });
     const el = container.querySelector('button')!;
     expect([el.dataset.testid, el.getAttribute('aria-keyshortcuts')]).toEqual(['x', 'K']);
     fireEvent.keyDown(el);
     fireEvent.click(el);
-    fireEvent.focusIn(el);
-    fireEvent.focusOut(el);
+    fireEvent.focus(el);
+    fireEvent.blur(el);
     fireEvent.mouseEnter(el);
     fireEvent.dblClick(el);
     for (const [name, spy] of Object.entries(spies)) expect(spy, name).toHaveBeenCalledOnce();
     expect(writeText).toHaveBeenCalledWith('v');
   });
 
-  it('ThemeToggle forwards them to its button, which still toggles on click (React overrides onClick)', () => {
-    const spies = { onKeyDown: vi.fn(), onFocus: vi.fn(), onBlur: vi.fn(), onMouseEnter: vi.fn(), onDoubleClick: vi.fn(), onClickCapture: vi.fn() };
-    const onClick = vi.fn();
-    const { container } = render(ThemeToggle as Component<Record<string, unknown>>, { props: { ...spies, onClick, 'data-testid': 'x', 'aria-keyshortcuts': 'K' } });
+  it('ThemeToggle forwards them to its button, which still toggles on click (React overrides onclick)', () => {
+    const spies = { onkeydown: vi.fn(), onfocus: vi.fn(), onblur: vi.fn(), onmouseenter: vi.fn(), ondblclick: vi.fn(), onclickcapture: vi.fn() };
+    const onclick = vi.fn();
+    const { container } = render(ThemeToggle as Component<Record<string, unknown>>, { props: { ...spies, onclick, 'data-testid': 'x', 'aria-keyshortcuts': 'K' } });
     const el = container.querySelector('button')!;
     expect([el.dataset.testid, el.getAttribute('aria-keyshortcuts')]).toEqual(['x', 'K']);
     fireEvent.keyDown(el);
     fireEvent.click(el);
-    fireEvent.focusIn(el);
-    fireEvent.focusOut(el);
+    fireEvent.focus(el);
+    fireEvent.blur(el);
     fireEvent.mouseEnter(el);
     fireEvent.dblClick(el);
     for (const [name, spy] of Object.entries(spies)) expect(spy, name).toHaveBeenCalledOnce();
-    expect([onClick.mock.calls.length, document.documentElement.dataset.theme]).toEqual([0, 'light']);
+    expect([onclick.mock.calls.length, document.documentElement.dataset.theme]).toEqual([0, 'light']);
     delete document.documentElement.dataset.theme;
     localStorage.clear();
   });
@@ -128,26 +128,28 @@ describe('React-named handlers and attributes', () => {
     ['Tabs', Tabs, { label: 'L', value: 'a', items: [{ id: 'a', label: 'A' }] }],
     ['TabPanel', TabPanel, { id: 'a', value: 'a' }],
   ] as const)('%s forwards nothing, as React', (_, C, props) => {
-    const onClick = vi.fn();
-    const { container } = render(C as Component<Record<string, unknown>>, { props: { ...props, onClick, 'data-testid': 'x' } });
+    const onclick = vi.fn();
+    const { container } = render(C as Component<Record<string, unknown>>, { props: { ...props, onclick, 'data-testid': 'x' } });
     fireEvent.click(container.firstElementChild!);
-    expect([container.querySelector('[data-testid]'), onClick.mock.calls.length]).toEqual([null, 0]);
+    expect([container.querySelector('[data-testid]'), onclick.mock.calls.length]).toEqual([null, 0]);
   });
 
-  it('Button runs onDoubleClickCapture once, in the capture phase', () => {
+  it('Button runs ondblclickcapture once, in the capture phase', () => {
     const calls: string[] = [];
-    const { container } = render(Button, { props: { onDoubleClickCapture: () => calls.push('capture'), onDoubleClick: () => calls.push('bubble') } });
+    const { container } = render(Button, { props: { ondblclickcapture: () => calls.push('capture'), ondblclick: () => calls.push('bubble') } });
     const button = container.querySelector('button')!;
     fireEvent.dblClick(button);
     expect(calls).toEqual(['capture', 'bubble']);
-    expect(button.hasAttribute('ondoubleclickcapture')).toBe(false);
+    expect(button.hasAttribute('ondblclickcapture')).toBe(false);
   });
 
-  it('calls the native and the React handler of the same event, the native one first', () => {
+  it('preserves native handlers and undefined props without wrapping', () => {
     const calls: string[] = [];
-    const out = reactEvents({ onClick: () => calls.push('React'), onclick: () => calls.push('native'), onKeyUp: undefined, id: 'a' });
-    expect(Object.keys(out).sort()).toEqual(['id', 'onclick']);
+    const onclick = () => calls.push('native');
+    const out = eventProps({ onclick, onkeyup: undefined, id: 'a' });
+    expect(Object.keys(out).sort()).toEqual(['id', 'onclick', 'onkeyup']);
+    expect(out.onclick).toBe(onclick);
     (out.onclick as () => void)();
-    expect(calls).toEqual(['native', 'React']);
+    expect(calls).toEqual(['native']);
   });
 });

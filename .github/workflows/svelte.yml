@@ -1,13 +1,20 @@
 name: Svelte package
 
-# The Svelte workspace (svelte/): the @microcks/deep-ink Svelte package. It has its own lockfile. Nothing is published.
+# Isolated native Svelte family, Storybook and packed consumer. Nothing is published.
 on:
+  workflow_call:
+    inputs:
+      storybook:
+        type: boolean
+        default: false
   push:
     branches: [main]
     paths:
       - "svelte/**"
       - "packages/tokens/**"
       - "packages/registry/src/css/**"
+      - "packages/registry/src/angular/icon.ts"
+      - "packages/registry/package.json"
       - "packages/registry/items/**"
       - "packages/registry/parity/**"
       - "packages/registry/css-order.json"
@@ -18,6 +25,8 @@ on:
       - "svelte/**"
       - "packages/tokens/**"
       - "packages/registry/src/css/**"
+      - "packages/registry/src/angular/icon.ts"
+      - "packages/registry/package.json"
       - "packages/registry/items/**"
       - "packages/registry/parity/**"
       - "packages/registry/css-order.json"
@@ -29,7 +38,7 @@ permissions:
   contents: read
 
 concurrency:
-  group: svelte-${{ github.ref }}
+  group: svelte-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
@@ -45,15 +54,24 @@ jobs:
           cache-dependency-path: |
             pnpm-lock.yaml
             svelte/pnpm-lock.yaml
-      # The stylesheet needs only the tokens and the registry CSS build (no Stencil, no Angular).
+      # CSS needs only tokens and the registry CSS build. Button icons are parsed from the
+      # registry's icon.ts literals at build time: no full registry, Stencil or Angular runtime.
       - run: pnpm install --frozen-lockfile --filter @microcks-deep-ink/tokens --filter @microcks-deep-ink/registry
       - run: pnpm --filter @microcks-deep-ink/tokens build
       - run: pnpm --filter @microcks-deep-ink/registry exec node scripts/build-css.mjs
       - run: pnpm -C svelte install --frozen-lockfile
       - run: pnpm -C svelte lint
-      - run: pnpm -C svelte check
-      # Specs, axe, the barrel and the React parity cases (packages/registry/parity).
-      - run: pnpm -C svelte test
       - run: pnpm -C svelte build
+      - run: pnpm -C svelte check
+      - run: pnpm -C svelte test
+      - run: pnpm -C svelte check:boundaries
+      - run: pnpm -C svelte build:storybook
+      - uses: actions/upload-artifact@v7
+        if: inputs.storybook
+        with:
+          name: storybook-svelte
+          path: svelte/apps/storybook/storybook-static
+          if-no-files-found: error
+      - run: pnpm -C svelte smoke:package
       - run: test -s svelte/packages/deep-ink/dist/styles.css && test -s svelte/packages/deep-ink/dist/styles.no-fonts.css
       - run: pnpm -C svelte publint

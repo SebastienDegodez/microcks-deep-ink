@@ -9,9 +9,9 @@ import RadioGroup from './RadioGroup.svelte';
 describe('Checkbox', () => {
   it('is a checkbox named by its label and described by its description, toggled with Space', async () => {
     const user = userEvent.setup();
-    const onChange = vi.fn();
+    const onchange = vi.fn();
     let checked = true;
-    const { container } = render(Checkbox, { props: { label: 'Run on every import', description: 'Triggers a test.', onChange, get checked() { return checked; }, set checked(v) { checked = v; } } });
+    const { container } = render(Checkbox, { props: { label: 'Run on every import', description: 'Triggers a test.', onchange, get checked() { return checked; }, set checked(v) { checked = v; } } });
     const box = screen.getByRole<HTMLInputElement>('checkbox', { name: 'Run on every import' });
     expect(box.checked).toBe(true);
     expect(box.getAttribute('aria-describedby')).toBe(container.querySelector('.choice-description')!.id);
@@ -19,15 +19,15 @@ describe('Checkbox', () => {
     expect(document.activeElement).toBe(box);
     await user.keyboard(' ');
     expect([box.checked, checked]).toEqual([false, false]);
-    expect(onChange).toHaveBeenCalledOnce();
+    expect(onchange).toHaveBeenCalledOnce();
     expect(await axeViolations(container)).toEqual([]);
   });
 
-  it('toggles from its label, not when disabled, and calls onFocus and onBlur', async () => {
+  it('toggles from its label, not when disabled, and calls onfocus and onblur', async () => {
     const user = userEvent.setup();
-    const onFocus = vi.fn();
-    const onBlur = vi.fn();
-    render(Checkbox, { props: { label: 'Validate', variant: 'card', className: 'mine', onFocus, onBlur } });
+    const onfocus = vi.fn();
+    const onblur = vi.fn();
+    render(Checkbox, { props: { label: 'Validate', variant: 'card', class: 'mine', onfocus, onblur } });
     render(Checkbox, { props: { label: 'Locked', disabled: true } });
     render(Checkbox, { props: { label: 'Initially on', defaultChecked: true } });
     const box = screen.getByRole<HTMLInputElement>('checkbox', { name: 'Validate' });
@@ -35,7 +35,7 @@ describe('Checkbox', () => {
     expect(screen.getByRole<HTMLInputElement>('checkbox', { name: 'Initially on' }).checked).toBe(true);
     await user.tab();
     await user.tab();
-    expect([onFocus.mock.calls.length, onBlur.mock.calls.length]).toEqual([1, 1]);
+    expect([onfocus.mock.calls.length, onblur.mock.calls.length]).toEqual([1, 1]);
     await user.click(screen.getByText('Validate'));
     expect(box.checked).toBe(true);
     await user.click(screen.getByText('Locked'));
@@ -59,18 +59,18 @@ describe('RadioGroup', () => {
 
   it('is a group named by its legend, described by help and error; arrows move the selection', async () => {
     const user = userEvent.setup();
-    const onChange = vi.fn();
+    const onchange = vi.fn();
     let value: string | undefined = 'uri';
     const { container } = render(RadioGroup, {
-      props: { legend: 'Dispatcher', options, onChange, required: true, help: 'How a request picks its response.', error: 'Pick one.', get value() { return value; }, set value(v) { value = v; } },
+      props: { legend: 'Dispatcher', options, onchange, required: true, help: 'How a request picks its response.', error: 'Pick one.', get value() { return value; }, set value(v) { value = v; } },
     });
-    const group = screen.getByRole('group', { name: 'Dispatcher' });
+    const group = screen.getByRole('radiogroup', { name: 'Dispatcher' });
     expect(group.getAttribute('aria-describedby')!.split(' ')).toHaveLength(2);
     expect(group.getAttribute('aria-invalid')).toBe('true');
     expect(screen.getByRole<HTMLInputElement>('radio', { name: 'URI parts' }).checked).toBe(true);
     await user.tab();
     await user.keyboard('{ArrowDown}');
-    expect(onChange).toHaveBeenLastCalledWith('json');
+    expect(onchange).toHaveBeenLastCalledWith('json');
     expect(value).toBe('json');
     expect(screen.getByRole<HTMLInputElement>('radio', { name: 'JSON body' }).checked).toBe(true);
     expect(await axeViolations(container)).toEqual([]);

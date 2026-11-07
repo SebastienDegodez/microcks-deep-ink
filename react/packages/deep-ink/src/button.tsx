@@ -4,15 +4,16 @@ import { Icon } from './icon';
 import type { IconName } from './icon';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'dashed' | 'danger';
-export type ButtonSize = 'sm' | 'compact' | 'tile' | 'md' | 'lg';
+export type ButtonSize = 'xs' | 'sm' | 'compact' | 'tile' | 'md' | 'lg';
+export type ButtonTone = 'danger' | 'link';
 
 interface ButtonOwnProps {
   /** One primary per task region. `link` is a small text button (Copy, Clear list); `dashed` an add / try action. */
   variant?: ButtonVariant;
-  /** `md` is 40px high. `sm` is 32px and `compact` 34px (never the primary action of a page); `tile` 36px (actions in a card footer); `lg` is 44px (form footers). */
+  /** `md` is 40px high. `xs` is 28px with 13px 600 text (an inline action in a banner), `sm` 32px and `compact` 34px (never the primary action of a page); `tile` 36px (actions in a card footer); `lg` is 44px (form footers). */
   size?: ButtonSize;
-  /** `danger` (ghost and link only): the text in the danger colour (an inline Delete). */
-  tone?: 'danger';
+  /** Text colour. `danger` (ghost and link only): an inline Delete. `link` (outline only): the link colour inside the border (Sources "Undo"). */
+  tone?: ButtonTone;
   /** Filled danger, only inside a confirmation dialog. Use with `variant="danger"`. */
   confirm?: boolean;
   /** Leading icon name. */
@@ -48,7 +49,7 @@ function requireName(component: string, iconOnly: boolean | undefined, props: Re
 function contents(icon: IconName | undefined, size: ButtonSize, variant: ButtonVariant, children: ReactNode) {
   return (
     <>
-      {icon ? <Icon name={icon} size={size === 'sm' || size === 'compact' || size === 'tile' || variant === 'link' || variant === 'dashed' ? 14 : 16} /> : null}
+      {icon ? <Icon name={icon} size={size === 'xs' || size === 'sm' || size === 'compact' || size === 'tile' || variant === 'link' || variant === 'dashed' ? 14 : 16} /> : null}
       {children}
     </>
   );

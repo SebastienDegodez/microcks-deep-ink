@@ -34,9 +34,9 @@ describe('CommandBar', () => {
   });
 
   it('moves with the arrows (wrapping), runs on Enter, closes and returns focus', async () => {
-    const onCommand = vi.fn();
-    const onClose = vi.fn();
-    render(Harness, { props: { items: ITEMS, onCommand, onClose } });
+    const oncommand = vi.fn();
+    const onclose = vi.fn();
+    render(Harness, { props: { items: ITEMS, oncommand, onclose } });
     const opener = screen.getByRole('button', { name: 'Search' });
     opener.focus();
     await fireEvent.click(opener);
@@ -49,8 +49,8 @@ describe('CommandBar', () => {
     expect(activeOption()?.textContent).toContain('Run a test');
     await fireEvent.keyDown(field(), { key: 'End' });
     await fireEvent.keyDown(field(), { key: 'Enter' });
-    expect(onCommand).toHaveBeenCalledWith(ITEMS[2]);
-    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(oncommand).toHaveBeenCalledWith(ITEMS[2]);
+    expect(onclose).toHaveBeenCalledTimes(1);
     expect(screen.queryByRole('combobox')).toBeNull();
     expect(document.activeElement).toBe(opener);
   });
@@ -70,17 +70,17 @@ describe('CommandBar', () => {
   });
 
   it('closes on Escape and on the Close button, once each', async () => {
-    const onClose = vi.fn();
-    render(Harness, { props: { items: ITEMS, onClose } });
+    const onclose = vi.fn();
+    render(Harness, { props: { items: ITEMS, onclose } });
     const opener = screen.getByRole('button', { name: 'Search' });
     opener.focus();
     await fireEvent.click(opener);
     await fireEvent.keyDown(field(), { key: 'Escape' });
-    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onclose).toHaveBeenCalledTimes(1);
     expect(document.activeElement).toBe(opener);
     await fireEvent.click(opener);
     await fireEvent.click(screen.getByRole('button', { name: 'Close' }));
-    expect(onClose).toHaveBeenCalledTimes(2);
+    expect(onclose).toHaveBeenCalledTimes(2);
     expect(screen.queryByRole('combobox')).toBeNull();
   });
 
@@ -97,12 +97,12 @@ describe('CommandBar', () => {
   });
 
   it('renders inline with a group name, and runs a clicked option', async () => {
-    const onCommand = vi.fn();
-    const { container } = render(CommandBar, { props: { inline: true, items: ITEMS, label: 'Command bar', onCommand } });
+    const oncommand = vi.fn();
+    const { container } = render(CommandBar, { props: { inline: true, items: ITEMS, label: 'Command bar', oncommand } });
     expect(screen.getByRole('group', { name: 'Command bar' })).toBeTruthy();
     expect(screen.queryByRole('button', { name: 'Close' })).toBeNull();
     await fireEvent.click(screen.getByRole('option', { name: /GET \/pastries/ }));
-    expect(onCommand).toHaveBeenCalledWith(ITEMS[2]);
+    expect(oncommand).toHaveBeenCalledWith(ITEMS[2]);
     await tick();
     expect(await axeViolations(container)).toEqual([]);
   });

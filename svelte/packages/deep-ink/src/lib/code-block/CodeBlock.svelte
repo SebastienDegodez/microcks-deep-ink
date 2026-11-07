@@ -1,19 +1,13 @@
-<!--
-  Code in a <figure> with a focusable, named <pre> (registry item code-block). Same props as the React CodeBlock: code,
-  lines, language, caption, label, copy, variant, source, headerTone, focusable, frame, tabs, tab, onTabChange,
-  tabsLabel, lineNumbers, startLine, gutter, tone, maxHeight, className, style (a string here) plus any attribute and
-  React handler, forwarded to the <figure> (to the <pre> with frame="none"). focusable="overflow" measures the <pre>
-  after every content change and on resize (ResizeObserver), as React does.
--->
+
 <script lang="ts">
   import type { HTMLAttributes } from 'svelte/elements';
   import Icon from '../icon/Icon.svelte';
-  import { reactEvents, type ReactHandlers } from '../react-events';
+  import { eventProps, type NativeHandlers } from '../event-props';
   import CopyButton from '../copy-button/CopyButton.svelte';
   import type { CodeLine, CodeTab } from './code-block';
 
   type Props = Omit<HTMLAttributes<HTMLElement>, 'class' | 'children'> &
-    ReactHandlers<HTMLElement> & {
+    NativeHandlers<HTMLElement> & {
     /** Plain text. Use `lines` for per-line markers. */
     code?: string;
     lines?: CodeLine[];
@@ -34,14 +28,14 @@
     frame?: 'figure' | 'none';
     tabs?: CodeTab[];
     tab?: string;
-    onTabChange?: (id: string) => void;
+    ontabchange?: (id: string) => void;
     tabsLabel?: string;
     lineNumbers?: boolean;
     startLine?: number;
     gutter?: 'wide' | 'narrow';
     tone?: 'danger';
     maxHeight?: string | number;
-    className?: string;
+    class?: string;
     style?: string;
   };
 
@@ -55,7 +49,7 @@
     variant = 'framed',
     tabs,
     tab,
-    onTabChange,
+    ontabchange,
     tabsLabel = 'Format',
     lineNumbers,
     startLine = 1,
@@ -66,7 +60,7 @@
     headerTone,
     focusable = 'always',
     frame = 'figure',
-    className,
+    class: cssClass,
     style,
     ...rest
   }: Props = $props();
@@ -135,27 +129,27 @@
 
 {#if preOnly}
   <pre
-    {...reactEvents(rest)}
+    {...eventProps(rest)}
     {...data}
     bind:this={pre}
     {...regionProps}
-    class={['code-pre', className].filter(Boolean).join(' ')}
+    class={['code-pre', cssClass].filter(Boolean).join(' ')}
     style={[style, maxHeightCss].filter(Boolean).join(';') || undefined}>{@render body()}</pre>
 {:else}
   <figure
-    {...reactEvents(rest)}
+    {...eventProps(rest)}
     {style}
-    class={['code', className].filter(Boolean).join(' ')}
+    class={['code', cssClass].filter(Boolean).join(' ')}
     {...data}
     data-header-tone={header && headerTone ? headerTone : undefined}
   >
     {#if header}
       <figcaption>
         {#if tabs?.length}<span class="code-tabs" role="group" aria-label={tabsLabel}
-            >{#each tabs as t (t.id)}<button type="button" aria-pressed={t.id === tab} onclick={() => onTabChange?.(t.id)}>{t.label}</button
+            >{#each tabs as t (t.id)}<button type="button" aria-pressed={t.id === tab} onclick={() => ontabchange?.(t.id)}>{t.label}</button
               >{/each}</span
           >{/if}<span class="code-caption" id={captionId} data-title={source ? '' : undefined}>{caption ?? ''}</span
-        >{#if source}<span class="code-source">{source}</span>{/if}{#if copy}<CopyButton {value} variant="link" className="code-copy" />{/if}
+        >{#if source}<span class="code-source">{source}</span>{/if}{#if copy}<CopyButton {value} variant="link" class="code-copy" />{/if}
       </figcaption>
     {/if}
     <pre bind:this={pre} {...regionProps} style={maxHeightCss}>{@render body()}</pre>

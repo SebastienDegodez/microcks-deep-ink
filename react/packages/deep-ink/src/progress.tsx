@@ -6,10 +6,12 @@ export interface ProgressProps extends Omit<ProgressHTMLAttributes<HTMLProgressE
   /** Omit for an indeterminate progress. */
   value?: number;
   max?: number;
+  /** Written value while indeterminate. */
+  indeterminateLabel?: string;
 }
 
 /** Native <progress> with a visible label and a written value (never color alone). */
-export function Progress({ label, value, max = 100, className, id, ...rest }: ProgressProps) {
+export function Progress({ label, value, max = 100, indeterminateLabel = 'In progress', className, id, ...rest }: ProgressProps) {
   const auto = useId();
   const fieldId = id ?? auto;
   const percent = value === undefined ? undefined : Math.round((value / max) * 100);
@@ -19,7 +21,7 @@ export function Progress({ label, value, max = 100, className, id, ...rest }: Pr
         <label className="progress-label" htmlFor={fieldId}>
           {label}
         </label>
-        <span className="progress-value">{percent === undefined ? 'In progress' : `${percent}%`}</span>
+        <span className="progress-value">{percent === undefined ? indeterminateLabel : `${percent}%`}</span>
       </div>
       <progress {...rest} id={fieldId} className={['progress', className].filter(Boolean).join(' ')} value={value} max={max} />
     </div>

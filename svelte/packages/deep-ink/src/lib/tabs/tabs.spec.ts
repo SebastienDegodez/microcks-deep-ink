@@ -36,39 +36,39 @@ describe('Tabs', () => {
   });
 
   it('moves with the arrow keys, skips disabled tabs and wraps', async () => {
-    const onChange = vi.fn();
-    render(Harness, { props: { items, onChange } });
+    const onchange = vi.fn();
+    render(Harness, { props: { items, onchange } });
     await fireEvent.keyDown(tab(OPS), { key: 'ArrowRight' });
-    expect(onChange).toHaveBeenLastCalledWith('props');
+    expect(onchange).toHaveBeenLastCalledWith('props');
     expect(document.activeElement).toBe(tab('Properties'));
     await fireEvent.keyDown(tab('Properties'), { key: 'ArrowRight' });
-    expect(onChange).toHaveBeenLastCalledWith('tests');
+    expect(onchange).toHaveBeenLastCalledWith('tests');
     await fireEvent.keyDown(tab('Tests'), { key: 'ArrowRight' });
-    expect(onChange).toHaveBeenLastCalledWith('ops');
+    expect(onchange).toHaveBeenLastCalledWith('ops');
     await fireEvent.keyDown(tab(OPS), { key: 'ArrowLeft' });
-    expect(onChange).toHaveBeenLastCalledWith('tests');
+    expect(onchange).toHaveBeenLastCalledWith('tests');
     expect(tab('Tests').getAttribute('aria-selected')).toBe('true');
   });
 
   it('jumps with Home and End', async () => {
-    const onChange = vi.fn();
-    render(Harness, { props: { items, onChange } });
+    const onchange = vi.fn();
+    render(Harness, { props: { items, onchange } });
     await fireEvent.keyDown(tab(OPS), { key: 'End' });
-    expect(onChange).toHaveBeenLastCalledWith('tests');
+    expect(onchange).toHaveBeenLastCalledWith('tests');
     await fireEvent.keyDown(tab('Tests'), { key: 'Home' });
-    expect(onChange).toHaveBeenLastCalledWith('ops');
+    expect(onchange).toHaveBeenLastCalledWith('ops');
     expect(document.activeElement).toBe(tab(OPS));
   });
 
   it('manual activation moves focus without selecting', async () => {
-    const onChange = vi.fn();
-    render(Harness, { props: { items, activation: 'manual', onChange } });
+    const onchange = vi.fn();
+    render(Harness, { props: { items, activation: 'manual', onchange } });
     await fireEvent.keyDown(tab(OPS), { key: 'ArrowRight' });
-    expect(onChange).not.toHaveBeenCalled();
+    expect(onchange).not.toHaveBeenCalled();
     expect(document.activeElement).toBe(tab('Properties'));
     expect(tab(OPS).getAttribute('aria-selected')).toBe('true');
     await fireEvent.click(tab('Properties'));
-    expect(onChange).toHaveBeenCalledWith('props');
+    expect(onchange).toHaveBeenCalledWith('props');
   });
 
   it('renders only the selected panel content', async () => {

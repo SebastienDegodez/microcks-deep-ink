@@ -1,9 +1,4 @@
-<!--
-  Label, control, help and error wired together (registry item field). Same props as the React Field: label, help,
-  error, required, className. `label`, `help` and `error` (ReactNode in React) take a string or a snippet. React's
-  render-prop child is a snippet that receives the props to spread on the control:
-  `{#snippet children(control)}<Input {...control} />{/snippet}`.
--->
+
 <script lang="ts" module>
   /** Props to spread on the form control rendered inside a `Field`. */
   export interface FieldControlProps {
@@ -27,10 +22,10 @@
     required?: boolean;
     /** Receives the props to spread on the control. */
     children: Snippet<[FieldControlProps]>;
-    className?: string;
+    class?: string;
   };
 
-  let { label, help, error, required, children, className }: Props = $props();
+  let { label, help, error, required, children, class: cssClass }: Props = $props();
 
   // In expressions, so that the compiler keeps their spaces.
   const asterisk = ' *';
@@ -51,7 +46,7 @@
 {#snippet node(content: string | Snippet)}{#if typeof content === 'function'}{@render content()}{:else}{content}{/if}{/snippet}
 
 <!-- Kept on few lines: whitespace between the tags would change the text and the accessible names. -->
-<div class={['field', className].filter(Boolean).join(' ')} data-invalid={error ? '' : undefined}
+<div class={['field', cssClass].filter(Boolean).join(' ')} data-invalid={error ? '' : undefined}
   ><label class="label" for={id}
     >{@render node(label)}{#if required}<span class="required" aria-hidden="true">{asterisk}</span>{/if}</label
   >{@render children(control)}{#if help}<p class="help" id={helpId}>{@render node(help)}</p>{/if}{#if error}<p

@@ -42,6 +42,18 @@ describe('CopyButton', () => {
     expect(screen.getByRole('button', { name: 'Copy' })).toBeTruthy();
   });
 
+  it('forwards canonical class arrays and xs/link styling through its native button', () => {
+    render(CopyButton, { props: {
+      value: 'packed', variant: 'outline', tone: 'link', size: 'xs',
+      class: ['custom', { active: true, hidden: false }],
+    } });
+    const button = screen.getByRole('button', { name: 'Copy' });
+    expect(button.className).toBe('button copy-button custom active');
+    expect(button.dataset.size).toBe('xs');
+    expect(button.dataset.tone).toBe('link');
+    expect(button.querySelector('svg')?.getAttribute('width')).toBe('14');
+  });
+
   it('announces a failure', async () => {
     mockClipboard(vi.fn().mockRejectedValue(new Error('denied')));
     render(CopyButton, { props: { value: 'x' } });
@@ -65,14 +77,13 @@ describe('CopyButton', () => {
 });
 
 describe('CopyButton click', () => {
-  it('copies instead of calling a given onClick, as React overrides it', async () => {
+  it('copies instead of calling a given onclick', async () => {
     const writeText = vi.fn().mockResolvedValue(undefined);
     mockClipboard(writeText);
-    const onClick = vi.fn();
     const onclick = vi.fn();
-    render(CopyButton, { props: { value: 'v', onClick, onclick } as never });
+    render(CopyButton, { props: { value: 'v', onclick } as never });
     await fireEvent.click(screen.getByRole('button', { name: 'Copy' }));
     expect(writeText).toHaveBeenCalledWith('v');
-    expect([onClick, onclick].map((f) => f.mock.calls.length)).toEqual([0, 0]);
+    expect(onclick).not.toHaveBeenCalled();
   });
 });

@@ -40,17 +40,17 @@ describe('DataTable', () => {
   });
 
   it('sets aria-sort only on the sorted column and asks for the next direction', async () => {
-    const onSortChange = vi.fn();
+    const onsortchange = vi.fn();
     const sort: SortState = { key: 'name', direction: 'ascending' };
-    render(DataTable<Svc>, { props: { ...base, sort, onSortChange } });
+    render(DataTable<Svc>, { props: { ...base, sort, onsortchange } });
     const name = screen.getByRole('columnheader', { name: /Name/ });
     expect(name.getAttribute('aria-sort')).toBe('ascending');
     expect(screen.getByRole('columnheader', { name: /Calls/ }).hasAttribute('aria-sort')).toBe(false);
     expect(screen.getByRole('columnheader', { name: 'Version' }).hasAttribute('aria-sort')).toBe(false);
     await fireEvent.click(within(name).getByRole('button'));
-    expect(onSortChange).toHaveBeenLastCalledWith({ key: 'name', direction: 'descending' });
+    expect(onsortchange).toHaveBeenLastCalledWith({ key: 'name', direction: 'descending' });
     await fireEvent.click(within(screen.getByRole('columnheader', { name: /Calls/ })).getByRole('button'));
-    expect(onSortChange).toHaveBeenLastCalledWith({ key: 'calls', direction: 'ascending' });
+    expect(onsortchange).toHaveBeenLastCalledWith({ key: 'calls', direction: 'ascending' });
     expect(screen.getByRole('status').textContent).toBe('Sorted by Name, ascending');
   });
 
@@ -132,9 +132,9 @@ describe('DataTable', () => {
   });
 
   it('a selectable row header is a toggle button named by the row, pressed on the selected row', async () => {
-    const onRowSelect = vi.fn();
+    const onrowselect = vi.fn();
     const cols: DataTableColumn<Svc>[] = [{ key: 'name', header: 'Name', rowHeader: true }, columns[1]!];
-    const { container } = render(DataTable<Svc>, { props: { ...base, scroll: false, layout: 'fixed', columns: cols, selectedKey: 'orders', onRowSelect } });
+    const { container } = render(DataTable<Svc>, { props: { ...base, scroll: false, layout: 'fixed', columns: cols, selectedKey: 'orders', onrowselect } });
     const orders = within(screen.getByRole('rowheader', { name: 'Orders API' })).getByRole('button', { name: 'Orders API' });
     expect(orders.getAttribute('aria-pressed')).toBe('true');
     const pastry = screen.getByRole('button', { name: 'API Pastry', pressed: false });
@@ -143,20 +143,20 @@ describe('DataTable', () => {
     pastry.focus();
     expect(document.activeElement).toBe(pastry);
     await fireEvent.click(pastry);
-    expect(onRowSelect).toHaveBeenCalledWith(rows[0]);
+    expect(onrowselect).toHaveBeenCalledWith(rows[0]);
     expect(await axeViolations(container)).toEqual([]);
   });
 
   it('keyboard: the tab order is the toggles in row order, never the wrapper, when scroll={false}', async () => {
-    const onRowSelect = vi.fn();
-    const { container } = render(DataTable<Svc>, { props: { ...base, scroll: false, columns: [{ key: 'name', header: 'Name', rowHeader: true }, columns[1]!], onRowSelect } });
+    const onrowselect = vi.fn();
+    const { container } = render(DataTable<Svc>, { props: { ...base, scroll: false, columns: [{ key: 'name', header: 'Name', rowHeader: true }, columns[1]!], onrowselect } });
     const tabbable = [...container.querySelectorAll<HTMLElement>('a[href], button, [tabindex]')].filter((el) => el.tabIndex >= 0);
     expect(tabbable.map((el) => el.textContent)).toEqual(['API Pastry', 'Orders API']);
     for (const el of tabbable) expect(el.tagName).toBe('BUTTON');
     // A native button: Enter and Space activate it (a click), no key handler of its own.
     tabbable[1]!.focus();
     await fireEvent.click(document.activeElement!);
-    expect(onRowSelect).toHaveBeenLastCalledWith(rows[1]);
+    expect(onrowselect).toHaveBeenLastCalledWith(rows[1]);
   });
 
   it('renders a column snippet in the cells and a custom row link with the RowLinkProps', () => {
@@ -164,13 +164,13 @@ describe('DataTable', () => {
     const seen: RowLinkProps[] = [];
     const renderRowLink = createRawSnippet((row: () => Svc, props: () => RowLinkProps) => {
       seen.push(props());
-      return { render: () => `<a class="${props().className}" href="${props().href}" data-router="">${row().name}</a>` };
+      return { render: () => `<a class="${props().class}" href="${props().href}" data-router="">${row().name}</a>` };
     });
     const { container } = render(DataTable<Svc>, {
       props: { ...base, columns: [columns[0]!, { ...columns[2]!, render: calls }], rowHref: (r: Svc) => `/s/${r.id}`, selectedKey: 'orders', renderRowLink },
     });
     expect(screen.getByRole('link', { name: 'Orders API' }).hasAttribute('data-router')).toBe(true);
-    expect(seen.map((p) => [p.className, p.href, p['aria-current'], typeof p.children])).toEqual([
+    expect(seen.map((p) => [p.class, p.href, p['aria-current'], typeof p.children])).toEqual([
       ['table-rowlink', '/s/pastry2', undefined, 'function'],
       ['table-rowlink', '/s/orders', 'true', 'function'],
     ]);

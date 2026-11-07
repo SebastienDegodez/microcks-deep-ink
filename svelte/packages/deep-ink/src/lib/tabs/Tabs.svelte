@@ -1,9 +1,4 @@
-<!--
-  Tabs with the WAI-ARIA tabs pattern (registry item tabs): roving tabindex, arrow keys with wrap, Home and End. Same
-  props as the React Tabs: label, items, value, onChange (called with the selected id), activation, idPrefix, variant,
-  children (the panels, a snippet), className. `value` is also bindable. Like React, no other attribute is forwarded.
-  Put TabPanels in `children`, or render them yourself with the same `idPrefix`.
--->
+
 <script lang="ts" module>
   import type { IconName } from '../icon/Icon.svelte';
 
@@ -41,7 +36,7 @@
     items: TabItem[];
     /** Id of the selected tab. */
     value: string;
-    onChange?: (id: string) => void;
+    onchange?: (id: string) => void;
     /** `automatic`: arrows select. `manual`: arrows move focus, Enter or Space selects. */
     activation?: 'automatic' | 'manual';
     /** Prefix of the generated ids. Only needed when a `TabPanel` is rendered outside `Tabs`. */
@@ -50,10 +45,10 @@
     variant?: 'line' | 'card';
     /** Panels, rendered after the tab list. */
     children?: Snippet;
-    className?: string;
+    class?: string;
   };
 
-  let { label, items, value = $bindable(), onChange, activation = 'automatic', idPrefix, variant = 'line', children, className }: Props = $props();
+  let { label, items, value = $bindable(), onchange, activation = 'automatic', idPrefix, variant = 'line', children, class: cssClass }: Props = $props();
 
   const generated = $props.id();
   const prefix = $derived(idPrefix ?? generated);
@@ -71,7 +66,7 @@
 
   function select(id: string) {
     value = id;
-    onChange?.(id);
+    onchange?.(id);
   }
 
   function move(to: number) {
@@ -106,7 +101,7 @@
   }
 </script>
 
-<div class={['tabs', className].filter(Boolean).join(' ')} data-variant={variant === 'card' ? 'card' : undefined}
+<div class={['tabs', cssClass].filter(Boolean).join(' ')} data-variant={variant === 'card' ? 'card' : undefined}
   ><div role="tablist" class="tablist" aria-label={label}
     >{#each items as t, i (t.id)}<button
         bind:this={refs[i]}

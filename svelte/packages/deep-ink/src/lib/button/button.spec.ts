@@ -3,8 +3,11 @@ import userEvent from '@testing-library/user-event';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../../test/axe';
-import Button from './Button.svelte';
-import ButtonLink from './ButtonLink.svelte';
+import { Button, ButtonLink } from '../index.js';
+import LegacyButton from './Button.svelte';
+import LegacyButtonLink from './ButtonLink.svelte';
+import { iconSize, requireName } from './button.js';
+import { iconSize as canonicalIconSize, requireName as canonicalRequireName } from '../internal/button.js';
 
 const text = (t: string) => createRawSnippet(() => ({ render: () => `<span>${t}</span>` }));
 
@@ -19,14 +22,14 @@ describe('Button', () => {
     expect(b.getAttribute('data-size')).toBe('md');
   });
 
-  it('merges className, forwards props and the ref', () => {
-    const onClick = vi.fn();
+  it('merges class, forwards props and the ref', () => {
+    const onclick = vi.fn();
     let ref: HTMLButtonElement | undefined;
-    render(Button, { props: { className: 'mine', onClick, type: 'submit', get element() { return ref; }, set element(e) { ref = e; }, children: text('Go') } });
-    expect(ref?.className).toBe('button mine');
+    render(Button, { props: { class: ['mine', { active: true, hidden: false }], onclick, type: 'submit', get element() { return ref; }, set element(e) { ref = e; }, children: text('Go') } });
+    expect(ref?.className).toBe('button mine active');
     expect(ref?.type).toBe('submit');
     fireEvent.click(screen.getByRole('button', { name: 'Go' }));
-    expect(onClick).toHaveBeenCalled();
+    expect(onclick).toHaveBeenCalled();
   });
 
   it('loading sets aria-busy and disables', () => {
@@ -76,26 +79,59 @@ describe('Button', () => {
     expect(await axeViolations(document.body)).toEqual([]);
   });
 
-  it('is reached with Tab and activated with Enter and Space, and calls onFocus and onBlur', async () => {
+  it('is reached with Tab and activated with Enter and Space, and calls onfocus and onblur', async () => {
     const user = userEvent.setup();
-    const onClick = vi.fn();
-    const onFocus = vi.fn();
-    const onBlur = vi.fn();
-    render(Button, { props: { onClick, onFocus, onBlur, children: text('Run') } });
+    const onclick = vi.fn();
+    const onfocus = vi.fn();
+    const onblur = vi.fn();
+    render(Button, { props: { onclick, onfocus, onblur, children: text('Run') } });
     await user.tab();
     expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Run' }));
     await user.keyboard('{Enter}');
     await user.keyboard(' ');
-    expect(onClick).toHaveBeenCalledTimes(2);
+    expect(onclick).toHaveBeenCalledTimes(2);
     await user.tab();
-    expect([onFocus.mock.calls.length, onBlur.mock.calls.length]).toEqual([1, 1]);
+    expect([onfocus.mock.calls.length, onblur.mock.calls.length]).toEqual([1, 1]);
   });
 
   it('a loading button is not activated', async () => {
     const user = userEvent.setup();
-    const onClick = vi.fn();
-    render(Button, { props: { loading: true, onClick, children: text('Import') } });
+    const onclick = vi.fn();
+    render(Button, { props: { loading: true, onclick, children: text('Import') } });
     await user.click(screen.getByRole('button', { name: 'Import' }));
-    expect(onClick).not.toHaveBeenCalled();
+    expect(onclick).not.toHaveBeenCalled();
+  });
+
+  it('legacy helper exports are the canonical bindings', () => {
+    expect(iconSize).toBe(canonicalIconSize);
+    expect(requireName).toBe(canonicalRequireName);
+    expect(iconSize('xs', 'outline')).toBe(14);
+  });
+
+  it('legacy component paths forward canonical classes, xs/link tone, refs and loading guards', async () => {
+    let buttonElement: HTMLButtonElement | undefined;
+    let linkElement: HTMLAnchorElement | undefined;
+    const onclick = vi.fn();
+    render(LegacyButton, { props: {
+      size: 'xs', variant: 'outline', tone: 'link', icon: 'undo',
+      class: ['legacy', { active: true }], children: text('Legacy action'),
+      get element() { return buttonElement; }, set element(e) { buttonElement = e; },
+    } });
+    expect(buttonElement?.className).toBe('button legacy active');
+    expect(buttonElement?.dataset.size).toBe('xs');
+    expect(buttonElement?.dataset.tone).toBe('link');
+    expect(buttonElement?.querySelector('svg')?.getAttribute('width')).toBe('14');
+    render(LegacyButtonLink, { props: {
+      href: '/never', loading: true, onclick, class: { legacy: true },
+      children: text('Legacy unavailable'),
+      get element() { return linkElement; }, set element(e) { linkElement = e; },
+    } });
+    expect(linkElement?.className).toBe('button legacy');
+    expect(linkElement?.hasAttribute('href')).toBe(false);
+    expect(linkElement?.tabIndex).toBe(-1);
+    expect(linkElement?.getAttribute('aria-busy')).toBe('true');
+    await fireEvent.click(linkElement!);
+    await fireEvent.keyDown(linkElement!, { key: 'Enter' });
+    expect(onclick).not.toHaveBeenCalled();
   });
 });

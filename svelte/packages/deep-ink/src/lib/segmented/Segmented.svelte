@@ -1,9 +1,4 @@
-<!--
-  Filter buttons that behave like one choice (registry item segmented): a role="group" of buttons with aria-pressed.
-  Same props as the React Segmented: label, options, value, onChange (called with the pressed id), variant, tone,
-  pressedFill, iconSize, size, spacing, className. `value` is also bindable. Like React, no other attribute is forwarded.
-  Announce the result count of the filtered list in a live region.
--->
+
 <script lang="ts" module>
   import type { IconName } from '../icon/Icon.svelte';
 
@@ -32,7 +27,7 @@
     options: SegmentedOption[];
     /** Id of the pressed option. */
     value: string;
-    onChange?: (id: string) => void;
+    onchange?: (id: string) => void;
     /** `track` (default): padded track, the pressed option raised. `joined`: bordered cells side by side. */
     variant?: 'track' | 'joined';
     /** `primary` (joined only): the pressed option is filled with the action colour. */
@@ -45,21 +40,21 @@
     size?: 'md' | 'sm';
     /** `wide`: 0 12px button padding instead of 0 10px (Usage period). */
     spacing?: 'normal' | 'wide';
-    className?: string;
+    class?: string;
   };
 
   let {
     label,
     options,
     value = $bindable(),
-    onChange,
+    onchange,
     variant = 'track',
     tone = 'neutral',
     pressedFill = 'raised',
     iconSize = 15,
     size = 'md',
     spacing = 'normal',
-    className,
+    class: cssClass,
   }: Props = $props();
 
   // In an expression, so that the compiler keeps the space.
@@ -67,14 +62,14 @@
 
   function press(id: string) {
     value = id;
-    onChange?.(id);
+    onchange?.(id);
   }
 </script>
 
 <div
   role="group"
   aria-label={label}
-  class={['segmented', className].filter(Boolean).join(' ')}
+  class={['segmented', cssClass].filter(Boolean).join(' ')}
   data-variant={variant}
   data-tone={tone}
   data-pressed-fill={pressedFill === 'selected' ? 'selected' : undefined}

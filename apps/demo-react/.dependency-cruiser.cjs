@@ -20,6 +20,7 @@ const TEST_RUNNER = '(^|/)node_modules/(vitest|@testing-library/[^/]+)(/|$)';
 // Mock Service Worker: the mock API of the `http` backend.
 const MSW = '(^|/)node_modules/msw(/|$)';
 const TEST_FILE = '\\.test\\.tsx?$';
+const GOVERN_CORE = '(^|/)(node_modules/@microcks/demo-core|packages/demo-core)/dist/govern/';
 // Port contract suites (`*.contract.ts`): test-only modules that tests import, so they follow the test-file exceptions.
 const CONTRACT_FILE = '\\.contract\\.ts$';
 
@@ -28,10 +29,17 @@ module.exports = {
   forbidden: [
     {
       name: 'domain-is-isolated',
-      comment: 'src/domain imports nothing outside src/domain: no npm package, no React, no other layer.',
+      comment: 'src/domain imports nothing outside src/domain, except the extracted framework-neutral govern policies.',
       severity: 'error',
       from: { path: '^src/domain/' },
-      to: { pathNot: ['^src/domain/', TEST_RUNNER] },
+      to: { pathNot: ['^src/domain/', TEST_RUNNER, GOVERN_CORE] },
+    },
+    {
+      name: 'govern-core-only-from-govern-domain',
+      comment: 'Only the govern domain facade consumes demo-core/govern; other layers retain their domain imports.',
+      severity: 'error',
+      from: { pathNot: '^src/domain/govern/' },
+      to: { path: GOVERN_CORE },
     },
     {
       name: 'application-depends-on-domain-only',

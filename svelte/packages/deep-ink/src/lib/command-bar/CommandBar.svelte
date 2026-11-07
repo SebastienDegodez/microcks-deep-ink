@@ -1,11 +1,4 @@
-<!--
-  Command bar (registry item command-bar, Ctrl/⌘K): navigation and actions behind one search field. WAI-ARIA 1.2
-  combobox with a listbox popup (aria-activedescendant keeps DOM focus in the input), results grouped by kind. Modal
-  mode is a native <dialog> opened with showModal(): focus is trapped, Escape closes, and focus returns to the opener.
-  `inline` renders the same widget in place. Same props as the React CommandBar: items, open, inline, placeholder,
-  globalShortcut, label, onCommand, onClose, className plus any attribute and React handler of the root (<dialog>, or
-  the inline <div>). React's `ref` is `bind:element`.
--->
+
 <script lang="ts" module>
   import type { CommandItem, CommandProtocol } from './command-bar';
 
@@ -37,12 +30,12 @@
   import { tick } from 'svelte';
   import type { HTMLAttributes } from 'svelte/elements';
   import Icon from '../icon/Icon.svelte';
-  import { reactEvents, type ReactHandlers } from '../react-events';
+  import { eventProps, type NativeHandlers } from '../event-props';
 
   type Props = Omit<HTMLAttributes<HTMLElement>, 'class' | 'children' | 'onselect'> &
-    Omit<ReactHandlers<HTMLElement>, 'onSelect' | 'onSelectCapture'> & {
+    Omit<NativeHandlers<HTMLElement>, 'onselect' | 'onselectcapture'> & {
     items: CommandItem[];
-    /** Modal mode: controls the dialog. Update it from `onClose`. */
+    /** Modal mode: controls the dialog. Update it from `onclose`. */
     open?: boolean;
     /** Render in place instead of in a dialog (docs, embedding). */
     inline?: boolean;
@@ -51,10 +44,10 @@
     globalShortcut?: boolean;
     /** Accessible name of the dialog and the search field. Default "Command bar". */
     label?: string;
-    onCommand?: (item: CommandItem) => void;
+    oncommand?: (item: CommandItem) => void;
     /** Called when the modal closes (Escape, backdrop, close button, or after a command ran). */
-    onClose?: () => void;
-    className?: string;
+    onclose?: () => void;
+    class?: string;
     /** The root element: the <dialog>, or the inline <div>. */
     element?: HTMLElement;
   };
@@ -66,9 +59,9 @@
     placeholder = 'Jump to a service, or type an action…',
     globalShortcut = true,
     label = 'Command bar',
-    onCommand,
-    onClose,
-    className,
+    oncommand,
+    onclose,
+    class: cssClass,
     element = $bindable(),
     ...rest
   }: Props = $props();
@@ -78,7 +71,7 @@
   let listEl = $state<HTMLDivElement>();
   let opener: HTMLElement | null = null;
 
-  // `open` drives the modal; Ctrl/⌘K and the close paths change it locally and report through onClose.
+  // `open` drives the modal; Ctrl/⌘K and the close paths change it locally and report through onclose.
   // svelte-ignore state_referenced_locally
   let shown = $state(Boolean(open));
   // svelte-ignore state_referenced_locally
@@ -115,11 +108,11 @@
     // A second close in the same event (Escape, then cancel) is a no-op.
     const wasOpen = shown;
     shown = false;
-    if (wasOpen) onClose?.();
+    if (wasOpen) onclose?.();
   }
   function choose(item?: CommandItem) {
     if (!item) return;
-    onCommand?.(item);
+    oncommand?.(item);
     if (!inline) close();
   }
 
@@ -148,38 +141,38 @@
 
   // Ctrl/⌘K from anywhere.
   $effect(() => {
-    const onKey = (e: KeyboardEvent) => {
+    const onkey = (e: KeyboardEvent) => {
       if (!globalShortcut || !(e.metaKey || e.ctrlKey) || e.key.toLowerCase() !== 'k') return;
       e.preventDefault();
       if (inline) input?.focus();
       else if (shown) close();
       else shown = true;
     };
-    document.addEventListener('keydown', onKey);
-    return () => document.removeEventListener('keydown', onKey);
+    document.addEventListener('keydown', onkey);
+    return () => document.removeEventListener('keydown', onkey);
   });
 
   // Dialog: Escape (cancel), a native close and a click on the backdrop all close the bar.
   $effect(() => {
     const dialog = element as HTMLDialogElement | undefined;
     if (inline || !dialog) return;
-    const onCancel = (e: Event) => {
+    const oncancel = (e: Event) => {
       e.preventDefault();
       close();
     };
-    const onNativeClose = () => {
+    const onnativeclose = () => {
       if (shown) close();
     };
-    const onClick = (e: MouseEvent) => {
+    const onclick = (e: MouseEvent) => {
       if (e.target === dialog) close();
     };
-    dialog.addEventListener('cancel', onCancel);
-    dialog.addEventListener('close', onNativeClose);
-    dialog.addEventListener('click', onClick);
+    dialog.addEventListener('cancel', oncancel);
+    dialog.addEventListener('close', onnativeclose);
+    dialog.addEventListener('click', onclick);
     return () => {
-      dialog.removeEventListener('cancel', onCancel);
-      dialog.removeEventListener('close', onNativeClose);
-      dialog.removeEventListener('click', onClick);
+      dialog.removeEventListener('cancel', oncancel);
+      dialog.removeEventListener('close', onnativeclose);
+      dialog.removeEventListener('click', onclick);
       if (dialog.open) dialog.close();
     };
   });
@@ -216,7 +209,7 @@
     }
   }
 
-  const classes = $derived(['command-bar', className].filter(Boolean).join(' '));
+  const classes = $derived(['command-bar', cssClass].filter(Boolean).join(' '));
 </script>
 
 {#snippet tag(item: CommandItem)}{#if item.kind === 'action'}<span class="command-bar-tag" data-kind="action">RUN</span
@@ -280,7 +273,7 @@
 {/snippet}
 
 {#if inline}
-  <div {...reactEvents(rest)} bind:this={element} class={classes} data-inline="" role="group" aria-label={label}>{@render panel()}</div>
+  <div {...eventProps(rest)} bind:this={element} class={classes} data-inline="" role="group" aria-label={label}>{@render panel()}</div>
 {:else}
-  <dialog {...reactEvents(rest)} bind:this={element} class={classes} aria-label={label}>{#if shown}{@render panel()}{/if}</dialog>
+  <dialog {...eventProps(rest)} bind:this={element} class={classes} aria-label={label}>{#if shown}{@render panel()}{/if}</dialog>
 {/if}

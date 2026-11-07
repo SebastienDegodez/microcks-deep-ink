@@ -1,7 +1,7 @@
 export interface MenuItem {
   id: string;
   label: string;
-  onSelect?: () => void;
+  onselect?: () => void;
   /** Renders an `<a>` for navigation instead of a `<button>`. */
   href?: string;
   danger?: boolean;

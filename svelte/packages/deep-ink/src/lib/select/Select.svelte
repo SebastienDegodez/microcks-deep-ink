@@ -1,18 +1,13 @@
-<!--
-  Native <select> (registry item select). Same props as the React Select: size, className, defaultValue and any React
-  handler (onChange, onKeyDown, onFocus...), plus any <select> attribute; `value` is bindable and starts at `defaultValue`
-  when not given; the options are the children. The browser provides the keyboard behavior and the picker.
-  Give it a visible label with Field (or a <label for>).
--->
+
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { HTMLSelectAttributes } from 'svelte/elements';
-  import { reactEvents, type ReactHandlers } from '../react-events';
+  import { eventProps, type NativeHandlers } from '../event-props';
 
   type Props = Omit<HTMLSelectAttributes, 'class' | 'size' | 'children'> &
-    ReactHandlers<HTMLSelectElement> & {
+    NativeHandlers<HTMLSelectElement> & {
     size?: 'md' | 'sm';
-    className?: string;
+    class?: string;
     /** Initial value of an uncontrolled select. */
     defaultValue?: HTMLSelectAttributes['value'];
     children?: Snippet;
@@ -20,7 +15,7 @@
 
   let {
     size = 'md',
-    className,
+    class: cssClass,
     defaultValue,
     value = $bindable(defaultValue),
     children,
@@ -30,8 +25,8 @@
 
 <select
   bind:value
-  {...reactEvents(rest)}
-  class={['select', className].filter(Boolean).join(' ')}
+  {...eventProps(rest)}
+  class={['select', cssClass].filter(Boolean).join(' ')}
   data-size={size}
 >
   {@render children?.()}

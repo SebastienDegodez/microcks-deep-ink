@@ -1,5 +1,5 @@
 // Parity with React. packages/registry/parity/<item>.cases.json lists render cases:
-//   { "component": "Kbd", "cases": [{ "name": "default", "props": { "className": "x" }, "children": "K" }] }
+//   { "component": "Kbd", "cases": [{ "name": "default", "props": { "class": "x" }, "children": "K" }] }
 // The React workspace renders each case with renderToStaticMarkup into <item>.<case>.html (committed; regenerate with
 // `pnpm -C react/packages/deep-ink parity`). Here the Svelte component renders the same case with svelte/server, and
 // both are compared through normaliseHtml.
@@ -51,7 +51,7 @@ export function reactHtml(item: string, name: string, dir = PARITY): string {
 /** A JSON stand-in for a function prop: `{ "$fn": "tone" }` is `(x) => x.tone` (rowTone, rowHref...). */
 export const decode = (props: Record<string, unknown> = {}) =>
   Object.fromEntries(
-    Object.entries(props).map(([k, v]) => [k, v && typeof v === 'object' && '$fn' in v ? (x: Record<string, unknown>) => x[(v as { $fn: string }).$fn] : v]),
+    Object.entries(props).map(([k, v]) => [k === 'className' ? 'class' : k.replace(/^on[A-Z]\w*/, (name) => name.toLowerCase()), v && typeof v === 'object' && '$fn' in v ? (x: Record<string, unknown>) => x[(v as { $fn: string }).$fn] : v]),
   );
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -63,5 +63,11 @@ export function svelteHtml(component: Component<any>, c: ParityCase): string {
 /** Both sides normalised, ready for `expect(svelte).toBe(react)`. */
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function parity(component: Component<any>, item: string, c: ParityCase, dir = PARITY) {
-  return { svelte: normaliseHtml(svelteHtml(component, c)), react: normaliseHtml(reactHtml(item, c.name, dir)) };
+  let reference = reactHtml(item, c.name, dir);
+  // Native navigation controls remove activation targets while busy; radio groups expose their actual role.
+  if (item === 'button' && c.component === 'ButtonLink' && (c.props?.loading || c.props?.disabled)) {
+    reference = reference.replace(/ href="[^"]*"/, '').replace('<a ', '<a role="link" tabindex="-1" ');
+  }
+  if (item === 'checkbox' && c.component === 'RadioGroup') reference = reference.replace('<fieldset ', '<fieldset role="radiogroup" ');
+  return { svelte: normaliseHtml(svelteHtml(component, c)), react: normaliseHtml(reference) };
 }

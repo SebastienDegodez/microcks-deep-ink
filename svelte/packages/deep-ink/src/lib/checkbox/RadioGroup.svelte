@@ -1,9 +1,4 @@
-<!--
-  `fieldset` + `legend` + native radios (registry item checkbox). Same props as the React RadioGroup: legend, options,
-  value, onChange (called with the selected value), name, required, help, error, variant, className. `legend`, `help`,
-  `error` and the option labels (ReactNode in React) take a string or a snippet. `value` is also bindable. Arrow keys
-  move the selection (native behavior).
--->
+
 <script lang="ts" module>
   import type { Snippet } from 'svelte';
 
@@ -24,7 +19,7 @@
     legend: string | Snippet;
     options: RadioOption[];
     value: string | undefined;
-    onChange?: (value: string) => void;
+    onchange?: (value: string) => void;
     /** Shared name of the radios. Generated when omitted. */
     name?: string;
     required?: boolean;
@@ -32,10 +27,10 @@
     error?: string | Snippet;
     /** `card`: each option is a bordered card label. */
     variant?: 'plain' | 'card' | 'compact';
-    className?: string;
+    class?: string;
   };
 
-  let { legend, options, value = $bindable(), onChange, name, required, help, error, variant = 'plain', className }: Props = $props();
+  let { legend, options, value = $bindable(), onchange, name, required, help, error, variant = 'plain', class: cssClass }: Props = $props();
 
   // In expressions, so that the compiler keeps their spaces.
   const asterisk = ' *';
@@ -49,9 +44,10 @@
 
 {#snippet node(content: string | Snippet)}{#if typeof content === 'function'}{@render content()}{:else}{content}{/if}{/snippet}
 
-<!-- svelte-ignore a11y_role_supports_aria_props_implicit (same markup as React: the error state of the group) -->
+
 <fieldset
-  class={['fieldset', className].filter(Boolean).join(' ')}
+  role="radiogroup"
+  class={['fieldset', cssClass].filter(Boolean).join(' ')}
   aria-describedby={[helpId, errorId].filter(Boolean).join(' ') || undefined}
   aria-invalid={error ? true : undefined}
   data-invalid={error ? '' : undefined}
@@ -66,9 +62,9 @@
       disabled={o.disabled}
       {required}
       checked={value === o.value}
-      onChange={() => {
+      onchange={() => {
         value = o.value;
-        onChange?.(o.value);
+        onchange?.(o.value);
       }}
     />{/each}{#if help}<p class="help" id={helpId}>{@render node(help)}</p>{/if}{#if error}<p class="error" id={errorId}
       ><Icon name="warning" size={16} /><span><span class="sr-only">{errorWord}</span>{@render node(error)}</span></p

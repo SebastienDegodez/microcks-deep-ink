@@ -29,20 +29,20 @@ describe('Input', () => {
     expect(oninput).toHaveBeenCalledTimes(7);
   });
 
-  it('calls the React onChange on every keystroke, and onFocus and onBlur', async () => {
+  it('calls the native oninput on every keystroke, and onfocus and onblur', async () => {
     const user = userEvent.setup();
     const values: string[] = [];
-    const onChange = vi.fn((e: Event) => values.push((e.currentTarget as HTMLInputElement).value));
-    const onFocus = vi.fn();
-    const onBlur = vi.fn();
-    render(Input, { props: { 'aria-label': 'Port', onChange, onFocus, onBlur } });
+    const oninput = vi.fn((e: Event) => values.push((e.currentTarget as HTMLInputElement).value));
+    const onfocus = vi.fn();
+    const onblur = vi.fn();
+    render(Input, { props: { 'aria-label': 'Port', oninput, onfocus, onblur } });
     await user.tab();
-    expect(onFocus).toHaveBeenCalledOnce();
+    expect(onfocus).toHaveBeenCalledOnce();
     await user.keyboard('8080');
-    expect(onChange).toHaveBeenCalledTimes(4);
+    expect(oninput).toHaveBeenCalledTimes(4);
     expect(values).toEqual(['8', '80', '808', '8080']);
     await user.tab();
-    expect(onBlur).toHaveBeenCalledOnce();
+    expect(onblur).toHaveBeenCalledOnce();
   });
 
   it('starts at defaultValue, and value wins over it', async () => {
@@ -95,14 +95,14 @@ describe('Textarea', () => {
     expect(await axeViolations(container)).toEqual([]);
   });
 
-  it('starts at defaultValue and calls the React onChange on every keystroke', async () => {
+  it('starts at defaultValue and calls the native oninput on every keystroke', async () => {
     const user = userEvent.setup();
-    const onChange = vi.fn();
-    render(Textarea, { props: { 'aria-label': 'Notes', defaultValue: 'Hello', onChange } });
+    const oninput = vi.fn();
+    render(Textarea, { props: { 'aria-label': 'Notes', defaultValue: 'Hello', oninput } });
     const textarea = screen.getByRole<HTMLTextAreaElement>('textbox', { name: 'Notes' });
     expect(textarea.value).toBe('Hello');
     await user.type(textarea, '!!');
     expect(textarea.value).toBe('Hello!!');
-    expect(onChange).toHaveBeenCalledTimes(2);
+    expect(oninput).toHaveBeenCalledTimes(2);
   });
 });

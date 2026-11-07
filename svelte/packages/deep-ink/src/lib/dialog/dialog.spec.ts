@@ -31,26 +31,26 @@ describe('Dialog', () => {
   });
 
   it('closes with the close button and returns focus to the opener', async () => {
-    const onClose = vi.fn();
-    render(Harness, { props: { onClose } });
+    const onclose = vi.fn();
+    render(Harness, { props: { onclose } });
     opener().focus();
     await fireEvent.click(opener());
     await fireEvent.click(screen.getByRole('button', { name: 'Close' }));
     await waitFor(() => expect(document.querySelector('dialog')!.hasAttribute('open')).toBe(false));
     await waitFor(() => expect(document.activeElement).toBe(opener()));
-    expect(onClose).toHaveBeenCalledTimes(1);
+    expect(onclose).toHaveBeenCalledTimes(1);
   });
 
   it('closes on Escape (native cancel then close) and returns focus', async () => {
-    const onClose = vi.fn();
-    render(Harness, { props: { onClose } });
+    const onclose = vi.fn();
+    render(Harness, { props: { onclose } });
     opener().focus();
     await fireEvent.click(opener());
     const dialog = document.querySelector('dialog')!;
     // What the browser does on Escape: fire cancel, then close the dialog.
     await fireEvent(dialog, new Event('cancel', { cancelable: true }));
     dialog.close();
-    await waitFor(() => expect(onClose).toHaveBeenCalledTimes(1));
+    await waitFor(() => expect(onclose).toHaveBeenCalledTimes(1));
     await waitFor(() => expect(document.activeElement).toBe(opener()));
   });
 
@@ -61,15 +61,15 @@ describe('Dialog', () => {
   });
 
   it('closes on a backdrop click only with closeOnBackdrop', async () => {
-    const onClose = vi.fn();
-    const { rerender } = render(Dialog, { props: { open: true, onClose, title: 'T', children: createRawSnippet(() => ({ render: () => '<p>Body</p>' })) } });
+    const onclose = vi.fn();
+    const { rerender } = render(Dialog, { props: { open: true, onclose, title: 'T', children: createRawSnippet(() => ({ render: () => '<p>Body</p>' })) } });
     const dialog = document.querySelector('dialog')!;
     await fireEvent.click(dialog);
-    expect(onClose).not.toHaveBeenCalled();
+    expect(onclose).not.toHaveBeenCalled();
     await rerender({ closeOnBackdrop: true });
     await fireEvent.click(screen.getByText('Body'));
-    expect(onClose).not.toHaveBeenCalled();
+    expect(onclose).not.toHaveBeenCalled();
     await fireEvent.click(dialog);
-    expect(onClose).toHaveBeenCalledOnce();
+    expect(onclose).toHaveBeenCalledOnce();
   });
 });

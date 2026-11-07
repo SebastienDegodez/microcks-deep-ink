@@ -38,6 +38,7 @@ export const FormFooter: StoryObj = {
         <div class="inline">
           <button mkButton variant="dashed" size="compact" icon="plus">Add header</button>
           <button mkButton variant="ghost" size="sm" tone="danger" icon="trash">Delete</button>
+          <button mkButton variant="outline" size="xs" tone="link">Undo</button>
         </div>
       </div>
     `,
@@ -53,6 +54,7 @@ export const Sizes: StoryObj = {
         <button mkButton size="tile">Tile (36px)</button>
         <button mkButton size="compact">Compact (34px)</button>
         <button mkButton size="sm">Small (32px)</button>
+        <button mkButton size="xs">Extra small (28px)</button>
       </div>
     `,
   }),

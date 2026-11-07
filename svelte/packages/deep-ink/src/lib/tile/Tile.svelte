@@ -1,16 +1,9 @@
-<!--
-  Card for a package, a service, a workflow or an agent (registry item tile). The whole tile is clickable through one
-  real link or button (the title) stretched over it; footer controls stay separate. Same props as the React Tile:
-  title, headingLevel, media, meta, aside, footer, href, onSelect, renderAction, selected, as, className plus any
-  attribute and React handler (onClick...) of the root. `title`, `media`, `meta`, `aside` and `footer` (ReactNode in
-  React) are strings or snippets, the body is the children; `renderAction` is a snippet given the TileActionProps to
-  spread on your router link. React's `ref` is `bind:element` here.
--->
+
 <script lang="ts" module>
   import type { Snippet } from 'svelte';
 
   export interface TileActionProps {
-    className: 'tile-action';
+    class: 'tile-action';
     id: string;
     'aria-current'?: 'true';
     children: string | Snippet;
@@ -19,10 +12,10 @@
 
 <script lang="ts">
   import type { HTMLAttributes } from 'svelte/elements';
-  import { reactEvents, type ReactHandlers } from '../react-events';
+  import { eventProps, type NativeHandlers } from '../event-props';
 
   type Props = Omit<HTMLAttributes<HTMLElement>, 'class' | 'title' | 'children' | 'onselect'> &
-    Omit<ReactHandlers<HTMLElement>, 'onSelect'> & {
+    Omit<NativeHandlers<HTMLElement>, 'onselect'> & {
     /** Visible name. It names the tile and, when the tile is interactive, it is the one link or button. */
     title: string | Snippet;
     /** Level of the title heading. Keep the page outline ordered. */
@@ -38,14 +31,14 @@
     /** The title becomes a link stretched over the tile. */
     href?: string;
     /** The title becomes a toggle button stretched over the tile (`aria-pressed` follows `selected`). */
-    onSelect?: () => void;
+    onselect?: () => void;
     /** Renders the title link yourself, for router links. Spread the props on it. */
     renderAction?: Snippet<[TileActionProps]>;
     /** Selected tile: the link gets `aria-current`, the button `aria-pressed`. */
     selected?: boolean;
     /** Root element: `article` (default) or `li` inside a `<ul class="tile-grid">`. */
     as?: 'article' | 'li' | 'div';
-    className?: string;
+    class?: string;
     element?: HTMLElement;
     children?: Snippet;
   };
@@ -58,20 +51,20 @@
     aside,
     footer,
     href,
-    onSelect,
+    onselect,
     renderAction,
     selected,
     as = 'article',
-    className,
+    class: cssClass,
     element = $bindable(),
     children,
     ...rest
   }: Props = $props();
 
   const titleId = $props.id();
-  const interactive = $derived(Boolean(href || onSelect || renderAction));
+  const interactive = $derived(Boolean(href || onselect || renderAction));
   const actionProps: TileActionProps = $derived({
-    className: 'tile-action',
+    class: 'tile-action',
     id: titleId,
     'aria-current': selected ? 'true' : undefined,
     children: title,
@@ -83,8 +76,8 @@
 <svelte:element
   this={as}
   bind:this={element}
-  {...reactEvents(rest)}
-  class={['tile', className].filter(Boolean).join(' ')}
+  {...eventProps(rest)}
+  class={['tile', cssClass].filter(Boolean).join(' ')}
   aria-labelledby={rest['aria-labelledby'] ?? titleId}
   data-interactive={interactive ? '' : undefined}
   data-selected={selected ? '' : undefined}
@@ -96,12 +89,12 @@
             id={titleId}
             {href}
             aria-current={actionProps['aria-current']}>{@render content(title)}</a
-          >{:else if onSelect}<button
+          >{:else if onselect}<button
             type="button"
             class="tile-action"
             id={titleId}
             aria-pressed={selected ? 'true' : 'false'}
-            onclick={onSelect}>{@render content(title)}</button
+            onclick={onselect}>{@render content(title)}</button
           >{:else}<span id={titleId}>{@render content(title)}</span>{/if}</svelte:element
       >{#if meta}<span class="tile-meta">{@render content(meta)}</span>{/if}</div
     >{#if aside}<span class="tile-aside">{@render content(aside)}</span>{/if}</div

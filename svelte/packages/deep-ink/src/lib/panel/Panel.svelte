@@ -1,16 +1,11 @@
-<!--
-  Panel on `canvas` with a hairline border (registry item panel). Same props as the React Panel: title, headingLevel,
-  actions, flush, titleStyle, padding, as, className plus any attribute and React handler (onClick...) of the root. `title` and `actions` (ReactNode in
-  React) take a string or a snippet; the body is the children. With a title, the root is labelled by the heading.
-  React's `ref` is `bind:element` here.
--->
+
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { HTMLAttributes } from 'svelte/elements';
-  import { reactEvents, type ReactHandlers } from '../react-events';
+  import { eventProps, type NativeHandlers } from '../event-props';
 
   type Props = Omit<HTMLAttributes<HTMLElement>, 'class' | 'title' | 'children'> &
-    ReactHandlers<HTMLElement> & {
+    NativeHandlers<HTMLElement> & {
     /** Visible heading. When set, the panel is labelled by it. */
     title?: string | Snippet;
     /** Level of the title heading. Keep the page outline ordered. */
@@ -25,7 +20,7 @@
     padding?: 'md' | 'lg';
     /** Root element. */
     as?: 'section' | 'div' | 'article' | 'aside';
-    className?: string;
+    class?: string;
     element?: HTMLElement;
     children?: Snippet;
   };
@@ -38,7 +33,7 @@
     titleStyle = 'heading',
     padding = 'md',
     as = 'section',
-    className,
+    class: cssClass,
     element = $bindable(),
     children,
     ...rest
@@ -50,8 +45,8 @@
 <svelte:element
   this={as}
   bind:this={element}
-  {...reactEvents(rest)}
-  class={['panel', className].filter(Boolean).join(' ')}
+  {...eventProps(rest)}
+  class={['panel', cssClass].filter(Boolean).join(' ')}
   data-flush={flush ? '' : undefined}
   data-title={titleStyle === 'label' ? 'label' : undefined}
   data-pad={padding === 'lg' ? 'lg' : undefined}

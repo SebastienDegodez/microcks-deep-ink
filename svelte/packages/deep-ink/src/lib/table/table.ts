@@ -26,7 +26,7 @@ export interface DataTableColumn<T> {
 
 /** Given to `renderRowLink`: spread them on your link and render `children` (the cell content) inside it. */
 export interface RowLinkProps {
-  className: string;
+  class: string;
   href: string;
   'aria-current'?: 'true';
   children: Snippet;

@@ -14,6 +14,8 @@
     font: 400 13px/1.4 var(--font-ui);
   }
   .summary-strip[data-gap="roomy"] { row-gap: 10px; }
+  /* Inherit the line height of the host text (Service dispatcher strip). */
+  .summary-strip[data-line-height="inherit"] { line-height: inherit; }
   /* Canvas (Agent test setup strip): canvas fill, radius 8, padding 10px 14px, 6px rows, normal line height. */
   .summary-strip[data-variant="canvas"] {
     row-gap: 6px;

@@ -1,4 +1,4 @@
-<!-- Test-only: the React spec's Exchange of a request card and a response card, under a page heading. -->
+
 <script lang="ts">
   import Exchange from '../../src/lib/exchange-card/Exchange.svelte';
   import ExchangeCard from '../../src/lib/exchange-card/ExchangeCard.svelte';

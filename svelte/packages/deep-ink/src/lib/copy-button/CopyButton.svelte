@@ -1,9 +1,4 @@
-<!--
-  Copies `value` to the clipboard (registry item copy-button): a Button plus a visually hidden polite live region that
-  announces "Copied" or "Copy failed", so the result is never visual only. Same props as the React CopyButton: value,
-  label, copiedLabel and the Button props (variant, size, tone, iconOnly, className, any <button> attribute and React
-  handler) except onClick, children, icon and loading. The copied label shows for 1.8 seconds, as in React.
--->
+
 <script lang="ts" module>
   async function writeClipboard(text: string): Promise<boolean> {
     try {
@@ -31,9 +26,9 @@
 
 <script lang="ts">
   import type { ComponentProps } from 'svelte';
-  import Button from '../button/Button.svelte';
+  import Button from '../Button.svelte';
 
-  type Props = Omit<ComponentProps<typeof Button>, 'onClick' | 'onclick' | 'children' | 'icon' | 'loading'> & {
+  type Props = Omit<ComponentProps<typeof Button>, 'onclick' | 'children' | 'icon' | 'loading'> & {
     /** Text copied to the clipboard. */
     value: string;
     /** Idle label. With `iconOnly` it becomes the accessible name. */
@@ -42,15 +37,15 @@
     copiedLabel?: string;
   };
 
-  let { value, label = 'Copy', copiedLabel = 'Copied', size = 'sm', variant = 'secondary', iconOnly, className, element = $bindable(), ...props }: Props = $props();
+  let { value, label = 'Copy', copiedLabel = 'Copied', size = 'sm', variant = 'secondary', iconOnly, class: cssClass, element = $bindable(), ...props }: Props = $props();
 
   let copyState = $state<'idle' | 'copied' | 'failed'>('idle');
   let timer: ReturnType<typeof setTimeout> | undefined;
 
   $effect(() => () => clearTimeout(timer));
 
-  // React overrides onClick with the copy action.
-  const rest = $derived(Object.fromEntries(Object.entries(props).filter(([k]) => k !== 'onClick' && k !== 'onclick')));
+  // the reference implementation overrides onclick with the copy action.
+  const rest = $derived(Object.fromEntries(Object.entries(props).filter(([k]) => k !== 'onclick')));
 
   async function copy() {
     const ok = await writeClipboard(value);
@@ -71,7 +66,7 @@
   {variant}
   {iconOnly}
   icon={copyState === 'copied' ? 'check' : 'copy'}
-  className={['copy-button', className].filter(Boolean).join(' ')}
+  class={['copy-button', cssClass]}
   data-state={copyState === 'idle' ? undefined : copyState}
   onclick={copy}>{#if !iconOnly}{text}{/if}</Button
 ><span role="status" aria-live="polite" class="sr-only">{message}</span>

@@ -4,7 +4,9 @@
   "private": true,
   "type": "module",
   "license": "Apache-2.0",
-  "description": "Deep Ink Svelte 5 components for the Microcks UI v2. Private, not published (React owns the npm name for now).",
+  "description": "Native Svelte 5 presentational components and shared layered Deep Ink CSS. Private, not published.",
+  "svelte": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
@@ -15,25 +17,20 @@
     "./styles.no-fonts.css": "./dist/styles.no-fonts.css",
     "./package.json": "./package.json"
   },
-  "files": [
-    "dist",
-    "!dist/**/*.spec.*",
-    "!dist/**/*.test.*"
-  ],
-  "sideEffects": [
-    "*.css"
-  ],
+  "files": ["dist", "!dist/**/*.spec.*", "!dist/**/*.test.*"],
+  "sideEffects": ["**/*.css"],
   "scripts": {
-    "build": "node scripts/gen-index.mjs --check && rm -rf dist && svelte-package -i src/lib -o dist && node scripts/build-css.mjs",
+    "build": "node scripts/build-icons.mjs && node scripts/gen-index.mjs --check && rm -rf dist && svelte-package -i src/lib -o dist && node scripts/build-css.mjs",
+    "check": "node scripts/build-icons.mjs && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+    "test": "pnpm build && vitest run --config vitest.config.ts --maxWorkers=2",
+    "prepack": "pnpm build",
     "gen:index": "node scripts/gen-index.mjs",
     "pending": "node scripts/gen-index.mjs --pending",
-    "test": "vitest run --maxWorkers=2",
-    "check": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
     "lint": "eslint src test scripts",
     "publint": "publint"
   },
   "peerDependencies": {
-    "svelte": "^5.0.0"
+    "svelte": "^5.19.0"
   },
   "devDependencies": {
     "@microcks-deep-ink/registry": "link:../../../packages/registry",

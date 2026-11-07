@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Accessibility smoke run over the assembled site (landing page, both Storybooks, every demo route).
+"""Accessibility smoke run over the assembled site (landing page, all Storybooks, every demo route).
 
 Two passes over every page, in the dark and the light theme:
 
@@ -55,7 +55,7 @@ def serve(site: Path) -> tuple[socketserver.TCPServer, str]:
 
 def build_urls(site: Path, base: str, limit: int) -> list[dict]:
     urls: list[dict] = [{"url": f"{base}/index.html", "label": "landing", "group": "landing", "kind": "page"}]
-    for name in ("react", "angular"):
+    for name in ("react", "angular", "svelte"):
         index = site / name / "index.json"
         if not index.exists():
             continue

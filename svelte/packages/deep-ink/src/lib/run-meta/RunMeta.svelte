@@ -1,8 +1,4 @@
-<!--
-  The meta line under a run header, in a native <dl> (registry item run-meta). Same props as the React RunMeta: items,
-  className plus any <dl> attribute and React handler (onClick...). An item's `term`, `value` and `detail` (ReactNode
-  in React) are strings or snippets; `id` is accepted for React compatibility (Svelte keys the items by position).
--->
+
 <script lang="ts" module>
   import type { Snippet } from 'svelte';
 
@@ -21,15 +17,15 @@
 
 <script lang="ts">
   import type { HTMLAttributes } from 'svelte/elements';
-  import { reactEvents, type ReactHandlers } from '../react-events';
+  import { eventProps, type NativeHandlers } from '../event-props';
 
   type Props = Omit<HTMLAttributes<HTMLDListElement>, 'class' | 'children'> &
-    ReactHandlers<HTMLDListElement> & { items: RunMetaItem[]; className?: string };
+    NativeHandlers<HTMLDListElement> & { items: RunMetaItem[]; class?: string };
 
-  let { items, className, ...rest }: Props = $props();
+  let { items, class: cssClass, ...rest }: Props = $props();
 </script>
 
-<dl {...reactEvents(rest)} class={['run-meta', className].filter(Boolean).join(' ')}
+<dl {...eventProps(rest)} class={['run-meta', cssClass].filter(Boolean).join(' ')}
   >{#each items as it, i (i)}<div class="run-meta-item"
       ><dt>{#if typeof it.term === 'function'}{@render it.term()}{:else}{it.term}{/if}</dt><dd
         data-kind={it.kind && it.kind !== 'text' ? it.kind : undefined}

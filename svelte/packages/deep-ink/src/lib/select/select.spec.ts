@@ -32,21 +32,21 @@ describe('Select', () => {
     expect(onchange).toHaveBeenCalledOnce();
   });
 
-  it('calls the React onChange, onFocus and onBlur, and starts at defaultValue', async () => {
+  it('calls the React onchange, onfocus and onblur, and starts at defaultValue', async () => {
     const user = userEvent.setup();
-    const onChange = vi.fn();
-    const onFocus = vi.fn();
-    const onBlur = vi.fn();
-    render(Select, { props: { 'aria-label': 'Dispatcher', defaultValue: 'JSON_BODY', onChange, onFocus, onBlur, children: options('URI_PARTS', 'JSON_BODY', 'SCRIPT') } });
+    const onchange = vi.fn();
+    const onfocus = vi.fn();
+    const onblur = vi.fn();
+    render(Select, { props: { 'aria-label': 'Dispatcher', defaultValue: 'JSON_BODY', onchange, onfocus, onblur, children: options('URI_PARTS', 'JSON_BODY', 'SCRIPT') } });
     const select = screen.getByRole<HTMLSelectElement>('combobox', { name: 'Dispatcher' });
     expect(select.value).toBe('JSON_BODY');
     await user.tab();
-    expect(onFocus).toHaveBeenCalledOnce();
+    expect(onfocus).toHaveBeenCalledOnce();
     await user.selectOptions(select, 'SCRIPT');
-    expect(onChange).toHaveBeenCalledOnce();
+    expect(onchange).toHaveBeenCalledOnce();
     expect(select.value).toBe('SCRIPT');
     await user.tab();
-    expect(onBlur).toHaveBeenCalledOnce();
+    expect(onblur).toHaveBeenCalledOnce();
   });
 
   it('is skipped by Tab when disabled', async () => {

@@ -6,7 +6,7 @@ import { formatDay, formatHourMinute } from '@/domain/importing';
 import { buildSnippet, exampleUrl, paramLines, requestHead, type SnippetFormat, type WorkflowUsage } from '@/domain/catalog';
 import { labelToString, type Example, type Operation } from '@/domain/shared';
 import { PageHeader, useAnnounce, useClock, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge, Button, Callout, Chip, CodeBlock, CopyButton, Exchange, ExchangeCard, FactRow, Facts, Icon, type IconName, Input, LiveIndicator, Menu, MethodTag, OpPickList, SectionLabel, SplitPane, SplitPaneMain, SplitPaneSide, TabPanel, Tabs } from '@microcks/deep-ink';
+import { ApiBadge, Button, Callout, Chip, CodeBlock, CopyButton, Exchange, ExchangeCard, FactRow, Facts, Icon, type IconName, Input, LiveIndicator, Menu, MethodTag, OpPickList, SectionLabel, SummaryStrip, SummaryStripSep, SplitPane, SplitPaneMain, SplitPaneSide, TabPanel, Tabs } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import AgentPage from '../agent/AgentPage';
 import { MONTHS, fmt, pluralize } from '@/ui/app/format';
@@ -296,12 +296,12 @@ function ApiServicePage() {
                   ) : null}
                 </div>
 
-                <div className="dispatch-strip">
+                <SummaryStrip gap="roomy" lineHeight="inherit">
                   <span className="dispatch-strip-item"><span className="dispatch-strip-key">Dispatcher</span><span className="dispatch-strip-value">{currentOp.dispatcher} · rule: {currentOp.rule}</span></span>
-                  <span className="dispatch-strip-sep" aria-hidden="true" />
+                  <SummaryStripSep />
                   <span className="dispatch-strip-item"><span className="dispatch-strip-key">Delay</span><span className="dispatch-strip-value">{currentOp.delayMs} ms</span><span className="dispatch-strip-key">fixed</span></span>
                   <Button asChild size="sm" variant="secondary" icon="pencil" className="dispatch-strip-edit"><RouterLink to={`/services/${svc.id}/operations/${currentOp.id}`}>Edit behavior</RouterLink></Button>
-                </div>
+                </SummaryStrip>
 
                 <div role="group" aria-labelledby="wf-used-title" className="wf-usage">
                   <div className="wf-usage-head">

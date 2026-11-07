@@ -10,15 +10,15 @@ const text = (t: string) => createRawSnippet(() => ({ render: () => `<span>${t}<
 describe('Link', () => {
   it('is a link named by its text, reached with Tab and followed with Enter', async () => {
     const user = userEvent.setup();
-    const onClick = vi.fn((e: Event) => e.preventDefault());
-    const { container } = render(Link, { props: { href: '/docs/dispatchers', onClick, children: text('Dispatcher guide') } });
+    const onclick = vi.fn((e: Event) => e.preventDefault());
+    const { container } = render(Link, { props: { href: '/docs/dispatchers', onclick, children: text('Dispatcher guide') } });
     const link = screen.getByRole('link', { name: 'Dispatcher guide' });
     expect(link.getAttribute('href')).toBe('/docs/dispatchers');
     expect(link.hasAttribute('target')).toBe(false);
     await user.tab();
     expect(document.activeElement).toBe(link);
     await user.keyboard('{Enter}');
-    expect(onClick).toHaveBeenCalledOnce();
+    expect(onclick).toHaveBeenCalledOnce();
     expect(await axeViolations(container)).toEqual([]);
   });
 
@@ -31,15 +31,15 @@ describe('Link', () => {
     expect(await axeViolations(container)).toEqual([]);
   });
 
-  it('keeps target and rel when not external, and calls onFocus and onBlur', async () => {
+  it('keeps target and rel when not external, and calls onfocus and onblur', async () => {
     const user = userEvent.setup();
-    const onFocus = vi.fn();
-    const onBlur = vi.fn();
-    render(Link, { props: { href: '#docs', target: '_top', rel: 'help', className: 'strong', onFocus, onBlur, children: text('Docs') } });
+    const onfocus = vi.fn();
+    const onblur = vi.fn();
+    render(Link, { props: { href: '#docs', target: '_top', rel: 'help', class: 'strong', onfocus, onblur, children: text('Docs') } });
     const link = screen.getByRole('link', { name: 'Docs' });
     expect([link.getAttribute('target'), link.getAttribute('rel'), link.className]).toEqual(['_top', 'help', 'link strong']);
     await user.tab();
     await user.tab();
-    expect([onFocus.mock.calls.length, onBlur.mock.calls.length]).toEqual([1, 1]);
+    expect([onfocus.mock.calls.length, onblur.mock.calls.length]).toEqual([1, 1]);
   });
 });

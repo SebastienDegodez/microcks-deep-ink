@@ -1,24 +1,20 @@
-<!--
-  Marks a projection, a proposed feature not available today (registry item projection-pill). Same props as the React
-  ProjectionPill: title (a supplementary tooltip), children (defaults to "Projection · v2 module"), className plus any
-  <span> attribute and React handler (onClick...).
--->
+
 <script lang="ts">
   import type { Snippet } from 'svelte';
   import type { HTMLAttributes } from 'svelte/elements';
-  import { reactEvents, type ReactHandlers } from '../react-events';
+  import { eventProps, type NativeHandlers } from '../event-props';
 
   type Props = Omit<HTMLAttributes<HTMLSpanElement>, 'class' | 'children'> &
-    ReactHandlers<HTMLSpanElement> & {
+    NativeHandlers<HTMLSpanElement> & {
     /** Supplementary tooltip. The visible text must stand alone. */
     title?: string;
-    className?: string;
+    class?: string;
     children?: Snippet;
   };
 
-  let { className, children, ...rest }: Props = $props();
+  let { class: cssClass, children, ...rest }: Props = $props();
 </script>
 
-<span {...reactEvents(rest)} class={['projection-pill', className].filter(Boolean).join(' ')}
+<span {...eventProps(rest)} class={['projection-pill', cssClass].filter(Boolean).join(' ')}
   >{#if children}{@render children()}{:else}Projection · v2 module{/if}</span
 >

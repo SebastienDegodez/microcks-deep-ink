@@ -25,11 +25,11 @@ describe('Tile', () => {
   });
 
   it('is a toggle button when selectable', () => {
-    const onSelect = vi.fn();
-    render(Tile, { props: { title: 'Open Banking', onSelect, selected: false } });
+    const onselect = vi.fn();
+    render(Tile, { props: { title: 'Open Banking', onselect, selected: false } });
     const button = screen.getByRole('button', { name: 'Open Banking', pressed: false });
     fireEvent.click(button);
-    expect(onSelect).toHaveBeenCalledOnce();
+    expect(onselect).toHaveBeenCalledOnce();
   });
 
   it('is static without an action', () => {

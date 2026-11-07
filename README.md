@@ -1,6 +1,6 @@
 # Microcks Deep Ink
 
-> **DEMO.** A design system proposal for the Microcks UI v2. Not an official Microcks release. **Nothing is published on npm**: every package is `private`. Only the demo site (landing page, two Storybooks and a clickable demo) is online.
+> **DEMO.** A design system proposal for the Microcks UI v2. Not an official Microcks release. **Nothing is published on npm**: every package is `private`. The demo site assembles a landing page, three Storybooks and a clickable React demo.
 
 The **Microcks UI v2 design system**, a proposal for the maintainers, packaged for reuse by the Microcks UI and by marketplace plugins.
 
@@ -12,6 +12,11 @@ The **Microcks UI v2 design system**, a proposal for the maintainers, packaged f
 | Clickable demo, 19 screens (React) | https://sebastiendegodez.github.io/microcks-deep-ink/demo/ |
 | React Storybook | https://sebastiendegodez.github.io/microcks-deep-ink/react/ |
 | Angular Storybook | https://sebastiendegodez.github.io/microcks-deep-ink/angular/ |
+| Svelte Storybook (in progress) | https://sebastiendegodez.github.io/microcks-deep-ink/svelte/ |
+
+The Svelte Storybook is included in the Pages assembly and is published after
+this change is merged and the main deployment succeeds. A complete Svelte demo
+is not available yet; its component library is separate from React's runtime.
 
 Every page is marked **DEMO**, the data is in memory and nothing is saved. Accessibility target: RGAA 4.1.2 (about WCAG 2.1 AA), status **not audited**, see [docs/accessibility.md](docs/accessibility.md).
 

@@ -23,16 +23,16 @@ describe('ThemeToggle', () => {
   });
 
   it('toggles data-theme on <html>, stores it under microcks-theme and dispatches the change event', async () => {
-    const onChange = vi.fn();
-    document.addEventListener(THEME_EVENT, onChange);
+    const onchange = vi.fn();
+    document.addEventListener(THEME_EVENT, onchange);
     render(ThemeToggle);
     const button = screen.getByRole('button', { name: 'Light theme' });
     await fireEvent.click(button);
     expect([document.documentElement.dataset.theme, localStorage.getItem(THEME_STORAGE_KEY), button.getAttribute('aria-pressed')]).toEqual(['light', 'light', 'true']);
     await fireEvent.click(button);
     expect([getTheme(), localStorage.getItem('microcks-theme'), button.getAttribute('aria-pressed')]).toEqual(['dark', 'dark', 'false']);
-    expect(onChange).toHaveBeenCalledTimes(2);
-    document.removeEventListener(THEME_EVENT, onChange);
+    expect(onchange).toHaveBeenCalledTimes(2);
+    document.removeEventListener(THEME_EVENT, onchange);
   });
 
   it('applies the saved preference on mount and follows changes made elsewhere', async () => {

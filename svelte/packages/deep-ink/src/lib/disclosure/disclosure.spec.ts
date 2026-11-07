@@ -25,22 +25,22 @@ describe('Disclosure', () => {
     expect(screen.getByText('Open by default.')).toBeTruthy();
   });
 
-  it('toggles with Enter and Space on the focused summary, and calls onToggle', async () => {
+  it('toggles with Enter and Space on the focused summary, and calls ontoggle', async () => {
     const user = userEvent.setup();
-    const onToggle = vi.fn();
-    render(Disclosure, { props: { summary: 'Advanced options', onToggle, children: text('Dispatcher rules.') } });
+    const ontoggle = vi.fn();
+    render(Disclosure, { props: { summary: 'Advanced options', ontoggle, children: text('Dispatcher rules.') } });
     await user.tab();
     expect(document.activeElement).toBe(summary());
     await user.keyboard('{Enter}');
     expect(details().open).toBe(true);
     await user.keyboard(' ');
     expect(details().open).toBe(false);
-    await vi.waitFor(() => expect(onToggle).toHaveBeenCalledTimes(2));
+    await vi.waitFor(() => expect(ontoggle).toHaveBeenCalledTimes(2));
   });
 
   it('toggles on a click on the summary', async () => {
     const user = userEvent.setup();
-    render(Disclosure, { props: { summary: 'Advanced options', className: 'wide', children: text('Dispatcher rules.') } });
+    render(Disclosure, { props: { summary: 'Advanced options', class: 'wide', children: text('Dispatcher rules.') } });
     expect(details().classList.contains('wide')).toBe(true);
     await user.click(summary());
     expect(details().open).toBe(true);

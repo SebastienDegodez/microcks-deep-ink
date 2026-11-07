@@ -17,12 +17,12 @@ describe('Chip', () => {
   });
 
   it('is a toggle button with aria-pressed when pressed is given, the count read after the text', async () => {
-    const onClick = vi.fn();
-    const { container } = render(Chip, { props: { pressed: false, protocol: 'gRPC', count: 0, size: 'lg', onClick, children: 'gRPC' } });
+    const onclick = vi.fn();
+    const { container } = render(Chip, { props: { pressed: false, protocol: 'gRPC', count: 0, size: 'lg', onclick, children: 'gRPC' } });
     const toggle = screen.getByRole('button', { name: 'gRPC 0' });
     expect([toggle.getAttribute('aria-pressed'), toggle.dataset.protocol, toggle.hasAttribute('data-empty')]).toEqual(['false', 'grpc', true]);
     await fireEvent.click(toggle);
-    expect(onClick).toHaveBeenCalledOnce();
+    expect(onclick).toHaveBeenCalledOnce();
     expect(await axeViolations(container)).toEqual([]);
   });
 
@@ -33,22 +33,22 @@ describe('Chip', () => {
     }
   });
 
-  it('adds a remove button named "Remove <key> <text>" that calls onRemove', async () => {
-    const onRemove = vi.fn();
-    const { container } = render(Chip, { props: { tone: 'info', labelKey: 'env', onRemove, children: 'prod' } });
+  it('adds a remove button named "Remove <key> <text>" that calls onremove', async () => {
+    const onremove = vi.fn();
+    const { container } = render(Chip, { props: { tone: 'info', labelKey: 'env', onremove, children: 'prod' } });
     const remove = screen.getByRole('button', { name: 'Remove env prod' });
     expect(remove.querySelector('svg')!.getAttribute('aria-hidden')).toBe('true');
     await fireEvent.click(remove);
-    expect(onRemove).toHaveBeenCalledOnce();
+    expect(onremove).toHaveBeenCalledOnce();
     expect(await axeViolations(container)).toEqual([]);
   });
 
   it('names the remove button from snippet text or from removeLabel, and has none on toggles', () => {
-    render(Chip, { props: { onRemove: () => {}, children: html('<b>beta</b>') } });
+    render(Chip, { props: { onremove: () => {}, children: html('<b>beta</b>') } });
     expect(screen.getByRole('button', { name: 'Remove beta' })).toBeTruthy();
-    render(Chip, { props: { onRemove: () => {}, removeLabel: 'Clear filter', children: 'x' } });
+    render(Chip, { props: { onremove: () => {}, removeLabel: 'Clear filter', children: 'x' } });
     expect(screen.getByRole('button', { name: 'Clear filter' })).toBeTruthy();
-    render(Chip, { props: { pressed: true, onRemove: () => {}, children: 'All' } });
+    render(Chip, { props: { pressed: true, onremove: () => {}, children: 'All' } });
     expect(screen.getByRole('button', { name: 'All' }).querySelector('.chip-remove')).toBeNull();
     expect(screen.getAllByRole('button')).toHaveLength(3);
   });

@@ -1,0 +1,25 @@
+{
+  "name": "@microcks/demo-core",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Framework-neutral business policies shared by the alternative Microcks demos.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    "./govern": {
+      "types": "./dist/govern/secret-form.d.ts",
+      "default": "./dist/govern/secret-form.js"
+    }
+  },
+  "files": ["dist"],
+  "sideEffects": false,
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "pnpm build && node --test",
+    "lint:arch": "node --test test/boundary.test.mjs"
+  },
+  "devDependencies": {
+    "typescript": "~6.0.0"
+  }
+}

@@ -1,3 +1,158 @@
+## React / Svelte follow-up contract (2026-11-07)
+
+This section governs the React/Svelte follow-up tracked in #219. The v0.2
+bootstrap plan below is historical: its copy-only distribution and permanently
+private package rules do not describe the final npm delivery requested here.
+
+### Outcome and boundaries
+
+- React and Svelte must offer the same demo pages, data, navigation, interactions
+  and visible states, with pixel-perfect rendering. The React demo is the visual
+  reference; do not simplify the Svelte demo or change the reference to hide differences.
+- Ship two independently consumable npm component libraries, each with a
+  framework-specific Storybook covering its public components and variants.
+  Keep the existing name `@microcks/deep-ink` in both isolated workspaces.
+  Each demo resolves its own framework implementation; do not rename the Svelte
+  package just to combine the workspaces. npm does not select an implementation
+  by framework: two separate artifacts cannot occupy the same name and version.
+  Before release, define how the single npm name selects each implementation
+  (for example, explicit framework subpath exports in one release artifact).
+  This release decision must preserve runtime isolation and is not implemented yet.
+- Share tokens, fonts, CSS class contracts, assets, HTML recipes and
+  framework-neutral element bundles. Do not share React component implementations
+  with Svelte or build an abstraction that forces both frameworks through React APIs.
+- React, Svelte and Angular are alternative framework implementations for the
+  eventual choice, not three runtimes to embed in the same application. Demo
+  equivalence supports that choice; it does not justify duplicating business
+  rules or framework-neutral widget engines.
+- WorkflowLoom may use native React rendering for React and native Svelte
+  rendering for Svelte; the Svelte implementation may also be compiled as a
+  `<workflow-loom>` custom element. A single shared rendering engine is not a
+  requirement. Share the framework-neutral data/event contracts and pure layout
+  calculations instead of duplicating those rules. Match interaction semantics,
+  accessibility and pixel output across implementations. React must not load
+  the Svelte implementation, and Svelte must not load React. The existing element
+  remains in use until replacements pass those gates; Angular's eventual adapter
+  choice is separate. Parallel native implementations support evaluation before
+  choosing one framework, not permanent duplicate product maintenance.
+- Extract reusable demo domain logic, use cases, ports and deterministic in-memory
+  fixtures into a framework-neutral demo-core. Keep routing, rendering, lifecycle,
+  subscriptions and dependency composition in each demo's own UI adapter.
+  Neither component library depends on demo-core or demo pages.
+- Neither demo contains design-system component implementations, copied component
+  sources or local substitutes. Every reusable design-system component and its
+  styles belong to the corresponding library and are imported through its public
+  API. Demo code only owns page composition, application behavior and page-specific
+  layout; it must not hide reusable UI behind a page-local component or stylesheet.
+  Remove copied design-system sources after migration, rather than leaving unused
+  implementations in the demo.
+- Svelte components use native Svelte 5 conventions: typed `$props`, runes where
+  reactive state is needed, snippets for composition, callback props for events,
+  and lifecycle cleanup. Do not translate React hooks, JSX, ReactNode, contexts
+  or synthetic events into compatibility wrappers.
+- No React imports, types, runtime dependencies or transitive React runtime in the
+  Svelte library or demo. Their public types and shipped artifacts must stand alone.
+  Storybook's own React-based manager is development tooling, not a Svelte runtime
+  dependency; keep manager addons separate from Svelte preview/component code and
+  out of the published library.
+- Apply SOLID through focused responsibilities, composition, small typed public
+  interfaces and injected side effects. Preserve native semantics and accessibility.
+  Match behavior and styling contracts, not framework-specific prop signatures.
+
+### Ordered, small delivery steps
+
+Each implementation step gets its own focused commit and push after validation.
+An unchecked phase is not complete merely because its plan or scaffolding exists.
+
+| Step | Deliverable and completion gate | Depends on |
+| --- | --- | --- |
+| R | Finish React extraction and remaining variants; demo pages consume the library instead of local design-system components. Check public APIs, SOLID, tests and visual preservation. | Existing React work |
+| V | Freeze a versioned visual/behavior matrix: all routes, reachable states, fixtures, themes and viewports, with deterministic screenshots and replayable interactions. | R for the final reference; tooling can start earlier |
+| F | Extract demo-core without framework dependencies; React consumes it with unchanged behavior and pixels. Add enforceable dependency-boundary checks. | R; final fidelity check uses V |
+| G0 | Extend the existing isolated Svelte workspace/package, keeping its name; add native compilation/types, isolated Svelte Storybook and dependency guards. Verify a packed package in a Svelte-only consumer. | Stable shared CSS/HTML contracts |
+| G1 | Implement Svelte components in small independent families, with stories, unit/interaction/a11y tests and React/Svelte visual comparison for every public variant. | G0 and the corresponding React contract from R |
+| H | Build the complete Svelte demo using demo-core and the Svelte library, migrating one route family at a time. Keep page-specific composition in the demo, reusable UI in the library. | F and the components needed from G1 |
+| I | Run cross-framework route/state visual and behavior checks in CI, enforce boundaries, and resolve every unexplained difference. | V and H |
+| J | Resolve distribution under the shared npm name; build both Storybooks, validate release tarballs and standalone consumers, document framework selection/API differences, then publish approved versions. | R, G1 and I |
+
+R and F remain prerequisites for migrating the full demo. G0 and visual test
+tooling can proceed alongside R without changing its unfinished contracts.
+After G0, independent component families can run in parallel. After F and their
+required components land, independent demo route families can run in parallel.
+Package manifests, lockfiles, barrel exports, shared CSS and CI integration have
+one owner; tasks that edit them are serialized. Never parallelize a consumer
+against an unfinished prerequisite.
+
+### Measurable acceptance criteria
+
+- Compare full-page screenshots and relevant component states in both themes,
+  at desktop and narrow/mobile viewports. Include loading, empty, error,
+  disabled, focus, hover, expanded, selected and modal states where applicable,
+  not just the initial screen.
+- Pin browser/build environment, viewport, device scale, fonts and assets.
+  Freeze clock, seeded data and asynchronous transitions identically; await
+  fonts and application readiness. Test moving/animated behavior separately
+  at controlled times instead of concealing it with screenshot masks.
+- Require equal image dimensions and **zero differing pixels** in the pinned
+  reference environment (`maxDiffPixels: 0`). Do not silently accept a percentage
+  tolerance, mask application content or replace React baselines to pass Svelte.
+  Archive paired screenshots and diff images on failure. Pixel equality is
+  only asserted for the recorded matrix, not arbitrary browsers/devices.
+- Replay equivalent interactions in each demo and assert the same outcomes,
+  navigation and keyboard/focus behavior. Keep a11y checks independent of pixels.
+- Boundary checks cover source imports, public declarations, production dependency
+  graphs and packed artifacts. A Svelte-only consumer must build and run without
+  installing React; a React-only consumer must not require Svelte.
+- Audit both demo source trees for local design-system implementations and styling,
+  including unused files and page-local substitutes. Require zero such
+  implementations: demo imports use the library's public API, never its private
+  source files. Enforce import boundaries in CI and review new reusable UI for
+  placement in the library, with a corresponding Storybook story.
+- Every reusable component is exported by its framework library and represented
+  in its Storybook. Release tarballs contain the documented components, declarations,
+  styles and required assets, with no demo code or unresolved workspace/link
+  dependency. The selected framework entrypoint must not load the other framework,
+  including through root re-exports or required peer dependencies.
+  Publishing remains a separate release
+  action; packages stay private until those gates and release approval are met.
+
+### First implementation lot
+
+- #285: Sources uses library ResultBox/Button; compact density, extra-small
+  outline action and transparent link-tone hover replace local banner styles.
+  Before/after verification covers both themes, three widths and focus/blur/hover:
+  36 full-page/banner captures have zero differing pixels.
+- #286: the isolated Svelte package now exports MethodTag, StatusBadge,
+  LiveIndicator and SummaryStrip/Sep with native Svelte types, snippets and
+  events. Its Storybook contains 42 stories; packed client/SSR consumers need
+  no React. Component reference verification covers 129 cases in both themes
+  at 800px and 320px: 516 comparisons have zero differing pixels under pinned
+  Chromium, identical locally served fonts/CSS and disabled motion.
+- The coordinator reviewed the implementations and corrected hover rendering
+  and zero-width behavior before integration. This is a bounded first lot,
+  not completion of R, G1, the full demo matrix or npm publication. Visual
+  evidence is currently session-local; persistent CI visual replay remains
+  part of V/I. #287 (demo-core), #288 (Svelte Cockpit) and #289 (native Loom)
+  track subsequent work and its prerequisites.
+
+### Second implementation lot
+
+- #287, first increment only: secret-form validation, credential summaries and
+  membership-draft policies move unchanged to `@microcks/demo-core/govern`.
+  React keeps its domain facade and consumes the built neutral package.
+  Package boundary tests reject framework/design-system/demo back-references.
+  The remaining domains, fixtures, ports and use cases are not extracted yet.
+- #291: native Svelte Button/ButtonLink provide the React visual variants with
+  typed native events, snippets, bindings, icons, tests and Storybook stories.
+  Disabled/loading links suppress navigation; this intentional safety difference
+  is documented rather than described as behavioral equivalence to React's
+  unguarded busy link. The repeatable strict comparison harness is separate
+  test tooling, not Svelte runtime code or a product demo.
+- No Cockpit Svelte page or replacement Loom implementation is included in this
+  lot. The complete demo-core and cross-framework demo parity gates remain open.
+
+---
+
 ## Summary
 
 The repo moves from "22 Web Components plus generated wrappers" to a shadcn-style copy-paste design system:

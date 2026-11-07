@@ -1,12 +1,7 @@
-<!--
-  Disclosure menu on the native popover attribute (registry item menu). Same props as the React Menu: label, icon,
-  iconOnly, items, variant, size, align, className (on the trigger) and children (extra content after the items, a
-  snippet). The trigger has popovertarget and a mirrored aria-expanded; Escape and click outside close it natively
-  (focus returns to the trigger). Up and Down move between items (wrapping), Home and End jump to the ends.
--->
+
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import Button from '../button/Button.svelte';
+  import Button from '../Button.svelte';
   import type { ButtonSize, ButtonVariant } from '../button/button';
   import type { IconName } from '../icon/Icon.svelte';
   import type { MenuItem } from './menu';
@@ -22,11 +17,11 @@
     size?: ButtonSize;
     /** Which edge of the trigger the menu lines up with. */
     align?: 'start' | 'end';
-    className?: string;
+    class?: string;
     children?: Snippet;
   };
 
-  let { label, icon, iconOnly, items, variant = 'secondary', size = 'md', align = 'start', className, children }: Props = $props();
+  let { label, icon, iconOnly, items, variant = 'secondary', size = 'md', align = 'start', class: cssClass, children }: Props = $props();
 
   const uid = $props.id();
   const menuId = `${uid}-menu`;
@@ -71,7 +66,7 @@
   $effect(() => {
     const m = menu;
     if (!m) return;
-    const onKeyDown = (e: KeyboardEvent) => {
+    const onkeydown = (e: KeyboardEvent) => {
       const els = itemElements();
       if (els.length === 0) return;
       const at = els.indexOf(document.activeElement as HTMLElement);
@@ -86,20 +81,20 @@
       next.focus();
     };
     // Tabbing out of the menu closes it, so it never stays open behind the user.
-    const onFocusOut = (e: FocusEvent) => {
+    const onfocusout = (e: FocusEvent) => {
       const to = e.relatedTarget as Node | null;
       if (to && !m.contains(to) && !trigger?.contains(to)) m.hidePopover?.();
     };
-    m.addEventListener('keydown', onKeyDown);
-    m.addEventListener('focusout', onFocusOut);
+    m.addEventListener('keydown', onkeydown);
+    m.addEventListener('focusout', onfocusout);
     return () => {
-      m.removeEventListener('keydown', onKeyDown);
-      m.removeEventListener('focusout', onFocusOut);
+      m.removeEventListener('keydown', onkeydown);
+      m.removeEventListener('focusout', onfocusout);
     };
   });
 
   const select = (item: MenuItem) => {
-    item.onSelect?.();
+    item.onselect?.();
     close();
   };
 </script>
@@ -110,7 +105,7 @@
   {size}
   {icon}
   {iconOnly}
-  {className}
+  class={cssClass}
   aria-label={iconOnly ? label : undefined}
   aria-expanded={expanded}
   aria-controls={menuId}

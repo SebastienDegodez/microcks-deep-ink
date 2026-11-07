@@ -4,7 +4,7 @@ import { Link as RouterLink, useParams, useSearchParams } from 'react-router';
 import type { ExampleGroup } from '@/domain/copilot';
 import type { Example, Operation } from '@/domain/shared';
 import { PageHeader, useAnnounce, useQuery, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge, Button, CopyButton, Icon, Textarea, MethodTag, OpPickList, SectionLabel, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
+import { ApiBadge, Button, CopyButton, Icon, LiveIndicator, Textarea, MethodTag, OpPickList, SectionLabel, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { fresh, ProposalRow, type Item, type MockTarget } from './ProposalRow';
 
@@ -319,7 +319,7 @@ export default function CopilotPage() {
             <>
             <div role="status" className="copilot-generating">
               <p className="copilot-generating-line">
-                <span className="copilot-live"><span aria-hidden="true" className="copilot-live-dot" />live</span>
+                <LiveIndicator size="compact" pulse={false} />
                 Generating {exWord(count)} for {op.method} {op.path}{hint.trim() ? ` · hint: "${hint.trim()}"` : ''}…
               </p>
               {Array.from({ length: count }, (_, i) => (

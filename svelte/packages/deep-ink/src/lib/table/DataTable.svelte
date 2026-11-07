@@ -1,10 +1,4 @@
-<!--
-  Data table (registry item table): real <caption>, th scope, aria-sort, a focusable scroll region; no clickable <tr>.
-  Same props as the React DataTable: caption, captionHidden, columns, rows, rowKey, rowHref, renderRowLink, selectedKey,
-  sort, onSortChange, emptyText, density, headerCase, rowTone, scroll, layout, onRowSelect, className. A column's
-  `render` and `renderRowLink` (ReactNode functions in React) are snippets: `renderRowLink(row, props)` gets the
-  RowLinkProps, whose `children` snippet is the cell content.
--->
+
 <script lang="ts" generics="T">
   import type { Snippet } from 'svelte';
   import Icon from '../icon/Icon.svelte';
@@ -26,7 +20,7 @@
     selectedKey?: string;
     sort?: SortState;
     /** Called when a sort button is activated. The caller sorts `rows`. */
-    onSortChange?: (sort: SortState) => void;
+    onsortchange?: (sort: SortState) => void;
     emptyText?: string;
     density?: 'comfortable' | 'compact';
     headerCase?: 'upper' | 'sentence';
@@ -35,8 +29,8 @@
     scroll?: boolean;
     layout?: 'auto' | 'fixed';
     /** Makes the row header of each row a toggle button (`aria-pressed`) that selects the row. */
-    onRowSelect?: (row: T) => void;
-    className?: string;
+    onrowselect?: (row: T) => void;
+    class?: string;
   };
 
   let {
@@ -49,15 +43,15 @@
     renderRowLink,
     selectedKey,
     sort,
-    onSortChange,
+    onsortchange,
     emptyText = 'Nothing here yet.',
     density = 'comfortable',
     headerCase = 'upper',
     rowTone,
     scroll = true,
     layout = 'auto',
-    onRowSelect,
-    className,
+    onrowselect,
+    class: cssClass,
   }: Props = $props();
 
   // In an expression, so that the compiler keeps its trailing space.
@@ -78,7 +72,7 @@
 
 {#snippet value(row: T, c: DataTableColumn<T>)}{#if c.render}{@render c.render(row)}{:else}{text(row, c)}{/if}{/snippet}
 
-<div class={['table-wrap', className].filter(Boolean).join(' ')} {...wrap}>
+<div class={['table-wrap', cssClass].filter(Boolean).join(' ')} {...wrap}>
   <table
     class="table"
     data-density={density}
@@ -95,7 +89,7 @@
             data-align={c.align === 'end' ? 'end' : undefined}
             aria-sort={c.sortable ? active : undefined}
             style={c.width ? `width:${c.width}` : undefined}
-            >{#if c.sortable}<button type="button" class="table-sort" onclick={() => onSortChange?.(nextSort(c.key))}
+            >{#if c.sortable}<button type="button" class="table-sort" onclick={() => onsortchange?.(nextSort(c.key))}
                 >{c.header}<Icon name={active === 'descending' ? 'arrow-down' : active === 'ascending' ? 'arrow-up' : 'dash'} size={12} /></button
               >{:else if c.headerHidden}<span class="sr-only">{c.header}</span>{:else}{c.header}{/if}</th
           >
@@ -113,19 +107,19 @@
             {#each columns as c, i (c.key)}
               {#snippet content()}{@render value(row, c)}{/snippet}
               {#snippet inner()}{#if i === 0 && href !== undefined}{@const props: RowLinkProps = {
-                    className: 'table-rowlink',
+                    class: 'table-rowlink',
                     href,
                     'aria-current': selected ? 'true' : undefined,
                     children: content,
                   }}{#if renderRowLink}{@render renderRowLink(row, props)}{:else}<a
-                      class={props.className}
+                      class={props.class}
                       href={props.href}
                       aria-current={props['aria-current']}>{@render content()}</a
-                    >{/if}{:else if c.rowHeader && onRowSelect}<button
+                    >{/if}{:else if c.rowHeader && onrowselect}<button
                     type="button"
                     class="table-pick"
                     aria-pressed={selected}
-                    onclick={() => onRowSelect(row)}>{@render content()}</button
+                    onclick={() => onrowselect(row)}>{@render content()}</button
                   >{:else if i === 0 && selected}<span class="sr-only">{selectedWord}</span>{@render content()}{:else}{@render
                     content()}{/if}{/snippet}
               {#if c.rowHeader}

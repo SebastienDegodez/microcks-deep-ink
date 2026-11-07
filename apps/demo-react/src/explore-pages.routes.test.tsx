@@ -74,6 +74,10 @@ describe('WP7 pages', () => {
     // The h1 is the api-badge: "REST API Pastry 2.0".
     await h1(/^REST\s+API Pastry 2\.0$/);
     expect(screen.getByRole('heading', { level: 3, name: 'Used in 4 workflows' })).toBeTruthy();
+    const dispatch = screen.getByRole('link', { name: 'Edit behavior' }).closest('.summary-strip') as HTMLElement;
+    expect(dispatch.getAttribute('data-line-height')).toBe('inherit');
+    expect(dispatch.getAttribute('data-gap')).toBe('roomy');
+    expect(dispatch.querySelectorAll('.summary-strip-sep[aria-hidden="true"]')).toHaveLength(1);
     await screen.findByRole('button', { name: /Accept Tartelette Framboise/ });
     expect(screen.getByRole('button', { name: /Accept Tartelette Framboise/ })).toBeTruthy();
     fireEvent.click(screen.getByRole('tab', { name: /Tests/ }));
@@ -125,6 +129,11 @@ describe('WP7 pages', () => {
     expect(screen.getByText('api-pastry-2.0-examples.yaml')).toBeTruthy();
     expect(screen.getByRole('link', { name: /Add 1 example to API Pastry 2.0/ })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Generate again' }));
+    await waitFor(() => {
+      const indicator = document.querySelector('.copilot-generating .live');
+      expect(indicator?.getAttribute('data-size')).toBe('compact');
+      expect(indicator?.getAttribute('data-pulse')).toBe('false');
+    });
     await waitFor(() => expect(screen.queryByRole('article', { name: 'Paris-Brest, rejected' })).toBeNull());
     expect(screen.getByRole('article', { name: 'Tartelette Framboise, accepted' })).toBeTruthy();
     fireEvent.click(screen.getByRole('button', { name: 'Cancel generation' }));
@@ -182,7 +191,14 @@ describe('WP7 pages', () => {
     const confirm = await screen.findByRole('alertdialog', { name: 'Confirm deletion of Pastry orders events' });
     fireEvent.click(within(confirm).getByRole('button', { name: 'Delete source' }));
     expect(await screen.findByText(/deleted. Services already discovered remain/)).toBeTruthy();
-    fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    const undo = screen.getByRole('button', { name: 'Undo' });
+    const banner = undo.closest('.result-box');
+    expect(banner?.getAttribute('role')).toBe('status');
+    expect(banner?.getAttribute('data-tone')).toBe('info');
+    expect(banner?.getAttribute('data-density')).toBe('compact');
+    expect([undo.getAttribute('data-variant'), undo.getAttribute('data-size'), undo.getAttribute('data-tone')]).toEqual(['outline', 'xs', 'link']);
+    await waitFor(() => expect(document.activeElement).toBe(undo));
+    fireEvent.click(undo);
     await screen.findByRole('article', { name: 'Pastry orders events' });
   });
 

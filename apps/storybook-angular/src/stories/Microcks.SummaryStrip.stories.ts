@@ -49,4 +49,4 @@ export const Canvas: StoryObj = {
 };
 
 /** Interactive: every input is a control in the Controls panel. */
-export const Playground: StoryObj = playground('summary-strip', 'SummaryStripComponent', { gap: 'normal', values: 'secondary', parts: [{ text: '12', kind: 'value' }, { text: 'operations', kind: 'label' }, { text: '', sep: true }, { text: '3', kind: 'value' }, { text: 'failing', kind: 'label' }] }, '');
+export const Playground: StoryObj = playground('summary-strip', 'SummaryStripComponent', { gap: 'normal', values: 'secondary', lineHeight: 'fixed', parts: [{ text: '12', kind: 'value' }, { text: 'operations', kind: 'label' }, { text: '', sep: true }, { text: '3', kind: 'value' }, { text: 'failing', kind: 'label' }] }, '');

@@ -10,8 +10,8 @@ export interface ShellNavItem {
 }
 
 /**
- * Attributes to spread on the link you render in `renderLink`, as React's ShellLinkProps but under their Svelte names
- * (`class`, `onclick`). The link content (icon, label, badge) is the snippet's third argument, React's `props.children`.
+ * Attributes to spread on the link you render in `renderLink`, as the reference implementation's ShellLinkProps but under their Svelte names
+ * (`class`, `onclick`). The link content (icon, label, badge) is the snippet's third argument, the reference implementation's `props.children`.
  */
 export interface ShellLinkProps {
   class: string;

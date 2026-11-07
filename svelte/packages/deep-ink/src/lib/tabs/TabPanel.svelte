@@ -1,7 +1,4 @@
-<!--
-  Panel of one tab (registry item tabs). Same props as the React TabPanel: id, value, idPrefix, children (a snippet),
-  className. Like React, no other attribute is forwarded. Only the selected panel renders its children.
--->
+
 <script lang="ts">
   import { getContext, type Snippet } from 'svelte';
   import { PREFIX, panelId, tabId } from './Tabs.svelte';
@@ -13,10 +10,10 @@
     value: string;
     idPrefix?: string;
     children?: Snippet;
-    className?: string;
+    class?: string;
   };
 
-  let { id, value, idPrefix, children, className }: Props = $props();
+  let { id, value, idPrefix, children, class: cssClass }: Props = $props();
 
   const inherited = getContext<(() => string) | undefined>(PREFIX);
   const prefix = $derived(idPrefix ?? inherited?.() ?? 'di');
@@ -27,7 +24,7 @@
   role="tabpanel"
   id={panelId(prefix, id)}
   aria-labelledby={tabId(prefix, id)}
-  class={['tabpanel', className].filter(Boolean).join(' ')}
+  class={['tabpanel', cssClass].filter(Boolean).join(' ')}
   tabindex={0}
   hidden={!active}>{#if active}{@render children?.()}{/if}</div
 >
