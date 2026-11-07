@@ -1,6 +1,6 @@
 <!--
   Inline message with a tone (registry item callout). Same props as the React Callout: tone, title, live, actions,
-  variant, size, className plus any <div> attribute. `title` and `actions` (ReactNode in React) take a string or a
+  variant, size, className plus any <div> attribute and React handler (onClick...). `title` and `actions` (ReactNode in React) take a string or a
   snippet; the message is the children. The tone is carried by an icon and the title, never by color alone.
 -->
 <script lang="ts" module>
@@ -15,8 +15,10 @@
   import type { Snippet } from 'svelte';
   import type { HTMLAttributes } from 'svelte/elements';
   import Icon from '../icon/Icon.svelte';
+  import { reactEvents, type ReactHandlers } from '../react-events';
 
-  type Props = Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'title' | 'children'> & {
+  type Props = Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'title' | 'children'> &
+    ReactHandlers<HTMLDivElement> & {
     tone?: CalloutTone;
     /** An empty string renders no title, even for the ai tone. */
     title?: string | Snippet;
@@ -41,7 +43,7 @@
 {#snippet node(content: string | Snippet)}{#if typeof content === 'function'}{@render content()}{:else}{content}{/if}{/snippet}
 
 <div
-  {...rest}
+  {...reactEvents(rest)}
   class={['callout', className].filter(Boolean).join(' ')}
   data-tone={tone}
   data-variant={variant === 'outline' ? 'outline' : undefined}

@@ -1,9 +1,11 @@
 <!-- Native checkbox or radio inside its label: the body of Checkbox and Radio. -->
 <script lang="ts" module>
   import type { Snippet } from 'svelte';
-  import type { ChangeEventHandler, FocusEventHandler, HTMLInputAttributes } from 'svelte/elements';
+  import type { ChangeEventHandler, HTMLInputAttributes } from 'svelte/elements';
+  import { reactEvents, type ReactHandlers } from '../react-events';
 
-  export type ChoiceProps = Omit<HTMLInputAttributes, 'class' | 'type' | 'children'> & {
+  export type ChoiceProps = Omit<HTMLInputAttributes, 'class' | 'type' | 'children'> &
+    ReactHandlers<HTMLInputElement> & {
     /** Visible label. */
     label: string | Snippet;
     /** Secondary text, linked with aria-describedby. */
@@ -13,9 +15,6 @@
     className?: string;
     /** Initial state of an uncontrolled input. */
     defaultChecked?: boolean;
-    onChange?: ChangeEventHandler<HTMLInputElement>;
-    onFocus?: FocusEventHandler<HTMLInputElement>;
-    onBlur?: FocusEventHandler<HTMLInputElement>;
     element?: HTMLInputElement;
   };
 </script>
@@ -29,16 +28,11 @@
     className,
     defaultChecked,
     checked = $bindable(),
-    onChange,
-    onFocus,
-    onBlur,
-    onchange,
-    onfocus,
-    onblur,
     element = $bindable(),
     ...rest
   }: ChoiceProps & { kind: 'checkbox' | 'radio' } = $props();
 
+  const events = $derived(reactEvents(rest));
   const uid = $props.id();
   const labelId = `${uid}-label`;
   const descId = $derived(description ? `${uid}-desc` : undefined);
@@ -49,21 +43,12 @@
 <label class="choice" data-variant={variant}
   ><input
     bind:this={element}
-    {...rest}
+    {...events}
     type={kind}
     checked={checked ?? defaultChecked}
     onchange={(e) => {
       if (kind === 'checkbox') checked = e.currentTarget.checked;
-      onchange?.(e);
-      onChange?.(e);
-    }}
-    onfocus={(e) => {
-      onfocus?.(e);
-      onFocus?.(e);
-    }}
-    onblur={(e) => {
-      onblur?.(e);
-      onBlur?.(e);
+      (events.onchange as ChangeEventHandler<HTMLInputElement> | undefined)?.(e);
     }}
     aria-labelledby={labelId}
     class={[kind, className].filter(Boolean).join(' ')}

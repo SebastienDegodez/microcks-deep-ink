@@ -1,16 +1,18 @@
 <!--
   Same styling as Button, on a native <a> (registry item button). Same props as the React ButtonLink: variant, size,
-  tone, confirm, icon, iconOnly, loading, className plus any <a> attribute, and the React handlers onClick, onFocus,
-  onBlur. Use it for navigation, Button for actions. React's `ref` is `bind:element` here.
+  tone, confirm, icon, iconOnly, loading, className plus any <a> attribute, and the React handlers (onClick, onKeyDown,
+  onFocus...). Use it for navigation, Button for actions. React's `ref` is `bind:element` here.
 -->
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import type { FocusEventHandler, HTMLAnchorAttributes, MouseEventHandler } from 'svelte/elements';
+  import type { HTMLAnchorAttributes } from 'svelte/elements';
   import Icon from '../icon/Icon.svelte';
+  import { reactEvents, type ReactHandlers } from '../react-events';
   import type { IconName } from '../icon/Icon.svelte';
   import { iconSize, requireName, type ButtonSize, type ButtonVariant } from './button';
 
-  type Props = Omit<HTMLAnchorAttributes, 'class' | 'children'> & {
+  type Props = Omit<HTMLAnchorAttributes, 'class' | 'children'> &
+    ReactHandlers<HTMLAnchorElement> & {
     variant?: ButtonVariant;
     size?: ButtonSize;
     tone?: 'danger';
@@ -21,9 +23,6 @@
     /** Sets `aria-busy`. */
     loading?: boolean;
     className?: string;
-    onClick?: MouseEventHandler<HTMLAnchorElement>;
-    onFocus?: FocusEventHandler<HTMLAnchorElement>;
-    onBlur?: FocusEventHandler<HTMLAnchorElement>;
     element?: HTMLAnchorElement;
     children?: Snippet;
   };
@@ -37,12 +36,6 @@
     iconOnly,
     loading,
     className,
-    onClick,
-    onFocus,
-    onBlur,
-    onclick,
-    onfocus,
-    onblur,
     element = $bindable(),
     children,
     ...rest
@@ -53,19 +46,7 @@
 
 <a
   bind:this={element}
-  {...rest}
-  onclick={(e) => {
-    onclick?.(e);
-    onClick?.(e);
-  }}
-  onfocus={(e) => {
-    onfocus?.(e);
-    onFocus?.(e);
-  }}
-  onblur={(e) => {
-    onblur?.(e);
-    onBlur?.(e);
-  }}
+  {...reactEvents(rest)}
   class={['button', className].filter(Boolean).join(' ')}
   data-variant={variant}
   data-size={size}
