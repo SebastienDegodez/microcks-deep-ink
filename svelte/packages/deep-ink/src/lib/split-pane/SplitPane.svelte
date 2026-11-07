@@ -7,6 +7,7 @@
   import type { Snippet } from 'svelte';
   import type { HTMLAttributes } from 'svelte/elements';
   import { reactEvents, type ReactHandlers } from '../react-events';
+  import { withVars } from '../style';
 
   type Props = Omit<HTMLAttributes<HTMLDivElement>, 'class' | 'children'> &
     ReactHandlers<HTMLDivElement> & {
@@ -30,15 +31,7 @@
 
   let { sideWidth, sideMax, mainWidth, gap, align = 'start', balanced, keepSideMax, className, style, children, ...rest }: Props = $props();
 
-  const css = $derived(
-    [
-      sideWidth && `--split-side:${sideWidth}`,
-      sideMax && `--split-side-max:${sideMax}`,
-      mainWidth && `--split-main:${mainWidth}`,
-      gap && `--split-gap:${gap}`,
-      style,
-    ].filter(Boolean).join(';') || undefined,
-  );
+  const css = $derived(withVars({ '--split-side': sideWidth, '--split-side-max': sideMax, '--split-main': mainWidth, '--split-gap': gap }, style));
 </script>
 
 <div

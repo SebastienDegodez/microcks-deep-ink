@@ -15,6 +15,12 @@
     {"name": "main", "component": "SplitPaneMain", "children": "detail"},
     {"name": "main-section", "component": "SplitPaneMain", "props": {"as": "section", "aria-label": "Operation detail", "data-testid": "m"}, "children": "detail"},
     {"name": "main-ol", "component": "SplitPaneMain", "props": {"as": "ol"}},
-    {"name": "main-div-explicit", "component": "SplitPaneMain", "props": {"as": "div", "id": "m1"}}
+    {"name": "main-div-explicit", "component": "SplitPaneMain", "props": {"as": "div", "id": "m1"}},
+    {"name": "side-section", "component": "SplitPaneSide", "props": {"as": "section", "aria-label": "Filters"}},
+    {"name": "side-ol", "component": "SplitPaneSide", "props": {"as": "ol"}},
+    {"name": "main-aside", "component": "SplitPaneMain", "props": {"as": "aside", "aria-label": "Help"}},
+    {"name": "main-nav", "component": "SplitPaneMain", "props": {"as": "nav", "aria-label": "Steps"}},
+    {"name": "main-ul", "component": "SplitPaneMain", "props": {"as": "ul"}},
+    {"name": "style-override", "props": {"sideWidth": "300px", "gap": "24px", "style": {"--split-gap": "8px", "color": "red"}}}
   ]
 }

@@ -1,6 +1,7 @@
 // Every component of the batch forwards any React-named handler and any data-* / aria-* attribute to the same element
 // as React: the root, the <input> of Checkbox, Radio and Switch, the <button> of CopyButton and ThemeToggle, the <dialog>
-// (or inline <div>) of CommandBar. Segmented, Tabs, TabPanel, AppShell and SummaryStripSep spread nothing in React, so they forward nothing.
+// (or inline <div>) of CommandBar, the <figure> of CodeBlock (its <pre> with frame="none"). Segmented, Tabs, TabPanel,
+// AppShell, Dialog, Menu, DataTable and SummaryStripSep spread nothing in React, so they forward nothing.
 import { fireEvent, render } from '@testing-library/svelte';
 import { createRawSnippet, type Component } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
@@ -10,6 +11,7 @@ import ButtonLink from './button/ButtonLink.svelte';
 import Callout from './callout/Callout.svelte';
 import Checkbox from './checkbox/Checkbox.svelte';
 import Chip from './chip/Chip.svelte';
+import CodeBlock from './code-block/CodeBlock.svelte';
 import CommandBar from './command-bar/CommandBar.svelte';
 import CopyButton from './copy-button/CopyButton.svelte';
 import EmptyState from './empty-state/EmptyState.svelte';
@@ -46,6 +48,8 @@ const cases: Array<[string, Component<any>, Record<string, unknown>, string]> = 
   ['Chip toggle', Chip, { pressed: false, children: 'C' }, 'button'],
   ['CommandBar inline', CommandBar, { inline: true, items: [] }, '.command-bar'],
   ['CommandBar modal', CommandBar, { items: [] }, 'dialog'],
+  ['CodeBlock', CodeBlock, { code: 'x' }, 'figure'],
+  ['CodeBlock frame="none"', CodeBlock, { code: 'x', frame: 'none' }, 'pre'],
   ['SectionLabel', SectionLabel, { as: 'h3' }, 'h3'],
   ['StatCard', StatCard, { title: 'T', value: '1' }, 'section'],
   ['StatGrid', StatGrid, { label: 'L' }, 'section'],
@@ -60,7 +64,7 @@ const cases: Array<[string, Component<any>, Record<string, unknown>, string]> = 
 
 describe('React-named handlers and attributes', () => {
   it.each(cases)('%s forwards them to the same element as React', (_, C, props, selector) => {
-    const spies = { onKeyDown: vi.fn(), onClick: vi.fn(), onFocus: vi.fn(), onBlur: vi.fn(), onMouseEnter: vi.fn(), onDoubleClick: vi.fn() };
+    const spies = { onKeyDown: vi.fn(), onClick: vi.fn(), onFocus: vi.fn(), onBlur: vi.fn(), onMouseEnter: vi.fn(), onDoubleClick: vi.fn(), onDoubleClickCapture: vi.fn(), onKeyDownCapture: vi.fn() };
     const { container } = render(C, { props: { ...props, ...spies, 'data-testid': 'x', 'aria-keyshortcuts': 'K' } });
     const el = container.querySelector<HTMLElement>(selector)!;
     expect([el.dataset.testid, el.getAttribute('aria-keyshortcuts')]).toEqual(['x', 'K']);

@@ -26,6 +26,7 @@
   import type { HTMLAttributes } from 'svelte/elements';
   import { reactEvents, type ReactHandlers } from '../react-events';
   import FactRow from './FactRow.svelte';
+  import { withVars } from '../style';
 
   type Props = Omit<HTMLAttributes<HTMLDListElement>, 'class' | 'children'> &
     ReactHandlers<HTMLDListElement> & {
@@ -77,12 +78,7 @@
   }: Props = $props();
 
   const css = $derived(
-    [
-      termWidth && `--facts-term:${termWidth}`,
-      gap && `--facts-gap:${gap}`,
-      columns && `--facts-cols:repeat(${columns}, minmax(0, 1fr))`,
-      style,
-    ].filter(Boolean).join(';') || undefined,
+    withVars({ '--facts-term': termWidth, '--facts-gap': gap, '--facts-cols': !!columns && `repeat(${columns}, minmax(0, 1fr))` }, style),
   );
 </script>
 

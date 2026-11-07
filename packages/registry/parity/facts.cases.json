@@ -16,6 +16,7 @@
     {"name": "class-and-attributes", "props": {"className": "wide", "id": "f", "data-testid": "facts", "aria-label": "Facts"}},
     {"name": "row", "component": "FactRow", "props": {"term": "Statistics"}, "children": "Usage details"},
     {"name": "row-sub-mono-tone", "component": "FactRow", "props": {"term": "Version", "sub": "latest", "mono": true, "tone": "success", "className": "x", "data-testid": "r"}, "children": "2.0"},
-    {"name": "row-empty-sub", "component": "FactRow", "props": {"term": "T", "sub": ""}, "children": "v"}
+    {"name": "row-empty-sub", "component": "FactRow", "props": {"term": "T", "sub": ""}, "children": "v"},
+    {"name": "style-override", "props": {"termWidth": "150px", "columns": 2, "style": {"--facts-term": "9ch", "marginTop": "4px"}}}
   ]
 }
