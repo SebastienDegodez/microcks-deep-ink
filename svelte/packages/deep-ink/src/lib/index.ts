@@ -1,4 +1,6 @@
 // Generated from packages/registry/items by scripts/gen-index.mjs. Do not edit.
+export { default as AppShell } from './app-shell/AppShell.svelte';
+export * from './app-shell/app-shell.js';
 export { default as Button } from './button/Button.svelte';
 export { default as ButtonLink } from './button/ButtonLink.svelte';
 export * from './button/button.js';
@@ -12,6 +14,8 @@ export { default as Chip } from './chip/Chip.svelte';
 export * from './chip/chip.js';
 export { default as CodeBlock } from './code-block/CodeBlock.svelte';
 export * from './code-block/code-block.js';
+export { default as CommandBar } from './command-bar/CommandBar.svelte';
+export * from './command-bar/command-bar.js';
 export { default as CopyButton } from './copy-button/CopyButton.svelte';
 export { default as DescriptionList } from './description-list/DescriptionList.svelte';
 export * from './description-list/description-list.js';
@@ -43,3 +47,5 @@ export * from './table/table.js';
 export { default as TabPanel } from './tabs/TabPanel.svelte';
 export { default as Tabs } from './tabs/Tabs.svelte';
 export * from './tabs/tabs.js';
+export { default as ThemeToggle } from './theme-toggle/ThemeToggle.svelte';
+export * from './theme-toggle/theme-toggle.js';

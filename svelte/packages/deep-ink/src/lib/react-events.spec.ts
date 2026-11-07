@@ -1,16 +1,18 @@
 // Every component of the batch forwards any React-named handler and any data-* / aria-* attribute to the same element
-// as React: the root, the <input> of Checkbox, Radio and Switch, the <button> of CopyButton, the <figure> of CodeBlock
-// (its <pre> with frame="none"). Segmented, Tabs, TabPanel, Dialog, Menu and DataTable spread nothing in React, so
-// they forward nothing.
+// as React: the root, the <input> of Checkbox, Radio and Switch, the <button> of CopyButton and ThemeToggle, the <dialog>
+// (or inline <div>) of CommandBar, the <figure> of CodeBlock (its <pre> with frame="none"). Segmented, Tabs, TabPanel,
+// AppShell, Dialog, Menu and DataTable spread nothing in React, so they forward nothing.
 import { fireEvent, render } from '@testing-library/svelte';
-import type { Component } from 'svelte';
+import { createRawSnippet, type Component } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
+import AppShell from './app-shell/AppShell.svelte';
 import Button from './button/Button.svelte';
 import ButtonLink from './button/ButtonLink.svelte';
 import Callout from './callout/Callout.svelte';
 import Checkbox from './checkbox/Checkbox.svelte';
 import Chip from './chip/Chip.svelte';
 import CodeBlock from './code-block/CodeBlock.svelte';
+import CommandBar from './command-bar/CommandBar.svelte';
 import CopyButton from './copy-button/CopyButton.svelte';
 import EmptyState from './empty-state/EmptyState.svelte';
 import Radio from './checkbox/Radio.svelte';
@@ -20,6 +22,7 @@ import Segmented from './segmented/Segmented.svelte';
 import Switch from './switch/Switch.svelte';
 import TabPanel from './tabs/TabPanel.svelte';
 import Tabs from './tabs/Tabs.svelte';
+import ThemeToggle from './theme-toggle/ThemeToggle.svelte';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const cases: Array<[string, Component<any>, Record<string, unknown>, string]> = [
@@ -32,6 +35,8 @@ const cases: Array<[string, Component<any>, Record<string, unknown>, string]> = 
   ['Switch', Switch, { label: 'L', checked: false }, 'input'],
   ['EmptyState', EmptyState, { title: 'T' }, 'section'],
   ['Chip toggle', Chip, { pressed: false, children: 'C' }, 'button'],
+  ['CommandBar inline', CommandBar, { inline: true, items: [] }, '.command-bar'],
+  ['CommandBar modal', CommandBar, { items: [] }, 'dialog'],
   ['CodeBlock', CodeBlock, { code: 'x' }, 'figure'],
   ['CodeBlock frame="none"', CodeBlock, { code: 'x', frame: 'none' }, 'pre'],
 ];
@@ -82,7 +87,26 @@ describe('React-named handlers and attributes', () => {
     expect(writeText).toHaveBeenCalledWith('v');
   });
 
+  it('ThemeToggle forwards them to its button, which still toggles on click (React overrides onClick)', () => {
+    const spies = { onKeyDown: vi.fn(), onFocus: vi.fn(), onBlur: vi.fn(), onMouseEnter: vi.fn(), onDoubleClick: vi.fn(), onClickCapture: vi.fn() };
+    const onClick = vi.fn();
+    const { container } = render(ThemeToggle as Component<Record<string, unknown>>, { props: { ...spies, onClick, 'data-testid': 'x', 'aria-keyshortcuts': 'K' } });
+    const el = container.querySelector('button')!;
+    expect([el.dataset.testid, el.getAttribute('aria-keyshortcuts')]).toEqual(['x', 'K']);
+    fireEvent.keyDown(el);
+    fireEvent.click(el);
+    fireEvent.focusIn(el);
+    fireEvent.focusOut(el);
+    fireEvent.mouseEnter(el);
+    fireEvent.dblClick(el);
+    for (const [name, spy] of Object.entries(spies)) expect(spy, name).toHaveBeenCalledOnce();
+    expect([onClick.mock.calls.length, document.documentElement.dataset.theme]).toEqual([0, 'light']);
+    delete document.documentElement.dataset.theme;
+    localStorage.clear();
+  });
+
   it.each([
+    ['AppShell', AppShell, { brand: 'B', nav: [], activeId: 'a', children: createRawSnippet(() => ({ render: () => '<p>x</p>' })) }],
     ['Segmented', Segmented, { label: 'L', value: 'a', options: [{ id: 'a', label: 'A' }] }],
     ['Tabs', Tabs, { label: 'L', value: 'a', items: [{ id: 'a', label: 'A' }] }],
     ['TabPanel', TabPanel, { id: 'a', value: 'a' }],
