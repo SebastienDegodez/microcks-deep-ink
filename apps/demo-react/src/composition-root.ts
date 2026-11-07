@@ -24,6 +24,7 @@ import type { Clock } from '@/application/ports/shared';
 import type { UseCases } from '@/application/use-cases';
 import { createHttpCatalogAdapters } from '@/infrastructure/http/catalog';
 import { createHttpClient, defaultApiBaseUrl, type HttpClient } from '@/infrastructure/http/client';
+import { createHttpImportingAdapters } from '@/infrastructure/http/importing';
 import { createHttpTestingAdapters } from '@/infrastructure/http/testing';
 import { createInMemoryAgentAdapters } from '@/infrastructure/in-memory/agents';
 import { createInMemoryArazzoAdapters } from '@/infrastructure/in-memory/arazzo';
@@ -87,6 +88,7 @@ interface InMemoryAdapters {
  */
 const HTTP_ADAPTERS: { [F in Feature]?: (deps: HttpDeps) => InMemoryAdapters[F] } = {
   catalog: createHttpCatalogAdapters,
+  importing: createHttpImportingAdapters,
   testing: createHttpTestingAdapters,
 };
 
