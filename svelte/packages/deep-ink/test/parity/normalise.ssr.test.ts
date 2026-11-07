@@ -35,6 +35,11 @@ describe('normaliseHtml', () => {
     expect(n('<p><code> a</code></p>')).not.toBe(n('<p><code>a</code></p>'));
     expect(n('<textarea>a\n</textarea>')).not.toBe(n('<textarea>a</textarea>'));
     expect(n('<pre>a\n  b</pre>')).toBe('<pre>\n  "a\\n  b"\n</pre>');
+    expect(n('<pre>a\nb</pre>')).not.toBe(n('<pre>a\\nb</pre>'));
+    expect(n('<p><code>a\nb</code></p>')).not.toBe(n('<p><code>a\\nb</code></p>'));
+    expect(n('<pre>a\tb</pre>')).not.toBe(n('<pre>a  b</pre>'));
+    expect(n('<pre>line 1\n  line 2\n\tline 3</pre>')).toBe(n('<pre>line 1\n  line 2\n\tline 3</pre>'));
+    expect(n('<pre>"a"</pre>')).toBe('<pre>\n  "\\"a\\""\n</pre>');
   });
 
   it('ignores class token order and duplicates, empty class and style, and style spacing', () => {

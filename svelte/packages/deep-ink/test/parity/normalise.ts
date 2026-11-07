@@ -16,7 +16,8 @@
 //   4. Within a run, a space is dropped at the start of the run, right after another space (across element
 //      boundaries: `a <b> b</b>` = `a <b>b</b>`), and at the end of the run. Every other space is kept.
 // So indentation between blocks (`<div>\n  <p>`) disappears, while `a b` vs `ab`, or `<span>a</span> <span>b</span>`
-// vs `<span>a</span><span>b</span>`, still differ. Text is printed between double quotes so that edge spaces show.
+// vs `<span>a</span><span>b</span>`, still differ. Text is printed as a JSON string: edge spaces
+// show and the encoding is lossless (a newline is \n, a literal backslash-n is \\n, a tab is \t).
 // The model is tag-based: CSS (flex, display) is not known, so a space between two flex items still counts.
 import { JSDOM } from 'jsdom';
 
@@ -113,7 +114,7 @@ export function normaliseHtml(html: string): string {
     const pad = '  '.repeat(depth);
     if (node.nodeType === 3) {
       const t = text.get(node);
-      if (t) lines.push(`${pad}"${escape(t).replace(/\n/g, '\\n')}"`);
+      if (t) lines.push(pad + JSON.stringify(escape(t)));
       return;
     }
     if (node.nodeType !== 1) return;
