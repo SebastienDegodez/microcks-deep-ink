@@ -1,5 +1,6 @@
 // Every component of the batch forwards any React-named handler and any data-* / aria-* attribute to the same element
-// as React: the root, or the <input> of Checkbox, Radio and Switch.
+// as React: the root, or the <input> of Checkbox, Radio and Switch, the <figure> of CodeBlock (its <pre> with
+// frame="none"). Dialog, Menu and DataTable spread nothing in React, so they are not listed.
 import { fireEvent, render } from '@testing-library/svelte';
 import type { Component } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
@@ -7,6 +8,7 @@ import Button from './button/Button.svelte';
 import ButtonLink from './button/ButtonLink.svelte';
 import Callout from './callout/Callout.svelte';
 import Checkbox from './checkbox/Checkbox.svelte';
+import CodeBlock from './code-block/CodeBlock.svelte';
 import Radio from './checkbox/Radio.svelte';
 import MethodTag from './method-tag/MethodTag.svelte';
 import { reactEvents } from './react-events';
@@ -21,11 +23,13 @@ const cases: Array<[string, Component<any>, Record<string, unknown>, string]> = 
   ['Checkbox', Checkbox, { label: 'L' }, 'input'],
   ['Radio', Radio, { label: 'L' }, 'input'],
   ['Switch', Switch, { label: 'L', checked: false }, 'input'],
+  ['CodeBlock', CodeBlock, { code: 'x' }, 'figure'],
+  ['CodeBlock frame="none"', CodeBlock, { code: 'x', frame: 'none' }, 'pre'],
 ];
 
 describe('React-named handlers and attributes', () => {
   it.each(cases)('%s forwards them to the same element as React', (_, C, props, selector) => {
-    const spies = { onKeyDown: vi.fn(), onClick: vi.fn(), onFocus: vi.fn(), onBlur: vi.fn(), onMouseEnter: vi.fn(), onDoubleClick: vi.fn() };
+    const spies = { onKeyDown: vi.fn(), onClick: vi.fn(), onFocus: vi.fn(), onBlur: vi.fn(), onMouseEnter: vi.fn(), onDoubleClick: vi.fn(), onDoubleClickCapture: vi.fn(), onKeyDownCapture: vi.fn() };
     const { container } = render(C, { props: { ...props, ...spies, 'data-testid': 'x', 'aria-keyshortcuts': 'K' } });
     const el = container.querySelector<HTMLElement>(selector)!;
     expect([el.dataset.testid, el.getAttribute('aria-keyshortcuts')]).toEqual(['x', 'K']);
