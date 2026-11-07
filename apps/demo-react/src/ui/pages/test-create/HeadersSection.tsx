@@ -1,7 +1,5 @@
 import type { TestTarget } from '@/domain/testing';
-import { Button } from '@/ui/components/ui/button';
-import { Input } from '@/ui/components/ui/input';
-import { Select } from '@/ui/components/ui/select';
+import { Button, Input, Select } from '@microcks/deep-ink';
 import type { Draft, HeaderRow, UpdateDraft } from './draft';
 import { FormSection } from './FormSection';
 

@@ -3,8 +3,7 @@
 import { render, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { describe, expect, it } from 'vitest';
-import { CopyButton } from '@/ui/components/ui/copy-button';
-import { Button } from '@microcks/deep-ink';
+import { CopyButton, Button } from '@microcks/deep-ink';
 
 describe('design system package', () => {
   it('shares the app React: a package component with hooks renders inside an app component with hooks', () => {

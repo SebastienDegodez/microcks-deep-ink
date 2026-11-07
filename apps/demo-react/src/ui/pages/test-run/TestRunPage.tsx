@@ -12,19 +12,9 @@ import {
   type TestStepResult,
 } from '@/domain/testing';
 import { PageHeader, useAnnounce, usePageTitle, useQuery, useRelativeTime, useUseCases } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { ConformanceBand, type OperationResult } from '@/ui/components/ui/conformance-band';
-import { CiPanel } from '@/ui/components/ui/ci-panel';
+import { ApiBadge, Button, ConformanceBand, type OperationResult, CiPanel, Icon, StatusBadge, type Outcome, LiveIndicator, MethodTag, RunProgress, type RunSegment, RunnerLog, SectionLabel } from '@microcks/deep-ink';
 import { TEST_RESULT_WORD } from '@/ui/app/outcomes';
 import { useReplay } from '@/ui/app/use-replay';
-import { Icon } from '@/ui/components/ui/icon';
-import { StatusBadge, type Outcome } from '@/ui/components/ui/status-badge';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { MethodTag } from '@/ui/components/ui/method-tag';
-import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
-import { RunnerLog } from '@/ui/components/ui/runner-log';
-import { SectionLabel } from '@/ui/components/ui/section-label';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { useThrottledAnnounce } from '../tests/useThrottledAnnounce';
 import './test-run.css';

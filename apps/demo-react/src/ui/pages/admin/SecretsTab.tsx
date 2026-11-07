@@ -9,12 +9,7 @@ import {
   type SecretFormKind,
 } from '@/domain/govern';
 import { useClock, useReturnFocus, useUseCases, type QueryResult } from '@/ui/app';
-import { Button } from '@/ui/components/ui/button';
-import { Field } from '@/ui/components/ui/field';
-import { Icon } from '@/ui/components/ui/icon';
-import { Input, Textarea } from '@/ui/components/ui/input';
-import { Segmented } from '@/ui/components/ui/segmented';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
+import { Button, Field, Icon, Input, Textarea, Segmented, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
 import './secrets.css';

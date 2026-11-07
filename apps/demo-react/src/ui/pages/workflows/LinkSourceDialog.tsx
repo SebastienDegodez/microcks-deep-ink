@@ -2,12 +2,7 @@ import { useState } from 'react';
 import type { ArazzoDocument, SourceDescription } from '@/domain/arazzo';
 import type { ServiceSummary } from '@/domain/shared';
 import { useAnnounce, useQuery, useUseCases } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { RadioGroup } from '@/ui/components/ui/checkbox';
-import { Skeleton } from '@/ui/components/ui/skeleton';
-import { Dialog } from '@/ui/components/ui/dialog';
+import { ApiBadge, Button, Callout, RadioGroup, Skeleton, Dialog } from '@microcks/deep-ink';
 
 export interface LinkSourceDialogProps {
   open: boolean;

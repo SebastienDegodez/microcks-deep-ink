@@ -1,10 +1,6 @@
 import { Link as RouterLink } from 'react-router';
 import type { ImportResult } from '@/domain/importing';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { CopyButton } from '@/ui/components/ui/copy-button';
-import { Icon } from '@/ui/components/ui/icon';
-import { ProjectionPill } from '@/ui/components/ui/projection-pill';
+import { ApiBadge, Button, CopyButton, Icon, ProjectionPill } from '@microcks/deep-ink';
 
 interface ImportDoneProps {
   result: ImportResult;

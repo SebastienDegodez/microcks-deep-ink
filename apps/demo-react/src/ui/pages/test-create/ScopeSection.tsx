@@ -1,11 +1,6 @@
 import type { Ref } from 'react';
 import { timeoutHelp, type TestFormErrors, type TestTarget } from '@/domain/testing';
-import { Button } from '@/ui/components/ui/button';
-import { Checkbox, Radio } from '@/ui/components/ui/checkbox';
-import { Field } from '@/ui/components/ui/field';
-import { Icon } from '@/ui/components/ui/icon';
-import { Input } from '@/ui/components/ui/input';
-import { MethodTag } from '@/ui/components/ui/method-tag';
+import { Button, Checkbox, Radio, Field, Icon, Input, MethodTag } from '@microcks/deep-ink';
 import type { Draft, UpdateDraft } from './draft';
 import { FormSection } from './FormSection';
 

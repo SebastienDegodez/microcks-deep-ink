@@ -4,15 +4,7 @@ import { Link as RouterLink, useParams, useSearchParams } from 'react-router';
 import type { ExampleGroup } from '@/domain/copilot';
 import type { Example, Operation } from '@/domain/shared';
 import { PageHeader, useAnnounce, useQuery, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { CopyButton } from '@/ui/components/ui/copy-button';
-import { Icon } from '@/ui/components/ui/icon';
-import { Textarea } from '@/ui/components/ui/input';
-import { MethodTag } from '@/ui/components/ui/method-tag';
-import { OpPickList } from '@/ui/components/ui/op-pick';
-import { SectionLabel } from '@/ui/components/ui/section-label';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
+import { ApiBadge, Button, CopyButton, Icon, Textarea, MethodTag, OpPickList, SectionLabel, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { fresh, ProposalRow, type Item, type MockTarget } from './ProposalRow';
 

@@ -1,6 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link } from 'react-router';
-import { Icon } from '@/ui/components/ui/icon';
+import { Icon } from '@microcks/deep-ink';
 import { PAGE_TITLE_ID } from './usePageTitle';
 
 export interface Crumb {

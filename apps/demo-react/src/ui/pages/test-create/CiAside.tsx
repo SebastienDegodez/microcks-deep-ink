@@ -1,7 +1,5 @@
 import { CI_FORMATS, CI_STEPS, ciDiffLegend, type CiFormat, type diffCiLines } from '@/domain/testing';
-import { Chip } from '@/ui/components/ui/chip';
-import { CodeBlock } from '@/ui/components/ui/code-block';
-import { Icon } from '@/ui/components/ui/icon';
+import { Chip, CodeBlock, Icon } from '@microcks/deep-ink';
 
 interface CiAsideProps {
   uid: string;

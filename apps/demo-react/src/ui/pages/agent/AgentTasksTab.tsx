@@ -3,10 +3,7 @@ import { useState } from 'react';
 import { getTaskJson, isTerminalTaskState, type AgentTask } from '@/domain/agents';
 import { ago } from '@/ui/app/format';
 import { useAnnounce, useSubscription, useUseCases } from '@/ui/app';
-import { Button } from '@/ui/components/ui/button';
-import { CodeBlock } from '@/ui/components/ui/code-block';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { TaskStateTag } from '@/ui/components/ui/task-timeline';
+import { Button, CodeBlock, LiveIndicator, TaskStateTag } from '@microcks/deep-ink';
 
 
 /** Tasks created on the mock, streamed from the use case (1 s tick). */

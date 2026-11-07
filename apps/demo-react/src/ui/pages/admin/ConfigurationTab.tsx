@@ -1,5 +1,5 @@
 import { useQuery, useUseCases } from '@/ui/app';
-import { Icon } from '@/ui/components/ui/icon';
+import { Icon } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import './configuration.css';
 

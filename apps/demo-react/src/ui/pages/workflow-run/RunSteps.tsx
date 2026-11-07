@@ -2,11 +2,7 @@ import { useId, useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 import { formatDuration } from '@/domain/shared';
 import { handoversOf, runContext, stepOffsets, stoppedStep, type Step, type StepResult, type Workflow, type WorkflowRun } from '@/domain/arazzo';
-import { Chip } from '@/ui/components/ui/chip';
-import { CodeBlock } from '@/ui/components/ui/code-block';
-import { Icon } from '@/ui/components/ui/icon';
-import { StatusBadge } from '@/ui/components/ui/status-badge';
-import { MethodTag } from '@/ui/components/ui/method-tag';
+import { Chip, CodeBlock, Icon, StatusBadge, MethodTag } from '@microcks/deep-ink';
 import { Verdict } from './run-parts';
 
 export type Phase = 'done' | 'running' | 'waiting';

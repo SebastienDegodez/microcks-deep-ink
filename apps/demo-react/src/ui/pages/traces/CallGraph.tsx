@@ -1,7 +1,6 @@
 import type { FlowCounts, TopologyEdge, TraceCall, TraceTopology } from '@/domain/observe';
 import { fmt } from '@/ui/app/format';
-import { Icon } from '@/ui/components/ui/icon';
-import { SectionLabel } from '@/ui/components/ui/section-label';
+import { Icon, SectionLabel } from '@microcks/deep-ink';
 
 /** Graph geometry of the prototype: 56px nodes on a 72px slot, six slots per 416px column. */
 const SLOT = 72;

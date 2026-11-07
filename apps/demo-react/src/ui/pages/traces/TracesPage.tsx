@@ -17,16 +17,7 @@ import {
 } from '@/domain/observe';
 import { fmt, plural } from '@/ui/app/format';
 import { PageHeader, usePageTitle, useQuery, useSubscription, useUseCases } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { FactRow, Facts } from '@/ui/components/ui/facts';
-import { Field } from '@/ui/components/ui/field';
-import { Icon } from '@/ui/components/ui/icon';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { SectionLabel } from '@/ui/components/ui/section-label';
-import { Select } from '@/ui/components/ui/select';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
+import { ApiBadge, Button, Callout, FactRow, Facts, Field, Icon, LiveIndicator, SectionLabel, Select, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { useThrottledAnnounce } from '../tests/useThrottledAnnounce';
 import { CallGraph } from './CallGraph';

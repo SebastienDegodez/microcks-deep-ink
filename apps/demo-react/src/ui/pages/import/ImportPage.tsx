@@ -7,18 +7,7 @@ import {
 } from '@/domain/importing';
 import { ValidationError } from '@/application/shared';
 import { PageHeader, useAnnounce, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { Checkbox } from '@/ui/components/ui/checkbox';
-import { Chip } from '@/ui/components/ui/chip';
-import { DropZone } from '@/ui/components/ui/drop-zone';
-import { Field } from '@/ui/components/ui/field';
-import { Icon } from '@/ui/components/ui/icon';
-import { Input, Textarea } from '@/ui/components/ui/input';
-import { Select } from '@/ui/components/ui/select';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
-import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
+import { ApiBadge, Button, Callout, Checkbox, Chip, DropZone, Field, Icon, Input, Textarea, Select, SplitPane, SplitPaneMain, SplitPaneSide, TabPanel, Tabs } from '@microcks/deep-ink';
 import { ImportDone } from './ImportDone';
 import { ImportPreviewCard } from './ImportPreview';
 
