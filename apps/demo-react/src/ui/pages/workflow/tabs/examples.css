@@ -22,9 +22,9 @@
 .wf-ex-tag { padding: 1px 6px; border-radius: 4px; background: var(--raised); font: 400 12px/1.4 var(--font-mono); }
 .wf-ex-steps { display: flex; flex-direction: column; gap: 3px; }
 .wf-ex-step { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; font-size: 12px; }
-.wf-ex-step .icon { color: var(--success); }
+.wf-ex-step .wf-ex-step-icon { color: var(--success); }
 .wf-ex-step-id { font-family: var(--font-mono); color: var(--text); }
-.wf-ex-step[data-run='no'] .icon, .wf-ex-step[data-run='no'] .wf-ex-step-id { color: var(--text-muted); }
+.wf-ex-step[data-run='no'] .wf-ex-step-icon, .wf-ex-step[data-run='no'] .wf-ex-step-id { color: var(--text-muted); }
 .wf-ex-muted { color: var(--text-muted); font-size: 12px; }
 .wf-ex-muted a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
 .wf-ex-judged { display: flex; flex-direction: column; gap: 2px; }

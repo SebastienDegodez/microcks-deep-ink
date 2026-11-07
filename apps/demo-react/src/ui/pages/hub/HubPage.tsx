@@ -79,7 +79,7 @@ export default function HubPage() {
         description="Community packages of API mocks and conformance tests. Install one to get its Services, examples and tests in this instance, once or kept in sync."
         actions={
           <span className="hb-connected">
-            <Icon name="check" size={14} />
+            <Icon name="check" size={14} className="hb-connected-icon" />
             Connected to
             <span className="hb-connected-url">{HUB_URL}</span>
           </span>
@@ -200,7 +200,7 @@ function PackageTile({
           {status === 'installed' ? (
             <>
               <span className="hb-installed">
-                <Icon name="check" size={15} />
+                <Icon name="check" size={15} strokeWidth={2.4} />
                 Installed
               </span>
               <Button asChild size="tile">
@@ -293,7 +293,7 @@ function Detail({
                 <span className="demo-mono">{a.contracts}</span>
                 {a.inCatalogue.includes(v) ? (
                   <span className="hb-exists">
-                    <Icon name="check" size={12} />
+                    <Icon name="check" size={12} strokeWidth={2.6} />
                     already in your catalogue
                   </span>
                 ) : null}
@@ -371,7 +371,7 @@ function Detail({
         {status === 'installed' ? (
           <>
             <span className="hb-installed">
-              <Icon name="check" size={15} />
+              <Icon name="check" size={15} strokeWidth={2.4} />
               Installed
             </span>
             <Button variant="primary" asChild>

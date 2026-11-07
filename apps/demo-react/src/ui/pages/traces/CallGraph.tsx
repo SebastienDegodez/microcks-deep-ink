@@ -161,7 +161,7 @@ export function CallGraph({ topology, counts, filter, focus, onFocus, flash }: P
                 <button key={x.id} {...nodeProps(x.id)} data-kind={!x.ok ? 'miss' : event ? 'event' : 'rest'}>
                   {hidden('Example, status')}{' '}
                   <span className="tr2-code" data-miss={x.ok ? undefined : ''}>
-                    <Icon name={x.ok ? 'check' : 'warning'} size={11} />
+                    <Icon name={x.ok ? 'check' : 'warning'} size={11} strokeWidth={3} />
                     {x.code}
                   </span>{' '}
                   <span className="tr2-node-text">

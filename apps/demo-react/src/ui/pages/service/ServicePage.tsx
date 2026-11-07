@@ -74,7 +74,7 @@ function WorkflowResult({ usage, relative }: { usage: WorkflowUsage; relative: (
   }
   return (
     <span className="wf-usage-result" data-tone={tone}>
-      <Icon name={icon} size={13} />
+      <Icon name={icon} size={13} strokeWidth={2.2} />
       {text}
     </span>
   );
@@ -269,7 +269,7 @@ function ApiServicePage() {
                 <div className="op-detail-head">
                   <div className="op-detail-title">
                     <div className="op-detail-title-row">
-                      <MethodTag method={currentOp.method} protocol={svc.protocol} />
+                      <MethodTag method={currentOp.method} protocol={svc.protocol} className="op-detail-method" />
                       <h2>{currentOp.path}</h2>
                     </div>
                     <span className="op-detail-summary">{currentOp.summary}{currentOp.mcpTool ? <> · MCP tool <span className="op-detail-tool">{currentOp.mcpTool}</span></> : null}</span>
@@ -280,7 +280,7 @@ function ApiServicePage() {
                 <div className="op-mock">
                   <SectionLabel as="label" htmlFor="mock-url">Mock URL</SectionLabel>
                   <div className="op-mock-url">
-                    <Input id="mock-url" mono readOnly value={mockUrl} />
+                    <Input id="mock-url" mono readOnly value={mockUrl} className="op-mock-url-input" />
                     <CopyButton value={mockUrl} size="md" label="Copy" />
                   </div>
                   {spec ? (
@@ -507,7 +507,7 @@ function ApiServicePage() {
                       <RouterLink to={`/tests/runner/${r.id}`} className="run-list-row">
                         <span className="run-list-id">#{r.id}</span>
                         <span className="run-list-status" data-tone={tone}>
-                          <Icon name={tone === 'passed' ? 'check-circle' : tone === 'running' ? 'running' : 'x-circle'} size={14} />
+                          <Icon name={tone === 'passed' ? 'check-circle' : tone === 'running' ? 'running' : 'x-circle'} size={14} strokeWidth={2.2} />
                           {tone === 'passed' ? 'Passed' : tone === 'running' ? 'Running' : 'Failed'}
                         </span>
                         <span className="run-list-score">{r.passed}/{r.total}</span>

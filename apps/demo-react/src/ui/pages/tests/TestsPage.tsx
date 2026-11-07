@@ -254,14 +254,14 @@ function History({
         />
         <span className="tests-filter">
           <label htmlFor="tests-runner">Runner</label>
-          <Select id="tests-runner" size="sm" value={runner} onChange={(e) => { setRunner(e.target.value); setShowAll(false); }}>
+          <Select id="tests-runner" className="tests-filter-select" size="sm" value={runner} onChange={(e) => { setRunner(e.target.value); setShowAll(false); }}>
             <option value="all">All runners</option>
             {runners.map((r) => <option key={r} value={r}>{r}</option>)}
           </Select>
         </span>
         <span className="tests-filter">
           <label htmlFor="tests-endpoint">Endpoint</label>
-          <Select id="tests-endpoint" size="sm" value={environment} onChange={(e) => { setEnvironment(e.target.value); setShowAll(false); }}>
+          <Select id="tests-endpoint" className="tests-filter-select" size="sm" value={environment} onChange={(e) => { setEnvironment(e.target.value); setShowAll(false); }}>
             <option value="all">All endpoints</option>
             {environments.map(([env, url]) => <option key={env} value={env}>{env} · {url.replace(/^https?:\/\//, '')}</option>)}
           </Select>

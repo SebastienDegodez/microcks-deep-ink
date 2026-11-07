@@ -446,13 +446,13 @@ function Summary({ run, totals, workflow }: { run: WorkflowRun; totals: { calls:
       <div className="wfr-actions">
         {run.relatedTestRunId ? (
           <RouterLink to={`/tests/runner/${run.relatedTestRunId}`} className="wfr-action" data-tone="danger">
-            <Icon name="warning" size={14} strokeWidth={2.4} />
+            <Icon name="warning" size={14} strokeWidth={2.4} className="wfr-action-icon" />
             Same bug in test run #{run.relatedTestRunId}
           </RouterLink>
         ) : null}
         {run.coherence[0] ? (
           <RouterLink to={`/services/pastry2/copilot?op=get-name&hint=${encodeURIComponent(run.coherence[0].copilotHint)}`} className="wfr-action" data-tone="action">
-            <Icon name="sparkles" size={14} />
+            <Icon name="sparkles" size={14} className="wfr-action-icon" />
             Generate the example with the AI Copilot
           </RouterLink>
         ) : null}

@@ -33,7 +33,7 @@
   border: 1px solid var(--border); border-radius: 6px; background: var(--surface);
   font-size: 13px; line-height: 1.5; color: var(--text-secondary);
 }
-.ad-lock-note > .icon { flex: none; margin-top: 3px; }
+.ad-lock-icon { flex: none; margin-top: 3px; }
 
 /* Status row under the tab list; it hides itself after 4 s. */
 .ad-toast-region:not(:empty) { padding-block-start: 20px; }
@@ -48,6 +48,6 @@
   padding: 0; border: 0; border-radius: var(--radius-control); background: transparent; color: var(--text-secondary); cursor: pointer;
 }
 .ad-toast-close:hover { background: var(--raised); color: var(--text); }
-.tabs > .ad-panel { padding-block-start: 20px; }
+.ad-panel { padding-block-start: 20px; }
 .ad-section-title > h2:focus { outline: none; }
 .ad-section-title > h2:focus-visible { outline: 2px solid var(--action); outline-offset: 2px; }

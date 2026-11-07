@@ -51,7 +51,7 @@
 .test-op-cards { list-style: none; margin: 0; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(230px, 1fr)); gap: 8px; }
 .test-op-card { display: flex; flex-direction: column; gap: 6px; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border); }
 .test-op-card-head { display: flex; align-items: center; gap: 8px; min-width: 0; }
-.test-op-card-head .method { flex: none; min-width: 0; padding: 1px 5px; border-radius: 3px; font-family: var(--font-mono); font-size: 10px; font-weight: 600; line-height: normal; }
+.test-op-card-head .test-op-method { flex: none; min-width: 0; padding: 1px 5px; border-radius: 3px; font-family: var(--font-mono); font-size: 10px; font-weight: 600; line-height: normal; }
 .test-op-card-path { flex: 1; min-width: 0; font-family: var(--font-mono); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .test-op-card-rate { flex: none; font-family: var(--font-brand); font-weight: 800; font-size: 20px; line-height: 1; color: var(--success); }
 .test-op-card-rate[data-tone="warning"] { color: var(--warning); }
@@ -76,7 +76,7 @@
 .tests-filters { display: flex; flex-wrap: wrap; align-items: center; gap: 10px 16px; }
 .tests-filter { display: inline-flex; align-items: center; gap: 8px; max-width: 100%; }
 .tests-filter > label { font-size: 13px; color: var(--text-muted); }
-.tests-filter > .select { width: auto; max-width: 100%; }
+.tests-filter > .tests-filter-select { width: auto; max-width: 100%; }
 .tests-count { margin: 0 0 0 auto; font-size: 13px; color: var(--text-muted); }
 
 /* Runs table. */

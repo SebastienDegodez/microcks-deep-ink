@@ -67,7 +67,7 @@ function StepBody({ step, streamed, serviceLink }: { step: ScriptStep; streamed:
       return (
         <div className="agent-artifact">
           <div className="agent-artifact-head">
-            <Icon name="file" size={14} />
+            <Icon name="file" size={14} className="agent-artifact-icon" />
             <span className="agent-artifact-name">{step.name}</span>
             <span className="agent-artifact-id">artifactId {step.artifactId}</span>
             <span className="agent-artifact-event">{streamed ? 'TaskArtifactUpdateEvent' : 'task.artifacts'}</span>
@@ -83,7 +83,7 @@ function StepBody({ step, streamed, serviceLink }: { step: ScriptStep; streamed:
       return (
         <div className="agent-chunks">
           <div className="agent-chunks-head">
-            <Icon name="file" size={14} />
+            <Icon name="file" size={14} className="agent-artifact-icon" />
             <span className="agent-artifact-name">{step.name}</span>
             <span className="agent-artifact-id">artifactId {step.artifactId} · streamed in {step.chunks.length} chunks</span>
             <span className="agent-artifact-event">TaskArtifactUpdateEvent</span>

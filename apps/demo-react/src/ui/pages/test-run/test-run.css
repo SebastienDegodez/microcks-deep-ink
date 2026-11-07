@@ -39,18 +39,15 @@
 .tr-trend { display: inline-flex; align-items: center; gap: 6px; font-size: 13px; color: var(--text-secondary); }
 .tr-trend[data-dir='down'] { color: var(--warning); }
 .tr-trend[data-dir='up'] { color: var(--success); }
-.tr-trend .icon { stroke-width: 2.4; }
 .tr-trend-prev { font-family: var(--font-mono); color: var(--text-muted); }
 .tr-verdict-text { display: flex; flex: 1 1 260px; flex-direction: column; gap: 8px; min-width: 0; }
 .tr-verdict-word { display: inline-flex; align-items: center; gap: 8px; font-size: 18px; font-weight: 600; color: var(--warning); }
 .tr-verdict-word[data-result='failed'] { color: var(--danger); }
 .tr-verdict-word[data-result='passed'] { color: var(--success); }
-.tr-verdict-word .icon { stroke-width: 2.6; }
 .tr-verdict-summary { font-size: 15px; color: var(--text); }
 .tr-verdict-detail { font-size: 13px; color: var(--text-secondary); }
 .tr-verdict-link { display: inline-flex; align-self: flex-start; align-items: center; gap: 8px; font-size: 13px; font-weight: 500; color: var(--link); }
 .tr-verdict-link strong { font-weight: 600; }
-.tr-verdict-link .icon { flex: none; }
 .tr-band { display: flex; flex-direction: column; gap: 6px; }
 .tr-band-caption { font-size: 12px; color: var(--text-muted); }
 .tr-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -97,7 +94,7 @@
 .tr-step-ms { flex: none; min-width: 48px; text-align: end; font: 400 12px/normal var(--font-mono); color: var(--text-secondary); }
 .tr-step-row > .tr-state { min-width: 82px; }
 .tr-step-chevron { display: inline-flex; flex: none; width: 16px; color: var(--text-muted); }
-.tr-step-row[aria-expanded='true'] .tr-step-chevron .icon { transform: rotate(90deg); }
+.tr-step-row[aria-expanded='true'] .tr-step-chevron-icon { transform: rotate(90deg); }
 
 /* Contract ⇄ actual response, under the open step */
 .tr-diff { line-height: normal; display: flex; flex-direction: column; gap: 12px; padding: 16px; border-top: 1px solid var(--border); background: var(--surface); }
@@ -141,4 +138,4 @@
 .tr-diff-note { margin: 0; font-size: 13px; line-height: 1.55; color: var(--text-secondary); }
 .tr-diff-link { color: var(--link); font-weight: 600; }
 .tr-diff-ok { display: flex; align-items: flex-start; gap: 8px; margin: 0; font-size: 13px; line-height: 1.55; color: var(--text-secondary); }
-.tr-diff-ok > .icon { flex: none; margin-top: 3px; color: var(--success); stroke-width: 2.6; }
+.tr-diff-ok-icon { flex: none; margin-top: 3px; color: var(--success); stroke-width: 2.6; }

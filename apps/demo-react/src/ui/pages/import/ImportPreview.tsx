@@ -79,7 +79,7 @@ export function ImportPreviewCard({ preview, role, onRoleChange, secret, onSecre
           ) : null}
           {source.kind === 'git' ? (
             <div className="note-box">
-              <Icon name="clock" size={16} />
+              <Icon name="clock" size={16} className="note-box-icon" />
               <span>The source “{source.name}” will be created, scanned and imported immediately, then re-scanned every hour. <RouterLink to="/sources">Manage sources</RouterLink></span>
             </div>
           ) : null}
@@ -165,7 +165,7 @@ function ArazzoBody({ preview, arazzo }: { preview: ImportPreview; arazzo: Arazz
                       <span className="mono-sm">MATCHED</span>
                     </span>
                   </td>
-                  <td><span className="ops-found"><Icon name="check-circle" size={14} />{d.operationsFound}</span></td>
+                  <td><span className="ops-found"><Icon name="check-circle" size={14} className="ops-found-icon" />{d.operationsFound}</span></td>
                 </tr>
               ))}
             </tbody>
@@ -176,7 +176,7 @@ function ArazzoBody({ preview, arazzo }: { preview: ImportPreview; arazzo: Arazz
           <span>Linked through the {arazzo.overlay} overlay <code>{arazzo.fileName.replace(/\.arazzo\.ya?ml$/, '.arazzo-sources.yaml')}</code>, or link them here.</span>
         </p>
         <div role="note" className="note-box" data-tone="info" style={{ maxWidth: 760 }}>
-          <Icon name="info" size={16} />
+          <Icon name="info" size={16} className="note-box-icon" />
           <span>Arazzo documents outside the supported subset are refused (e.g. goto actions, jsonpath criteria, workflowId steps). Success criteria use the simple and regex types; step actions are end and retry.</span>
         </div>
       </div>
@@ -240,7 +240,7 @@ function AgentBody({ preview, agent }: { preview: ImportPreview; agent: AgentPre
         </div>
       </div>
       <div role="note" className="note-box" data-tone="warning">
-        <Icon name="alert-circle" size={16} />
+        <Icon name="alert-circle" size={16} className="note-box-icon" />
         <span>Add an APIExamples secondary artifact to give the mock its conversations. The card alone describes skills, not what the agent answers. The mock serves the card with supportedInterfaces rewritten to point at Microcks, on all {agent.mockInterfaces.length} transports.</span>
       </div>
     </>

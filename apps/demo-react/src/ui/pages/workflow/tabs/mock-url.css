@@ -55,5 +55,5 @@
 .wf-mu-panel[data-size='narrow'] .wf-mu-box { flex: none; }
 .wf-mu-box[data-size='curl'] .wf-mu-box-head { flex-wrap: nowrap; }
 .wf-mu-box[data-size='curl'] .wf-mu-box-title { min-width: 0; }
-.wf-mu-box-head .button { flex: none; }
-.wf-mu-row > .method { display: inline-flex; align-items: center; height: 38px; padding: 0 10px; box-sizing: border-box; font-size: 12px; }
+.wf-mu-box-head .wf-mu-box-btn { flex: none; }
+.wf-mu-row > .wf-mu-method { display: inline-flex; align-items: center; height: 38px; padding: 0 10px; box-sizing: border-box; font-size: 12px; }

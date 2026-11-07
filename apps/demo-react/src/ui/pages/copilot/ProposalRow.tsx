@@ -93,7 +93,7 @@ export function ProposalRow({ item, op, target, served, onPatch, onAccept, onRej
       </div>
 
       {conflict ? (
-        <p className="proposal-conflict" role="note"><Icon name="warning" size={13} />{conflict}</p>
+        <p className="proposal-conflict" role="note"><Icon name="warning" size={13} className="proposal-conflict-icon" />{conflict}</p>
       ) : null}
 
       {open ? (

@@ -1,5 +1,5 @@
 .ad-toolbar { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; }
-.ad-toolbar > .filter-bar-search { flex: 0 1 360px; min-width: 220px; }
+.ad-search { flex: 0 1 360px; min-width: 220px; }
 
 .ad-users .table { min-width: 900px; table-layout: fixed; }
 /* Prototype grid: minmax(220,1.4fr) minmax(200,1.2fr) minmax(180,1fr) minmax(170,1fr) 150px, gap 12, padding 16. */

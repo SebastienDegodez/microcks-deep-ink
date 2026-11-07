@@ -202,7 +202,7 @@ export default function ImportPage() {
                       <Checkbox label="Disable SSL validation" checked={git.insecure} onChange={(e) => setGit({ ...git, insecure: e.target.checked })} />
                     </div>
                     <div className="note-box">
-                      <Icon name="clock" size={16} />
+                      <Icon name="clock" size={16} className="note-box-icon" />
                       <span>Scheduled source: Microcks re-scans the file on the global <span className="demo-mono">services.update.interval</span> (every hour by default) and resolves external references. <RouterLink to="/sources">Manage sources</RouterLink></span>
                     </div>
                     <div className="source-actions"><Button type="submit" variant="primary" loading={step === 'analyzing'}>Analyze repository</Button></div>
@@ -238,7 +238,7 @@ export default function ImportPage() {
               {tab !== 'direct' ? (
                 <div className="formats">
                   <span className="formats-label">Recognized formats</span>
-                  {RECOGNIZED_FORMATS.map((f) => <Chip key={f}>{f}</Chip>)}
+                  {RECOGNIZED_FORMATS.map((f) => <Chip key={f} className="format-chip">{f}</Chip>)}
                 </div>
               ) : null}
             </div>

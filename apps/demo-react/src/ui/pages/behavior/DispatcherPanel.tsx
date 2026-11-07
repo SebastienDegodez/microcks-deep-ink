@@ -91,7 +91,7 @@ export function DispatcherPanel({ draft, examples, pathParams, pathPrefix, edit 
           {CARDS.map((c) => (
             <label key={c.id} className="ex-radio-card" aria-disabled={c.disabled || undefined}>
               <input type="radio" name="dispatcher" value={c.id} checked={draft.dispatcher === c.id} disabled={c.disabled} onChange={() => pick(c.id)} />
-              <span className="ex-radio-card-title ex-row">{c.id}{draft.dispatcher === c.id ? <Icon name="check" size={14} /> : null}</span>
+              <span className="ex-radio-card-title ex-row">{c.id}{draft.dispatcher === c.id ? <Icon name="check" size={14} className="ex-radio-card-check" /> : null}</span>
               <span className="ex-small ex-secondary">{c.desc}</span>
               {c.tag ? <span className="ex-radio-card-tag">{c.tag}</span> : null}
             </label>

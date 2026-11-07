@@ -133,7 +133,7 @@ function ImportCard({ notify }: { notify: Notify }) {
       ) : (
         <div className="ad-snap-preview">
           <div className="ad-snap-filerow">
-            <Icon name="file-plain" size={15} />
+            <Icon name="file-plain" size={15} className="ad-snap-file-icon" />
             <span className="ad-snap-filename">{fileName}</span>
             {result ? null : <button type="button" id={`${inputId}-change`} className="ad-link-button" aria-label={`Change file ${fileName}`} onClick={clear}>Change</button>}
           </div>

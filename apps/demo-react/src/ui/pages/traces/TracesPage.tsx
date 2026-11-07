@@ -205,7 +205,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
           <div className="tr2-filters" role="group" aria-label="Trace filters">
             <Field label="Service" className="tr2-filter-service">
               {(c) => (
-                <Select {...c} value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
+                <Select {...c} className="tr2-select" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
                   <option value="">All services</option>
                   {serviceOptions.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -217,7 +217,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
             </Field>
             <Field label="Protocol" className="tr2-filter-narrow">
               {(c) => (
-                <Select {...c} value={kind} onChange={(e) => setKind(e.target.value as KindFilter)}>
+                <Select {...c} className="tr2-select" value={kind} onChange={(e) => setKind(e.target.value as KindFilter)}>
                   <option value="">All protocols</option>
                   <option value="REST">REST (HTTP)</option>
                   <option value="MCP">MCP tool calls</option>
@@ -227,7 +227,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
             </Field>
             <Field label="Status" className="tr2-filter-narrow">
               {(c) => (
-                <Select {...c} value={status} onChange={(e) => setStatus(e.target.value as typeof status)}>
+                <Select {...c} className="tr2-select" value={status} onChange={(e) => setStatus(e.target.value as typeof status)}>
                   <option value="">All statuses</option>
                   <option value="ok">2xx and delivered</option>
                   <option value="error">4xx no match</option>
@@ -356,7 +356,7 @@ function StatusText({ call, withLatency }: { call: TraceCall; withLatency?: bool
   const miss = isMiss(call);
   return (
     <span className="tr2-status" data-miss={miss ? '' : undefined}>
-      <Icon name={miss ? 'warning' : 'check'} size={13} />
+      <Icon name={miss ? 'warning' : 'check'} size={13} strokeWidth={2.6} className="tr2-status-icon" />
       <span className="demo-mono">
         {statusLabel(call)}
         {withLatency ? ` · ${call.ms} ms` : ''}
@@ -436,7 +436,7 @@ function CallDetail({ call: c, replayNote, onClose, onReplay }: { call: TraceCal
           </span>
         </div>
         <button type="button" className="tr2-close" aria-label="Close call detail" onClick={onClose}>
-          <Icon name="close" size={14} />
+          <Icon name="close" size={14} strokeWidth={2.2} />
         </button>
       </div>
 
@@ -496,7 +496,7 @@ function CallDetail({ call: c, replayNote, onClose, onReplay }: { call: TraceCal
       ) : null}
       {miss ? (
         <div role="note" className="tr2-note" data-variant="miss">
-          <Icon name="warning" size={14} />
+          <Icon name="warning" size={14} className="tr2-note-icon" />
           <span>
             No example of{' '}
             <span className="demo-mono">

@@ -7,7 +7,6 @@
 /* Sections: 16/600 heading, a 13px muted lead 4px under it, then 14px between blocks. */
 .behavior-layout .panel-header { align-items: baseline; }
 .behavior-layout .panel-actions { font-size: 13px; }
-.behavior-layout .panel-actions a { color: var(--link); text-decoration: none; }
 .behavior-layout .panel-actions a:hover { text-decoration: underline; }
 .behavior-layout .panel-body { display: flex; flex-direction: column; gap: 14px; }
 .behavior-layout .panel-lead { margin: -8px 0 0; font: 400 13px/1.5 var(--font-ui); color: var(--text-muted); }

@@ -25,7 +25,7 @@
 .op-detail-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; }
 .op-detail-title { display: flex; flex-direction: column; gap: 6px; min-width: 0; }
 .op-detail-title-row { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
-.op-detail-title-row > .method { min-width: 0; padding: 3px 7px; font-size: 12px; }
+.op-detail-title-row > .op-detail-method { min-width: 0; padding: 3px 7px; font-size: 12px; }
 .op-detail-title-row h2 { margin: 0; font: 600 18px/1.3 var(--font-mono); overflow-wrap: anywhere; }
 .op-detail-summary { font-size: 13px; color: var(--text-secondary); }
 .op-detail-tool { font-family: var(--font-mono); color: var(--link); }
@@ -41,7 +41,7 @@
 
 .op-mock { display: flex; flex-direction: column; gap: 10px; }
 .op-mock-url { display: flex; flex-wrap: wrap; gap: 8px; }
-.op-mock-url > .input { flex: 1 1 320px; min-width: 0; color: var(--link); font-size: 13px; }
+.op-mock-url > .op-mock-url-input { flex: 1 1 320px; min-width: 0; color: var(--link); font-size: 13px; }
 
 .dispatch-strip {
   display: flex;
@@ -59,7 +59,7 @@
 .dispatch-strip-value { font-family: var(--font-mono); color: var(--text); }
 .dispatch-strip-sep { width: 1px; height: 16px; background: var(--border); }
 .dispatch-strip-edit { margin-inline-start: auto; }
-.dispatch-strip-edit.button { min-width: 0; height: auto; min-height: 28px; padding: 5px 10px; background: transparent; font: 500 13px/1.25 var(--font-ui); }
+.dispatch-strip-edit { min-width: 0; height: auto; min-height: 28px; padding: 5px 10px; background: transparent; font: 500 13px/1.25 var(--font-ui); }
 
 .wf-usage { display: flex; flex-direction: column; gap: 10px; padding: 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 13px; line-height: 1.25; }
 .wf-usage-head { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 6px 12px; }
@@ -81,7 +81,6 @@
 }
 .wf-usage-step[data-on] { border-color: var(--action); background: var(--selected); color: var(--text); font-weight: 600; }
 .wf-usage-result { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--text-muted); }
-.wf-usage-result .icon { stroke-width: 2.2; }
 .wf-usage-result[data-tone='passed'] { color: var(--success); }
 .wf-usage-result[data-tone='failed'] { color: var(--danger); }
 .wf-usage-result[data-tone='blocked'] { color: var(--warning); }
@@ -191,8 +190,8 @@
 .endpoint-row-spec { font: 400 11px/1.4 var(--font-mono); color: var(--text-muted); }
 .endpoint-row-url { flex: 1 1 260px; min-width: 0; font: 400 13px/1.4 var(--font-mono); color: var(--link); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 /* Text-only Copy, as in the prototype (the copy icon would widen the button and wrap the URL). */
-.endpoint-row-copy.button { min-width: 0; height: auto; min-height: 28px; padding: 5px 10px; border: 1px solid var(--border-strong); border-radius: 4px; color: var(--text); font: 600 13px/1.25 var(--font-ui); }
-.endpoint-row-copy.button .icon { display: none; }
+.endpoint-row-copy { min-width: 0; height: auto; min-height: 28px; padding: 5px 10px; border: 1px solid var(--border-strong); border-radius: 4px; color: var(--text); font: 600 13px/1.25 var(--font-ui); }
+.endpoint-row-copy .icon { display: none; }
 
 .tool-card { display: flex; flex-wrap: wrap; gap: 10px 16px; padding: 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
 .tool-card-main { flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; gap: 4px; }
@@ -219,7 +218,7 @@
 .runs-card-title { display: flex; flex-direction: column; gap: 4px; min-width: 0; font-size: 13px; line-height: 1.3; color: var(--text-muted); }
 .runs-card-title h2 { color: var(--text); line-height: 1.25; }
 .runs-card-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
-.runs-card-actions > .button { min-height: 36px; height: 36px; font-size: 13px; }
+.runs-card-actions > .runs-card-all, .runs-card-actions > .runs-card-new { min-height: 36px; height: 36px; font-size: 13px; }
 
 .run-list { list-style: none; margin: 0; padding: 0; border: 1px solid var(--border); border-radius: 6px; overflow: hidden; }
 .run-list > li + li { border-top: 1px solid var(--border); }
@@ -227,7 +226,6 @@
 .run-list-row:hover { background: var(--raised); text-decoration: none; }
 .run-list-id { flex: none; width: 46px; font: 600 13px/1.4 var(--font-mono); }
 .run-list-status { flex: none; display: inline-flex; align-items: center; gap: 6px; min-width: 76px; font-size: 13px; font-weight: 600; }
-.run-list-status .icon { stroke-width: 2.2; }
 .run-list-status[data-tone='passed'] { color: var(--success); }
 .run-list-status[data-tone='failed'] { color: var(--danger); }
 .run-list-status[data-tone='running'] { color: var(--running); }

@@ -67,7 +67,7 @@
 }
 .constraints-table tbody tr:last-child td { border-bottom: 0; }
 .constraints-table .is-center { text-align: center; }
-.constraints-table .checkbox { width: 18px; height: 18px; margin-inline: auto; }
+.constraints-table .constraint-check { width: 18px; height: 18px; margin-inline: auto; }
 .cell-control {
   box-sizing: border-box;
   width: 100%;
