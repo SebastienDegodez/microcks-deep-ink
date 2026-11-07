@@ -22,6 +22,7 @@ import { createObserveUseCases } from '@/application/observe';
 import { createTestingUseCases } from '@/application/testing';
 import type { Clock } from '@/application/ports/shared';
 import type { UseCases } from '@/application/use-cases';
+import { createHttpCatalogAdapters } from '@/infrastructure/http/catalog';
 import { createHttpClient, defaultApiBaseUrl, type HttpClient } from '@/infrastructure/http/client';
 import { createHttpTestingAdapters } from '@/infrastructure/http/testing';
 import { createInMemoryAgentAdapters } from '@/infrastructure/in-memory/agents';
@@ -85,6 +86,7 @@ interface InMemoryAdapters {
  * A feature missing here falls back to memory until its `src/infrastructure/http/<feature>` lands.
  */
 const HTTP_ADAPTERS: { [F in Feature]?: (deps: HttpDeps) => InMemoryAdapters[F] } = {
+  catalog: createHttpCatalogAdapters,
   testing: createHttpTestingAdapters,
 };
 
