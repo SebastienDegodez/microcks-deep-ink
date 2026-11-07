@@ -25,6 +25,13 @@ private package rules do not describe the final npm delivery requested here.
   fixtures into a framework-neutral demo-core. Keep routing, rendering, lifecycle,
   subscriptions and dependency composition in each demo's own UI adapter.
   Neither component library depends on demo-core or demo pages.
+- Neither demo contains design-system component implementations, copied component
+  sources or local substitutes. Every reusable design-system component and its
+  styles belong to the corresponding library and are imported through its public
+  API. Demo code only owns page composition, application behavior and page-specific
+  layout; it must not hide reusable UI behind a page-local component or stylesheet.
+  Remove copied design-system sources after migration, rather than leaving unused
+  implementations in the demo.
 - Svelte components use native Svelte 5 conventions: typed `$props`, runes where
   reactive state is needed, snippets for composition, callback props for events,
   and lifecycle cleanup. Do not translate React hooks, JSX, ReactNode, contexts
@@ -82,6 +89,11 @@ against an unfinished prerequisite.
 - Boundary checks cover source imports, public declarations, production dependency
   graphs and packed artifacts. A Svelte-only consumer must build and run without
   installing React; a React-only consumer must not require Svelte.
+- Audit both demo source trees for local design-system implementations and styling,
+  including unused files and page-local substitutes. Require zero such
+  implementations: demo imports use the library's public API, never its private
+  source files. Enforce import boundaries in CI and review new reusable UI for
+  placement in the library, with a corresponding Storybook story.
 - Every reusable component is exported by its framework library and represented
   in its Storybook. Release tarballs contain the documented components, declarations,
   styles and required assets, with no demo code or unresolved workspace/link
