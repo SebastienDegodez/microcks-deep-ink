@@ -6,8 +6,10 @@
 { "component": "Kbd", "cases": [{ "name": "default", "props": { "className": "x" }, "children": "K" }] }
 ```
 
-- `component`: the export name (the same in React and Svelte); `props`: JSON props (React names, `className`);
-  `children`: optional text child.
+- `component`: the export name (the same in React and Svelte); a case may set its own `component` for another
+  export of the same item (`Textarea` in `input.cases.json`); `props`: JSON props (React names, `className`);
+  `children`: optional text child; `options`: `<option>` children instead (`[{ "label": "25", "value": "25", "disabled": true }]`,
+  `value` and `disabled` optional).
 - The `.html` files are generated, never edited: `pnpm -C react/packages/deep-ink parity` renders every case with
   `renderToStaticMarkup`. `pnpm -C react test` fails when a file is stale or orphaned.
 - `pnpm -C svelte test` renders the same cases with `svelte/server` and compares both after normalisation
