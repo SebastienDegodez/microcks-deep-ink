@@ -1,6 +1,7 @@
 import type { AnyHandler } from 'msw';
 import { createArazzoHandlers } from './arazzo';
 import { createCatalogHandlers } from './catalog';
+import { createCopilotHandlers } from './copilot';
 import { createGovernHandlers } from './govern';
 import { createImportingHandlers } from './importing';
 import { createObserveHandlers } from './observe';
@@ -11,6 +12,7 @@ export { API } from './api';
 /** Every feature's handlers (`./<feature>.ts`), shared by the browser worker and the vitest server. */
 export const handlers: AnyHandler[] = [
   ...createCatalogHandlers(),
+  ...createCopilotHandlers(),
   ...createImportingHandlers(),
   ...createTestingHandlers(),
   ...createObserveHandlers(),

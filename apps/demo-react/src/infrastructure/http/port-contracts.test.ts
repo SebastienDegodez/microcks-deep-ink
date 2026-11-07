@@ -19,11 +19,13 @@ import { describeObservePortContract, type ObserveOwnPorts } from '@/application
 import { describeTestingPortContract, type TestingOwnPorts } from '@/application/ports/__contracts__/testing.contract';
 import { createHttpArazzoAdapters } from '@/infrastructure/http/arazzo';
 import { createHttpCatalogAdapters } from '@/infrastructure/http/catalog';
+import { createHttpCopilotAdapters } from '@/infrastructure/http/copilot';
 import { createHttpGovernAdapters } from '@/infrastructure/http/govern';
 import { createHttpImportingAdapters } from '@/infrastructure/http/importing';
 import { createHttpObserveAdapters } from '@/infrastructure/http/observe';
 import { createArazzoHandlers } from '@/infrastructure/msw/handlers/arazzo';
 import { createCatalogHandlers } from '@/infrastructure/msw/handlers/catalog';
+import { createCopilotHandlers } from '@/infrastructure/msw/handlers/copilot';
 import { createObserveHandlers } from '@/infrastructure/msw/handlers/observe';
 import { createHttpTestingAdapters } from '@/infrastructure/http/testing';
 import { describePortContractOverHttp } from '@/infrastructure/msw/http.contract';
@@ -32,7 +34,7 @@ import { createImportingHandlers } from '@/infrastructure/msw/handlers/importing
 import { createTestingHandlers } from '@/infrastructure/msw/handlers/testing';
 
 describePortContractOverHttp<CatalogPorts>({ feature: 'catalog', contract: describeCatalogPortContract, http: createHttpCatalogAdapters, handlers: createCatalogHandlers });
-describePortContractOverHttp<CopilotOwnPorts>({ feature: 'copilot', contract: describeCopilotPortContract, http: undefined });
+describePortContractOverHttp<CopilotOwnPorts>({ feature: 'copilot', contract: describeCopilotPortContract, http: createHttpCopilotAdapters, handlers: createCopilotHandlers });
 describePortContractOverHttp<ImportingOwnPorts>({ feature: 'importing', contract: describeImportingPortContract, http: createHttpImportingAdapters, handlers: createImportingHandlers });
 describePortContractOverHttp<TestingOwnPorts>({ feature: 'testing', contract: describeTestingPortContract, http: createHttpTestingAdapters, handlers: createTestingHandlers });
 describePortContractOverHttp<ArazzoOwnPorts>({ feature: 'arazzo', contract: describeArazzoPortContract, http: createHttpArazzoAdapters, handlers: createArazzoHandlers });

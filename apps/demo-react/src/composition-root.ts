@@ -25,6 +25,7 @@ import type { UseCases } from '@/application/use-cases';
 import { createHttpArazzoAdapters } from '@/infrastructure/http/arazzo';
 import { createHttpCatalogAdapters } from '@/infrastructure/http/catalog';
 import { createHttpClient, defaultApiBaseUrl, type HttpClient } from '@/infrastructure/http/client';
+import { createHttpCopilotAdapters } from '@/infrastructure/http/copilot';
 import { createHttpGovernAdapters } from '@/infrastructure/http/govern';
 import { createHttpImportingAdapters } from '@/infrastructure/http/importing';
 import { createHttpObserveAdapters } from '@/infrastructure/http/observe';
@@ -91,6 +92,7 @@ interface InMemoryAdapters {
  */
 const HTTP_ADAPTERS: { [F in Feature]?: (deps: HttpDeps) => InMemoryAdapters[F] } = {
   catalog: createHttpCatalogAdapters,
+  copilot: createHttpCopilotAdapters,
   importing: createHttpImportingAdapters,
   testing: createHttpTestingAdapters,
   arazzo: createHttpArazzoAdapters,
