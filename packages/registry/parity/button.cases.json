@@ -1,0 +1,24 @@
+{
+  "component": "Button",
+  "cases": [
+    {"name": "default", "children": "Cancel"},
+    {"name": "variant-primary", "props": {"variant": "primary"}, "children": "Run test"},
+    {"name": "variant-outline", "props": {"variant": "outline"}, "children": "Cancel"},
+    {"name": "variant-ghost", "props": {"variant": "ghost"}, "children": "Skip"},
+    {"name": "variant-link-icon", "props": {"variant": "link", "icon": "copy"}, "children": "Copy"},
+    {"name": "variant-dashed-icon", "props": {"variant": "dashed", "icon": "plus"}, "children": "Add header"},
+    {"name": "variant-danger-confirm", "props": {"variant": "danger", "confirm": true}, "children": "Delete service"},
+    {"name": "size-sm-tone-danger", "props": {"variant": "ghost", "size": "sm", "tone": "danger", "icon": "trash"}, "children": "Delete"},
+    {"name": "size-compact", "props": {"size": "compact", "icon": "plus"}, "children": "Compact"},
+    {"name": "size-tile", "props": {"variant": "primary", "size": "tile", "icon": "download"}, "children": "Install"},
+    {"name": "size-lg-icon", "props": {"variant": "primary", "size": "lg", "icon": "play"}, "children": "Launch test"},
+    {"name": "icon-md", "props": {"icon": "upload"}, "children": "Import"},
+    {"name": "icon-only", "props": {"iconOnly": true, "icon": "trash", "aria-label": "Delete example"}},
+    {"name": "disabled", "props": {"disabled": true}, "children": "Disabled"},
+    {"name": "loading", "props": {"loading": true}, "children": "Running"},
+    {"name": "submit-and-attributes", "props": {"type": "submit", "className": "mine", "id": "b1", "name": "go", "aria-pressed": true}, "children": "Go"},
+    {"name": "link-default", "component": "ButtonLink", "props": {"href": "/services"}, "children": "Open"},
+    {"name": "link-primary-icon", "component": "ButtonLink", "props": {"href": "/import", "variant": "primary", "size": "lg", "icon": "upload", "className": "x"}, "children": "Import"},
+    {"name": "link-icon-only-loading", "component": "ButtonLink", "props": {"href": "/x", "iconOnly": true, "icon": "external", "aria-label": "Open", "loading": true, "confirm": true, "tone": "danger", "size": "sm"}}
+  ]
+}

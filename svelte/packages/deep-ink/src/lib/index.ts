@@ -1,4 +1,13 @@
 // Generated from packages/registry/items by scripts/gen-index.mjs. Do not edit.
+export { default as Button } from './button/Button.svelte';
+export { default as ButtonLink } from './button/ButtonLink.svelte';
+export * from './button/button.js';
+export { default as Callout } from './callout/Callout.svelte';
+export * from './callout/callout.js';
+export { default as Checkbox } from './checkbox/Checkbox.svelte';
+export { default as Radio } from './checkbox/Radio.svelte';
+export { default as RadioGroup } from './checkbox/RadioGroup.svelte';
+export * from './checkbox/checkbox.js';
 export { default as DescriptionList } from './description-list/DescriptionList.svelte';
 export * from './description-list/description-list.js';
 export { default as Disclosure } from './disclosure/Disclosure.svelte';
@@ -10,8 +19,11 @@ export { default as Input } from './input/Input.svelte';
 export { default as Textarea } from './input/Textarea.svelte';
 export { default as Kbd } from './kbd/Kbd.svelte';
 export { default as Link } from './link/Link.svelte';
+export { default as MethodTag } from './method-tag/MethodTag.svelte';
+export * from './method-tag/method-tag.js';
 export { default as Panel } from './panel/Panel.svelte';
 export { default as Meter } from './progress/Meter.svelte';
 export { default as Progress } from './progress/Progress.svelte';
 export { default as Select } from './select/Select.svelte';
 export { default as Skeleton } from './skeleton/Skeleton.svelte';
+export { default as Switch } from './switch/Switch.svelte';
