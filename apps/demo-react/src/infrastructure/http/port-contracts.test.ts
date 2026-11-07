@@ -18,10 +18,12 @@ import { describeImportingPortContract, type ImportingOwnPorts } from '@/applica
 import { describeObservePortContract, type ObserveOwnPorts } from '@/application/ports/__contracts__/observe.contract';
 import { describeTestingPortContract, type TestingOwnPorts } from '@/application/ports/__contracts__/testing.contract';
 import { createHttpCatalogAdapters } from '@/infrastructure/http/catalog';
+import { createHttpGovernAdapters } from '@/infrastructure/http/govern';
 import { createHttpImportingAdapters } from '@/infrastructure/http/importing';
 import { createCatalogHandlers } from '@/infrastructure/msw/handlers/catalog';
 import { createHttpTestingAdapters } from '@/infrastructure/http/testing';
 import { describePortContractOverHttp } from '@/infrastructure/msw/http.contract';
+import { createGovernHandlers } from '@/infrastructure/msw/handlers/govern';
 import { createImportingHandlers } from '@/infrastructure/msw/handlers/importing';
 import { createTestingHandlers } from '@/infrastructure/msw/handlers/testing';
 
@@ -31,5 +33,5 @@ describePortContractOverHttp<ImportingOwnPorts>({ feature: 'importing', contract
 describePortContractOverHttp<TestingOwnPorts>({ feature: 'testing', contract: describeTestingPortContract, http: createHttpTestingAdapters, handlers: createTestingHandlers });
 describePortContractOverHttp<ArazzoOwnPorts>({ feature: 'arazzo', contract: describeArazzoPortContract, http: undefined });
 describePortContractOverHttp<ObserveOwnPorts>({ feature: 'observe', contract: describeObservePortContract, http: undefined });
-describePortContractOverHttp<GovernOwnPorts>({ feature: 'govern', contract: describeGovernPortContract, http: undefined });
+describePortContractOverHttp<GovernOwnPorts>({ feature: 'govern', contract: describeGovernPortContract, http: createHttpGovernAdapters, handlers: createGovernHandlers });
 describePortContractOverHttp<AgentPorts>({ feature: 'agents', contract: describeAgentsPortContract, http: undefined });

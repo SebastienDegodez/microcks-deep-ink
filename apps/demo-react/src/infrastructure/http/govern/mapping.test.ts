@@ -1,0 +1,99 @@
+// @vitest-environment node
+import { describe, expect, it } from 'vitest';
+import type { AdminGroup, AdminUser, FeatureFlag } from '@/domain/govern';
+import { FixedClock } from '@/infrastructure/in-memory/shared';
+import { createInMemoryGovernAdapters } from '@/infrastructure/in-memory/govern';
+import {
+  estimateSnapshotSizeKb,
+  toAdminGroup,
+  toAdminUser,
+  toFeatureFlags,
+  toFeaturesConfig,
+  toKeycloakGroup,
+  toKeycloakUser,
+  toRole,
+  toSnapshot,
+} from './mapping';
+import type { KeycloakGroup, KeycloakUser, MicrocksFeaturesConfig } from './microcks';
+
+const roundTrip = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
+const seeded = () => createInMemoryGovernAdapters({ clock: new FixedClock() }).admin;
+
+describe('Keycloak users', () => {
+  it('maps a user to a Keycloak representation: names split, one realm role, group paths', () => {
+    const groups: AdminGroup[] = [{ id: 'pastry', name: '/microcks/manager/pastry', members: ['clara.nguyen'], pendingRequests: 0 }];
+    const user: AdminUser = { id: 'clara.nguyen', name: 'Clara Nguyen', email: 'clara@acme.io', role: 'manager', groups: ['pastry'], initials: 'CN' };
+    expect(toKeycloakUser(user, groups)).toEqual({
+      id: 'clara.nguyen', username: 'clara.nguyen', email: 'clara@acme.io', firstName: 'Clara', lastName: 'Nguyen',
+      realmRoles: ['manager'], groups: ['/microcks/manager/pastry'], demo: { initials: 'CN' },
+    });
+  });
+
+  it('reads a plain Keycloak user (no demo extension) with its strongest Microcks role', () => {
+    const plain: KeycloakUser = { id: 'u1', username: 'jdoe', email: 'j@acme.io', firstName: 'Jane', lastName: '', realmRoles: ['offline_access', 'user', 'manager'], groups: ['/microcks/manager/pets'] };
+    expect(toAdminUser(plain)).toEqual({ id: 'u1', name: 'Jane', email: 'j@acme.io', role: 'manager', groups: ['pets'] });
+    expect(toRole(['offline_access'])).toBe('user');
+    expect(toRole(['user', 'admin'])).toBe('admin');
+  });
+
+  it('round-trips every seeded user', async () => {
+    const admin = seeded();
+    const [users, groups] = await Promise.all([admin.users(), admin.groups()]);
+    expect(users.map((u) => toAdminUser(roundTrip(toKeycloakUser(u, groups))))).toEqual(users);
+  });
+});
+
+describe('Keycloak groups', () => {
+  it('maps a manager group: name is the last path segment, members and requests in the demo extension', () => {
+    const group: AdminGroup = { id: 'pets', name: '/microcks/manager/pets', members: ['tom.keller'], pendingRequests: 1, services: ['Petstore API 1.0.0'] };
+    const dto = toKeycloakGroup(group);
+    expect(dto).toEqual<KeycloakGroup>({
+      id: 'pets', name: 'pets', path: '/microcks/manager/pets', attributes: { services: ['Petstore API 1.0.0'] }, demo: { members: ['tom.keller'], pendingRequests: 1 },
+    });
+    expect(toAdminGroup(roundTrip(dto))).toEqual(group);
+  });
+
+  it('round-trips every seeded group', async () => {
+    const groups = await seeded().groups();
+    expect(groups.map((g) => toAdminGroup(roundTrip(toKeycloakGroup(g))))).toEqual(groups);
+  });
+});
+
+describe('snapshots', () => {
+  it('reads the exported file: operation count (numbers or lists) and estimated size', () => {
+    const file = { services: [{ id: 'a', operations: 3 }, { id: 'b', operations: [{}, {}] }, { id: 'c' }] };
+    const snapshot = toSnapshot(file, ['a', 'b', 'c']);
+    expect(snapshot).toMatchObject({ fileName: 'microcks-repository.json', serviceIds: ['a', 'b', 'c'], operations: 5, sizeKb: estimateSnapshotSizeKb(5) });
+    expect(JSON.parse(snapshot.json)).toEqual(file);
+  });
+
+  it('gives back the same snapshot as the in-memory export', async () => {
+    const expected = await seeded().snapshot(['pastry2', 'orders']);
+    expect(toSnapshot(JSON.parse(expected.json), ['pastry2', 'orders'])).toEqual(expected);
+  });
+});
+
+describe('features', () => {
+  it('serves each flag as a Microcks feature with a string `enabled`', async () => {
+    const config = toFeaturesConfig(await seeded().flags());
+    expect(config['repository-filter']).toEqual({ enabled: 'false' });
+    expect(config['microcks-hub']).toEqual({ enabled: 'true' });
+    expect(config.keycloak).toBeUndefined();
+  });
+
+  it('takes the state from Microcks (features and Keycloak) and the labels from the demo extension', () => {
+    const flags: FeatureFlag[] = [
+      { id: 'filter', label: 'Repository filter', description: '', enabled: false },
+      { id: 'keycloak', label: 'Keycloak', description: '', enabled: true },
+      { id: 'mcp', label: 'MCP', description: '', enabled: true },
+    ];
+    const config: MicrocksFeaturesConfig = { 'repository-filter': { enabled: 'true', 'label-key': 'domain' }, demo: { flags } };
+    expect(toFeatureFlags(config, { enabled: false }).map((f) => [f.id, f.enabled])).toEqual([['filter', true], ['keycloak', false], ['mcp', true]]);
+    expect(toFeatureFlags({ 'async-api': { enabled: 'true' } }, { enabled: true })).toEqual([]);
+  });
+
+  it('round-trips the seeded flags', async () => {
+    const flags = await seeded().flags();
+    expect(toFeatureFlags(roundTrip(toFeaturesConfig(flags)), { enabled: true })).toEqual(flags);
+  });
+});
