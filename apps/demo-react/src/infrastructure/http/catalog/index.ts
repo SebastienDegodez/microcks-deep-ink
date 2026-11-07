@@ -6,7 +6,10 @@
  * - `GET /services/{id}` and `GET /services/{id}?messages=true`: one service, its operations and their examples;
  * - `GET /services/labels`: the used labels;
  * - `POST /copilot/samples/{id}?operation=<operation name>` (AI Copilot, a JSON `Exchange[]`, 201 with no body):
- *   `addExamples()` of accepted AI proposals. Microcks tags them `sourceArtifact: 'AI Copilot'`, read back as accepted.
+ *   `addExamples()` of accepted AI proposals. The service (`GET /services/{id}`) gives the exchange type (an
+ *   `UnidirectionalEvent` for an event API) and the operation's dispatcher, from which the response's `dispatchCriteria`
+ *   is computed as Microcks does (it stores the exchanges as sent and serves a response by its criteria). Microcks tags
+ *   them `sourceArtifact: 'AI Copilot'`, read back as accepted.
  *
  * Demo-only endpoints (`/api/demo/...`, proposition v2 / not in Microcks API): test status, conformance and traffic
  * of the services (`demo/services`), operation extras, example review flags, the other example additions, the full behavior,
@@ -28,7 +31,7 @@ import type {
   MicrocksService,
   MicrocksServiceView,
 } from './dto';
-import { fromExchange, fromLabelsMap, fromOperationDto, fromServiceDto, toExchange } from './mapping';
+import { fromExchange, fromLabelsMap, fromOperationDto, fromServiceDto, isEventServiceType, toCopilotExchange, toExchange } from './mapping';
 
 export interface HttpCatalogDeps {
   http: HttpClient;
@@ -129,8 +132,13 @@ export function createHttpCatalogAdapters({ http }: HttpCatalogDeps): HttpCatalo
       const accepted = examples.filter(isAcceptedAiExample);
       const others = examples.filter((e) => !isAcceptedAiExample(e));
       if (accepted.length > 0) {
-        const operation = await microcksOperationName(id, opId);
-        await http.post(`copilot/samples/${enc(id)}`, accepted.map((e) => toExchange(e, operation)), { query: { operation } });
+        const [operation, read] = await Promise.all([
+          microcksOperationName(id, opId),
+          orUndefined(http.get<MicrocksService>(`services/${enc(id)}`)),
+        ]);
+        const dispatch = read?.operations?.find((o) => o.name === operation);
+        const target = { event: isEventServiceType(read?.type), dispatcher: dispatch?.dispatcher, dispatcherRules: dispatch?.dispatcherRules };
+        await http.post(`copilot/samples/${enc(id)}`, accepted.map((e) => toCopilotExchange(e, operation, target)), { query: { operation } });
       }
       if (others.length === 0) return;
       const body: DemoExampleInput[] = others.map((e) => ({

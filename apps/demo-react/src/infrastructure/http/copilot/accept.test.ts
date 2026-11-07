@@ -72,12 +72,72 @@ describe('accepting a Copilot proposal over http', () => {
     expect(body[0]).toMatchObject({
       type: 'reqRespPair',
       request: { name: 'Tarte Tatin', queryParameters: [{ name: 'name', value: 'Tarte Tatin' }] },
-      response: { name: 'Tarte Tatin', status: '200', mediaType: 'application/json' },
+      response: { name: 'Tarte Tatin', status: '200', mediaType: 'application/json', dispatchCriteria: '/name=Tarte Tatin' },
     });
     expect(seen.some((s) => s.method !== 'GET' && s.path.startsWith('demo/'))).toBe(false);
 
     const examples = await catalog.examples('pastry2', 'get-name');
     expect(examples.at(-1)).toMatchObject({ id: proposal!.id, name: 'Tarte Tatin', aiGenerated: true, reviewState: 'accepted' });
+  });
+
+  it('keeps the URI_PARAMS dispatch criteria of a list proposal (GET /pastries?size=)', async () => {
+    const { copilot } = useCases();
+    const [proposal] = await copilot.generate({ serviceId: 'pastry2', operationId: 'get-list', count: 1 });
+    await copilot.accept('pastry2', 'get-list', proposal!);
+    const post = seen.find((s) => s.method === 'POST')!;
+    expect(post).toMatchObject({ path: 'copilot/samples/pastry2', operation: 'GET /pastries', status: 201 });
+    expect((post.body as MicrocksRequestResponsePair[])[0]?.response.dispatchCriteria).toBe(`?size=${proposal!.request.params.size}`);
+  });
+
+  it('generates and accepts an event API proposal as a UnidirectionalEvent (orders, AsyncAPI)', async () => {
+    const { copilot, catalog } = useCases();
+    const [proposal] = await copilot.generate({ serviceId: 'orders', operationId: 'publish-order', count: 1 });
+    const generated = seen.find((s) => s.path === 'copilot/samples/orders')!;
+    expect(generated.operation).toBe('PUBLISH pastry-orders-events');
+    expect(JSON.parse(generated.responseText!)).toEqual([
+      expect.objectContaining({ type: 'unidirEvent', eventMessage: expect.objectContaining({ name: proposal!.name }) }),
+    ]);
+    seen.length = 0;
+    await copilot.accept('orders', 'publish-order', proposal!);
+    const post = seen.find((s) => s.method === 'POST')!;
+    expect(post).toMatchObject({ path: 'copilot/samples/orders', operation: 'PUBLISH pastry-orders-events', status: 201 });
+    expect(post.body).toEqual([
+      { type: 'unidirEvent', eventMessage: { id: proposal!.id, name: proposal!.name, operationId: 'PUBLISH pastry-orders-events', mediaType: 'application/json', content: proposal!.response.body } },
+    ]);
+    expect((await catalog.examples('orders', 'publish-order')).at(-1)).toMatchObject({ id: proposal!.id, aiGenerated: true, reviewState: 'accepted' });
+  });
+
+  it('accepts a Microcks-generated event (usersignedup: no ids, nulls) as the same UnidirectionalEvent', async () => {
+    const microcksEvent = {
+      type: 'unidirEvent',
+      eventMessage: { id: null, name: 'Laurent signed up', operationId: null, headers: null, mediaType: 'application/json', content: '{"id":"7d1b","fullName":"Laurent Broudoux"}', dispatchCriteria: null },
+    };
+    server.use(mswHttp.get('*/api/copilot/samples/usersignedup', () => HttpResponse.json([microcksEvent])));
+    const { copilot } = useCases();
+    const [proposal] = await copilot.generate({ serviceId: 'usersignedup', operationId: 'user-signedup', count: 1 });
+    expect(proposal).toMatchObject({ id: 'ai-user-signedup-laurent-signed-up', request: { params: {} }, response: { status: 200, body: microcksEvent.eventMessage.content } });
+    await copilot.accept('usersignedup', 'user-signedup', proposal!);
+    const post = seen.find((s) => s.method === 'POST')!;
+    expect(post.status).toBe(201);
+    expect(post.body).toEqual([
+      { type: 'unidirEvent', eventMessage: { id: proposal!.id, name: 'Laurent signed up', operationId: post.operation, mediaType: 'application/json', content: microcksEvent.eventMessage.content } },
+    ]);
+  });
+
+  it('the mock refuses what Microcks would store but never serve: a pair for an event API, a wrong criteria', async () => {
+    const post = (service: string, operation: string, body: unknown) =>
+      fetch(`http://demo.test/api/copilot/samples/${service}?operation=${encodeURIComponent(operation)}`, {
+        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body),
+      });
+    const pair = (criteria?: string) => ({
+      type: 'reqRespPair',
+      request: { name: 'Tarte Tatin', queryParameters: [{ name: 'name', value: 'Tarte Tatin' }] },
+      response: { name: 'Tarte Tatin', status: '200', content: '{}', ...(criteria !== undefined ? { dispatchCriteria: criteria } : {}) },
+    });
+    expect((await post('orders', 'PUBLISH pastry-orders-events', [pair()])).status).toBe(400);
+    expect((await post('pastry2', 'GET /pastries/{name}', [pair()])).status).toBe(400);
+    expect((await post('pastry2', 'GET /pastries/{name}', [pair('/name=Paris-Brest')])).status).toBe(400);
+    expect((await post('pastry2', 'GET /pastries/{name}', [pair('/name=Tarte Tatin')])).status).toBe(201);
   });
 
   it('answers 403 with no body for an unknown operation, as Microcks', async () => {

@@ -5,6 +5,7 @@ import { createInMemoryCopilotAdapters } from '@/infrastructure/in-memory/copilo
 import { NotFoundError } from '@/application/shared';
 import type { HttpClient, RequestOptions } from '@/infrastructure/http/client';
 import type { MicrocksSuggestedExchange } from './dto';
+import { dispatchCriteriaOf, toCopilotExchange } from '@/infrastructure/http/catalog/mapping';
 import { fromSuggestedExchanges, toSuggestedExchange } from './mapping';
 import { createHttpCopilotAdapters } from '.';
 
@@ -63,7 +64,7 @@ describe('suggested exchanges', () => {
   it('round-trips the in-memory proposals through the mock exchanges, ids included', async () => {
     const { copilot } = createInMemoryCopilotAdapters({ clock: new FixedClock() });
     const proposals = await copilot.suggestExamples('pastry2', 'patch-name', { count: 3 });
-    const exchanges = JSON.parse(JSON.stringify(proposals.map((p) => toSuggestedExchange(p, 'PATCH /pastries/{name}')))) as MicrocksSuggestedExchange[];
+    const exchanges = JSON.parse(JSON.stringify(proposals.map((p) => toSuggestedExchange(p, 'PATCH /pastries/{name}', { event: false, dispatcher: 'URI_PARTS', dispatcherRules: 'name' })))) as MicrocksSuggestedExchange[];
     expect(fromSuggestedExchanges(exchanges, 'patch-name')).toEqual(proposals);
   });
 });
@@ -106,5 +107,32 @@ describe('createHttpCopilotAdapters', () => {
     expect(calls).toHaveLength(0);
     expect(await copilot.workflowContext('pastry2', 'Tarte Tatin')).toBeUndefined();
     expect(calls.map((c) => c.path)).toEqual(['copilot/workflow-context/pastry2']);
+  });
+});
+
+describe('dispatchCriteriaOf (Microcks DispatchCriteriaHelper)', () => {
+  it('builds the criteria of the URI dispatchers, params sorted by name and filtered by the rule', () => {
+    expect(dispatchCriteriaOf({ dispatcher: 'URI_PARTS', dispatcherRules: 'name' }, { name: 'Tarte Tatin' })).toBe('/name=Tarte Tatin');
+    expect(dispatchCriteriaOf({ dispatcher: 'URI_PARTS', dispatcherRules: 'year && month' }, { year: '2026', month: '11', other: 'x' })).toBe('/month=11/year=2026');
+    expect(dispatchCriteriaOf({ dispatcher: 'URI_PARAMS', dispatcherRules: 'size' }, { size: 'S' })).toBe('?size=S');
+    expect(dispatchCriteriaOf({ dispatcher: 'URI_ELEMENTS', dispatcherRules: 'id ?? format' }, { format: 'json', id: '42' })).toBe('/id=42?format=json');
+    expect(dispatchCriteriaOf({ dispatcher: 'URI_PARAMS', dispatcherRules: 'page' }, { 'page-size': '10' })).toBe('');
+  });
+
+  it('uses the root dispatcher of a FALLBACK and nothing for the body/script dispatchers', () => {
+    const fallback = JSON.stringify({ dispatcher: 'URI_PARTS', dispatcherRules: 'name', fallback: 'Millefeuille' });
+    expect(dispatchCriteriaOf({ dispatcher: 'FALLBACK', dispatcherRules: fallback }, { name: 'Eclair' })).toBe('/name=Eclair');
+    expect(dispatchCriteriaOf({ dispatcher: 'JSON_BODY', dispatcherRules: '/orderId' }, { '/orderId': '1' })).toBeUndefined();
+    expect(dispatchCriteriaOf({}, { name: 'x' })).toBeUndefined();
+  });
+
+  it('serialises a proposal as Microcks would accept it: criteria on a pair, eventMessage for an event API', () => {
+    const example = { id: 'ai-1', name: 'Tarte Tatin', request: { params: { name: 'Tarte Tatin' } }, response: { status: 200, body: '{}' } };
+    expect(toCopilotExchange(example, 'GET /pastries/{name}', { event: false, dispatcher: 'URI_PARTS', dispatcherRules: 'name' })).toMatchObject({
+      type: 'reqRespPair', response: { dispatchCriteria: '/name=Tarte Tatin', status: '200' },
+    });
+    expect(toCopilotExchange({ ...example, request: { params: { '/orderId': '1' } } }, 'PUBLISH orders', { event: true })).toEqual({
+      type: 'unidirEvent', eventMessage: { id: 'ai-1', name: 'Tarte Tatin', operationId: 'PUBLISH orders', mediaType: 'application/json', content: '{}' },
+    });
   });
 });

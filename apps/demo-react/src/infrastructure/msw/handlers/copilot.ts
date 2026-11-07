@@ -2,7 +2,8 @@
  * Mock of the Copilot API (see `src/infrastructure/http/copilot/index.ts` for the endpoints): Microcks'
  * `GET /api/copilot/samples/{serviceId}?operation=` and the demo-only `GET /api/copilot/workflow-context/{serviceId}`
  * (proposition v2 / not in Microcks API). The handlers delegate to the in-memory Copilot (the same deterministic
- * proposals as memory mode) and serialise them into Microcks exchanges. Accepted proposals are stored by Microcks'
+ * proposals as memory mode) and serialise them into Microcks exchanges (events for an event API, request/response
+ * pairs with their `dispatchCriteria` otherwise). Accepted proposals are stored by Microcks'
  * `POST /api/copilot/samples/{serviceId}?operation=`, served by `./catalog.ts` (it owns the catalogue state); edits and
  * discards never reach the server.
  */
@@ -11,7 +12,7 @@ import { operationName } from '@/infrastructure/http/catalog/mapping';
 import type { MicrocksSuggestedExchange } from '@/infrastructure/http/copilot/dto';
 import { toSuggestedExchange } from '@/infrastructure/http/copilot/mapping';
 import { createInMemoryCopilotAdapters, type CopilotAdapters } from '@/infrastructure/in-memory/copilot';
-import { FixedClock, OPERATIONS } from '@/infrastructure/in-memory/shared';
+import { FixedClock, OPERATIONS, SERVICES } from '@/infrastructure/in-memory/shared';
 import { API } from './api';
 
 /** Microcks proposes two exchanges per call. */
@@ -35,7 +36,8 @@ export function createCopilotHandlers(adapters: CopilotAdapters = createInMemory
       const count = Number(url.searchParams.get('count') ?? MICROCKS_SAMPLE_COUNT);
       const hint = url.searchParams.get('hint') ?? undefined;
       const proposals = await copilot.suggestExamples(serviceId, operation.id, { count: Number.isInteger(count) ? count : MICROCKS_SAMPLE_COUNT, hint });
-      return HttpResponse.json<MicrocksSuggestedExchange[]>(proposals.map((p) => toSuggestedExchange(p, operationName(operation))));
+      const target = { event: SERVICES.find((s) => s.id === serviceId)?.protocol === 'EVENT', dispatcher: operation.dispatcher, dispatcherRules: operation.rule };
+      return HttpResponse.json<MicrocksSuggestedExchange[]>(proposals.map((p) => toSuggestedExchange(p, operationName(operation), target)));
     }),
     // Proposition v2 / not in Microcks API.
     http.get(`${API}/copilot/workflow-context/:id`, async ({ params, request }) => {

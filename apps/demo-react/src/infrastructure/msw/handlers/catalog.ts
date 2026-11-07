@@ -1,5 +1,5 @@
 import { http, HttpResponse, type AnyHandler } from 'msw';
-import type { Example, ServiceSummary } from '@/domain/shared';
+import type { Example, Operation, ServiceSummary } from '@/domain/shared';
 import type { Behavior } from '@/domain/catalog';
 import type { Clock } from '@/application/ports/shared';
 import type {
@@ -10,7 +10,7 @@ import type {
   MicrocksService,
   MicrocksServiceView,
 } from '@/infrastructure/http/catalog/dto';
-import { fromExchange, operationName, toExchange, toLabelsMap, toServiceDto, toServiceExtras } from '@/infrastructure/http/catalog/mapping';
+import { dispatchCriteriaOf, fromExchange, operationName, toExchange, toLabelsMap, toServiceDto, toServiceExtras } from '@/infrastructure/http/catalog/mapping';
 import { createInMemoryCatalogAdapters } from '@/infrastructure/in-memory/catalog';
 import { API } from './api';
 
@@ -60,6 +60,16 @@ export function createCatalogHandlers(deps: { clock?: Clock } = {}): AnyHandler[
 
   const id = (params: Record<string, unknown>, key = 'id') => String(params[key]);
 
+  /** Why Microcks would store this accepted exchange but never serve it (wrong exchange type, wrong criteria). */
+  function copilotExchangeProblem(exchange: MicrocksExchange, event: boolean, operation: Operation): string | undefined {
+    if (event) return exchange.type === 'unidirEvent' ? undefined : `An event operation expects unidirEvent exchanges, not ${exchange.type}`;
+    if (exchange.type !== 'reqRespPair') return `A request/response operation expects reqRespPair exchanges, not ${exchange.type}`;
+    const params = Object.fromEntries((exchange.request.queryParameters ?? []).map((p) => [p.name, p.value]));
+    const expected = dispatchCriteriaOf({ dispatcher: operation.dispatcher, dispatcherRules: operation.rule }, params);
+    const actual = exchange.response.dispatchCriteria;
+    return expected === undefined || actual === expected ? undefined : `dispatchCriteria ${JSON.stringify(actual ?? null)} would not be served: expected ${JSON.stringify(expected)}`;
+  }
+
   return [
     // --- Microcks API v1.15 -----------------------------------------------------------------------------------------
     http.get(`${API}/services/count`, async () => HttpResponse.json<MicrocksCounter>({ counter: (await catalog.list()).length })),
@@ -73,15 +83,17 @@ export function createCatalogHandlers(deps: { clock?: Clock } = {}): AnyHandler[
     }),
     // AI Copilot: stores accepted proposals (`AICopilotController#addSamplesSuggestions`). Microcks answers 201 with no
     // body, and 403 when the service or the operation is unknown. The exchanges read back as accepted AI examples.
+    // Stricter than Microcks (which stores what it gets): 400 for an exchange it would store but never serve.
     http.post(`${API}/copilot/samples/:id`, async ({ params, request }) => {
       const operationNameParam = new URL(request.url).searchParams.get('operation');
       if (!operationNameParam) return HttpResponse.json({ message: 'Required parameter operation is missing' }, { status: 400 });
       const operation = (await catalog.operations(id(params))).find((o) => operationName(o) === operationNameParam);
       if (!operation) return new HttpResponse(null, { status: 403 });
       const exchanges = (await request.json()) as MicrocksExchange[];
-      const accepted = exchanges
-        .filter((e) => e.type === 'reqRespPair' || e.type === 'unidirEvent')
-        .map((e) => fromExchange(e, { aiGenerated: true, reviewState: 'accepted' }));
+      const event = (await catalog.get(id(params)))?.protocol === 'EVENT';
+      const invalid = exchanges.map((e) => copilotExchangeProblem(e, event, operation)).find(Boolean);
+      if (invalid) return HttpResponse.json({ message: invalid }, { status: 400 });
+      const accepted = exchanges.map((e) => fromExchange(e, { aiGenerated: true, reviewState: 'accepted' }));
       await catalog.addExamples(id(params), operation.id, accepted);
       return new HttpResponse(null, { status: 201 });
     }),

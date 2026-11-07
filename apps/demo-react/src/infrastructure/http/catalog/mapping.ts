@@ -236,3 +236,94 @@ export function fromLabelsMap(labels: MicrocksLabelsMap, services: Pick<Microcks
   );
   return counts.filter((c) => c.count > 0).sort((a, b) => labelToString(a.label).localeCompare(labelToString(b.label)));
 }
+
+// --- AI Copilot exchanges -----------------------------------------------------------------------------------------
+
+/** Microcks service types whose operations exchange events (`UnidirectionalEvent`), not request/response pairs. */
+export const isEventServiceType = (type: MicrocksServiceType | undefined): boolean => type === 'EVENT' || type === 'GENERIC_EVENT';
+
+/** How Microcks dispatches an operation: `Operation.dispatcher` and `Operation.dispatcherRules`. */
+export interface DispatchTarget {
+  dispatcher?: string;
+  dispatcherRules?: string;
+}
+
+/** The root dispatcher of a `FALLBACK`/`PROXY_FALLBACK` operation (its rules are JSON), else the operation's own. */
+function rootDispatcher({ dispatcher, dispatcherRules = '' }: DispatchTarget): Required<DispatchTarget> {
+  if ((dispatcher === 'FALLBACK' || dispatcher === 'PROXY_FALLBACK') && dispatcherRules.trim().startsWith('{')) {
+    try {
+      const parsed = JSON.parse(dispatcherRules) as DispatchTarget;
+      return { dispatcher: parsed.dispatcher ?? '', dispatcherRules: parsed.dispatcherRules ?? '' };
+    } catch {
+      // Not JSON: dispatched as is.
+    }
+  }
+  return { dispatcher: dispatcher ?? '', dispatcherRules };
+}
+
+const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/** `DispatchCriteriaHelper.buildFrom{Parts,Params}Map`: the params named in the rule, sorted by name. */
+function criteriaOf(rule: string, params: Record<string, string>, separator: '/' | '?'): string {
+  return Object.keys(params)
+    .sort()
+    .filter((name) => new RegExp(`(^|[^-])\\b${escapeRegExp(name)}\\b([^-]|$)`).test(rule))
+    .map((name) => `${separator}${name}=${params[name]}`)
+    .join('');
+}
+
+/**
+ * The `dispatchCriteria` Microcks computes for a request (`AICopilotHelper`, `DispatchCriteriaHelper`): what the mock
+ * matches an incoming call against. `URI_PARTS` -> `/name=Tarte Tatin`, `URI_PARAMS` -> `?size=S`, `URI_ELEMENTS` ->
+ * both; undefined for the dispatchers that read the body or a script.
+ */
+export function dispatchCriteriaOf(target: DispatchTarget, params: Record<string, string>): string | undefined {
+  const { dispatcher, dispatcherRules } = rootDispatcher(target);
+  const [parts = '', query = ''] = dispatcherRules.includes('??') ? dispatcherRules.split('??') : [dispatcherRules, dispatcherRules];
+  switch (dispatcher) {
+    case 'URI_PARTS':
+      return criteriaOf(parts, params, '/');
+    case 'URI_PARAMS':
+      return criteriaOf(query, params, '?');
+    case 'URI_ELEMENTS':
+      return criteriaOf(parts, params, '/') + criteriaOf(query, params, '?');
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * An example as the exchange of Microcks' AI Copilot (`GET` answer, `POST /copilot/samples/{id}` body): an
+ * `UnidirectionalEvent` for an event operation, else a `RequestResponsePair` whose response carries the dispatch
+ * criteria Microcks serves it with. Ids are kept (the demo reads them back), the `AI Copilot` source is Microcks' job.
+ */
+export function toCopilotExchange(example: Example, operation: string, target: DispatchTarget & { event: boolean }): MicrocksExchange {
+  if (target.event) {
+    return {
+      type: 'unidirEvent',
+      eventMessage: { id: example.id, name: example.name, operationId: operation, mediaType: 'application/json', content: example.response.body },
+    };
+  }
+  const params = example.request.params;
+  const dispatchCriteria = dispatchCriteriaOf(target, params);
+  return {
+    type: 'reqRespPair',
+    request: {
+      id: `${example.id}-request`,
+      name: example.name,
+      operationId: operation,
+      responseId: example.id,
+      queryParameters: Object.entries(params).map(([name, value]) => ({ name, value })),
+      ...(example.request.body !== undefined ? { content: example.request.body } : {}),
+    },
+    response: {
+      id: example.id,
+      name: example.name,
+      operationId: operation,
+      status: String(example.response.status),
+      mediaType: 'application/json',
+      content: example.response.body,
+      ...(dispatchCriteria !== undefined ? { dispatchCriteria } : {}),
+    },
+  };
+}

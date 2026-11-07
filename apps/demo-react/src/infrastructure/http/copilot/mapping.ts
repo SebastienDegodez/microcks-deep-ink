@@ -3,14 +3,17 @@
  * examples, the mock API serialises the in-memory proposals into the same exchanges.
  */
 import type { Example } from '@/domain/shared';
-import { toExchange } from '@/infrastructure/http/catalog/mapping';
+import { toCopilotExchange, type DispatchTarget } from '@/infrastructure/http/catalog/mapping';
 import type { MicrocksSuggestedExchange } from './dto';
 
 const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
-/** A proposal as the exchange Microcks' Copilot answers (the demo keeps the ids so proposals stay stable). */
-export function toSuggestedExchange(example: Example, operation: string): MicrocksSuggestedExchange {
-  return toExchange(example, operation);
+/**
+ * A proposal as the exchange Microcks' Copilot answers: an event for an event API, else a request/response pair with
+ * its `dispatchCriteria` (the demo keeps the ids so proposals stay stable).
+ */
+export function toSuggestedExchange(example: Example, operation: string, target: DispatchTarget & { event: boolean }): MicrocksSuggestedExchange {
+  return toCopilotExchange(example, operation, target);
 }
 
 /** One suggested exchange as a pending AI example, or undefined for an exchange the demo does not show. */
