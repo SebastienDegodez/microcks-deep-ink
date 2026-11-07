@@ -3,7 +3,7 @@ import './service.css';
 import { useState, type HTMLAttributes } from 'react';
 import { Link as RouterLink, useNavigate, useParams, useSearchParams } from 'react-router';
 import { formatDay, formatHourMinute } from '@/domain/importing';
-import { buildSnippet, exampleUrlPath, paramLines, requestHead, type SnippetFormat, type WorkflowUsage } from '@/domain/catalog';
+import { buildSnippet, exampleUrl, paramLines, requestHead, type SnippetFormat, type WorkflowUsage } from '@/domain/catalog';
 import { labelToString, type Example, type Operation } from '@/domain/shared';
 import { PageHeader, useAnnounce, useClock, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge, Button, Callout, Chip, CodeBlock, CopyButton, Exchange, ExchangeCard, FactRow, Facts, Icon, type IconName, Input, LiveIndicator, Menu, MethodTag, OpPickList, SectionLabel, SplitPane, SplitPaneMain, SplitPaneSide, TabPanel, Tabs } from '@microcks/deep-ink';
@@ -147,7 +147,7 @@ function ApiServicePage() {
   const spec = currentOp && selected
     ? { method: currentOp.method, pathTemplate: currentOp.path, example: selected, mockBase: det.mockBase, mcpBase: det.mcp?.httpUrl ?? '', mcpTool: currentOp.mcpTool }
     : undefined;
-  const mockUrl = spec ? `${det.mockBase}${exampleUrlPath(spec.pathTemplate, spec.example.request.params)}` : det.mockBase;
+  const mockUrl = spec ? exampleUrl(spec) : det.mockBase;
   const allUsages = usages.data ?? [];
   const stepRefs = allUsages.flatMap((u) => (u.steps ?? []).filter((s) => s.catalogOperationId === currentOp?.id).map((s) => ({ ref: `${u.summary} › ${s.stepId}`, operationId: s.operationId })));
   const recentRuns = (runs.data ?? []).slice(0, RECENT_RUNS);
