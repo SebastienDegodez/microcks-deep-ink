@@ -1,0 +1,117 @@
+# Page CSS selectors (apps/demo-react/src/ui/pages) allowed to reach into registry classes.
+# Format: page-folder<TAB>selector, sorted (LC_ALL=C). Checked in CI by tools/fidelity/registry-selectors.py --check.
+# Adding a line: list the class in react/packages/deep-ink/PUBLIC-CSS.md in the same PR; the reviewer must justify it.
+admin	.ad-form .field
+admin	.ad-form .help
+admin	.ad-form .label
+admin	.ad-pending > .button
+admin	.ad-role-cell > .select
+admin	.ad-role-cell > .select:disabled
+admin	.ad-secrets-table .table
+admin	.ad-secrets-table .table td
+admin	.ad-secrets-table .table th
+admin	.ad-secrets-table .table thead th
+admin	.ad-secrets-table .table tr > :first-child
+admin	.ad-secrets-table .table tr > :last-child
+admin	.ad-users .table
+admin	.ad-users .table .table-empty
+admin	.ad-users .table td
+admin	.ad-users .table th
+admin	.ad-users .table th:nth-child(1)
+admin	.ad-users .table th:nth-child(2)
+admin	.ad-users .table th:nth-child(3)
+admin	.ad-users .table th:nth-child(4)
+admin	.ad-users .table th:nth-child(5)
+admin	.ad-users .table thead th
+admin	.ad-users .table tr > :first-child
+admin	.ad-users .table tr > :last-child
+agent	.agent-badge-link:hover .api-badge
+agent	.agent-copy-plain > .icon
+agent	.agent-test .demo-page-header-text:has(.run-meta)
+agent	.agent-test .exchange
+agent	.agent-test .exchange[data-highlight]
+agent	.agent-transport-sample .code-caption
+agent	.detail-block > .exchange + .exchange
+agent	.setup-modes .choice-description
+agent	.setup-modes > .choice
+agent	.setup-secret-warn .help
+agent	.transport-choices .choice-description
+agent	.transport-choices > .choice
+behavior	.behavior-layout .panel-actions
+behavior	.behavior-layout .panel-actions a:hover
+behavior	.behavior-layout .panel-body
+behavior	.behavior-layout .panel-header
+behavior	.dispatcher .panel-body
+behavior	.sim .panel-title
+behavior	.sim-send .choice
+behavior	.sim-send .choice-label
+behavior	.stateful .panel-body
+catalogue	.catalogue-badge-link:hover .api-badge-name
+catalogue	.catalogue-table .table
+catalogue	.catalogue-test:hover .status > span
+cockpit	.attn-kind-row .api-badge > span
+cockpit	.cockpit-stats .stat-card
+cockpit	.cockpit-stats .stat-card-body
+cockpit	.cockpit-stats .stat-card[data-empty] .stat-card-value
+cockpit	.stat-card-action > a:hover
+cockpit	.wall-tile-badge > .api-badge-name
+cockpit	.wall-tile-badge > .api-badge-type
+cockpit	.wall-tile-badge > .api-badge-version
+cockpit	.wall-tile-badge > .api-badge-version::before
+cockpit	.wall-tile-badge:has(> .api-badge-version)
+cockpit	.wall-tile-live .live-dot
+cockpit	.wall-tile-score .conformance[data-size='mini']
+cockpit	.wall-tile:hover .wall-tile-badge .api-badge-name
+copilot	.proposal-body .exchange-card > pre + pre
+copilot	.proposal-edit-actions > .button
+hub	.hb-detail-title > .tile-tag
+import	.source-box .tab
+import	.source-box .tablist
+import	.source-row > .choice
+service	.endpoint-row-copy .icon
+service	.service-ai-action .icon
+service	.service-page .exchange-card > pre[data-tone='secondary']
+sources	.delete-confirm .button
+sources	.scan-strip-counts .api-badge-name > .icon
+sources	.scan-strip-counts .api-badge[data-status='neutral'] .api-badge-name
+sources	.source-card-actions .button[data-size='sm']
+sources	.source-card-head > .choice
+sources	.source-facts > .facts-row > dd[data-mono]
+sources	.source-facts > .facts-row:last-child
+test-create	.tc-ci-code > figcaption .code-copy.button
+test-create	.tc-oauth-toggle .choice
+test-create	.tc-ops .choice > span:last-child
+test-create	.tc-ops .choice:not(:has(input:checked)) .tc-op-path
+tests	.tests-table .table-wrap
+traces	.tr2-filters .field
+traces	.tr2-filters .label
+usage	.index-card > .panel-body
+usage	.index-card > .panel-body
+usage	.treemap-card > .panel-body
+usage	.treemap-card > .panel-body
+usage	.us-chart-card > .panel-body
+usage	.us-heat-card > .panel-body
+usage	.us-heat-facts > .facts-row > dd
+usage	.us-table-card > .panel-body
+workflow	.wf-se-calls .table
+workflow	.wf-st-scroll .table
+workflow-run	.wfr-example-table .table
+workflow-run	.wfr-option .choice-description
+workflow-run	.wfr-option .choice-label
+workflow-run	.wfr-option > .choice
+workflow-run	.wfr-target-grid .choice-description
+workflow-run	.wfr-target-grid .choice-label
+workflow-run	.wfr-target-grid > .choice
+workflows	.wf-badge-link:hover .api-badge-name
+workflows	.wf-cell-run .button
+workflows	.wf-cell-run .button .icon
+workflows	.wf-name-badge > .api-badge-name
+workflows	.wf-onb-badge > .api-badge-name
+workflows	.wf-src-badge > .api-badge-name
+workflows	.wf-src-badge > .api-badge-type
+workflows	.wf-src-badge > .api-badge-version
+workflows	.wf-src-unlinked .chip-count
+workflows	.wf-src-unlinked .chip-label
+workflows	.wf-src-unlinked .chip-value
+workflows	.wf-src-unlinked .icon
+workflows	button.wf-src-unlinked[aria-pressed="true"] .icon

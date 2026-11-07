@@ -150,10 +150,18 @@ success/skipped. Squash, pinned on the checked head sha. PRs labelled `hold` are
 
 ```sh
 python3 -I tools/fidelity/registry-selectors.py .                    # counts per page folder and per registry class
-python3 -I tools/fidelity/registry-selectors.py . --check allow.tsv  # exit 1 on a selector not in the allowlist
+python3 -I tools/fidelity/registry-selectors.py . --check tools/fidelity/registry-selectors.allow  # exit 1, prints NEW lines
+python3 -I tools/fidelity/registry-selectors.py --self-test           # allowlist parser check
 ```
 
 Counts page CSS selectors (`apps/demo-react/src/ui/pages`) that reach into registry classes (`packages/registry/src/css`).
+
+CI (`root` job of `.github/workflows/storybooks.yml`, no build) runs `--check` against `registry-selectors.allow`
+(one `page-folder<TAB>selector` per line, sorted; `#` lines and blank lines are ignored). A failing check prints
+`NEW <folder>\t<selector>`. Prefer a component option or a page-owned class. If the selector really is needed, in the
+same PR: add the exact `NEW` line to `registry-selectors.allow` (keep it sorted) and list the class in
+`react/packages/deep-ink/PUBLIC-CSS.md` (it becomes public API). The reviewer must justify the addition in the review.
+When a selector is removed, drop its line too (stale lines do not fail the check).
 
 ## Known flaky
 
