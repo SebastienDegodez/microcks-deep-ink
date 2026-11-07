@@ -1,6 +1,7 @@
 // Every component of the batch forwards any React-named handler and any data-* / aria-* attribute to the same element
 // as React: the root, the <input> of Checkbox, Radio and Switch, the <button> of CopyButton and ThemeToggle, the <dialog>
-// (or inline <div>) of CommandBar, the <figure> of CodeBlock (its <pre> with frame="none"). Segmented, Tabs, TabPanel,
+// (or inline <div>) of CommandBar, the <figure> of CodeBlock (its <pre> with frame="none"), the root of the microcks
+// leaves (ExchangeCard, Exchange, RunMeta, RunOrigin, ProjectionPill, RunnerLog, Tile, TileGrid). Segmented, Tabs, TabPanel,
 // AppShell, Dialog, Menu and DataTable spread nothing in React, so they forward nothing.
 import { fireEvent, render } from '@testing-library/svelte';
 import { createRawSnippet, type Component } from 'svelte';
@@ -15,14 +16,22 @@ import CodeBlock from './code-block/CodeBlock.svelte';
 import CommandBar from './command-bar/CommandBar.svelte';
 import CopyButton from './copy-button/CopyButton.svelte';
 import EmptyState from './empty-state/EmptyState.svelte';
+import Exchange from './exchange-card/Exchange.svelte';
+import ExchangeCard from './exchange-card/ExchangeCard.svelte';
 import Radio from './checkbox/Radio.svelte';
 import MethodTag from './method-tag/MethodTag.svelte';
+import ProjectionPill from './projection-pill/ProjectionPill.svelte';
 import { reactEvents } from './react-events';
+import RunMeta from './run-meta/RunMeta.svelte';
+import RunOrigin from './run-origin/RunOrigin.svelte';
+import RunnerLog from './runner-log/RunnerLog.svelte';
 import Segmented from './segmented/Segmented.svelte';
 import Switch from './switch/Switch.svelte';
 import TabPanel from './tabs/TabPanel.svelte';
 import Tabs from './tabs/Tabs.svelte';
 import ThemeToggle from './theme-toggle/ThemeToggle.svelte';
+import Tile from './tile/Tile.svelte';
+import TileGrid from './tile/TileGrid.svelte';
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const cases: Array<[string, Component<any>, Record<string, unknown>, string]> = [
@@ -39,6 +48,14 @@ const cases: Array<[string, Component<any>, Record<string, unknown>, string]> = 
   ['CommandBar modal', CommandBar, { items: [] }, 'dialog'],
   ['CodeBlock', CodeBlock, { code: 'x' }, 'figure'],
   ['CodeBlock frame="none"', CodeBlock, { code: 'x', frame: 'none' }, 'pre'],
+  ['ExchangeCard', ExchangeCard, { title: 'T', label: 'L', blocks: [] }, 'section'],
+  ['Exchange', Exchange, { children: ['a', 'b'] }, '.exchange'],
+  ['RunMeta', RunMeta, { items: [] }, 'dl'],
+  ['RunOrigin', RunOrigin, { origin: 'ui' }, '.run-origin'],
+  ['ProjectionPill', ProjectionPill, {}, '.projection-pill'],
+  ['RunnerLog', RunnerLog, { lines: [] }, 'section'],
+  ['Tile', Tile, { title: 'T' }, 'article'],
+  ['TileGrid', TileGrid, { label: 'L' }, 'section'],
 ];
 
 describe('React-named handlers and attributes', () => {
