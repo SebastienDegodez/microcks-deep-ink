@@ -1,0 +1,17 @@
+{
+  "component": "Callout",
+  "cases": [
+    {"name": "default", "children": "3 operations and 9 examples were created."},
+    {"name": "info-title", "props": {"tone": "info", "title": "Contract imported"}, "children": "3 operations and 9 examples were created."},
+    {"name": "success-title", "props": {"tone": "success", "title": "Test passed"}, "children": "All 12 operations conform."},
+    {"name": "warning", "props": {"tone": "warning"}, "children": "The response has a field the contract does not declare."},
+    {"name": "danger-assertive", "props": {"tone": "danger", "title": "Import failed", "live": "assertive"}, "children": "The file is not valid OpenAPI."},
+    {"name": "success-polite", "props": {"tone": "success", "title": "Saved", "live": "polite"}, "children": "The service settings were saved."},
+    {"name": "ai-default-title-actions", "props": {"tone": "ai", "actions": "Review"}, "children": "3 examples were suggested."},
+    {"name": "ai-outline-empty-title", "props": {"tone": "ai", "variant": "outline", "title": ""}, "children": "Proposed by AI."},
+    {"name": "outline-sm", "props": {"tone": "warning", "variant": "outline", "size": "sm"}, "children": "The token shown here is masked."},
+    {"name": "outline-role-override", "props": {"variant": "outline", "role": "region", "aria-label": "Note"}, "children": "Read me."},
+    {"name": "title-only", "props": {"tone": "danger", "title": "Test failed", "variant": "filled", "size": "md", "live": false, "className": "wide", "id": "c1"}},
+    {"name": "labelledby-kept-without-title", "props": {"aria-labelledby": "h1"}, "children": "Text"}
+  ]
+}
