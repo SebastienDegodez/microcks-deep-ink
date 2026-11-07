@@ -1,6 +1,6 @@
 // Every component of the batch forwards any React-named handler and any data-* / aria-* attribute to the same element
 // as React: the root, the <input> of Checkbox, Radio and Switch, the <button> of CopyButton and ThemeToggle, the <dialog>
-// (or inline <div>) of CommandBar. Segmented, Tabs, TabPanel and AppShell spread nothing in React, so they forward nothing.
+// (or inline <div>) of CommandBar. Segmented, Tabs, TabPanel, AppShell and SummaryStripSep spread nothing in React, so they forward nothing.
 import { fireEvent, render } from '@testing-library/svelte';
 import { createRawSnippet, type Component } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
@@ -13,10 +13,21 @@ import Chip from './chip/Chip.svelte';
 import CommandBar from './command-bar/CommandBar.svelte';
 import CopyButton from './copy-button/CopyButton.svelte';
 import EmptyState from './empty-state/EmptyState.svelte';
+import FactRow from './facts/FactRow.svelte';
+import Facts from './facts/Facts.svelte';
 import Radio from './checkbox/Radio.svelte';
 import MethodTag from './method-tag/MethodTag.svelte';
 import { reactEvents } from './react-events';
+import SectionLabel from './section-label/SectionLabel.svelte';
 import Segmented from './segmented/Segmented.svelte';
+import SplitPane from './split-pane/SplitPane.svelte';
+import SplitPaneMain from './split-pane/SplitPaneMain.svelte';
+import SplitPaneSide from './split-pane/SplitPaneSide.svelte';
+import StatCard from './stat-card/StatCard.svelte';
+import StatGrid from './stat-card/StatGrid.svelte';
+import Stepper from './stepper/Stepper.svelte';
+import SummaryStrip from './summary-strip/SummaryStrip.svelte';
+import SummaryStripSep from './summary-strip/SummaryStripSep.svelte';
 import Switch from './switch/Switch.svelte';
 import TabPanel from './tabs/TabPanel.svelte';
 import Tabs from './tabs/Tabs.svelte';
@@ -35,6 +46,16 @@ const cases: Array<[string, Component<any>, Record<string, unknown>, string]> = 
   ['Chip toggle', Chip, { pressed: false, children: 'C' }, 'button'],
   ['CommandBar inline', CommandBar, { inline: true, items: [] }, '.command-bar'],
   ['CommandBar modal', CommandBar, { items: [] }, 'dialog'],
+  ['SectionLabel', SectionLabel, { as: 'h3' }, 'h3'],
+  ['StatCard', StatCard, { title: 'T', value: '1' }, 'section'],
+  ['StatGrid', StatGrid, { label: 'L' }, 'section'],
+  ['SummaryStrip', SummaryStrip, {}, 'div'],
+  ['SplitPane', SplitPane, {}, 'div'],
+  ['SplitPaneSide', SplitPaneSide, { as: 'nav' }, 'nav'],
+  ['SplitPaneMain', SplitPaneMain, { as: 'section' }, 'section'],
+  ['Stepper', Stepper, { steps: [] }, 'ol'],
+  ['Facts', Facts, {}, 'dl'],
+  ['FactRow', FactRow, { term: 'T' }, 'div'],
 ];
 
 describe('React-named handlers and attributes', () => {
@@ -106,6 +127,7 @@ describe('React-named handlers and attributes', () => {
     ['Segmented', Segmented, { label: 'L', value: 'a', options: [{ id: 'a', label: 'A' }] }],
     ['Tabs', Tabs, { label: 'L', value: 'a', items: [{ id: 'a', label: 'A' }] }],
     ['TabPanel', TabPanel, { id: 'a', value: 'a' }],
+    ['SummaryStripSep', SummaryStripSep, {}],
   ] as const)('%s forwards nothing, as React', (_, C, props) => {
     const onClick = vi.fn();
     const { container } = render(C as Component<Record<string, unknown>>, { props: { ...props, onClick, 'data-testid': 'x' } });

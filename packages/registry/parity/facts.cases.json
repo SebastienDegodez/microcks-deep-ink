@@ -1,0 +1,21 @@
+{
+  "component": "Facts",
+  "cases": [
+    {"name": "empty"},
+    {"name": "rows-sub-mono", "props": {"termWidth": "150px", "items": [{"term": "Origin", "value": "GitLab repository"}, {"term": "Artifact", "value": "Primary · OPEN_API_SPEC", "sub": "Creates or updates Services", "mono": true}]}},
+    {"name": "tones", "props": {"items": [{"term": "A", "value": "ok", "tone": "success"}, {"term": "B", "value": "slow", "tone": "warning"}, {"term": "C", "value": "Failed", "tone": "danger"}, {"term": "D", "value": "none", "tone": "muted"}, {"term": "E", "value": 3, "id": "e"}]}},
+    {"name": "columns-strong", "props": {"layout": "columns", "columns": 3, "strong": true, "items": [{"term": "Duration", "value": "1.84 s", "mono": true}, {"term": "Result", "value": "Failed", "tone": "danger"}]}},
+    {"name": "columns-sm", "props": {"layout": "columns", "size": "sm", "items": [{"term": "Client", "value": "microcks-arazzo"}]}},
+    {"name": "inline-surface-gap", "props": {"layout": "inline", "boxed": "surface", "gap": "9px 12px", "items": [{"term": "Workflow", "value": "restock-pastry"}]}},
+    {"name": "boxed-true-secondary-relaxed", "props": {"layout": "inline", "boxed": true, "values": "secondary", "lineHeight": "relaxed", "termWidth": "120px", "items": [{"term": "Method", "value": "tasks/cancel", "mono": true}, {"term": "Retries", "value": "none", "mono": true, "tone": "muted"}]}},
+    {"name": "boxed-false", "props": {"boxed": false, "strong": false, "mono": false, "items": [{"term": "Version", "value": "2.0"}]}},
+    {"name": "lg", "props": {"size": "lg", "termWidth": "150px", "items": [{"term": "Mock URL", "value": "https://microcks.acme.io/rest/API+Pastry/2.0", "mono": true}]}},
+    {"name": "request-body", "props": {"layout": "inline", "boxed": "compact", "mono": true, "wrap": "pre", "termWidth": "32ch", "gap": "2px 0", "items": [{"term": "pastryName", "value": "Eclair Cafe"}, {"term": "note", "value": "Restock before 7am.\nKeep the cold chain."}]}},
+    {"name": "explicit-defaults", "props": {"layout": "rows", "size": "md", "values": "text", "lineHeight": "inherit", "wrap": "normal", "items": [{"term": "Owner", "value": "MA"}]}},
+    {"name": "children-after-items", "props": {"items": [{"term": "Owner", "value": "MA"}]}, "children": "Extra"},
+    {"name": "class-and-attributes", "props": {"className": "wide", "id": "f", "data-testid": "facts", "aria-label": "Facts"}},
+    {"name": "row", "component": "FactRow", "props": {"term": "Statistics"}, "children": "Usage details"},
+    {"name": "row-sub-mono-tone", "component": "FactRow", "props": {"term": "Version", "sub": "latest", "mono": true, "tone": "success", "className": "x", "data-testid": "r"}, "children": "2.0"},
+    {"name": "row-empty-sub", "component": "FactRow", "props": {"term": "T", "sub": ""}, "children": "v"}
+  ]
+}
