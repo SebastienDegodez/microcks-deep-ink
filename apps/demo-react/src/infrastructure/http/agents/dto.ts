@@ -29,13 +29,23 @@ export type A2aTaskStateWire =
   | 'TASK_STATE_REJECTED'
   | 'TASK_STATE_CANCELED';
 
-/** `Part`: one of `text`, `data` or `file` (A2A 0.x also sends a `kind` discriminator). */
+/**
+ * `Part` (A2A 1.0): exactly one of `text`, `raw` (file bytes, base64 in JSON), `url` (file location) or `data`, with
+ * optional `filename` and `mediaType` siblings. A2A 0.x payloads (`kind` discriminator, nested `file` with `bytes` or
+ * `uri`) are read too and normalised to the 1.0 form.
+ */
 export interface A2aPart {
-  kind?: string;
   text?: string;
+  raw?: string;
+  url?: string;
   data?: unknown;
-  file?: { name?: string; mediaType?: string; uri?: string };
+  filename?: string;
+  mediaType?: string;
   metadata?: Record<string, unknown>;
+  /** A2A 0.x. */
+  kind?: string;
+  /** A2A 0.x file part. */
+  file?: { name?: string; mimeType?: string; mediaType?: string; uri?: string; bytes?: string };
 }
 
 /** Proposition v2 / not in Microcks API: `metadata.microcks` of a history message. */

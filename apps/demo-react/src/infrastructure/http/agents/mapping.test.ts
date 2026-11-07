@@ -13,6 +13,7 @@ import {
   fromA2aTask,
   fromA2aTestRequest,
   fromTaskStateWire,
+  partText,
   toA2aConformance,
   toA2aTask,
   toA2aTestRequest,
@@ -51,6 +52,37 @@ describe('A2A tasks', () => {
       history: [{ role: 'user', text: 'Where is my order? · {"orderId":"ord-1"}' }, { role: 'agent', text: 'Asking the oven.' }],
       artifacts: [{ name: 'recommendation', id: 'art-1', body: '{\n  "name": "Eclair",\n  "price": 2.5\n}' }],
     });
+  });
+
+  it('keeps A2A 1.0 file parts (url and raw) in history and artifacts, without demo metadata', () => {
+    const task: A2aTask = {
+      id: 'task-f', contextId: 'ctx-f', status: { state: 'TASK_STATE_COMPLETED', timestamp: '2026-11-03T09:10:04Z' },
+      history: [
+        { messageId: 'm1', role: 'ROLE_USER', parts: [{ text: 'Here is my receipt' }, { raw: 'aGVsbG8gd29ybGQ=', filename: 'receipt.txt', mediaType: 'text/plain' }] },
+        { messageId: 'm2', role: 'ROLE_AGENT', parts: [{ url: 'https://agent.example/report.pdf', filename: 'report.pdf', mediaType: 'application/pdf' }] },
+      ],
+      artifacts: [
+        { artifactId: 'art-url', name: 'report', parts: [{ url: 'https://agent.example/report.pdf', filename: 'report.pdf', mediaType: 'application/pdf' }] },
+        { artifactId: 'art-raw', name: 'receipt', parts: [{ raw: 'aGVsbG8gd29ybGQ=', filename: 'receipt.txt', mediaType: 'text/plain' }] },
+      ],
+    };
+    const mapped = fromA2aTask(task, NOW);
+    expect(mapped.history).toEqual([
+      { role: 'user', text: 'Here is my receipt · [file receipt.txt · text/plain · 11 bytes inline]' },
+      { role: 'agent', text: '[file report.pdf · application/pdf · https://agent.example/report.pdf]' },
+    ]);
+    expect(JSON.parse(mapped.artifacts[0]!.body)).toEqual([{ url: 'https://agent.example/report.pdf', filename: 'report.pdf', mediaType: 'application/pdf' }]);
+    expect(JSON.parse(mapped.artifacts[1]!.body)).toEqual([{ raw: 'aGVsbG8gd29ybGQ=', filename: 'receipt.txt', mediaType: 'text/plain' }]);
+    // Written back, the artifact keeps its file parts.
+    expect(toA2aTask(mapped).artifacts?.[0]?.parts).toEqual(task.artifacts?.[0]?.parts);
+  });
+
+  it('normalises A2A 0.x file parts and marks parts it cannot read instead of dropping them', () => {
+    expect(partText({ kind: 'file', file: { name: 'menu.png', mimeType: 'image/png', uri: 'https://agent.example/menu.png' } })).toBe('[file menu.png · image/png · https://agent.example/menu.png]');
+    expect(partText({ kind: 'file', file: { name: 'a.bin', bytes: 'AAEC' } })).toBe('[file a.bin · 3 bytes inline]');
+    expect(partText({ mediaType: 'text/plain' })).toBe('[unsupported part {"mediaType":"text/plain"}]');
+    const legacy = fromA2aTask({ id: 't', artifacts: [{ artifactId: 'a', parts: [{ kind: 'file', file: { name: 'menu.png', mimeType: 'image/png', uri: 'https://agent.example/menu.png' } }] }] }, NOW);
+    expect(JSON.parse(legacy.artifacts[0]!.body)).toEqual([{ url: 'https://agent.example/menu.png', filename: 'menu.png', mediaType: 'image/png' }]);
   });
 
   it('reads the A2A 0.x state names and a bare task', () => {

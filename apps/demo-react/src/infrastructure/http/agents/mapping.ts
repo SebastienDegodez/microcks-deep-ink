@@ -52,13 +52,46 @@ const BINDING_TO_TRANSPORT = { JSONRPC: 'JSON-RPC', 'HTTP+JSON': 'HTTP+JSON', GR
 const TRANSPORT_TO_BINDING = { 'JSON-RPC': 'JSONRPC', 'HTTP+JSON': 'HTTP+JSON', gRPC: 'GRPC' } as const satisfies Record<AgentTask['transport'], AgentTransport['binding']>;
 const BINDING_TO_ID: Record<AgentTransport['binding'], TransportId> = { JSONRPC: 'jsonrpc', 'HTTP+JSON': 'http', GRPC: 'grpc' };
 
-const partText = (part: A2aPart): string => (part.text !== undefined ? part.text : part.data !== undefined ? JSON.stringify(part.data) : (part.file?.name ?? part.file?.uri ?? ''));
+/** An A2A 0.x part (`kind`, nested `file`) in the A2A 1.0 form; a 1.0 part is returned as is, without its metadata. */
+export function normalizePart(part: A2aPart): A2aPart {
+  const { kind, file, metadata, ...rest } = part;
+  void kind;
+  void metadata;
+  if (!file) return rest;
+  const filename = rest.filename ?? file.name;
+  const mediaType = rest.mediaType ?? file.mediaType ?? file.mimeType;
+  return {
+    ...(file.bytes !== undefined ? { raw: file.bytes } : file.uri !== undefined ? { url: file.uri } : {}),
+    ...rest,
+    ...(filename !== undefined ? { filename } : {}),
+    ...(mediaType !== undefined ? { mediaType } : {}),
+  };
+}
 
-/** The parts as the demo prints them: one data part is its pretty JSON, anything else the pretty parts. */
+/** Approximate decoded size of base64 content. */
+const base64Bytes = (raw: string): number => Math.floor((raw.replace(/[\s=]/g, '').length * 3) / 4);
+
+/**
+ * One part as a line of a history message. The domain message is text: a file part is written out explicitly
+ * (`[file report.pdf · application/pdf · https://…]`, inline bytes by their size), a part with no known content as
+ * `[unsupported part …]`, so nothing is dropped silently.
+ */
+export function partText(input: A2aPart): string {
+  const part = normalizePart(input);
+  if (part.text !== undefined) return part.text;
+  if (part.data !== undefined) return JSON.stringify(part.data);
+  const describe = (location: string) => `[file ${[part.filename, part.mediaType, location].filter(Boolean).join(' · ')}]`;
+  if (part.url !== undefined) return describe(part.url);
+  if (part.raw !== undefined) return describe(`${base64Bytes(part.raw)} bytes inline`);
+  return `[unsupported part ${JSON.stringify(part)}]`;
+}
+
+/** The parts as the demo prints them: one data part is its pretty JSON, anything else the pretty parts (files included). */
 function partsBody(parts: readonly A2aPart[]): string {
-  const [only] = parts;
-  if (parts.length === 1 && only?.data !== undefined) return JSON.stringify(only.data, null, 2);
-  return JSON.stringify(parts.map((p) => (p.text !== undefined ? { text: p.text } : p.data !== undefined ? { data: p.data } : { file: p.file })), null, 2);
+  const normal = parts.map(normalizePart);
+  const [only] = normal;
+  if (normal.length === 1 && only?.data !== undefined) return JSON.stringify(only.data, null, 2);
+  return JSON.stringify(normal, null, 2);
 }
 
 function fromMessage(message: A2aMessage): TaskMessage {
