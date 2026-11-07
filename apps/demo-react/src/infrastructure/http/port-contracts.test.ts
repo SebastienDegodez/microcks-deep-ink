@@ -17,13 +17,15 @@ import { describeGovernPortContract, type GovernOwnPorts } from '@/application/p
 import { describeImportingPortContract, type ImportingOwnPorts } from '@/application/ports/__contracts__/importing.contract';
 import { describeObservePortContract, type ObserveOwnPorts } from '@/application/ports/__contracts__/observe.contract';
 import { describeTestingPortContract, type TestingOwnPorts } from '@/application/ports/__contracts__/testing.contract';
+import { createHttpCatalogAdapters } from '@/infrastructure/http/catalog';
 import { createHttpImportingAdapters } from '@/infrastructure/http/importing';
+import { createCatalogHandlers } from '@/infrastructure/msw/handlers/catalog';
 import { createHttpTestingAdapters } from '@/infrastructure/http/testing';
 import { describePortContractOverHttp } from '@/infrastructure/msw/http.contract';
 import { createImportingHandlers } from '@/infrastructure/msw/handlers/importing';
 import { createTestingHandlers } from '@/infrastructure/msw/handlers/testing';
 
-describePortContractOverHttp<CatalogPorts>({ feature: 'catalog', contract: describeCatalogPortContract, http: undefined });
+describePortContractOverHttp<CatalogPorts>({ feature: 'catalog', contract: describeCatalogPortContract, http: createHttpCatalogAdapters, handlers: createCatalogHandlers });
 describePortContractOverHttp<CopilotOwnPorts>({ feature: 'copilot', contract: describeCopilotPortContract, http: undefined });
 describePortContractOverHttp<ImportingOwnPorts>({ feature: 'importing', contract: describeImportingPortContract, http: createHttpImportingAdapters, handlers: createImportingHandlers });
 describePortContractOverHttp<TestingOwnPorts>({ feature: 'testing', contract: describeTestingPortContract, http: createHttpTestingAdapters, handlers: createTestingHandlers });
