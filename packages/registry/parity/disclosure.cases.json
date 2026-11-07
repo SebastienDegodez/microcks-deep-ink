@@ -1,0 +1,9 @@
+{
+  "component": "Disclosure",
+  "cases": [
+    {"name": "default", "props": {"summary": "Advanced options"}, "children": "Dispatcher rules, constraints and delays."},
+    {"name": "default-open", "props": {"summary": "Already open", "defaultOpen": true}, "children": "Open by default."},
+    {"name": "default-open-false", "props": {"summary": "Closed", "defaultOpen": false}},
+    {"name": "class-and-attributes", "props": {"summary": "Request headers", "className": "wide", "id": "headers", "name": "group"}, "children": "Accept: application/json"}
+  ]
+}

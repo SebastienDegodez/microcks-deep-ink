@@ -7,6 +7,7 @@ import { readFileSync, readdirSync } from 'node:fs';
 import { join } from 'node:path';
 import type { Component } from 'svelte';
 import { render } from 'svelte/server';
+import * as barrel from '../../src/lib/index';
 import Harness from './Harness.svelte';
 import { normaliseHtml } from './normalise';
 
@@ -20,6 +21,8 @@ export interface ParityCase {
   children?: string;
   /** `<option>` children (Select), instead of `children`. */
   options?: ParityOption[];
+  /** Render-prop child (Field): the named export of the package, given the control props and `props`. */
+  control?: { component: string; props?: Record<string, unknown> };
 }
 export interface ParityOption {
   label: string;
@@ -46,7 +49,8 @@ export function reactHtml(item: string, name: string, dir = PARITY): string {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function svelteHtml(component: Component<any>, c: ParityCase): string {
-  return render(Harness, { props: { component, props: c.props ?? {}, text: c.children, options: c.options } }).body;
+  const control = c.control && { component: (barrel as Record<string, unknown>)[c.control.component], props: c.control.props };
+  return render(Harness, { props: { component, props: c.props ?? {}, text: c.children, options: c.options, control } }).body;
 }
 
 /** Both sides normalised, ready for `expect(svelte).toBe(react)`. */
