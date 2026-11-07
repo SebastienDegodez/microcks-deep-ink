@@ -34,6 +34,7 @@ export const FormFooter: StoryObj = {
       <div className="inline">
         <Button variant="dashed" size="compact" icon="plus">Add header</Button>
         <Button variant="ghost" size="sm" tone="danger" icon="trash">Delete</Button>
+        <Button variant="outline" size="xs" tone="link">Undo</Button>
       </div>
     </div>
   ),
@@ -47,6 +48,7 @@ export const Sizes: StoryObj = {
       <Button size="tile">Tile (36px)</Button>
       <Button size="compact">Compact (34px)</Button>
       <Button size="sm">Small (32px)</Button>
+      <Button size="xs">Extra small (28px)</Button>
     </div>
   ),
 };
@@ -94,7 +96,7 @@ export const Playground: StoryObj<typeof Button> = {
   args: { children: 'Run test', variant: 'primary', size: 'md', icon: undefined, iconOnly: false, loading: false, confirm: false, disabled: false },
   argTypes: {
     variant: { control: 'select', options: ['primary', 'secondary', 'outline', 'ghost', 'link', 'dashed', 'danger'] },
-    size: { control: 'inline-radio', options: ['sm', 'compact', 'tile', 'md', 'lg'] },
-    tone: { control: 'inline-radio', options: [undefined, 'danger'] },
+    size: { control: 'inline-radio', options: ['xs', 'sm', 'compact', 'tile', 'md', 'lg'] },
+    tone: { control: 'inline-radio', options: [undefined, 'danger', 'link'] },
   },
 };

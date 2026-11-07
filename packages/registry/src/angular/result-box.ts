@@ -30,6 +30,7 @@ export class ResultBoxActionDirective {}
     '[attr.data-size]': "size() === 'md' ? 'md' : null",
     '[attr.data-bordered]': "bordered() ? null : 'false'",
     '[attr.data-surface]': "surface() === 'surface' ? null : surface()",
+    '[attr.data-density]': "density() === 'regular' ? null : density()",
     // `title` is an input here: do not leave it on the element as a tooltip.
     '[attr.title]': 'null',
   },
@@ -63,6 +64,8 @@ export class ResultBoxComponent {
   readonly bordered = input(true, { transform: booleanAttribute });
   /** Default `surface`. `raised`: the --raised fill instead of --surface (Agent test verdict). */
   readonly surface = input<'surface' | 'raised'>('surface');
+  /** Default `regular`. `compact`: 18px lines, a 10px gap and a 260px text basis before the action wraps (Sources undo banner). */
+  readonly density = input<'regular' | 'compact'>('regular');
   readonly dismiss = output<void>();
 
   protected readonly iconName = computed(() => {

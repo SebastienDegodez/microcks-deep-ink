@@ -21,6 +21,20 @@ private package rules do not describe the final npm delivery requested here.
 - Share tokens, fonts, CSS class contracts, assets, HTML recipes and
   framework-neutral element bundles. Do not share React component implementations
   with Svelte or build an abstraction that forces both frameworks through React APIs.
+- React, Svelte and Angular are alternative framework implementations for the
+  eventual choice, not three runtimes to embed in the same application. Demo
+  equivalence supports that choice; it does not justify duplicating business
+  rules or framework-neutral widget engines.
+- WorkflowLoom may use native React rendering for React and native Svelte
+  rendering for Svelte; the Svelte implementation may also be compiled as a
+  `<workflow-loom>` custom element. A single shared rendering engine is not a
+  requirement. Share the framework-neutral data/event contracts and pure layout
+  calculations instead of duplicating those rules. Match interaction semantics,
+  accessibility and pixel output across implementations. React must not load
+  the Svelte implementation, and Svelte must not load React. The existing element
+  remains in use until replacements pass those gates; Angular's eventual adapter
+  choice is separate. Parallel native implementations support evaluation before
+  choosing one framework, not permanent duplicate product maintenance.
 - Extract reusable demo domain logic, use cases, ports and deterministic in-memory
   fixtures into a framework-neutral demo-core. Keep routing, rendering, lifecycle,
   subscriptions and dependency composition in each demo's own UI adapter.
@@ -101,6 +115,25 @@ against an unfinished prerequisite.
   including through root re-exports or required peer dependencies.
   Publishing remains a separate release
   action; packages stay private until those gates and release approval are met.
+
+### First implementation lot
+
+- #285: Sources uses library ResultBox/Button; compact density, extra-small
+  outline action and transparent link-tone hover replace local banner styles.
+  Before/after verification covers both themes, three widths and focus/blur/hover:
+  36 full-page/banner captures have zero differing pixels.
+- #286: the isolated Svelte package now exports MethodTag, StatusBadge,
+  LiveIndicator and SummaryStrip/Sep with native Svelte types, snippets and
+  events. Its Storybook contains 42 stories; packed client/SSR consumers need
+  no React. Component reference verification covers 129 cases in both themes
+  at 800px and 320px: 516 comparisons have zero differing pixels under pinned
+  Chromium, identical locally served fonts/CSS and disabled motion.
+- The coordinator reviewed the implementations and corrected hover rendering
+  and zero-width behavior before integration. This is a bounded first lot,
+  not completion of R, G1, the full demo matrix or npm publication. Visual
+  evidence is currently session-local; persistent CI visual replay remains
+  part of V/I. #287 (demo-core), #288 (Svelte Cockpit) and #289 (native Loom)
+  track subsequent work and its prerequisites.
 
 ---
 

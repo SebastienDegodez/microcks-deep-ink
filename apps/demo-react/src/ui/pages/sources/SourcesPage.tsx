@@ -13,6 +13,7 @@ import { CopyButton } from '@/ui/components/ui/copy-button';
 import { Icon } from '@/ui/components/ui/icon';
 import { FilterRow, FilterSearch } from '@/ui/components/ui/filter-bar';
 import { LiveIndicator } from '@/ui/components/ui/live-indicator';
+import { ResultBox } from '@/ui/components/ui/result-box';
 import { FactRow, Facts, type Fact as RegistryFact } from '@/ui/components/ui/facts';
 import { Segmented } from '@/ui/components/ui/segmented';
 import { SummaryStrip, SummaryStripSep } from '@/ui/components/ui/summary-strip';
@@ -222,10 +223,13 @@ export default function SourcesPage() {
       <div className="sources-split">
         <section aria-label="Sources" className="sources-list">
           {undoing ? (
-            <div role="status" className="undo-banner">
-              <span className="undo-banner-text"><strong>{undoing.importer.name}</strong> deleted. Services already discovered remain but are no longer updated.</span>
-              <button type="button" ref={undoRef} className="undo-banner-action" onClick={() => void undo()}>Undo</button>
-            </div>
+            <ResultBox
+              tone="info"
+              density="compact"
+              action={<Button ref={undoRef} variant="outline" size="xs" tone="link" onClick={() => void undo()}>Undo</Button>}
+            >
+              <strong>{undoing.importer.name}</strong> deleted. Services already discovered remain but are no longer updated.
+            </ResultBox>
           ) : null}
           {shown.map((j) => {
             const st = importerStatus(j);

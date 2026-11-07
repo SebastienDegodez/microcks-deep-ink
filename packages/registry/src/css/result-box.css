@@ -24,6 +24,8 @@
 
   /* Raised fill (Agent test verdict). */
   .result-box[data-surface="raised"] { background: var(--raised); }
+  /* Compact: 18px lines, a 10px gap and a 260px text basis before the action wraps (Sources undo banner). */
+  .result-box[data-density="compact"] { gap: 10px; line-height: 18px; }
   /* Not bordered: no frame and a top-aligned note layout (Agent test verdict). The padding stays 10px 12px. */
   .result-box[data-bordered="false"] { align-items: flex-start; gap: 8px 10px; border: 0; line-height: 1.55; }
 
@@ -38,6 +40,7 @@
   .result-box-body { flex: 1 1 240px; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
   .result-box-title { margin: 0; font: 600 14px/1.4 var(--font-ui); color: var(--text); }
   .result-box-body strong { font-weight: 600; color: var(--text); }
+  .result-box[data-density="compact"] .result-box-body { flex-basis: 260px; }
   .result-box[data-bordered="false"] .result-box-body { gap: var(--space-1); }
   .result-box[data-bordered="false"] .result-box-title { line-height: normal; }
   .result-box[data-bordered="false"] .result-box-body > span { max-width: 80ch; }

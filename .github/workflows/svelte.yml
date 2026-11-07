@@ -1,6 +1,6 @@
 name: Svelte package
 
-# The Svelte workspace (svelte/): the stylesheet only, no components yet. Nothing is published.
+# Isolated native Svelte family, Storybook and packed consumer. Nothing is published.
 on:
   push:
     branches: [main]
@@ -49,4 +49,9 @@ jobs:
       - run: pnpm --filter @microcks-deep-ink/registry exec node scripts/build-css.mjs
       - run: pnpm -C svelte install --frozen-lockfile
       - run: pnpm -C svelte build
+      - run: pnpm -C svelte check
+      - run: pnpm -C svelte test
+      - run: pnpm -C svelte check:boundaries
+      - run: pnpm -C svelte build:storybook
+      - run: pnpm -C svelte smoke:package
       - run: test -s svelte/packages/deep-ink/dist/styles.css && test -s svelte/packages/deep-ink/dist/styles.no-fonts.css

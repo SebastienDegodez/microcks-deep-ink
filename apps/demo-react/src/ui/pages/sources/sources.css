@@ -78,19 +78,6 @@
 .delete-confirm .button { font-weight: 600; }
 .delete-confirm .delete-confirm-cancel { background: transparent; font-weight: 400; }
 
-/* Undo after delete */
-.undo-banner {
-  display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 10px 12px;
-  border: 1px solid var(--border-strong); border-radius: var(--radius-panel); background: var(--raised);
-  font: 400 13px/18px var(--font-ui); color: var(--text-secondary);
-}
-.undo-banner-text { flex: 1 1 260px; min-width: 0; }
-.undo-banner-text > strong { font-weight: 600; color: var(--text); }
-.undo-banner-action {
-  margin: 0; padding: 4px 10px; border: 1px solid var(--border-strong); border-radius: var(--radius-control);
-  background: transparent; color: var(--link); font: 600 13px/18px var(--font-ui); cursor: pointer;
-}
-
 /* No source matches the filters */
 .sources-empty {
   display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 22px;

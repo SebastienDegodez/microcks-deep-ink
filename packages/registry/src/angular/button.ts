@@ -3,7 +3,8 @@ import { createIconElement } from './icon';
 import type { IconName } from './icon';
 
 export type ButtonVariant = 'primary' | 'secondary' | 'outline' | 'ghost' | 'link' | 'dashed' | 'danger';
-export type ButtonSize = 'sm' | 'compact' | 'tile' | 'md' | 'lg';
+export type ButtonSize = 'xs' | 'sm' | 'compact' | 'tile' | 'md' | 'lg';
+export type ButtonTone = 'danger' | 'link';
 
 /**
  * Native `<button>` or `<a>` with the `button` styling: `<button mkButton variant="primary">Save</button>`.
@@ -26,10 +27,10 @@ export type ButtonSize = 'sm' | 'compact' | 'tile' | 'md' | 'lg';
 export class ButtonDirective {
   /** One primary per task region. */
   readonly variant = input<ButtonVariant>('secondary');
-  /** `md` is 40px high. `sm` is 32px and `compact` 34px (never the primary action of a page); `tile` 36px (actions in a card footer); `lg` is 44px (form footers). */
+  /** `md` is 40px high. `xs` is 28px with 13px 600 text (an inline action in a banner), `sm` 32px and `compact` 34px (never the primary action of a page); `tile` 36px (actions in a card footer); `lg` is 44px (form footers). */
   readonly size = input<ButtonSize>('md');
-  /** `danger` (ghost and link only): the text in the danger colour (an inline Delete). */
-  readonly tone = input<'danger'>();
+  /** Text colour. `danger` (ghost and link only): an inline Delete. `link` (outline only): the link colour inside the border (Sources "Undo"). */
+  readonly tone = input<ButtonTone>();
   /** Filled danger, only inside a confirmation dialog. Use with `variant="danger"`. */
   readonly confirm = input(false, { transform: booleanAttribute });
   /** Leading icon name. */
@@ -49,7 +50,7 @@ export class ButtonDirective {
     let iconEl: SVGSVGElement | null = null;
     effect(() => {
       const name = this.icon();
-      const size = this.size() === 'sm' || this.size() === 'compact' || this.size() === 'tile' || this.variant() === 'link' || this.variant() === 'dashed' ? 14 : 16;
+      const size = this.size() === 'xs' || this.size() === 'sm' || this.size() === 'compact' || this.size() === 'tile' || this.variant() === 'link' || this.variant() === 'dashed' ? 14 : 16;
       iconEl?.remove();
       iconEl = null;
       if (name) {
