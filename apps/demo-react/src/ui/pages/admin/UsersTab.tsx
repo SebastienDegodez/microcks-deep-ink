@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import type { AdminGroup, AdminUser, Role } from '@/domain/govern';
 import { useUseCases, type QueryResult } from '@/ui/app';
-import { Chip } from '@/ui/components/ui/chip';
-import { FilterSearch } from '@/ui/components/ui/filter-bar';
-import { Select } from '@/ui/components/ui/select';
-import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
+import { Chip, FilterSearch, Select, DataTable, type DataTableColumn } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
 import './users.css';

@@ -2,10 +2,7 @@ import type { ReactNode } from 'react';
 import { Link, useHref, useNavigate } from 'react-router';
 import { stoppedStep, verdictExplanation, type ArazzoDocument, type Workflow, type WorkflowRun } from '@/domain/arazzo';
 import { PageHeader, useClock, useUseCases } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Icon } from '@/ui/components/ui/icon';
-import { Menu } from '@/ui/components/ui/menu';
+import { ApiBadge, Button, Icon, Menu } from '@microcks/deep-ink';
 import { runPath, runSetupPath, workflowPath } from '../workflows/shared';
 
 const WEEK = 7 * 24 * 3600_000;

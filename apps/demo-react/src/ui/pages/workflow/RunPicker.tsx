@@ -1,6 +1,6 @@
 import type { WorkflowRun } from '@/domain/arazzo';
 import { RUN_STATUS_ICON, RUN_STATUS_WORD } from '@/ui/app/outcomes';
-import { Icon } from '@/ui/components/ui/icon';
+import { Icon } from '@microcks/deep-ink';
 import { runPick } from './loom-model';
 
 /** "Results & values from" run picker shared by the Loom and Steps tabs: the last four runs, as pressed buttons. */

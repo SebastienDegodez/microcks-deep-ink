@@ -2,12 +2,7 @@ import './agent-skills.css';
 import { useId, useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 import type { AgentProfile, AgentTaskState, Conversation, ScriptPart, ScriptStep } from '@/domain/agents';
-import { Chip } from '@/ui/components/ui/chip';
-import { Icon, type IconName } from '@/ui/components/ui/icon';
-import { SectionLabel } from '@/ui/components/ui/section-label';
-import { SkillList, type SkillItem } from '@/ui/components/ui/skill-list';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
-import { TaskStateTag, TaskTimeline, type TaskTimelineNode } from '@/ui/components/ui/task-timeline';
+import { Chip, Icon, type IconName, SectionLabel, SkillList, type SkillItem, SplitPane, SplitPaneMain, SplitPaneSide, TaskStateTag, TaskTimeline, type TaskTimelineNode } from '@microcks/deep-ink';
 
 const FALLBACK_ID = '__fallback';
 

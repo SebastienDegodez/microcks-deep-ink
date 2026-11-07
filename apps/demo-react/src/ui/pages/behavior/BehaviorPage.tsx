@@ -7,14 +7,7 @@ import {
   isValidRegExp, scriptSample, storedSummary, type Behavior, type ParameterConstraint,
 } from '@/domain/catalog';
 import { PageHeader, useAnnounce, useQuery, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Icon } from '@/ui/components/ui/icon';
-import { MethodTag } from '@/ui/components/ui/method-tag';
-import { Panel } from '@/ui/components/ui/panel';
-import { Segmented } from '@/ui/components/ui/segmented';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
-import { SummaryStrip } from '@/ui/components/ui/summary-strip';
+import { ApiBadge, Button, Icon, MethodTag, Panel, Segmented, SplitPane, SplitPaneMain, SplitPaneSide, SummaryStrip } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { DispatcherPanel } from './DispatcherPanel';
 import { SimulatorPanel } from './SimulatorPanel';

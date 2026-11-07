@@ -2,11 +2,7 @@ import './dispatcher.css';
 import { useMemo } from 'react';
 import { parseJsonBodyRule, reachability, ruleNames, scriptSample, storedAs, type Behavior, type BehaviorDispatcher } from '@/domain/catalog';
 import type { Example } from '@/domain/shared';
-import { Callout } from '@/ui/components/ui/callout';
-import { CodeBlock } from '@/ui/components/ui/code-block';
-import { Icon } from '@/ui/components/ui/icon';
-import { Panel } from '@/ui/components/ui/panel';
-import { Segmented } from '@/ui/components/ui/segmented';
+import { Callout, CodeBlock, Icon, Panel, Segmented } from '@microcks/deep-ink';
 
 const CARDS: { id: BehaviorDispatcher; desc: string; tag?: string; disabled?: boolean }[] = [
   { id: 'URI_PARTS', desc: 'Matches path segments, here {name}.', tag: 'inferred from contract' },

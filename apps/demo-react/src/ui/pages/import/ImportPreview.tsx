@@ -1,15 +1,7 @@
 import type { ReactNode } from 'react';
 import { Link as RouterLink } from 'react-router';
 import type { ArazzoPreview, AgentPreview, ImportPreview } from '@/domain/importing';
-import { Chip } from '@/ui/components/ui/chip';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Field } from '@/ui/components/ui/field';
-import { Icon, type IconName } from '@/ui/components/ui/icon';
-import { ProjectionPill } from '@/ui/components/ui/projection-pill';
-import { MethodTag } from '@/ui/components/ui/method-tag';
-import { Segmented } from '@/ui/components/ui/segmented';
-import { Select } from '@/ui/components/ui/select';
+import { Chip, ApiBadge, Button, Field, Icon, type IconName, ProjectionPill, MethodTag, Segmented, Select } from '@microcks/deep-ink';
 import { pluralize } from '@/ui/app/format';
 
 interface ImportPreviewProps {

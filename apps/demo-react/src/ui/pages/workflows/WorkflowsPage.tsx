@@ -4,14 +4,7 @@ import type { ArazzoDocument, RunKindFilter, SourceDescription, WorkflowRun } fr
 import { runHeadline, runOutcome, stoppedStep } from '@/domain/arazzo';
 import type { WorkflowListItem } from '@/application/arazzo';
 import { PageHeader, useAnnounce, usePageTitle, useQuery, useRelativeTime, useUseCases } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { Chip } from '@/ui/components/ui/chip';
-import { EmptyState } from '@/ui/components/ui/empty-state';
-import { FilterBar, FilterReset, FilterRow, FilterSearch } from '@/ui/components/ui/filter-bar';
-import { Icon } from '@/ui/components/ui/icon';
-import { Segmented, type SegmentedOption } from '@/ui/components/ui/segmented';
+import { ApiBadge, Button, Callout, Chip, EmptyState, FilterBar, FilterReset, FilterRow, FilterSearch, Icon, Segmented, type SegmentedOption } from '@microcks/deep-ink';
 import { LinkSourceDialog } from './LinkSourceDialog';
 import { LoomThumb, sourceColor } from './LoomThumb';
 import { ErrorBlock } from '@/ui/app/states';
