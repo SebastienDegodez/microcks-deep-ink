@@ -24,9 +24,6 @@
       "vite/client"
     ],
     "paths": {
-      "@/ui/components/ui/*": [
-        "./node_modules/@microcks/deep-ink/dist/index.d.ts"
-      ],
       "@/*": [
         "./src/*"
       ],

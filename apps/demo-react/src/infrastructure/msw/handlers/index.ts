@@ -1,5 +1,6 @@
 import type { AnyHandler } from 'msw';
 import { createAgentsHandlers } from './agents';
+import { createArazzoHandlers } from './arazzo';
 import { createCatalogHandlers } from './catalog';
 import { createGovernHandlers } from './govern';
 import { createImportingHandlers } from './importing';
@@ -19,4 +20,6 @@ export const handlers: AnyHandler[] = [
   ...createTestingHandlers(),
   ...createObserveHandlers(),
   ...createGovernHandlers(),
+  // Last: its POC mock URL route (`*/arazzo/...`) must not shadow another feature's.
+  ...createArazzoHandlers(),
 ];

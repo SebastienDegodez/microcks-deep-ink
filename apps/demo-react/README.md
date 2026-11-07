@@ -78,7 +78,7 @@ test-only: `lint:arch` lets them import vitest and MSW, and only tests may impor
 | `src/infrastructure/in-memory/shared` | `FixedClock` (2026-11-03T09:10:04Z), `latency()`, `createStream`/`createTickingStream`/`createSequenceStream`, **seeds** (services, Arazzo documents, workflows, runs, sessions), `seed-ids.ts` | domain, application |
 | `src/ui/app` | Providers and hooks (`useUseCases`, `useQuery`, `useSubscription`, `usePageTitle`, `useAnnounce`), `PageHeader`, `DemoBanner`, `AppLayout`, `routes.ts`, `router.tsx` | application (types), domain, ui, `react`, `react-router` |
 | `src/ui/pages/<screen>/<Name>Page.tsx` | One lazy page per route | same as `ui` |
-| `@/ui/components/ui/<item>` | The design system: an alias of the `@microcks/deep-ink` package (see below) | |
+| `@microcks/deep-ink` | The design system package (see below) | |
 
 ### The dependency rule
 
@@ -148,9 +148,8 @@ pnpm -C react install --frozen-lockfile && pnpm -C react build
 pnpm --filter demo-react dev
 ```
 
-`src/main.tsx` imports `@microcks/deep-ink/styles.css` once. Pages import `@/ui/components/ui/<item>` (or `@microcks/deep-ink`):
-`vite.config.ts` aliases every `@/ui/components/ui/...` import to the package, and `tsconfig.json` maps it to the package types.
-The one file left in `src/ui/components/ui` (`workflow-loom.tsx`) re-exports the Loom for `LoomHost`'s lazy `import.meta.glob`.
+`src/main.tsx` imports `@microcks/deep-ink/styles.css` once. Pages import `@microcks/deep-ink`;
+`LoomHost` loads the Loom with a dynamic `import('@microcks/deep-ink/workflow-loom')`, so it stays in its own lazy chunk.
 Fix components in the package (`react/packages/deep-ink/src`), never in the demo.
 
 ## Data

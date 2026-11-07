@@ -23,6 +23,7 @@ import { createTestingUseCases } from '@/application/testing';
 import type { Clock } from '@/application/ports/shared';
 import type { UseCases } from '@/application/use-cases';
 import { createHttpAgentsAdapters } from '@/infrastructure/http/agents';
+import { createHttpArazzoAdapters } from '@/infrastructure/http/arazzo';
 import { createHttpCatalogAdapters } from '@/infrastructure/http/catalog';
 import { createHttpClient, defaultApiBaseUrl, type HttpClient } from '@/infrastructure/http/client';
 import { createHttpGovernAdapters } from '@/infrastructure/http/govern';
@@ -93,6 +94,7 @@ const HTTP_ADAPTERS: { [F in Feature]?: (deps: HttpDeps) => InMemoryAdapters[F] 
   catalog: createHttpCatalogAdapters,
   importing: createHttpImportingAdapters,
   testing: createHttpTestingAdapters,
+  arazzo: createHttpArazzoAdapters,
   observe: createHttpObserveAdapters,
   govern: createHttpGovernAdapters,
   agents: createHttpAgentsAdapters,
