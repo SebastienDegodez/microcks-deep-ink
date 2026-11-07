@@ -8,6 +8,8 @@ on:
       - "svelte/**"
       - "packages/tokens/**"
       - "packages/registry/src/css/**"
+      - "packages/registry/src/angular/icon.ts"
+      - "packages/registry/package.json"
       - "packages/registry/items/**"
       - "packages/registry/css-order.json"
       - "packages/registry/scripts/build-css.mjs"
@@ -17,6 +19,8 @@ on:
       - "svelte/**"
       - "packages/tokens/**"
       - "packages/registry/src/css/**"
+      - "packages/registry/src/angular/icon.ts"
+      - "packages/registry/package.json"
       - "packages/registry/items/**"
       - "packages/registry/css-order.json"
       - "packages/registry/scripts/build-css.mjs"
@@ -43,7 +47,8 @@ jobs:
           cache-dependency-path: |
             pnpm-lock.yaml
             svelte/pnpm-lock.yaml
-      # The stylesheet needs only the tokens and the registry CSS build (no Stencil, no Angular).
+      # CSS needs only tokens and the registry CSS build. Button icons are parsed from the
+      # registry's icon.ts literals at build time: no full registry, Stencil or Angular runtime.
       - run: pnpm install --frozen-lockfile --filter @microcks-deep-ink/tokens --filter @microcks-deep-ink/registry
       - run: pnpm --filter @microcks-deep-ink/tokens build
       - run: pnpm --filter @microcks-deep-ink/registry exec node scripts/build-css.mjs

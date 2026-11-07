@@ -4,3 +4,5 @@ dist/
 storybook-static/
 .smoke/
 *.tgz
+packages/deep-ink/src/lib/internal/icon-data.ts
+test/button-parity/.artifacts/

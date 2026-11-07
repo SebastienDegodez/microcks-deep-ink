@@ -19,7 +19,7 @@ try {
   const output = run('npm', ['pack', '--json', '--pack-destination', scratch, '--cache', join(scratch, 'cache')], library);
   const [pack] = JSON.parse(output.slice(output.indexOf('[')));
   const paths = pack.files.map((file) => file.path);
-  for (const file of ['dist/index.js', 'dist/index.d.ts', 'dist/MethodTag.svelte', 'dist/StatusBadge.svelte', 'dist/LiveIndicator.svelte', 'dist/SummaryStrip.svelte', 'dist/SummaryStripSep.svelte', 'dist/styles.css', 'dist/styles.no-fonts.css']) {
+  for (const file of ['dist/index.js', 'dist/index.d.ts', 'dist/Button.svelte', 'dist/ButtonLink.svelte', 'dist/internal/icon-data.js', 'dist/MethodTag.svelte', 'dist/StatusBadge.svelte', 'dist/LiveIndicator.svelte', 'dist/SummaryStrip.svelte', 'dist/SummaryStripSep.svelte', 'dist/styles.css', 'dist/styles.no-fonts.css']) {
     assert(paths.includes(file), `Tarball missing ${file}`);
   }
   assert(!paths.some((path) => /(?:test|spec|react-events|node_modules)/.test(path)), 'Unexpected tarball contents');
@@ -45,6 +45,12 @@ try {
   }
   const lock = JSON.parse(readFileSync(join(consumer, 'package-lock.json'), 'utf8'));
   assert(!Object.keys(lock.packages).some((path) => /(?:^|\/)node_modules\/(?:react|react-dom|react-reconciler|@types\/react)(?:\/|$)/.test(path)), 'React in packed production/consumer dependency graph');
+  for (const path of ['@microcks/deep-ink/internal/icon-data.js', '@microcks/deep-ink/dist/internal/icon-data.js']) {
+    let rejected = false;
+    try { run('node', ['--input-type=module', '-e', `await import(${JSON.stringify(path)})`], consumer); }
+    catch { rejected = true; }
+    assert(rejected, `Internal implementation leaked through export ${path}`);
+  }
   for (const file of paths.filter((path) => /\.(?:js|ts|svelte)$/.test(path))) {
     const text = readFileSync(join(installed, file), 'utf8');
     assert(!/\bReact(?:Node|Element|Handlers)?\b|\breactEvents\b|(?:from|import)\s*['"]react(?:\/|-dom|['"])/.test(text), `React coupling in packed ${file}`);

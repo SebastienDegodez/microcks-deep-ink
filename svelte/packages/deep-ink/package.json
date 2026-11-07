@@ -20,8 +20,8 @@
   "files": ["dist"],
   "sideEffects": ["**/*.css"],
   "scripts": {
-    "build": "svelte-package -i src/lib -o dist && node scripts/build-css.mjs",
-    "check": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+    "build": "node scripts/build-icons.mjs && svelte-package -i src/lib -o dist && node scripts/build-css.mjs",
+    "check": "node scripts/build-icons.mjs && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
     "test": "pnpm build && vitest run && vitest run --config vite.ssr.config.ts",
     "prepack": "pnpm build"
   },

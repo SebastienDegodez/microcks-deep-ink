@@ -6,7 +6,7 @@ import type { LiveIndicatorProps, MethodTagProps, StatusBadgeProps, SummaryStrip
 
 it('exposes only the bounded public family and protocol mapping', () => {
   expect(Object.keys(api).sort()).toEqual([
-    'LiveIndicator', 'MethodTag', 'PROTOCOL_ATTR', 'StatusBadge', 'SummaryStrip', 'SummaryStripSep',
+    'Button', 'ButtonLink', 'LiveIndicator', 'MethodTag', 'PROTOCOL_ATTR', 'StatusBadge', 'SummaryStrip', 'SummaryStripSep',
   ]);
 });
 

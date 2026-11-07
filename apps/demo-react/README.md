@@ -13,6 +13,7 @@ It is served under `/demo/` (hash router, Vite `base: './'`) and targets RGAA 4.
 ## Run it
 
 ```bash
+pnpm --filter @microcks/demo-core build # build the extracted framework-neutral govern policies first
 pnpm --filter demo-react dev          # http://localhost:5173/#/
 pnpm --filter demo-react test         # Vitest (domain, use cases over the in-memory adapters, routes, a11y shell)
 pnpm --filter demo-react lint         # ESLint: typescript-eslint, jsx-a11y strict, react-hooks
@@ -51,7 +52,7 @@ simulated latency (120 to 350 ms, deterministic). The Playwright smoke run uses 
 
 | Folder | Contains | May import |
 |---|---|---|
-| `src/domain/<feature>` | Types and **pure functions**: `conformanceScore`, `formatRelative`, `validatePocSubset`, `executionLayers`, `evaluateCriterion`, `nextAfterStep`, `playWorkflow`, `baggage`, `validateRunRequest`... | `src/domain` only (no npm package, no React). `domain/<a>` never imports `domain/<b>`, except `domain/shared`. |
+| `src/domain/<feature>` | Types and **pure functions**: `conformanceScore`, `formatRelative`, `validatePocSubset`, `executionLayers`, `evaluateCriterion`, `nextAfterStep`, `playWorkflow`, `baggage`, `validateRunRequest`... | `src/domain` only, plus `@microcks/demo-core/govern` from the govern facade (no React). `domain/<a>` never imports `domain/<b>`, except `domain/shared`. |
 | `src/application/ports/<feature>.ts` | Interfaces the application needs (`ServiceCatalog`, `WorkflowRunRepository`, `TraceStream`...) | domain |
 | `src/application/<feature>/index.ts` | `<Feature>UseCases` interface and `create<Feature>UseCases(ports)`; DTOs of the views | domain, application (ports, shared). Never another feature's folder. |
 | `src/application/use-cases.ts` | `UseCases`: the one object pages receive | application |
@@ -65,7 +66,9 @@ simulated latency (120 to 350 ms, deterministic). The Playwright smoke run uses 
 
 Enforced by `.dependency-cruiser.cjs` (every rule has severity `error`, `pnpm lint:arch` must report 0):
 
-- `src/domain/**` imports nothing outside `src/domain`.
+- `src/domain/**` imports nothing outside `src/domain`, except the govern facade's
+  `@microcks/demo-core/govern` import (secret-form and membership-draft policies).
+  See [`packages/demo-core`](../../packages/demo-core/README.md) for this small first increment of #287.
 - `src/application/**` imports only `src/domain` and `src/application`.
 - `src/infrastructure/**` imports `src/domain` and `src/application`, never `src/ui`.
 - `src/ui/**` imports `src/application` (types, `UseCases`), `src/domain` (types, pure functions), `src/ui`, `react`, `react-dom` and

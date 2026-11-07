@@ -7,9 +7,9 @@ consumers choose their framework workspace. Private, version 0.0.0, not publishe
 
 ## Current scope
 
-Native Svelte 5 `MethodTag`, `StatusBadge`, `LiveIndicator`, `SummaryStrip` and
-`SummaryStripSep`; declarations and unchanged layered shared CSS; an isolated
-Svelte/Vite Storybook with 42 stories. No Svelte demo is implemented here and
+Native Svelte 5 `Button`, `ButtonLink`, `MethodTag`, `StatusBadge`, `LiveIndicator`,
+`SummaryStrip` and `SummaryStripSep`; declarations and unchanged layered shared CSS; an isolated
+Svelte/Vite Storybook with 69 stories. No Svelte demo is implemented here and
 this is not a complete component port. See [the package README](packages/deep-ink/README.md).
 
 The library uses `$props`, `$derived`, snippets, native `class`/DOM attributes
@@ -20,7 +20,8 @@ tooling; a preview build guard rejects React runtime modules.
 ## Commands
 
 Build the shared tokens/CSS at the repository root first (or wait for the
-existing root build). This workspace only reads those outputs:
+existing root build). This workspace reads those CSS outputs plus the registry's
+checked-in icon source (no full registry build is needed):
 
 ```sh
 pnpm --filter @microcks-deep-ink/tokens build
@@ -33,6 +34,7 @@ pnpm -C svelte check:boundaries
 pnpm -C svelte storybook               # port 6008
 pnpm -C svelte build:storybook
 pnpm -C svelte smoke:package
+pnpm -C svelte test:button-parity      # prerequisites below
 ```
 
 Tests cover the variant combinations, snippets, native attributes/events,
@@ -52,6 +54,51 @@ the Svelte source tree, not an installed React dependency or a CI visual suite.
 This evidence covers only the recorded family matrix, not the full demo or
 arbitrary browsers. Boundary checks currently cover the library and Storybook;
 there is no demo source tree to scan yet.
+
+Button has a repeatable strict pixel/browser suite in `test/button-parity/`.
+It uses the real built Svelte package and read-only React reference, not a
+local component imitation. Install the React workspace dependencies first.
+Use Python with `test/button-parity/requirements.txt` and its Playwright Chromium
+installed; `PARITY_PYTHON` can select an existing environment. The licensed
+IBM Plex Sans fixture is checked against a pinned SHA-256, shared CSS is copied
+once for both renders, and animation/transitions are frozen without masks.
+The suite covers every variant/size on buttons and anchors, all 105 named
+icons, both themes, 800/320px, hover/keyboard focus, pressed, danger-confirm,
+icon-only, disabled/loading and the latest xs/outline/link tone. It also
+checks real browser keyboard/navigation/form behavior and axe in both themes.
+Chromium launches with the deterministic CPU raster flags read from
+`tools/fidelity/snap.py` `DETERMINISTIC_ARGS` (default GPU raster produced a
+2px anti-aliasing flake on a focus ring). `PARITY_REPEAT=n` captures every
+state n times per framework and requires identical captures (self-parity);
+`PARITY_CASES=case-85,...` limits a targeted rerun. Zero pixels may differ;
+results and failure screenshots (stale ones are deleted at start) live in
+ignored `test/button-parity/.artifacts/`. This command is not wired into root CI and
+does not claim full-demo parity.
+
+Icons are generated during build/check from the literal `PATHS` object in
+`packages/registry/src/angular/icon.ts` (via the registry's `./angular/*`
+export), using a TypeScript AST reader that rejects non-literal data. The
+file is never imported or executed, so CI needs no full registry build
+(`registry.full.json`) and no Angular runtime. No hand-maintained icon table
+or React renderer is shipped. All names and
+stroke/dash data must match the React reference before the pixel suite runs.
+Navigation safety intentionally improves on upstream React `ButtonLink`: busy
+or disabled links remove their href/tab stop, retain link semantics and suppress
+activation. Disabled links announce `aria-disabled`; busy links announce
+`aria-busy` and retain the unmodified React busy-link visual treatment.
+The React fixture uses its supported `aria-disabled` attribute for disabled
+links, with loading markup untouched. The suite does not claim React's
+unguarded busy navigation is equivalent.
+
+Recorded Button runs: two consecutive full runs with `PARITY_REPEAT=2` each
+passed **2060/2060 strict comparisons**, 335 cases, Chromium 156.0.8078.4,
+deterministic raster flags, both themes and widths, maximum React/Svelte and
+self-capture differing pixels **0**; the previously flaky `case-85` focus state
+also passed 50 repeated captures per framework.
+Native keyboard/action/link navigation, form submission, element bindings,
+disabled/loading activation/restoration and tab order passed; browser axe
+reported no violations in either theme. Full current report:
+`test/button-parity/.artifacts/report.json`.
 
 ## Upstream coordination
 

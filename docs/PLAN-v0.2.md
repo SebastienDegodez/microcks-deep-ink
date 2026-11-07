@@ -135,6 +135,22 @@ against an unfinished prerequisite.
   part of V/I. #287 (demo-core), #288 (Svelte Cockpit) and #289 (native Loom)
   track subsequent work and its prerequisites.
 
+### Second implementation lot
+
+- #287, first increment only: secret-form validation, credential summaries and
+  membership-draft policies move unchanged to `@microcks/demo-core/govern`.
+  React keeps its domain facade and consumes the built neutral package.
+  Package boundary tests reject framework/design-system/demo back-references.
+  The remaining domains, fixtures, ports and use cases are not extracted yet.
+- #291: native Svelte Button/ButtonLink provide the React visual variants with
+  typed native events, snippets, bindings, icons, tests and Storybook stories.
+  Disabled/loading links suppress navigation; this intentional safety difference
+  is documented rather than described as behavioral equivalence to React's
+  unguarded busy link. The repeatable strict comparison harness is separate
+  test tooling, not Svelte runtime code or a product demo.
+- No Cockpit Svelte page or replacement Loom implementation is included in this
+  lot. The complete demo-core and cross-framework demo parity gates remain open.
+
 ---
 
 ## Summary

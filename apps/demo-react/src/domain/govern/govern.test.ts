@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { membershipChanges, membershipKey, packageTotals, previewInstall, secretCredentials, validateSecretForm, type HubPackage } from './index';
+import * as core from '@microcks/demo-core/govern';
 
 const pkg: HubPackage = {
   id: 'p', name: 'Pastry samples', category: 'Samples', description: '', versions: [], apiCount: 2, installed: false,
@@ -42,6 +43,13 @@ describe('install preview', () => {
 });
 
 describe('secret form and memberships', () => {
+  it('exposes the shared policies to the existing React consumers without wrappers', () => {
+    expect(validateSecretForm).toBe(core.validateSecretForm);
+    expect(secretCredentials).toBe(core.secretCredentials);
+    expect(membershipKey).toBe(core.membershipKey);
+    expect(membershipChanges).toBe(core.membershipChanges);
+  });
+
   it('validates name and credential', () => {
     const ok = { name: 'my-token', kind: 'token' as const, description: '', secret: 'abc' };
     expect(validateSecretForm(ok, [])).toEqual({});

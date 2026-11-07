@@ -14,6 +14,7 @@
     "check:boundaries": "node scripts/check-boundaries.mjs",
     "storybook": "pnpm --filter storybook-svelte storybook",
     "build:storybook": "pnpm --filter storybook-svelte build-storybook",
-    "smoke:package": "node scripts/smoke-package.mjs"
+    "smoke:package": "node scripts/smoke-package.mjs",
+    "test:button-parity": "pnpm build && node test/button-parity/run.mjs"
   }
 }
