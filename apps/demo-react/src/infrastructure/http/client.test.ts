@@ -39,6 +39,28 @@ describe('HttpClient', () => {
     await expect(client.delete('examples/1')).resolves.toBeUndefined();
   });
 
+  it('sends FormData and URLSearchParams as is and resolves a text/plain answer to its text', async () => {
+    let multipart: string | null = null;
+    let form = '';
+    server.use(
+      http.post(`${API}/artifact/upload`, async ({ request }) => {
+        multipart = request.headers.get('content-type');
+        const file = (await request.formData()).get('file');
+        return HttpResponse.text(file instanceof File ? file.name : 'none', { status: 201 });
+      }),
+      http.post(`${API}/artifact/download`, async ({ request }) => {
+        form = await request.text();
+        return HttpResponse.text('API Pastry:2.0', { status: 201 });
+      }),
+    );
+    const data = new FormData();
+    data.append('file', new File(['openapi: 3.1.0'], 'apipastry-openapi.yaml'));
+    await expect(client.post('artifact/upload', data)).resolves.toBe('apipastry-openapi.yaml');
+    expect(multipart).toMatch(/^multipart\/form-data; boundary=/);
+    await expect(client.post('artifact/download', new URLSearchParams({ url: 'https://acme.io/a.yaml', mainArtifact: 'true' }))).resolves.toBe('API Pastry:2.0');
+    expect(form).toBe('url=https%3A%2F%2Facme.io%2Fa.yaml&mainArtifact=true');
+  });
+
   it('maps 404 to NotFoundError, with the entity and id of the body when present', async () => {
     server.use(
       http.get(`${API}/services/nope`, () => HttpResponse.json({ entity: 'Service', id: 'nope' }, { status: 404 })),

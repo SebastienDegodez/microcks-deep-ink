@@ -9,6 +9,9 @@ import { BackendError, NotFoundError, ValidationError } from '@/application/shar
  * Errors are mapped to `@/application/shared` errors, so use cases and pages never see an HTTP status:
  * 404 -> `NotFoundError`, 400/422 -> `ValidationError`, any other non-2xx -> `BackendError(status)`,
  * no response (network failure) -> `BackendError(null)`. An aborted request rejects with the original `AbortError`.
+ *
+ * Bodies are sent as JSON, except `FormData` (multipart, `POST /api/artifact/upload`) and `URLSearchParams`
+ * (form-urlencoded, `POST /api/artifact/download`), sent as is. A `text/plain` answer resolves to its text.
  */
 export interface HttpClient {
   get<T>(path: string, options?: RequestOptions): Promise<T>;
@@ -54,14 +57,15 @@ export function createHttpClient(options: HttpClientOptions): HttpClient {
       for (const item of Array.isArray(value) ? value : [value]) url.searchParams.append(key, String(item));
     }
     const headers: Record<string, string> = { accept: 'application/json' };
-    if (body !== undefined) headers['content-type'] = 'application/json';
+    const raw = body instanceof FormData || body instanceof URLSearchParams;
+    if (body !== undefined && !raw) headers['content-type'] = 'application/json';
 
     let response: Response;
     try {
       response = await doFetch(url, {
         method,
         headers,
-        body: body === undefined ? undefined : JSON.stringify(body),
+        body: body === undefined ? undefined : raw ? body : JSON.stringify(body),
         signal: opts.signal,
       });
     } catch (error) {
@@ -73,6 +77,7 @@ export function createHttpClient(options: HttpClientOptions): HttpClient {
     if (response.status === 204) return undefined as T;
     const text = await response.text();
     if (text === '') return undefined as T;
+    if (response.headers.get('content-type')?.startsWith('text/plain')) return text as T;
     try {
       return JSON.parse(text) as T;
     } catch {
