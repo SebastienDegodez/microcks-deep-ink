@@ -2,8 +2,9 @@
  * Mock of the Copilot API (see `src/infrastructure/http/copilot/index.ts` for the endpoints): Microcks'
  * `GET /api/copilot/samples/{serviceId}?operation=` and the demo-only `GET /api/copilot/workflow-context/{serviceId}`
  * (proposition v2 / not in Microcks API). The handlers delegate to the in-memory Copilot (the same deterministic
- * proposals as memory mode) and serialise them into Microcks exchanges. Accepted proposals are stored by the catalogue
- * routes (`./catalog.ts`); edits and discards never reach the server.
+ * proposals as memory mode) and serialise them into Microcks exchanges. Accepted proposals are stored by Microcks'
+ * `POST /api/copilot/samples/{serviceId}?operation=`, served by `./catalog.ts` (it owns the catalogue state); edits and
+ * discards never reach the server.
  */
 import { http, HttpResponse, type HttpHandler } from 'msw';
 import { operationName } from '@/infrastructure/http/catalog/mapping';

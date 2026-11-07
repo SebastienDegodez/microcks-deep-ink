@@ -19,7 +19,7 @@ import { API } from './api';
  * the same data as memory mode) and serialised to Microcks DTOs (`src/infrastructure/http/catalog/dto.ts`).
  *
  * Microcks API v1.15: `GET /services/count`, `GET /services?page&size`, `GET /services/labels`,
- * `GET /services/{id}[?messages=true]`.
+ * `GET /services/{id}[?messages=true]`, and the AI Copilot's `POST /api/copilot/samples/{id}?operation=` (accept).
  * Demo-only (proposition v2 / not in Microcks API): every `/api/demo/...` route below.
  */
 export function createCatalogHandlers(deps: { clock?: Clock } = {}): AnyHandler[] {
@@ -70,6 +70,20 @@ export function createCatalogHandlers(deps: { clock?: Clock } = {}): AnyHandler[
       const size = intParam(url, 'size', 20);
       const services = (await catalog.list()).slice(page * size, (page + 1) * size);
       return HttpResponse.json(await Promise.all(services.map(serviceDto)));
+    }),
+    // AI Copilot: stores accepted proposals (`AICopilotController#addSamplesSuggestions`). Microcks answers 201 with no
+    // body, and 403 when the service or the operation is unknown. The exchanges read back as accepted AI examples.
+    http.post(`${API}/copilot/samples/:id`, async ({ params, request }) => {
+      const operationNameParam = new URL(request.url).searchParams.get('operation');
+      if (!operationNameParam) return HttpResponse.json({ message: 'Required parameter operation is missing' }, { status: 400 });
+      const operation = (await catalog.operations(id(params))).find((o) => operationName(o) === operationNameParam);
+      if (!operation) return new HttpResponse(null, { status: 403 });
+      const exchanges = (await request.json()) as MicrocksExchange[];
+      const accepted = exchanges
+        .filter((e) => e.type === 'reqRespPair' || e.type === 'unidirEvent')
+        .map((e) => fromExchange(e, { aiGenerated: true, reviewState: 'accepted' }));
+      await catalog.addExamples(id(params), operation.id, accepted);
+      return new HttpResponse(null, { status: 201 });
     }),
     http.get(`${API}/services/:id`, async ({ params, request }) => {
       const service = await catalog.get(id(params));

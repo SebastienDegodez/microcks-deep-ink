@@ -14,8 +14,9 @@
  * - `GET /copilot/workflow-context/{serviceId}?hint=`: `workflowContext()`, 204 when no run lacks that example; a
  *   backend without the route (404) has no context. No request is sent without a hint.
  *
- * Accepting a proposal goes through the catalogue port (`catalog.addExamples`), editing and discarding stay in the
- * page until then: nothing of a proposal is stored on the server before it is accepted.
+ * Accepting a proposal goes through the catalogue port (`catalog.addExamples`), whose HTTP adapter stores it with
+ * Microcks' `POST /copilot/samples/{serviceId}?operation=` (see `../catalog`); editing and discarding stay in the page
+ * until then: nothing of a proposal is stored on the server before it is accepted.
  */
 import type { WorkflowContext } from '@/domain/copilot';
 import type { CopilotExtensions } from '@/application/copilot';

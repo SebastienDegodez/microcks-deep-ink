@@ -4,15 +4,16 @@
  */
 import type { LabelCount } from '@/domain/catalog';
 import { labelToString, type Dispatcher, type Example, type Operation, type Protocol, type ServiceSummary } from '@/domain/shared';
-import type {
-  DemoExampleReview,
-  DemoOperationExtras,
-  DemoServiceExtras,
-  MicrocksExchange,
-  MicrocksLabelsMap,
-  MicrocksOperation,
-  MicrocksService,
-  MicrocksServiceType,
+import {
+  AI_COPILOT_SOURCE,
+  type DemoExampleReview,
+  type DemoOperationExtras,
+  type DemoServiceExtras,
+  type MicrocksExchange,
+  type MicrocksLabelsMap,
+  type MicrocksOperation,
+  type MicrocksService,
+  type MicrocksServiceType,
 } from './dto';
 
 const TYPE_BY_PROTOCOL: Record<Protocol, MicrocksServiceType> = {
@@ -116,10 +117,11 @@ export function toServiceExtras(service: ServiceSummary, operations: Operation[]
  */
 export function toExchange(example: Example, operation: string, protocol?: Protocol): MicrocksExchange {
   const params = Object.entries(example.request.params);
+  const source = example.aiGenerated ? { sourceArtifact: AI_COPILOT_SOURCE } : {};
   if (protocol === 'EVENT' && params.length === 0 && example.request.body === undefined && example.response.status === 200) {
     return {
       type: 'unidirEvent',
-      eventMessage: { id: example.id, name: example.name, operationId: operation, mediaType: 'application/json', content: example.response.body },
+      eventMessage: { id: example.id, name: example.name, operationId: operation, mediaType: 'application/json', content: example.response.body, ...source },
     };
   }
   return {
@@ -131,6 +133,7 @@ export function toExchange(example: Example, operation: string, protocol?: Proto
       responseId: example.id,
       queryParameters: params.map(([name, value]) => ({ name, value })),
       ...(example.request.body !== undefined ? { content: example.request.body } : {}),
+      ...source,
     },
     response: {
       id: example.id,
@@ -139,6 +142,7 @@ export function toExchange(example: Example, operation: string, protocol?: Proto
       status: String(example.response.status),
       mediaType: 'application/json',
       content: example.response.body,
+      ...source,
     },
   };
 }
@@ -192,10 +196,18 @@ export function fromOperationDto(operation: MicrocksOperation, extras: DemoOpera
   };
 }
 
+/**
+ * An exchange as an example. Microcks marks the exchanges accepted through the AI Copilot with
+ * `sourceArtifact: 'AI Copilot'`: they read as accepted AI examples unless the demo review flags say otherwise.
+ */
 export function fromExchange(exchange: MicrocksExchange, review: DemoExampleReview = {}): Example {
+  const sources = exchange.type === 'unidirEvent' ? [exchange.eventMessage] : [exchange.request, exchange.response];
+  const fromCopilot = sources.some((m) => m?.sourceArtifact === AI_COPILOT_SOURCE);
+  const aiGenerated = review.aiGenerated ?? (fromCopilot ? true : undefined);
+  const reviewState = review.reviewState ?? (fromCopilot ? ('accepted' as const) : undefined);
   const flags = {
-    ...(review.aiGenerated !== undefined ? { aiGenerated: review.aiGenerated } : {}),
-    ...(review.reviewState ? { reviewState: review.reviewState } : {}),
+    ...(aiGenerated !== undefined ? { aiGenerated } : {}),
+    ...(reviewState ? { reviewState } : {}),
   };
   if (exchange.type === 'unidirEvent') {
     const message = exchange.eventMessage;

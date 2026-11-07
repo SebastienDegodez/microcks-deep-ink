@@ -4,10 +4,12 @@
  * Microcks endpoints (Microcks API v1.15, see `./dto.ts`):
  * - `GET /services/count` and `GET /services?page&size`: the catalogue, read page by page;
  * - `GET /services/{id}` and `GET /services/{id}?messages=true`: one service, its operations and their examples;
- * - `GET /services/labels`: the used labels.
+ * - `GET /services/labels`: the used labels;
+ * - `POST /copilot/samples/{id}?operation=<operation name>` (AI Copilot, a JSON `Exchange[]`, 201 with no body):
+ *   `addExamples()` of accepted AI proposals. Microcks tags them `sourceArtifact: 'AI Copilot'`, read back as accepted.
  *
  * Demo-only endpoints (`/api/demo/...`, proposition v2 / not in Microcks API): test status, conformance and traffic
- * of the services (`demo/services`), operation extras, example review flags, example edits, the full behavior,
+ * of the services (`demo/services`), operation extras, example review flags, the other example additions, the full behavior,
  * details, workflow usages and the ⌘K commands. Filtering is done here, over the whole catalogue, with the same
  * domain function as the in-memory adapter (`/services/search` only matches names and labels).
  */
@@ -42,6 +44,9 @@ export const SERVICES_PAGE_SIZE = 20;
 
 const enc = encodeURIComponent;
 
+/** A Copilot proposal a person accepted: Microcks stores it with `POST /copilot/samples/{id}?operation=`. */
+const isAcceptedAiExample = (e: Example) => e.aiGenerated === true && e.reviewState === 'accepted';
+
 /** `undefined` instead of a `NotFoundError` (the port answers `undefined` for an unknown id). */
 async function orUndefined<T>(read: Promise<T>): Promise<T | undefined> {
   try {
@@ -75,6 +80,15 @@ export function createHttpCatalogAdapters({ http }: HttpCatalogDeps): HttpCatalo
 
   const operationsOf = ({ view, extras }: { view: MicrocksServiceView; extras: DemoServiceExtras }): Operation[] =>
     (view.service.operations ?? []).map((o) => fromOperationDto(o, extras.operations[o.name]));
+
+  /**
+   * Microcks' operation name (`GET /pastries/{name}`) of a domain operation id, from the demo extras; a plain Microcks
+   * has none (404) and its operation ids already are the operation names (see `fromOperationDto`).
+   */
+  async function microcksOperationName(id: string, opId: string): Promise<string> {
+    const operations = (await orUndefined(http.get<DemoServiceExtras>(`demo/services/${enc(id)}`)))?.operations ?? {};
+    return Object.keys(operations).find((name) => operations[name]?.id === opId) ?? opId;
+  }
 
   const operationPath = (id: string, opId: string) => `demo/services/${enc(id)}/operations/${enc(opId)}`;
 
@@ -111,7 +125,15 @@ export function createHttpCatalogAdapters({ http }: HttpCatalogDeps): HttpCatalo
       });
     },
     async addExamples(id, opId, examples) {
-      const body: DemoExampleInput[] = examples.map((e) => ({
+      // Accepted Copilot proposals go to Microcks' own endpoint; the other examples have no Microcks API.
+      const accepted = examples.filter(isAcceptedAiExample);
+      const others = examples.filter((e) => !isAcceptedAiExample(e));
+      if (accepted.length > 0) {
+        const operation = await microcksOperationName(id, opId);
+        await http.post(`copilot/samples/${enc(id)}`, accepted.map((e) => toExchange(e, operation)), { query: { operation } });
+      }
+      if (others.length === 0) return;
+      const body: DemoExampleInput[] = others.map((e) => ({
         exchange: toExchange(e, opId),
         ...(e.aiGenerated !== undefined ? { aiGenerated: e.aiGenerated } : {}),
         ...(e.reviewState ? { reviewState: e.reviewState } : {}),
