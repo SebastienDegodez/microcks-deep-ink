@@ -32,6 +32,23 @@ describe('Select', () => {
     expect(onchange).toHaveBeenCalledOnce();
   });
 
+  it('calls the React onChange, onFocus and onBlur, and starts at defaultValue', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    const onFocus = vi.fn();
+    const onBlur = vi.fn();
+    render(Select, { props: { 'aria-label': 'Dispatcher', defaultValue: 'JSON_BODY', onChange, onFocus, onBlur, children: options('URI_PARTS', 'JSON_BODY', 'SCRIPT') } });
+    const select = screen.getByRole<HTMLSelectElement>('combobox', { name: 'Dispatcher' });
+    expect(select.value).toBe('JSON_BODY');
+    await user.tab();
+    expect(onFocus).toHaveBeenCalledOnce();
+    await user.selectOptions(select, 'SCRIPT');
+    expect(onChange).toHaveBeenCalledOnce();
+    expect(select.value).toBe('SCRIPT');
+    await user.tab();
+    expect(onBlur).toHaveBeenCalledOnce();
+  });
+
   it('is skipped by Tab when disabled', async () => {
     const user = userEvent.setup();
     render(Select, { props: { 'aria-label': 'Protocol', disabled: true, children: options('REST') } });

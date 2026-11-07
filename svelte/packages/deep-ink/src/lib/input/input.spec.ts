@@ -29,6 +29,33 @@ describe('Input', () => {
     expect(oninput).toHaveBeenCalledTimes(7);
   });
 
+  it('calls the React onChange on every keystroke, and onFocus and onBlur', async () => {
+    const user = userEvent.setup();
+    const values: string[] = [];
+    const onChange = vi.fn((e: Event) => values.push((e.currentTarget as HTMLInputElement).value));
+    const onFocus = vi.fn();
+    const onBlur = vi.fn();
+    render(Input, { props: { 'aria-label': 'Port', onChange, onFocus, onBlur } });
+    await user.tab();
+    expect(onFocus).toHaveBeenCalledOnce();
+    await user.keyboard('8080');
+    expect(onChange).toHaveBeenCalledTimes(4);
+    expect(values).toEqual(['8', '80', '808', '8080']);
+    await user.tab();
+    expect(onBlur).toHaveBeenCalledOnce();
+  });
+
+  it('starts at defaultValue, and value wins over it', async () => {
+    const user = userEvent.setup();
+    render(Input, { props: { 'aria-label': 'Path', defaultValue: '/pastries' } });
+    const input = screen.getByRole<HTMLInputElement>('textbox', { name: 'Path' });
+    expect(input.value).toBe('/pastries');
+    await user.type(input, '/x');
+    expect(input.value).toBe('/pastries/x');
+    render(Input, { props: { 'aria-label': 'Controlled', defaultValue: 'default', value: 'value' } });
+    expect(screen.getByRole<HTMLInputElement>('textbox', { name: 'Controlled' }).value).toBe('value');
+  });
+
   it('keeps the native type and attributes', () => {
     render(Input, { props: { type: 'email', 'aria-label': 'Email', required: true } });
     const input = screen.getByRole('textbox', { name: 'Email' });
@@ -66,5 +93,16 @@ describe('Textarea', () => {
     await user.keyboard('{{{Enter}}');
     expect(value).toBe('{\n}');
     expect(await axeViolations(container)).toEqual([]);
+  });
+
+  it('starts at defaultValue and calls the React onChange on every keystroke', async () => {
+    const user = userEvent.setup();
+    const onChange = vi.fn();
+    render(Textarea, { props: { 'aria-label': 'Notes', defaultValue: 'Hello', onChange } });
+    const textarea = screen.getByRole<HTMLTextAreaElement>('textbox', { name: 'Notes' });
+    expect(textarea.value).toBe('Hello');
+    await user.type(textarea, '!!');
+    expect(textarea.value).toBe('Hello!!');
+    expect(onChange).toHaveBeenCalledTimes(2);
   });
 });

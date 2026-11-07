@@ -18,6 +18,13 @@ export interface ParityCase {
   component?: string;
   props?: Record<string, unknown>;
   children?: string;
+  /** `<option>` children (Select), instead of `children`. */
+  options?: ParityOption[];
+}
+export interface ParityOption {
+  label: string;
+  value?: string;
+  disabled?: boolean;
 }
 export interface ParityItem {
   item: string;
@@ -39,7 +46,7 @@ export function reactHtml(item: string, name: string, dir = PARITY): string {
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function svelteHtml(component: Component<any>, c: ParityCase): string {
-  return render(Harness, { props: { component, props: c.props ?? {}, text: c.children } }).body;
+  return render(Harness, { props: { component, props: c.props ?? {}, text: c.children, options: c.options } }).body;
 }
 
 /** Both sides normalised, ready for `expect(svelte).toBe(react)`. */

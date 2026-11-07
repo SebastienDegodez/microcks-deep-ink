@@ -1,8 +1,12 @@
 {
   "component": "Select",
   "cases": [
-    { "name": "default", "props": { "id": "runner" } },
-    { "name": "size-sm", "props": { "size": "sm", "aria-label": "Rows per page" } },
-    { "name": "class-and-attributes", "props": { "className": "wide", "name": "dispatcher", "disabled": true, "required": true, "aria-invalid": "true", "aria-label": "Dispatcher" } }
+    {"name": "default", "props": {"id": "runner"}},
+    {"name": "size-sm", "props": {"size": "sm", "aria-label": "Rows per page"}},
+    {"name": "class-and-attributes", "props": {"className": "wide", "name": "dispatcher", "disabled": true, "required": true, "aria-invalid": "true", "aria-label": "Dispatcher"}},
+    {"name": "story-default", "props": {"id": "sel-1", "defaultValue": "URI_PARTS"}, "options": [{"label": "URI_PARTS", "value": "URI_PARTS"}, {"label": "URI_PARAMS", "value": "URI_PARAMS"}, {"label": "JSON_BODY", "value": "JSON_BODY"}, {"label": "SCRIPT", "value": "SCRIPT"}]},
+    {"name": "story-small", "props": {"id": "sel-2", "size": "sm", "defaultValue": "25"}, "options": [{"label": "10"}, {"label": "25"}, {"label": "50"}]},
+    {"name": "story-playground", "props": {"aria-label": "Protocol"}, "options": [{"label": "REST"}, {"label": "EVENT"}, {"label": "gRPC"}]},
+    {"name": "controlled-value-disabled-option", "props": {"aria-label": "Dispatcher", "value": "JSON_BODY", "disabled": true}, "options": [{"label": "URI_PARTS", "value": "URI_PARTS", "disabled": true}, {"label": "JSON_BODY", "value": "JSON_BODY"}]}
   ]
 }
