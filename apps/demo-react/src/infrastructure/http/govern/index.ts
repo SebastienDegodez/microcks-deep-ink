@@ -9,11 +9,11 @@ import type { AdminRepository, HubRepository } from '@/application/ports/govern'
 import type { Clock } from '@/application/ports/shared';
 import { NotFoundError } from '@/application/shared';
 import type { HttpClient } from '@/infrastructure/http/client';
-import { toAdminGroup, toAdminUser, toFeatureFlags, toSnapshot } from './mapping';
+import { readSnapshotImportResult, toAdminGroup, toAdminUser, toFeatureFlags, toSnapshot, toSnapshotImportResult } from './mapping';
 import type {
-  DemoSnapshotImportResult,
   KeycloakGroup,
   KeycloakUser,
+  MicrocksCounter,
   MicrocksFeaturesConfig,
   MicrocksKeycloakConfig,
   MicrocksSnapshotFile,
@@ -37,6 +37,7 @@ function snapshotForm(fileName: string): FormData {
 }
 
 export function createHttpGovernAdapters({ http }: HttpGovernDeps): HttpGovernAdapters {
+  const servicesCount = async () => (await http.get<MicrocksCounter>('services/count')).counter;
   const pkg = (id: string) => `demo/hub/packages/${encodeURIComponent(id)}`;
 
   const hub: HubRepository = {
@@ -75,7 +76,11 @@ export function createHttpGovernAdapters({ http }: HttpGovernDeps): HttpGovernAd
       return toSnapshot(await http.get<MicrocksSnapshotFile>('export', { query: { serviceIds } }), serviceIds);
     },
     snapshotImportPreview: (fileName) => http.post<SnapshotImportPreviewItem[]>('demo/import/preview', snapshotForm(fileName)),
-    importSnapshot: (fileName) => http.post<DemoSnapshotImportResult>('import', snapshotForm(fileName)),
+    async importSnapshot(fileName) {
+      const before = await servicesCount();
+      const answered = readSnapshotImportResult(await http.post<unknown>('import', snapshotForm(fileName)));
+      return answered ?? toSnapshotImportResult(before, await servicesCount());
+    },
     async flags() {
       const [config, keycloak] = await Promise.all([http.get<MicrocksFeaturesConfig>('features/config'), http.get<MicrocksKeycloakConfig>('keycloak/config')]);
       return toFeatureFlags(config, keycloak);

@@ -5,6 +5,7 @@ import { FixedClock } from '@/infrastructure/in-memory/shared';
 import { createInMemoryGovernAdapters } from '@/infrastructure/in-memory/govern';
 import {
   estimateSnapshotSizeKb,
+  readSnapshotImportResult,
   toAdminGroup,
   toAdminUser,
   toFeatureFlags,
@@ -13,7 +14,10 @@ import {
   toKeycloakUser,
   toRole,
   toSnapshot,
+  toSnapshotImportResult,
 } from './mapping';
+import { createHttpGovernAdapters } from '.';
+import type { HttpClient } from '@/infrastructure/http/client';
 import type { KeycloakGroup, KeycloakUser, MicrocksFeaturesConfig } from './microcks';
 
 const roundTrip = <T>(value: T): T => JSON.parse(JSON.stringify(value)) as T;
@@ -89,11 +93,77 @@ describe('features', () => {
     ];
     const config: MicrocksFeaturesConfig = { 'repository-filter': { enabled: 'true', 'label-key': 'domain' }, demo: { flags } };
     expect(toFeatureFlags(config, { enabled: false }).map((f) => [f.id, f.enabled])).toEqual([['filter', true], ['keycloak', false], ['mcp', true]]);
-    expect(toFeatureFlags({ 'async-api': { enabled: 'true' } }, { enabled: true })).toEqual([]);
   });
 
   it('round-trips the seeded flags', async () => {
     const flags = await seeded().flags();
     expect(toFeatureFlags(roundTrip(toFeaturesConfig(flags)), { enabled: true })).toEqual(flags);
+  });
+
+  it('reads a real Microcks FeaturesConfig (no demo extension): one flag per feature, then Keycloak', () => {
+    // The example of `FeaturesConfig` in microcks-openapi-v1.15.yaml.
+    const config: MicrocksFeaturesConfig = {
+      'repository-filter': { 'label-label': 'Domain', enabled: 'true', 'label-list': 'domain,status', 'label-key': 'domain' },
+      'microcks-hub': { 'allowed-roles': 'admin,manager,manager-any', endpoint: 'https://hub.microcks.io/api', enabled: 'true' },
+      'repository-tenancy': { enabled: 'false', 'artifact-import-allowed-roles': 'admin,manager,manager-any' },
+      'async-api': { 'default-binding': 'KAFKA', enabled: 'true' },
+      'custom-thing': { enabled: 'false' },
+    };
+    const keycloak = { realm: 'microcks', 'auth-server-url': 'https://sso.acme.io', 'public-client': true, 'ssl-required': 'external' as const, resource: 'microcks-app', enabled: true };
+    const flags = toFeatureFlags(config, keycloak);
+    expect(flags.map((f) => [f.id, f.label, f.enabled])).toEqual([
+      ['filter', 'Repository filter', true],
+      ['hub', 'Microcks Hub', true],
+      ['tenancy', 'Repository tenancy', false],
+      ['async-api', 'Async API mocking', true],
+      ['custom-thing', 'custom-thing', false],
+      ['keycloak', 'Keycloak authentication', true],
+    ]);
+    expect(flags[1]).toMatchObject({ value: 'allowed-roles admin,manager,manager-any · endpoint https://hub.microcks.io/api', key: 'features.feature.microcks-hub.enabled=true' });
+    expect(flags[5]).toMatchObject({ value: 'realm microcks · client microcks-app · https://sso.acme.io', key: 'keycloak.enabled=true' });
+    expect(toFeatureFlags({}, { enabled: false }).map((f) => [f.id, f.enabled])).toEqual([['keycloak', false]]);
+  });
+});
+
+describe('snapshot import result', () => {
+  it('reads the demo body', () => {
+    expect(readSnapshotImportResult({ created: 1, replaced: 2 })).toEqual({ created: 1, replaced: 2 });
+  });
+
+  it('a real Microcks answers 201 without a body: the summary comes from the services count', () => {
+    for (const body of [undefined, null, '', {}]) expect(readSnapshotImportResult(body)).toBeUndefined();
+    expect(toSnapshotImportResult(10, 12)).toEqual({ created: 2, replaced: 0 });
+    expect(toSnapshotImportResult(10, 10)).toEqual({ created: 0, replaced: 0 });
+    expect(toSnapshotImportResult(10, 9)).toEqual({ created: 0, replaced: 0 });
+  });
+});
+
+describe('adapters over a real Microcks (no demo extensions)', () => {
+  /** Answers like Microcks: `POST /api/import` 201 without a body, `FeaturesConfig` without `demo`. */
+  function microcks(): HttpClient {
+    let services = 10;
+    const get = async (path: string): Promise<unknown> => {
+      if (path === 'services/count') return { counter: services };
+      if (path === 'features/config') return { 'microcks-hub': { enabled: 'true' }, 'repository-filter': { enabled: 'false' } };
+      if (path === 'keycloak/config') return { enabled: false };
+      throw new Error(`unexpected GET ${path}`);
+    };
+    const post = async (path: string): Promise<unknown> => {
+      if (path !== 'import') throw new Error(`unexpected POST ${path}`);
+      services += 1;
+      return undefined;
+    };
+    const unexpected = async () => { throw new Error('unexpected call'); };
+    return { get, post, put: unexpected, patch: unexpected, delete: unexpected } as unknown as HttpClient;
+  }
+
+  it('imports a snapshot answered without a body', async () => {
+    const { admin } = createHttpGovernAdapters({ http: microcks(), clock: new FixedClock() });
+    expect(await admin.importSnapshot('repo.json')).toEqual({ created: 1, replaced: 0 });
+  });
+
+  it('lists the flags of a FeaturesConfig without the demo extension', async () => {
+    const { admin } = createHttpGovernAdapters({ http: microcks(), clock: new FixedClock() });
+    expect((await admin.flags()).map((f) => [f.id, f.enabled])).toEqual([['hub', true], ['filter', false], ['keycloak', false]]);
   });
 });
