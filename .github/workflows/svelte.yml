@@ -61,7 +61,6 @@ jobs:
       - run: pnpm --filter @microcks-deep-ink/registry exec node scripts/build-css.mjs
       - run: pnpm -C svelte install --frozen-lockfile
       - run: pnpm -C svelte lint
-      - run: pnpm -C svelte check
       - run: pnpm -C svelte build
       - run: pnpm -C svelte check
       - run: pnpm -C svelte test
