@@ -4,7 +4,7 @@ import reactHooks from 'eslint-plugin-react-hooks';
 
 const DESIGN_SYSTEM_PACKAGES = {
   group: ['@microcks-deep-ink/*'],
-  message: 'Import the design system from @microcks/deep-ink (or @/ui/components/ui/<item>), never the workspace packages.',
+  message: 'Import the design system from @microcks/deep-ink, never the workspace packages.',
 };
 
 export default tseslint.config(

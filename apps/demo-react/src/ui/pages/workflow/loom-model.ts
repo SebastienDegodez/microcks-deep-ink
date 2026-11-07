@@ -13,7 +13,7 @@ import { formatDuration } from '@/domain/shared/time';
 
 /**
  * Props of the `WorkflowLoom` element wrapper. The types are written here, identical to the wrapper's
- * (`ui/components/ui/workflow-loom.tsx`), so the page does not depend on the file being copied.
+ * (`WorkflowLoom` of `@microcks/deep-ink`), so the page does not import the package eagerly for its types.
  */
 export type LoomStepStatus = 'passed' | 'failed' | 'not-run';
 export type LoomCheckState = 'passed' | 'failed' | 'off' | 'not-evaluated';

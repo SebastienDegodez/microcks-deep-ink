@@ -10,6 +10,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./workflow-loom": {
+      "types": "./dist/workflow-loom.d.ts",
+      "default": "./dist/workflow-loom.js"
+    },
     "./styles.css": "./dist/styles.css",
     "./styles.no-fonts.css": "./dist/styles.no-fonts.css",
     "./package.json": "./package.json"
