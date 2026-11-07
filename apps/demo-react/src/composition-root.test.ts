@@ -162,7 +162,7 @@ describe('backend switch', () => {
 
   it('falls back to memory per feature when the http backend has no adapter for it', async () => {
     const composition = createComposition({ backend: 'http', apiBaseUrl: 'http://demo.test/api/' });
-    expect(composition).toMatchObject({ backend: 'http', httpFeatures: ['catalog', 'importing', 'testing', 'arazzo', 'observe'] });
+    expect(composition).toMatchObject({ backend: 'http', httpFeatures: ['catalog', 'importing', 'testing', 'arazzo', 'observe', 'govern'] });
     expect((await composition.useCases.agents.getAgent('concierge')).serviceId).toBe('concierge');
   });
 
