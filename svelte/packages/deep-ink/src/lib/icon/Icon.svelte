@@ -1,4 +1,4 @@
-<!-- Inline stroke icon (registry item icon). Same props as the React Icon: name, size, label, className plus any <svg> attribute. -->
+<!-- Inline stroke icon (registry item icon). Same props as the React Icon: name, size, label, className plus any <svg> attribute and React handler (onClick...). -->
 <script lang="ts" module>
   /** One stroke of an icon: path data, or path data drawn with a dash pattern. */
   export type IconPath = string | { readonly d: string; readonly dash: string };
@@ -136,8 +136,10 @@
 
 <script lang="ts">
   import type { SVGAttributes } from 'svelte/elements';
+  import { reactEvents, type ReactHandlers } from '../react-events';
 
-  type Props = Omit<SVGAttributes<SVGSVGElement>, 'class' | 'name' | 'children'> & {
+  type Props = Omit<SVGAttributes<SVGSVGElement>, 'class' | 'name' | 'children'> &
+    ReactHandlers<SVGSVGElement> & {
     name: IconName;
     /** Width and height in px. */
     size?: number;
@@ -168,7 +170,7 @@
   role={label ? 'img' : undefined}
   aria-label={label || undefined}
   aria-hidden={label ? undefined : 'true'}
-  {...rest}
+  {...reactEvents(rest)}
   class={['icon', className].filter(Boolean).join(' ')}
 >
   {#each paths as p, i (i)}

@@ -1,12 +1,14 @@
 <!--
   Decorative placeholder (registry item skeleton). Same props as the React Skeleton: lines, width, className plus any
-  <span> attribute. Hidden from assistive technology: set aria-busy="true" on the container that is loading and
+  <span> attribute and React handler (onClick...). Hidden from assistive technology: set aria-busy="true" on the container that is loading and
   announce completion with a live region.
 -->
 <script lang="ts">
   import type { HTMLAttributes } from 'svelte/elements';
+  import { reactEvents, type ReactHandlers } from '../react-events';
 
-  type Props = Omit<HTMLAttributes<HTMLSpanElement>, 'class' | 'children'> & {
+  type Props = Omit<HTMLAttributes<HTMLSpanElement>, 'class' | 'children'> &
+    ReactHandlers<HTMLSpanElement> & {
     /** Number of text-like lines. */
     lines?: number;
     width?: string | number;
@@ -20,9 +22,9 @@
 </script>
 
 {#if lines <= 1}
-  <span {...rest} aria-hidden="true" class={['skeleton', className].filter(Boolean).join(' ')} style={css}></span>
+  <span {...reactEvents(rest)} aria-hidden="true" class={['skeleton', className].filter(Boolean).join(' ')} style={css}></span>
 {:else}
-  <span {...rest} aria-hidden="true" class={['skeleton-group', className].filter(Boolean).join(' ')} style={css}>
+  <span {...reactEvents(rest)} aria-hidden="true" class={['skeleton-group', className].filter(Boolean).join(' ')} style={css}>
     {#each { length: lines }, i (i)}<span class="skeleton"></span>{/each}
   </span>
 {/if}

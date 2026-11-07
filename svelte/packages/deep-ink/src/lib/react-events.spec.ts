@@ -31,12 +31,21 @@ describe('React-named handlers and attributes', () => {
     expect([el.dataset.testid, el.getAttribute('aria-keyshortcuts')]).toEqual(['x', 'K']);
     fireEvent.keyDown(el, { key: 'a' });
     fireEvent.click(el);
-    fireEvent.focus(el);
-    fireEvent.blur(el);
+    fireEvent.focusIn(el);
+    fireEvent.focusOut(el);
     fireEvent.mouseEnter(el);
     fireEvent.dblClick(el);
     for (const [name, spy] of Object.entries(spies)) expect(spy, name).toHaveBeenCalledOnce();
     for (const name of Object.keys(spies)) expect(el.hasAttribute(name.toLowerCase())).toBe(false);
+  });
+
+  it('Button runs onDoubleClickCapture once, in the capture phase', () => {
+    const calls: string[] = [];
+    const { container } = render(Button, { props: { onDoubleClickCapture: () => calls.push('capture'), onDoubleClick: () => calls.push('bubble') } });
+    const button = container.querySelector('button')!;
+    fireEvent.dblClick(button);
+    expect(calls).toEqual(['capture', 'bubble']);
+    expect(button.hasAttribute('ondoubleclickcapture')).toBe(false);
   });
 
   it('calls the native and the React handler of the same event, the native one first', () => {
