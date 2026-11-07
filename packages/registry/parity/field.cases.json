@@ -1,0 +1,12 @@
+{
+  "component": "Field",
+  "cases": [
+    {"name": "label-only", "props": {"label": "Name"}, "control": {"component": "Input"}},
+    {"name": "all", "props": {"label": "Name", "help": "Used in the mock URL.", "error": "Enter a name.", "required": true, "className": "wide"}, "control": {"component": "Input"}},
+    {"name": "story-default", "props": {"label": "Service name", "help": "As written in the contract title."}, "control": {"component": "Input", "props": {"defaultValue": "API Pastry"}}},
+    {"name": "story-required", "props": {"label": "Contract URL", "required": true, "help": "HTTPS URL of an OpenAPI or AsyncAPI file."}, "control": {"component": "Input", "props": {"type": "url", "mono": true, "placeholder": "https://example.org/openapi.yaml"}}},
+    {"name": "story-error", "props": {"label": "Version", "required": true, "error": "Enter a version such as 2.0."}, "control": {"component": "Input", "props": {"defaultValue": ""}}},
+    {"name": "required-false", "props": {"label": "Notes", "required": false}, "control": {"component": "Textarea", "props": {"rows": 3}}},
+    {"name": "select-control", "props": {"label": "Dispatcher", "help": "How a request picks its response."}, "control": {"component": "Select"}}
+  ]
+}
