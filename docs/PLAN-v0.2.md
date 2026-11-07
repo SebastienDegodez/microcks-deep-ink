@@ -11,9 +11,13 @@ private package rules do not describe the final npm delivery requested here.
   reference; do not simplify the Svelte demo or change the reference to hide differences.
 - Ship two independently consumable npm component libraries, each with a
   framework-specific Storybook covering its public components and variants.
-  Keep `@microcks/deep-ink` for React; the Svelte target is
-  `@microcks/deep-ink-svelte`. Both currently use `@microcks/deep-ink` in isolated
-  workspaces; resolve that collision during Svelte package setup, before publication.
+  Keep the existing name `@microcks/deep-ink` in both isolated workspaces.
+  Each demo resolves its own framework implementation; do not rename the Svelte
+  package just to combine the workspaces. npm does not select an implementation
+  by framework: two separate artifacts cannot occupy the same name and version.
+  Before release, define how the single npm name selects each implementation
+  (for example, explicit framework subpath exports in one release artifact).
+  This release decision must preserve runtime isolation and is not implemented yet.
 - Share tokens, fonts, CSS class contracts, assets, HTML recipes and
   framework-neutral element bundles. Do not share React component implementations
   with Svelte or build an abstraction that forces both frameworks through React APIs.
@@ -44,11 +48,11 @@ An unchecked phase is not complete merely because its plan or scaffolding exists
 | R | Finish React extraction and remaining variants; demo pages consume the library instead of local design-system components. Check public APIs, SOLID, tests and visual preservation. | Existing React work |
 | V | Freeze a versioned visual/behavior matrix: all routes, reachable states, fixtures, themes and viewports, with deterministic screenshots and replayable interactions. | R for the final reference; tooling can start earlier |
 | F | Extract demo-core without framework dependencies; React consumes it with unchanged behavior and pixels. Add enforceable dependency-boundary checks. | R; final fidelity check uses V |
-| G0 | Set up the distinct Svelte npm package, native compilation/types, isolated Svelte Storybook and dependency guards. Verify a packed package in a Svelte-only consumer. | Stable shared CSS/HTML contracts |
+| G0 | Extend the existing isolated Svelte workspace/package, keeping its name; add native compilation/types, isolated Svelte Storybook and dependency guards. Verify a packed package in a Svelte-only consumer. | Stable shared CSS/HTML contracts |
 | G1 | Implement Svelte components in small independent families, with stories, unit/interaction/a11y tests and React/Svelte visual comparison for every public variant. | G0 and the corresponding React contract from R |
 | H | Build the complete Svelte demo using demo-core and the Svelte library, migrating one route family at a time. Keep page-specific composition in the demo, reusable UI in the library. | F and the components needed from G1 |
 | I | Run cross-framework route/state visual and behavior checks in CI, enforce boundaries, and resolve every unexplained difference. | V and H |
-| J | Build both Storybooks, validate both npm tarballs and standalone consumers, document installation/API differences, then publish approved versions. | R, G1 and I |
+| J | Resolve distribution under the shared npm name; build both Storybooks, validate release tarballs and standalone consumers, document framework selection/API differences, then publish approved versions. | R, G1 and I |
 
 R and F remain prerequisites for migrating the full demo. G0 and visual test
 tooling can proceed alongside R without changing its unfinished contracts.
@@ -79,9 +83,11 @@ against an unfinished prerequisite.
   graphs and packed artifacts. A Svelte-only consumer must build and run without
   installing React; a React-only consumer must not require Svelte.
 - Every reusable component is exported by its framework library and represented
-  in its Storybook. Both tarballs contain the documented components, declarations,
-  styles and required assets, with no demo code, cross-framework runtime or
-  unresolved workspace/link dependency. Publishing remains a separate release
+  in its Storybook. Release tarballs contain the documented components, declarations,
+  styles and required assets, with no demo code or unresolved workspace/link
+  dependency. The selected framework entrypoint must not load the other framework,
+  including through root re-exports or required peer dependencies.
+  Publishing remains a separate release
   action; packages stay private until those gates and release approval are met.
 
 ---
