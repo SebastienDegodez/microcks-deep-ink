@@ -17,12 +17,14 @@ import { describeGovernPortContract, type GovernOwnPorts } from '@/application/p
 import { describeImportingPortContract, type ImportingOwnPorts } from '@/application/ports/__contracts__/importing.contract';
 import { describeObservePortContract, type ObserveOwnPorts } from '@/application/ports/__contracts__/observe.contract';
 import { describeTestingPortContract, type TestingOwnPorts } from '@/application/ports/__contracts__/testing.contract';
+import { createHttpAgentsAdapters } from '@/infrastructure/http/agents';
 import { createHttpArazzoAdapters } from '@/infrastructure/http/arazzo';
 import { createHttpCatalogAdapters } from '@/infrastructure/http/catalog';
 import { createHttpCopilotAdapters } from '@/infrastructure/http/copilot';
 import { createHttpGovernAdapters } from '@/infrastructure/http/govern';
 import { createHttpImportingAdapters } from '@/infrastructure/http/importing';
 import { createHttpObserveAdapters } from '@/infrastructure/http/observe';
+import { createAgentsHandlers } from '@/infrastructure/msw/handlers/agents';
 import { createArazzoHandlers } from '@/infrastructure/msw/handlers/arazzo';
 import { createCatalogHandlers } from '@/infrastructure/msw/handlers/catalog';
 import { createCopilotHandlers } from '@/infrastructure/msw/handlers/copilot';
@@ -40,4 +42,4 @@ describePortContractOverHttp<TestingOwnPorts>({ feature: 'testing', contract: de
 describePortContractOverHttp<ArazzoOwnPorts>({ feature: 'arazzo', contract: describeArazzoPortContract, http: createHttpArazzoAdapters, handlers: createArazzoHandlers });
 describePortContractOverHttp<ObserveOwnPorts>({ feature: 'observe', contract: describeObservePortContract, http: createHttpObserveAdapters, handlers: createObserveHandlers });
 describePortContractOverHttp<GovernOwnPorts>({ feature: 'govern', contract: describeGovernPortContract, http: createHttpGovernAdapters, handlers: createGovernHandlers });
-describePortContractOverHttp<AgentPorts>({ feature: 'agents', contract: describeAgentsPortContract, http: undefined });
+describePortContractOverHttp<AgentPorts>({ feature: 'agents', contract: describeAgentsPortContract, http: createHttpAgentsAdapters, handlers: createAgentsHandlers });
