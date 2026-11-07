@@ -7,16 +7,7 @@ import {
   type Importer, type SourceOrigin, type SourceStatus, type SyncEntry,
 } from '@/domain/importing';
 import { PageHeader, useAnnounce, useClock, useQuery, useRelativeTime, useReturnFocus, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { CopyButton } from '@/ui/components/ui/copy-button';
-import { Icon } from '@/ui/components/ui/icon';
-import { FilterRow, FilterSearch } from '@/ui/components/ui/filter-bar';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { FactRow, Facts, type Fact as RegistryFact } from '@/ui/components/ui/facts';
-import { Segmented } from '@/ui/components/ui/segmented';
-import { SummaryStrip, SummaryStripSep } from '@/ui/components/ui/summary-strip';
-import { Switch } from '@/ui/components/ui/switch';
+import { ApiBadge, Button, CopyButton, Icon, FilterRow, FilterSearch, LiveIndicator, FactRow, Facts, type Fact as RegistryFact, Segmented, SummaryStrip, SummaryStripSep, Switch } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 
 const STATUS_WORD: Record<SourceStatus, string> = { imported: 'Imported', warning: 'Imported · 1 warning', failed: 'Failed', inactive: 'Inactive', running: 'Importing' };

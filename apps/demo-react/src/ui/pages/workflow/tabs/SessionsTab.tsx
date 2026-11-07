@@ -5,17 +5,7 @@ import type { WorkflowDetail } from '@/application/arazzo';
 import { MONTHS } from '@/ui/app/format';
 import { useClock, useRelativeTime } from '@/ui/app';
 import { STATUS_ICON } from '@/ui/app/outcomes';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { Checkbox } from '@/ui/components/ui/checkbox';
-import { Facts } from '@/ui/components/ui/facts';
-import { Field } from '@/ui/components/ui/field';
-import { Icon } from '@/ui/components/ui/icon';
-import { Input } from '@/ui/components/ui/input';
-import { MethodTag } from '@/ui/components/ui/method-tag';
-import { Select } from '@/ui/components/ui/select';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
-import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
+import { Button, Callout, Checkbox, Facts, Field, Icon, Input, MethodTag, Select, SplitPane, SplitPaneMain, SplitPaneSide, DataTable, type DataTableColumn } from '@microcks/deep-ink';
 import { runPath } from '../../workflows/shared';
 import './sessions.css';
 

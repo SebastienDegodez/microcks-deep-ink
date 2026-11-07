@@ -13,18 +13,7 @@ import {
 } from '@/domain/govern';
 import { plural } from '@/ui/app/format';
 import { PageHeader, useAnnounce, usePageTitle, useQuery, useReturnFocus, useUseCases } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { Chip } from '@/ui/components/ui/chip';
-import { RadioGroup } from '@/ui/components/ui/checkbox';
-import { FilterSearch } from '@/ui/components/ui/filter-bar';
-import { Icon } from '@/ui/components/ui/icon';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { Panel } from '@/ui/components/ui/panel';
-import { SectionLabel } from '@/ui/components/ui/section-label';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
-import { Tile, TileGrid } from '@/ui/components/ui/tile';
+import { ApiBadge, Button, Callout, Chip, RadioGroup, FilterSearch, Icon, LiveIndicator, Panel, SectionLabel, SplitPane, SplitPaneMain, SplitPaneSide, Tile, TileGrid } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import './hub.css';
 

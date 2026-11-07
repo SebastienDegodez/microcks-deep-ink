@@ -5,10 +5,7 @@ import { callTotals, matchesRunKind, stoppedStep, verdictExplanation, type RunKi
 import type { WorkflowDetail } from '@/application/arazzo';
 import { useRelativeTime } from '@/ui/app';
 import { RUN_STATUS_ICON, RUN_STATUS_WORD } from '@/ui/app/outcomes';
-import { Chip } from '@/ui/components/ui/chip';
-import { Button } from '@/ui/components/ui/button';
-import { Icon, type IconName } from '@/ui/components/ui/icon';
-import { MethodTag } from '@/ui/components/ui/method-tag';
+import { Chip, Button, Icon, type IconName, MethodTag } from '@microcks/deep-ink';
 import { runPath, runSetupPath } from '../../workflows/shared';
 import { originWord } from '../run-facts';
 import './runs.css';

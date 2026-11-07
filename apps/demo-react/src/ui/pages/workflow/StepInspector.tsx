@@ -3,10 +3,7 @@ import { Link } from 'react-router';
 import { criteriaText, stoppedStep, type Action, type ArazzoDocument, type Step, type StepResult, type Workflow, type WorkflowRun } from '@/domain/arazzo';
 import { formatDuration } from '@/domain/shared/time';
 import { STATUS_ICON } from '@/ui/app/outcomes';
-import { Button } from '@/ui/components/ui/button';
-import { Icon } from '@/ui/components/ui/icon';
-import { MethodTag } from '@/ui/components/ui/method-tag';
-import { SplitPaneSide } from '@/ui/components/ui/split-pane';
+import { Button, Icon, MethodTag, SplitPaneSide } from '@microcks/deep-ink';
 import { bodyPointer, expressionsOf, formatValue, stepResultLine, threadsOf, valueIn, wrongValue } from './loom-model';
 import { httpLine, originWord, runNoun, stepChecksOf, stepStatusOf, type Tone } from './run-facts';
 

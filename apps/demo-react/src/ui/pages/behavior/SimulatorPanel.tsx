@@ -4,12 +4,8 @@ import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { Behavior, SimulationResult, StepKind } from '@/domain/catalog';
 import { useAnnounce, useUseCases } from '@/ui/app';
-import { Button } from '@/ui/components/ui/button';
-import { Checkbox } from '@/ui/components/ui/checkbox';
-import { Icon } from '@/ui/components/ui/icon';
-import { Input } from '@/ui/components/ui/input';
-import type { IconName } from '@/ui/components/ui/icon';
-import { Panel } from '@/ui/components/ui/panel';
+import { Button, Checkbox, Icon, Input, Panel } from '@microcks/deep-ink';
+import type { IconName } from '@microcks/deep-ink';
 
 const PRESETS = ['/pastries/Eclair%20Cafe', '/pastries/Millefeuille', '/pastries/Kouign-amann', '/pastries/Eclair%20Chocolat?size=XL'];
 const API_KEY = { 'x-api-key': 'demo-7f3a' };

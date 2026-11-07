@@ -11,12 +11,13 @@ import { createHttpObserveAdapters, TRAFFIC_POLL_MS } from '.';
 
 /** A `calls` handler that holds every request until the test releases it, counting the requests and those in flight. */
 function slowCallsHandler() {
-  const state = { requests: 0, inFlight: 0, maxInFlight: 0, pending: [] as (() => void)[] };
+  const state = { requests: 0, inFlight: 0, maxInFlight: 0, aborted: 0, pending: [] as (() => void)[] };
   server.use(
     mswHttp.get('*/api/demo/traffic/calls', async ({ request }) => {
       state.requests += 1;
       state.inFlight += 1;
       state.maxInFlight = Math.max(state.maxInFlight, state.inFlight);
+      request.signal.addEventListener('abort', () => (state.aborted += 1));
       await new Promise<void>((resolve) => state.pending.push(resolve));
       state.inFlight -= 1;
       const after = Number(new URL(request.url).searchParams.get('after') ?? 10);
@@ -71,7 +72,7 @@ describe('polling streams (traffic ticker over http)', () => {
     unsubscribe();
   });
 
-  it('unsubscribing during a request drops its answer and cancels the next tick', async () => {
+  it('unsubscribing during a request aborts it, drops its answer and cancels the next tick', async () => {
     const { state, releaseAll } = slowCallsHandler();
     const values: TraceCall[] = [];
     const unsubscribe = adapters().traffic.subscribe((c) => values.push(c));
@@ -79,6 +80,8 @@ describe('polling streams (traffic ticker over http)', () => {
     await advance(TRAFFIC_POLL_MS);
     expect(state.requests).toBe(1);
     unsubscribe();
+    await settle();
+    expect(state.aborted).toBe(1);
     await releaseAll();
     await advance(10 * TRAFFIC_POLL_MS);
     expect(values).toEqual([]);

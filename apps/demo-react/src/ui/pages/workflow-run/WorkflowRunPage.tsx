@@ -18,16 +18,7 @@ import {
 import { formatClock, formatDuration } from '@/domain/shared';
 import { RUN_SCENARIOS, type RunScenario } from '@/application/arazzo';
 import { PageHeader, useQuery, useRelativeTime, useSubscription, useUseCases, usePageTitle } from '@/ui/app';
-import { Chip } from '@/ui/components/ui/chip';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Facts } from '@/ui/components/ui/facts';
-import { Icon } from '@/ui/components/ui/icon';
-import { StatusBadge } from '@/ui/components/ui/status-badge';
-import { DataTable } from '@/ui/components/ui/table';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { RunMeta } from '@/ui/components/ui/run-meta';
-import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
+import { Chip, ApiBadge, Button, Facts, Icon, StatusBadge, DataTable, LiveIndicator, RunMeta, RunProgress, type RunSegment } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { ButtonRouterLink, runPath, runSetupPath, workflowPath } from '../workflows/shared';
 import { RunApiPanel, RunBadges, Verdict, implementationsText, runBreadcrumb } from './run-parts';

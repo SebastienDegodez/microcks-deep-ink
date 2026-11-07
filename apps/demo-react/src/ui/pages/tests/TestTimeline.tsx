@@ -1,9 +1,7 @@
 import { Link as RouterLink } from 'react-router';
 import { runConformance, type TestRunSummary } from '@/domain/testing';
-import { BarChart, type BarTone } from '@/ui/components/ui/bar-chart';
+import { BarChart, type BarTone, Icon, MethodTag } from '@microcks/deep-ink';
 import { TEST_RESULT_ICON, TEST_RESULT_WORD, type TestResult } from '@/ui/app/outcomes';
-import { Icon } from '@/ui/components/ui/icon';
-import { MethodTag } from '@/ui/components/ui/method-tag';
 import { testRunHref } from '@/ui/app/format';
 
 /** Bars taller than this duration are capped at 88% and labelled with their duration. */

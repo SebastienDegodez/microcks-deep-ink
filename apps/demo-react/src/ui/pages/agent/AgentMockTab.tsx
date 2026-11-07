@@ -1,11 +1,7 @@
 import './agent-mock.css';
 import { useState } from 'react';
 import { SSE_SAMPLE, pushSample, transportSample, transportStreamingNote, type AgentProfile, type CallMode } from '@/domain/agents';
-import { CodeBlock } from '@/ui/components/ui/code-block';
-import { CopyButton } from '@/ui/components/ui/copy-button';
-import { Icon } from '@/ui/components/ui/icon';
-import { Input } from '@/ui/components/ui/input';
-import { Segmented } from '@/ui/components/ui/segmented';
+import { CodeBlock, CopyButton, Icon, Input, Segmented } from '@microcks/deep-ink';
 
 /** The three bindings of a2a.proto, served at once by the mock, with a ready-to-paste call for each. */
 export function AgentMockTab({ agent }: { agent: AgentProfile }) {

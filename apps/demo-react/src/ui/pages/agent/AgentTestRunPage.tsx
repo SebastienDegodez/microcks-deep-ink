@@ -25,27 +25,7 @@ import {
 import { formatClock } from '@/domain/shared';
 import { PAGE_TITLE_ID, PageHeader, useAnnounce, usePageTitle, useQuery, useRelativeTime, useUseCases } from '@/ui/app';
 import { useReplay } from '@/ui/app/use-replay';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { Checkbox, Radio } from '@/ui/components/ui/checkbox';
-import { ConformanceMatrix, type CheckResult, type MatrixGroup, type MatrixRow } from '@/ui/components/ui/conformance-matrix';
-import { CiPanel } from '@/ui/components/ui/ci-panel';
-import { FactRow, Facts, type FactTone } from '@/ui/components/ui/facts';
-import { Field } from '@/ui/components/ui/field';
-import { ProjectionPill } from '@/ui/components/ui/projection-pill';
-import { ResultBox } from '@/ui/components/ui/result-box';
-import { RunMeta } from '@/ui/components/ui/run-meta';
-import { Icon } from '@/ui/components/ui/icon';
-import { StatusBadge } from '@/ui/components/ui/status-badge';
-import { Input } from '@/ui/components/ui/input';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
-import { RunnerLog } from '@/ui/components/ui/runner-log';
-import { SectionLabel } from '@/ui/components/ui/section-label';
-import { Select } from '@/ui/components/ui/select';
-import { SummaryStrip } from '@/ui/components/ui/summary-strip';
-import { TaskLanes } from '@/ui/components/ui/task-timeline';
+import { ApiBadge, Button, Callout, Checkbox, Radio, ConformanceMatrix, type CheckResult, type MatrixGroup, type MatrixRow, CiPanel, FactRow, Facts, type FactTone, Field, ProjectionPill, ResultBox, RunMeta, Icon, StatusBadge, Input, LiveIndicator, RunProgress, type RunSegment, RunnerLog, SectionLabel, Select, SummaryStrip, TaskLanes } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 
 /** The runner fills one matrix cell every 800 ms, as in the prototype. */

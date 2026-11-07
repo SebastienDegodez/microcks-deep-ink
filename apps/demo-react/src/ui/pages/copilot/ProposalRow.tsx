@@ -2,11 +2,7 @@ import { useEffect, useId, useRef } from 'react';
 import { findCriteriaConflict, validateExampleDraft } from '@/domain/copilot';
 import type { Example, Operation } from '@/domain/shared';
 import { exampleUrlPath } from '@/domain/catalog';
-import { Button } from '@/ui/components/ui/button';
-import { Exchange, ExchangeCard } from '@/ui/components/ui/exchange-card';
-import { Icon } from '@/ui/components/ui/icon';
-import { Input, Textarea } from '@/ui/components/ui/input';
-import { SectionLabel } from '@/ui/components/ui/section-label';
+import { Button, Exchange, ExchangeCard, Icon, Input, Textarea, SectionLabel } from '@microcks/deep-ink';
 
 export type Status = 'pending' | 'accepted' | 'rejected';
 export interface Item { example: Example; status: Status; edited: boolean; expanded: boolean; editing: boolean; draftName: string; draftBody: string }

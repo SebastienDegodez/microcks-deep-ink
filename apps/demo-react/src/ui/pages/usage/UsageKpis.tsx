@@ -1,8 +1,6 @@
 import { Link as RouterLink } from 'react-router';
 import { formatCount, type UsageView } from '@/domain/observe';
-import { Icon } from '@/ui/components/ui/icon';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { StatCard, StatGrid } from '@/ui/components/ui/stat-card';
+import { Icon, LiveIndicator, StatCard, StatGrid } from '@microcks/deep-ink';
 import './kpis.css';
 
 const tone = (score: number | null) => (score === null ? 'neutral' : score >= 80 ? 'success' : score >= 50 ? 'warning' : 'danger');

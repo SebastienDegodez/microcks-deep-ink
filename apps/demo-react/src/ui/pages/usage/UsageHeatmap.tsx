@@ -1,7 +1,6 @@
 import { useId, useState } from 'react';
 import { WEEKDAY_HEADERS, formatCount, heatmapWeeks, type UsageView } from '@/domain/observe';
-import { Facts } from '@/ui/components/ui/facts';
-import { Panel } from '@/ui/components/ui/panel';
+import { Facts, Panel } from '@microcks/deep-ink';
 import { useRovingSelection } from '../tests/roving';
 import './heatmap.css';
 
