@@ -8,6 +8,10 @@ Guarantees below hold within `0.x`: the class name is stable, it stays on the el
 styles stay in `@layer deep-ink.components`, so an unlayered page rule wins whatever its specificity.
 Count: `python3 -I tools/fidelity/registry-selectors.py .` (114 selectors, 39 classes).
 
+CI fails on any page selector not in `tools/fidelity/registry-selectors.allow`. To add one, in the same PR: add the
+`NEW` line printed by the check to the allowlist and document the class here; the reviewer must justify it (why no
+component option or page-owned class fits). See `tools/fidelity/README.md`.
+
 Pages style their own elements through the documented `className` prop (merged on the root element) and the native
 props forwarded to it (`strokeWidth` on `Icon`); those are not listed.
 

@@ -1,7 +1,13 @@
 """Count page CSS selectors that reach into registry classes.
 usage: python3 -I registry-selectors.py <repo> [--check <allowlist>]
-Allowlist: one 'page-folder<TAB>selector' per line. --check exits 1 on any selector not listed."""
+Allowlist: one 'page-folder<TAB>selector' per line; blank lines and lines starting with '#' are ignored.
+--check exits 1 on any selector not listed. `--self-test` checks the allowlist parser and exits."""
 import re, sys, glob, os, collections
+def load_allow(lines):
+    return set(l.rstrip('\n') for l in lines if l.strip() and not l.startswith('#'))
+if sys.argv[1:] == ['--self-test']:
+    assert load_allow(['# c\tx\n', '\n', 'a\t.b .icon\n']) == {'a\t.b .icon'}
+    print('ok'); sys.exit(0)
 root = sys.argv[1]
 strip = lambda t: re.sub(r'/\*.*?\*/', '', t, flags=re.S)
 reg = set()
@@ -21,7 +27,7 @@ for f in sorted(glob.glob(pages + '/**/*.css', recursive=True)):
                 found.append(f'{folder}\t{s}'); per[folder] += 1
                 for c in set(hits): cls[c] += 1
 if '--check' in sys.argv:
-    allow = set(l.rstrip('\n') for l in open(sys.argv[sys.argv.index('--check') + 1]) if l.strip())
+    allow = load_allow(open(sys.argv[sys.argv.index('--check') + 1]))
     new = [x for x in found if x not in allow]
     for x in new: print('NEW', x)
     sys.exit(1 if new else 0)

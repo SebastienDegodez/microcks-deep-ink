@@ -3,7 +3,8 @@ name: Build, check and publish the demo site
 # DEMO site: landing page, React Storybook, Angular Storybook and the clickable demo.
 # Pull requests build and check everything; only pushes to main deploy to GitHub Pages.
 #   react   the React workspace (react.yml): @microcks/deep-ink (dist) and the React Storybook
-#   root    the root workspace: registry, tokens, core, CLI, Angular Storybook, demo (it consumes the dist)
+#   root    the root workspace: registry-selectors allowlist check, registry, tokens, core, CLI, Angular Storybook,
+#           demo (it consumes the dist)
 #   site    assembles the Pages site, runs the accessibility smoke run, uploads the Pages artifact on main
 #   deploy  main only
 on:
@@ -11,6 +12,8 @@ on:
     branches: [main]
   pull_request:
     # svelte/ has svelte.yml, and react/apps/ (the React Storybook) is checked by react.yml.
+    # apps/demo-react/src/ui/pages/** and packages/registry/src/css/** are not ignored: they run the
+    # registry-selectors check in the root job (the allowlist itself lives in tools/fidelity/).
     paths-ignore:
       - "svelte/**"
       - "react/apps/**"
@@ -41,6 +44,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v7
+      # No build needed: page CSS (apps/demo-react/src/ui/pages) must not reach into a registry class
+      # (packages/registry/src/css) unless the selector is in the allowlist and documented in PUBLIC-CSS.md.
+      - run: python3 -I tools/fidelity/registry-selectors.py --self-test
+      - run: python3 -I tools/fidelity/registry-selectors.py . --check tools/fidelity/registry-selectors.allow
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v7
         with:
