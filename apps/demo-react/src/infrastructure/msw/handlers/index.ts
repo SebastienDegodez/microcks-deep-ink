@@ -1,10 +1,7 @@
 import type { AnyHandler } from 'msw';
+import { createTestingHandlers } from './testing';
 
-/**
- * Prefix of every API handler path. The demo is served under a sub-path (`/microcks-deep-ink/demo/` on Pages,
- * `/` in dev and in tests), so handlers match any origin and directory: `http.get(`${API}/services`, ...)`.
- */
-export const API = '*/api';
+export { API } from './api';
 
 /** Every feature's handlers (`./<feature>.ts`), shared by the browser worker and the vitest server. */
-export const handlers: AnyHandler[] = [];
+export const handlers: AnyHandler[] = [...createTestingHandlers()];
