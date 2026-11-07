@@ -1,0 +1,7 @@
+{
+  "component": "ThemeToggle",
+  "cases": [
+    {"name": "default", "props": {}},
+    {"name": "attributes-and-fixed-props", "props": {"id": "theme", "title": "Switch theme", "disabled": true, "data-testid": "theme", "className": "ignored", "aria-label": "ignored", "aria-pressed": true, "type": "submit", "variant": "primary"}}
+  ]
+}
