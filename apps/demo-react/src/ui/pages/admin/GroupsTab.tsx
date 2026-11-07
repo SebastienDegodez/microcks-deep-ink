@@ -110,7 +110,7 @@ export function GroupsTab({ users, groups, draft, setDraft, notify, onChanged }:
                       return (
                         <td key={m.id} className="ad-matrix-cell">
                           <button type="button" className="ad-cell" data-state={state} aria-pressed={now} aria-label={label} title={title} onClick={() => toggle(key)}>
-                            {now ? <Icon name="check" size={16} /> : state === 'remove' ? <Icon name="dash" size={14} /> : <span className="ad-cell-dot" aria-hidden="true" />}
+                            {now ? <Icon name="check" size={16} strokeWidth={2.8} /> : state === 'remove' ? <Icon name="dash" size={14} strokeWidth={2.6} /> : <span className="ad-cell-dot" aria-hidden="true" />}
                           </button>
                         </td>
                       );

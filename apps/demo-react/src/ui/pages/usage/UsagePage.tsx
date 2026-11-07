@@ -49,7 +49,7 @@ export default function UsagePage() {
               <SectionLabel as="label" htmlFor={selectId}>
                 Service
               </SectionLabel>
-              <Select id={selectId} value={scope} onChange={(e) => navigate(e.target.value === 'all' ? '/metrics' : `/metrics/${e.target.value}`)}>
+              <Select id={selectId} className="us-select" value={scope} onChange={(e) => navigate(e.target.value === 'all' ? '/metrics' : `/metrics/${e.target.value}`)}>
                 {(scopes.data ?? [{ id: 'all', label: 'All services' }]).map((o) => (
                   <option key={o.id} value={o.id}>
                     {o.label}

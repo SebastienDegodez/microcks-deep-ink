@@ -164,8 +164,8 @@ export default function BehaviorPage() {
                           </select>
                         </td>
                         <td><input className="cell-control" type="text" aria-label={`Name of ${who}`} placeholder="parameter name" value={c.name} onChange={(e) => setConstraint(i, { name: e.target.value })} /></td>
-                        <td className="is-center"><input type="checkbox" className="checkbox" aria-label={`${who} is required`} checked={c.required} onChange={(e) => setConstraint(i, { required: e.target.checked })} /></td>
-                        <td className="is-center"><input type="checkbox" className="checkbox" aria-label={`Recopy ${who}`} checked={Boolean(c.recopy)} onChange={(e) => setConstraint(i, { recopy: e.target.checked })} /></td>
+                        <td className="is-center"><input type="checkbox" className="checkbox constraint-check" aria-label={`${who} is required`} checked={c.required} onChange={(e) => setConstraint(i, { required: e.target.checked })} /></td>
+                        <td className="is-center"><input type="checkbox" className="checkbox constraint-check" aria-label={`Recopy ${who}`} checked={Boolean(c.recopy)} onChange={(e) => setConstraint(i, { recopy: e.target.checked })} /></td>
                         <td>
                           <input
                             className="cell-control cell-regexp"

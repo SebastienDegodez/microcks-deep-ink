@@ -90,7 +90,7 @@ export function ScopeSection({ target, protocol, d, update, uid, selected, error
 function OperationLabel({ verb, path, samples, protocol }: { verb: string; path: string; samples: number; protocol?: Parameters<typeof MethodTag>[0]['protocol'] }) {
   return (
     <span className="tc-op-label">
-      <MethodTag method={verb} protocol={protocol} />
+      <MethodTag method={verb} protocol={protocol} className="tc-op-method" />
       <span className="tc-op-path">{path}</span>
       <span className="tc-op-samples">
         {samples} {samples === 1 ? 'sample' : 'samples'}

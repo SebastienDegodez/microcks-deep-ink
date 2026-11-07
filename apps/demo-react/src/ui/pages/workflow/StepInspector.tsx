@@ -153,7 +153,7 @@ export function StepInspector({ workflow, document, run, step, failedStepId, ser
           {run ? `, with the values resolved in run #${run.number}` : ''}.
         </span>
         {failedStepId && run ? (
-          <Button size="sm" onClick={onSelectFailed}>
+          <Button size="sm" className="wf-inspector-select" onClick={onSelectFailed}>
             Inspect the failed step of #{run.number}
           </Button>
         ) : null}
@@ -242,7 +242,7 @@ export function StepInspector({ workflow, document, run, step, failedStepId, ser
               <div className="wf-ins-checks">
                 {checks.map((c) => (
                   <span key={c.label} className="wf-ins-check">
-                    <Icon name={STATUS_ICON[c.tone]} size={15} strokeWidth={2.2} data-tone={c.tone} />
+                    <Icon name={STATUS_ICON[c.tone]} size={15} strokeWidth={2.2} data-tone={c.tone} className="wf-ins-icon" />
                     <span>{c.label}</span>
                     <strong data-tone={c.tone}>{c.word}</strong>
                   </span>

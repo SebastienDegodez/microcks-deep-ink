@@ -12,7 +12,7 @@ export function ConfigurationTab() {
   return (
     <div className="ad-tab">
       <div role="note" className="ad-lock-note">
-        <Icon name="lock" size={14} />
+        <Icon name="lock" size={14} className="ad-lock-icon" />
         <span>
           Read-only. These values come from <span className="demo-mono">application.properties</span> and <span className="demo-mono">features.properties</span>, or from your Helm values or Operator resource. Change them there and restart Microcks.
         </span>
@@ -25,7 +25,7 @@ export function ConfigurationTab() {
               <span className="ad-flag-desc">{f.description}</span>
             </span>
             <span className="ad-flag-state" data-on={f.enabled ? '' : undefined}>
-              <Icon name={f.enabled ? 'check' : 'circle'} size={14} />
+              <Icon name={f.enabled ? 'check' : 'circle'} size={14} strokeWidth={f.enabled ? 2.6 : 2} />
               {f.enabled ? 'Enabled' : 'Disabled'}
             </span>
             <span className="ad-flag-value">{f.value ?? '—'}</span>

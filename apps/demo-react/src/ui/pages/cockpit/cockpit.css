@@ -5,7 +5,6 @@
 .cockpit-stats { --stat-min: 240px; }
 .cockpit-stats .stat-card, .cockpit-stats .stat-card-body { gap: 10px; }
 .cockpit-stats .stat-card[data-empty] .stat-card-value { color: var(--text-muted); }
-.stat-card-action > a { color: var(--link); text-decoration: none; }
 .stat-card-action > a:hover { text-decoration: underline; }
 .cockpit-stat-foot { font: 400 12px/1.4 var(--font-ui); color: var(--text-muted); }
 
@@ -25,7 +24,6 @@
 .kpi-gauge > span { position: absolute; inset: 0 auto 0 0; border-radius: 2px; background: var(--level); }
 .kpi-counts { display: flex; flex-wrap: wrap; gap: 14px; font: 600 13px/1.4 var(--font-ui); }
 .kpi-counts > span { display: inline-flex; align-items: center; gap: 6px; }
-.kpi-counts .icon { stroke-width: 2.2; }
 .kpi-workflows { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font: 400 12px/1.4 var(--font-ui); color: var(--text-muted); }
 .kpi-workflows > a { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; color: var(--link); text-decoration: none; }
 .kpi-workflows > a:hover { text-decoration: underline; }
@@ -115,9 +113,7 @@
 .recent-test:hover { border-color: var(--border-strong); text-decoration: none; }
 .recent-test-result { flex: 0 0 82px; display: inline-flex; align-items: center; gap: 6px; font: 600 13px/normal var(--font-ui); color: var(--danger); }
 .recent-test[data-ok] .recent-test-result { color: var(--success); }
-.recent-test-result .icon { stroke-width: 2.2; }
 .recent-test-what { flex: 1 1 200px; min-width: 0; display: flex; flex-direction: column; align-items: flex-start; gap: 3px; }
-.recent-test-what .api-badge { max-width: 100%; }
 .recent-test-runner { font: 400 11px/normal var(--font-mono); color: var(--text-muted); }
 .recent-test-figures { flex: 0 0 auto; display: flex; flex-direction: column; align-items: flex-end; gap: 2px; font: 400 12px/normal var(--font-mono); color: var(--text-secondary); }
 .recent-test-when { font-size: 11px; color: var(--text-muted); }
@@ -172,7 +168,6 @@
 .start-step-toggle { flex: none; width: 30px; height: 30px; display: inline-flex; align-items: center; justify-content: center; padding: 0; border: 1.5px solid var(--border-strong); border-radius: 999px; background: transparent; color: var(--text); font: 600 13px/1 var(--font-mono); cursor: pointer; }
 .start-step[data-current] .start-step-toggle { border-color: var(--action); }
 .start-step[data-done] .start-step-toggle { border-color: var(--success); background: var(--success); color: var(--on-status); }
-.start-step-toggle .icon { stroke-width: 2.6; }
 .start-step-text { flex: 1 1 260px; min-width: 0; display: flex; flex-direction: column; gap: 6px; }
 .start-step-title { font: 600 15px/normal var(--font-ui); color: var(--text); }
 .start-step[data-done] .start-step-title { color: var(--text-muted); }

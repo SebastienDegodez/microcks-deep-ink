@@ -41,10 +41,10 @@ export function AgentMockTab({ agent }: { agent: AgentProfile }) {
               </div>
             </div>
             <p className="agent-transport-stream">
-              <Icon name="activity" size={13} />
+              <Icon name="activity" size={13} className="agent-stream-icon" />
               <span>{transportStreamingNote(t, mode)}</span>
             </p>
-            <CodeBlock className="agent-transport-sample" code={transportSample(t, mode)} language="bash" caption={`${method} · ${t.id === 'grpc' ? 'grpcurl' : 'curl'}`} label={`${method} · ${t.id === 'grpc' ? 'grpcurl' : 'curl'}, ${t.name} binding`} />
+            <CodeBlock className="agent-transport-sample agent-panel-code" code={transportSample(t, mode)} language="bash" caption={`${method} · ${t.id === 'grpc' ? 'grpcurl' : 'curl'}`} label={`${method} · ${t.id === 'grpc' ? 'grpcurl' : 'curl'}, ${t.name} binding`} />
             <div className="agent-also">
               <span className="agent-also-label">Also served</span>
               <span className="agent-also-list">{t.more}</span>
@@ -60,7 +60,7 @@ export function AgentMockTab({ agent }: { agent: AgentProfile }) {
               HTTP+JSON shape for <span className="demo-mono">ord-2417-ready</span>, paced by the task script. JSON-RPC wraps each event in <span className="demo-mono">result</span>.
             </span>
           </div>
-          <CodeBlock code={SSE_SAMPLE} variant="plain" copy={false} caption="text/event-stream" />
+          <CodeBlock className="agent-panel-code" code={SSE_SAMPLE} variant="plain" copy={false} caption="text/event-stream" />
         </section>
       ) : null}
       <div className="agent-mock-foot">
@@ -70,7 +70,7 @@ export function AgentMockTab({ agent }: { agent: AgentProfile }) {
             <CopyButton value={push} label="Copy" variant="link" aria-label="Copy the push notification request" />
           </div>
           <p className="agent-panel-text">Register a webhook on a task; the mock posts each status and artifact update to it, following the script timing.</p>
-          <CodeBlock code={push} language="bash" variant="plain" copy={false} caption="CreateTaskPushNotificationConfig" />
+          <CodeBlock className="agent-panel-code" code={push} language="bash" variant="plain" copy={false} caption="CreateTaskPushNotificationConfig" />
           <p className="agent-webhook">
             <span className="ex-muted">1 registered webhook</span>
             <span className="agent-webhook-url">{agent.webhook.url}</span>
@@ -80,7 +80,7 @@ export function AgentMockTab({ agent }: { agent: AgentProfile }) {
         <section className="agent-card-panel agent-answers" aria-labelledby="agent-answers-title">
           <h2 id="agent-answers-title">How the mock answers</h2>
           <div role="note" className="agent-note">
-            <Icon name="ban" size={15} />
+            <Icon name="ban" size={15} className="agent-note-icon" />
             <span>Unmatched messages answer a task in state <span className="demo-mono">rejected</span>, not an HTTP error.</span>
           </div>
           <ul className="agent-answers-list">

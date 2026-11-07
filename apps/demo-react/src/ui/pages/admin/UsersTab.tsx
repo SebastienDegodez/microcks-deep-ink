@@ -102,7 +102,7 @@ export function UsersTab({ users, groups, notify, onChanged }: { users: QueryRes
   return (
     <div className="ad-tab" aria-busy={users.status === 'loading'}>
       <div className="ad-toolbar">
-        <FilterSearch label="Filter users" placeholder="Filter by name, username or email…" autoComplete="off" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <FilterSearch className="ad-search" label="Filter users" placeholder="Filter by name, username or email…" autoComplete="off" value={query} onChange={(e) => setQuery(e.target.value)} />
         <span className="ad-meta">{plural(all.length, 'user')} · {count('admin')} admin · {plural(count('manager'), 'manager')}</span>
       </div>
       <DataTable

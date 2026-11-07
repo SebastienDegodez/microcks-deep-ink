@@ -96,9 +96,9 @@
 }
 .wfr-action:hover { filter: brightness(1.08); }
 .wfr-action[data-tone="danger"] { border-color: var(--danger); }
-.wfr-action[data-tone="danger"] .icon { color: var(--danger); }
+.wfr-action[data-tone="danger"] .wfr-action-icon { color: var(--danger); }
 .wfr-action[data-tone="action"] { border-color: var(--action); }
-.wfr-action[data-tone="action"] .icon { color: var(--action); }
+.wfr-action[data-tone="action"] .wfr-action-icon { color: var(--action); }
 .wfr-action-op { font: 400 12px/1 var(--font-mono); color: var(--text-secondary); }
 
 .wfr-verdict { display: inline-flex; align-items: center; gap: 5px; font: 600 12px/1.4 var(--font-ui); white-space: nowrap; }
@@ -193,7 +193,7 @@ button[aria-expanded="true"] > .wfr-step-chevron { transform: rotate(90deg); }
 .wfr-step-pend { margin: 0; padding: 10px 14px; border-top: 1px solid var(--border); font: 400 13px/1.5 var(--font-ui); color: var(--text-muted); }
 .wfr-step-body { display: flex; flex-direction: column; gap: 16px; padding: 14px 16px 16px; border-top: 1px solid var(--border); }
 .wfr-step-failure { margin: 0; display: flex; align-items: flex-start; gap: 8px; padding: 10px 12px; border-radius: 4px; border: 1px solid var(--danger); font: 400 12px/1.55 var(--font-ui); color: var(--text); }
-.wfr-step-failure .icon { flex: none; margin-top: 2px; color: var(--danger); }
+.wfr-failure-icon { flex: none; margin-top: 2px; color: var(--danger); }
 .wfr-step-desc { margin: 0; font: 400 13px/1.5 var(--font-ui); color: var(--text-secondary); }
 
 .wfr-request-line { display: flex; flex-wrap: wrap; align-items: baseline; gap: 6px 10px; padding: 8px 12px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg); font: 400 12px/1.6 var(--font-mono); }
@@ -227,7 +227,7 @@ button[aria-expanded="true"] > .wfr-step-chevron { transform: rotate(90deg); }
 .wfr-attempt-no { flex: none; min-width: 72px; font-weight: 600; color: var(--text); }
 .wfr-attempt-ms { flex: none; min-width: 48px; font-family: var(--font-mono); color: var(--text-secondary); }
 .wfr-attempt-note { flex: 1 1 260px; min-width: 0; display: inline-flex; align-items: flex-start; gap: 6px; line-height: 1.5; color: var(--text-secondary); }
-.wfr-attempt-note .icon { flex: none; margin-top: 3px; }
+.wfr-attempt-icon { flex: none; margin-top: 3px; }
 .wfr-code-chip { flex: none; min-width: 38px; box-sizing: border-box; text-align: center; font: 600 11px/1.4 var(--font-mono); color: var(--text-secondary); border: 1px solid currentColor; border-radius: 4px; padding: 1px 5px; }
 .wfr-code-chip[data-tone="success"] { color: var(--success); }
 .wfr-code-chip[data-tone="danger"] { color: var(--danger); }
@@ -244,7 +244,7 @@ button[aria-expanded="true"] > .wfr-step-chevron { transform: rotate(90deg); }
 .wfr-schema-text[data-tone="text"] { color: var(--text); }
 
 .wfr-coherence { display: flex; align-items: flex-start; gap: 10px; padding: 12px 14px; border-radius: 6px; border: 1px solid var(--warning); background: var(--surface); }
-.wfr-coherence > .icon { flex: none; margin-top: 2px; color: var(--warning); }
+.wfr-coherence-icon { flex: none; margin-top: 2px; color: var(--warning); }
 .wfr-coherence-body { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
 .wfr-coherence-body p { margin: 0; font: 400 13px/1.6 var(--font-ui); color: var(--text); max-width: 75ch; }
 .wfr-coherence-links { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 16px; font-size: 13px; }
@@ -255,8 +255,8 @@ button[aria-expanded="true"] > .wfr-step-chevron { transform: rotate(90deg); }
 .wfr-output-chip { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; padding: 2px 8px; border-radius: 6px; border: 1px solid var(--border); font: 400 12px/1.5 var(--font-mono); color: var(--text); }
 .wfr-output-chip strong { font-weight: 600; }
 .wfr-flow { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 4px; background: var(--surface); }
-.wfr-flow > .icon { flex: none; margin-top: 2px; color: var(--success); }
-.wfr-flow[data-kind="stop"] > .icon { color: var(--danger); }
+.wfr-flow-icon { flex: none; margin-top: 2px; color: var(--success); }
+.wfr-flow[data-kind="stop"] > .wfr-flow-icon { color: var(--danger); }
 .wfr-flow-text { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .wfr-flow-title { font: 600 13px/1.4 var(--font-ui); color: var(--text); overflow-wrap: anywhere; }
 .wfr-flow-detail { font: 400 12px/1.55 var(--font-ui); color: var(--text-secondary); max-width: 75ch; }
@@ -277,7 +277,7 @@ button[aria-expanded="true"] > .wfr-step-chevron { transform: rotate(90deg); }
 .wfr-api-foot > .wfr-note { flex: 1 1 200px; }
 .wfr-api-mock { display: flex; flex-direction: column; gap: 8px; padding-top: 12px; border-top: 1px solid var(--border); }
 .wfr-api-mock .wfr-pre > pre { padding: 10px 12px; }
-.wfr-api-mock > .wfr-copy, .wfr-api-mock > .copy-button { align-self: flex-end; }
+.wfr-api-mock > .wfr-copy { align-self: flex-end; }
 
 /* ------------------------------------------------------------------------------------- setup */
 .wfr-setup { gap: 0; }
@@ -291,10 +291,10 @@ fieldset.wfr-setup-group > legend + * { clear: both; }
 .wfr-label-type { font-weight: 400; color: var(--text-muted); }
 .wfr-field { min-width: 0; }
 /* The width caps the control only; the help line runs on (as in the prototype). */
-.wfr-w-420 :is(input, select, .select) { max-width: 420px; }
-.wfr-w-320 :is(input, select, .select) { max-width: 320px; }
-.wfr-w-520 :is(input, select, .select) { max-width: 520px; }
-.wfr-w-220 :is(input, select, .select) { max-width: 220px; }
+.wfr-w-420 :is(input, select) { max-width: 420px; }
+.wfr-w-320 :is(input, select) { max-width: 320px; }
+.wfr-w-520 :is(input, select) { max-width: 520px; }
+.wfr-w-220 :is(input, select) { max-width: 220px; }
 .wfr-mono-control { font-family: var(--font-mono); font-size: 13px; }
 .wfr-url-control { color: var(--link); }
 .wfr-target-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 8px; }

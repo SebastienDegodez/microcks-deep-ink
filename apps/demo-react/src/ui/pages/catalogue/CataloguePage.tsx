@@ -66,7 +66,7 @@ export default function CataloguePage() {
   const labelChips = (s: ServiceSummary) => (
     <span className="catalogue-labels">
       {s.labels.map((l) => (
-        <Chip key={labelToString(l)} size="sm" labelKey={l.key}>
+        <Chip key={labelToString(l)} size="sm" labelKey={l.key} className="catalogue-label-chip">
           {l.value}
         </Chip>
       ))}
@@ -212,7 +212,7 @@ export default function CataloguePage() {
           {data.services.map((s) => (
             <article key={s.id} className="catalogue-card">
               <div className="catalogue-card-head">
-                <ApiBadge protocol={s.protocol} name={s.name} version={s.version} size="card" />
+                <ApiBadge protocol={s.protocol} name={s.name} version={s.version} size="card" className="catalogue-card-badge" />
                 <span className="catalogue-format">{s.format} · {pluralize(s.operationCount, operationUnit(s.protocol))}</span>
               </div>
               <div className="catalogue-shields">
@@ -237,9 +237,9 @@ export default function CataloguePage() {
         <span>{data.services.length} of {data.total} · page 1 of 1</span>
         <nav aria-label="Pagination" className="catalogue-pager-nav">
           <span className="catalogue-pager-size">20 per page</span>
-          <Button size="sm" variant="secondary" icon="chevron-left" iconOnly aria-label="Previous page" disabled />
+          <Button size="sm" variant="secondary" icon="chevron-left" iconOnly aria-label="Previous page" disabled className="catalogue-pager-btn" />
           <span className="catalogue-pager-page" aria-current="page">1</span>
-          <Button size="sm" variant="secondary" icon="chevron" iconOnly aria-label="Next page" disabled />
+          <Button size="sm" variant="secondary" icon="chevron" iconOnly aria-label="Next page" disabled className="catalogue-pager-btn" />
         </nav>
       </footer>
     </div>

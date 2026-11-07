@@ -75,7 +75,7 @@ function Setup({ defaults, initial, onRun }: { defaults: AgentTestDefaults; init
       <form className="setup-grid" onSubmit={(e) => { e.preventDefault(); if (!problem) onRun(merged); }} noValidate>
         <div className="setup-col" data-col="main">
           <Field label="Agent Card URL" error={urlOk ? undefined : 'Enter an http(s) URL, usually ending in /.well-known/agent-card.json.'} help={urlOk ? 'Microcks reads the card, then calls each interface listed in supportedInterfaces.' : undefined} className="setup-url">
-            {(c) => <Input {...c} required type="url" spellCheck={false} autoComplete="off" mono value={setup.cardUrl} onChange={(e) => setSetup({ ...setup, cardUrl: e.target.value })} />}
+            {(c) => <Input {...c} className="setup-url-input" required type="url" spellCheck={false} autoComplete="off" mono value={setup.cardUrl} onChange={(e) => setSetup({ ...setup, cardUrl: e.target.value })} />}
           </Field>
           <fieldset className="setup-fieldset">
             <legend>
@@ -123,7 +123,7 @@ function Setup({ defaults, initial, onRun }: { defaults: AgentTestDefaults; init
         <div className="setup-col" data-col="side">
           <Field label="Secret" help={secret?.help} className={secret?.matches ? 'setup-secret' : 'setup-secret setup-secret-warn'}>
             {(c) => (
-              <Select {...c} value={setup.secret} onChange={(e) => setSetup({ ...setup, secret: e.target.value })}>
+              <Select {...c} className="setup-secret-select" value={setup.secret} onChange={(e) => setSetup({ ...setup, secret: e.target.value })}>
                 {defaults.secrets.map((s) => <option key={s.name} value={s.name}>{s.name || 'No secret'}</option>)}
               </Select>
             )}
@@ -134,7 +134,7 @@ function Setup({ defaults, initial, onRun }: { defaults: AgentTestDefaults; init
             help={timeoutOk ? 'Per agent message, not per conversation. LLM agents can take several seconds to answer.' : undefined}
             className="setup-timeout"
           >
-            {(c) => <Input {...c} required mono inputMode="numeric" value={timeout} onChange={(e) => setTimeoutText(e.target.value)} />}
+            {(c) => <Input {...c} className="setup-timeout-input" required mono inputMode="numeric" value={timeout} onChange={(e) => setTimeoutText(e.target.value)} />}
           </Field>
           <fieldset className="setup-compare">
             <legend>Compare agent text loosely</legend>
@@ -223,7 +223,7 @@ function Detail({ detail, check, onClose }: { detail: AgentCheckDetail; check: A
             <div className="lifecycle-box">
               <TaskLanes lanes={detail.lanes} />
               {detail.note ? (
-                <p className="lifecycle-note"><Icon name="arrow-up" size={13} />{detail.note}</p>
+                <p className="lifecycle-note"><Icon name="arrow-up" size={13} className="lifecycle-icon" />{detail.note}</p>
               ) : null}
             </div>
           </div>
@@ -416,7 +416,7 @@ function Results({ run, phase, tick, conversationSubs, onStep, onReplay, onEdit 
                 </span>
                 {run.failures.map((f) => (
                   <button key={`${f.row}|${f.transport}`} type="button" className="failure-link" onClick={() => setChosen(cellKey(f.row, f.transport))}>
-                    <Icon name="cross" size={13} />
+                    <Icon name="cross" size={13} className="failure-link-icon" />
                     <span><span className="failure-link-cell">{AGENT_TRANSPORT_NAMES[f.transport]} × {f.row}</span> · {f.cause}</span>
                   </button>
                 ))}

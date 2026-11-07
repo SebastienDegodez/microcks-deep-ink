@@ -166,7 +166,7 @@ export default function SourcesPage() {
 
         <SummaryStrip variant="canvas" className="scan-strip" role="group" aria-label="Scan schedule">
           <span className="scan-strip-group">
-            <Icon name="clock" size={15} />
+            <Icon name="clock" size={15} className="scan-strip-icon" />
             <span className="muted">Scan schedule</span>
             <span className="scan-strip-cron">{schedule.cron}</span>
             <span className="secondary">{schedule.description}</span>
@@ -233,7 +233,7 @@ export default function SourcesPage() {
                   ) : <Switch label={<span className="sr-only">{`Scan ${j.name} on schedule`}</span>} checked={j.active} onChange={(v) => void toggleActive(j, v)} />}
                   <button type="button" id={`source-name-${j.id}`} className="source-card-name" aria-pressed={isSel} onClick={() => navigate(`/sources/${j.id}`)}>{j.name}</button>
                   {running ? <LiveIndicator label="live · importing" variant="inline" /> : (
-                    <span className="source-status" data-status={st}><Icon name={STATUS_ICON[st]} size={14} />{STATUS_WORD[st]}</span>
+                    <span className="source-status" data-status={st}><Icon name={STATUS_ICON[st]} size={14} strokeWidth={2.4} />{STATUS_WORD[st]}</span>
                   )}
                   <span className="source-card-last">{last}</span>
                 </div>
@@ -423,7 +423,7 @@ function TimelineLine({ entry, when }: { entry: Extract<SyncEntry, { kind: 'run'
         <span className="demo-mono sync-entry-clock">{formatShortClock(entry.at)}</span>
         <span className="muted sync-entry-when">{when}</span>
         <span className="secondary">{entry.trigger}</span>
-        <span className="sync-entry-result" data-result={entry.result}><Icon name={RESULT_ICON[entry.result]} size={12} />{RESULT_WORD[entry.result]}</span>
+        <span className="sync-entry-result" data-result={entry.result}><Icon name={RESULT_ICON[entry.result]} size={12} strokeWidth={2.6} />{RESULT_WORD[entry.result]}</span>
       </span>
       <span className="sync-entry-change">
         {entry.changes.length ? (

@@ -287,14 +287,14 @@ function RunView({ base }: { base: TestRun }) {
                 </span>
                 {previous ? (
                   <span className="tr-trend" data-dir={delta < 0 ? 'down' : delta > 0 ? 'up' : 'flat'}>
-                    <Icon name={delta < 0 ? 'arrow-down' : delta > 0 ? 'arrow-up' : 'dash'} size={13} />
+                    <Icon name={delta < 0 ? 'arrow-down' : delta > 0 ? 'arrow-up' : 'dash'} size={13} strokeWidth={2.4} />
                     {delta === 0 ? 'Same as' : `${Math.abs(delta)} pts vs`} run #{previous.runId} <span className="tr-trend-prev">{previous.conformance}%</span>
                   </span>
                 ) : null}
               </div>
               <div className="tr-verdict-text">
                 <span className="tr-verdict-word" data-result={base.result}>
-                  <Icon name={base.result === 'passed' ? 'check' : base.result === 'failed' ? 'cross' : 'clock'} size={18} />
+                  <Icon name={base.result === 'passed' ? 'check' : base.result === 'failed' ? 'cross' : 'clock'} size={18} strokeWidth={2.6} />
                   {base.result === 'passed' ? 'Passed' : base.result === 'failed' ? 'Failed' : 'Timed out'}
                 </span>
                 <span className="tr-verdict-summary">
@@ -440,7 +440,7 @@ function RunView({ base }: { base: TestRun }) {
                       <span className="tr-step-ms">{isFin ? `${step.ms} ms` : '—'}</span>
                       <StatusBadge shape="bare" status={LOOK[st].status} label={LOOK[st].word} className="tr-state" />
                       <span className="tr-step-chevron" aria-hidden="true">
-                        {isFin ? <Icon name="chevron" size={16} /> : null}
+                        {isFin ? <Icon name="chevron" size={16} className="tr-step-chevron-icon" /> : null}
                       </span>
                     </button>
                     {open ? <StepDiff id={regionId} step={step} run={base} serviceId={base.serviceId} /> : null}
@@ -576,7 +576,7 @@ function StepDiff({ id, step, run, serviceId }: { id: string; step: TestStepResu
         </div>
       ) : (
         <p className="tr-diff-ok">
-          <Icon name="check" size={14} />
+          <Icon name="check" size={14} className="tr-diff-ok-icon" />
           <span>
             {isArray
               ? `Conformant. ${n} ${n === 1 ? 'item' : 'items'} checked against ${schema}, ${props} properties each, 0 violations. Status ${code} is declared by the contract.`

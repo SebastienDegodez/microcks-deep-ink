@@ -1,6 +1,6 @@
 /* Header: "Connected to https://hub.microcks.io/api" */
 .hb-connected { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 13px; color: var(--text-secondary); }
-.hb-connected > .icon { color: var(--success); }
+.hb-connected-icon { color: var(--success); }
 .hb-connected-url { font: 400 12px/16px var(--font-mono); color: var(--link); }
 
 /* Search row and category pills */
@@ -14,7 +14,6 @@
 .hb-empty { flex: 1 1 100%; display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding: 22px; border: 1px dashed var(--border-strong); border-radius: var(--radius-panel); color: var(--text-secondary); font-size: 14px; }
 .hb-empty-reset { padding: 0; border: 0; background: transparent; color: var(--link); font: 600 14px/20px var(--font-ui); cursor: pointer; }
 .hb-installed { display: inline-flex; align-items: center; gap: 6px; padding: 0 4px; color: var(--success); font-size: 14px; font-weight: 600; }
-.hb-installed > .icon { stroke-width: 2.4; }
 
 .hb-detail > * { display: flex; flex-direction: column; gap: 18px; }
 .hb-detail-head { display: flex; flex-direction: column; gap: 6px; }
@@ -29,7 +28,6 @@
 .hb-api-head { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
 .hb-api-facts { display: flex; flex-wrap: wrap; gap: 4px 14px; font-size: 12px; color: var(--text-muted); }
 .hb-exists { display: inline-flex; align-items: center; gap: 5px; color: var(--success); }
-.hb-exists > .icon { stroke-width: 2.6; }
 .hb-versions { margin-inline-start: auto; display: inline-flex; flex-wrap: wrap; gap: 2px; padding: 2px; border: 1px solid var(--border); border-radius: var(--radius-control); background: var(--canvas); }
 .hb-versions > button { height: 24px; padding: 0 8px; border: 0; border-radius: 3px; background: transparent; color: var(--text-muted); font: 400 12px/16px var(--font-mono); cursor: pointer; }
 .hb-versions > button:hover { color: var(--text); }

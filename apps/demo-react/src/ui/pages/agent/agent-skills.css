@@ -95,7 +95,7 @@ a.agent-call-link:hover { text-decoration: underline; }
 .agent-artifact { width: 100%; max-width: 620px; box-sizing: border-box; display: flex; flex-direction: column; border: 1px solid var(--proto-a2a); border-radius: 8px; overflow: hidden; }
 .agent-artifact-head, .agent-chunks-head { display: flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; font-size: 12px; }
 .agent-artifact-head { padding: 7px 12px; background: var(--surface); border-bottom: 1px solid var(--border); }
-.agent-artifact-head > .icon, .agent-chunks-head > .icon { color: var(--proto-a2a); }
+.agent-artifact-icon { color: var(--proto-a2a); }
 .agent-artifact-name { font-family: var(--font-mono); font-weight: 600; color: var(--text); }
 .agent-artifact-id { font-family: var(--font-mono); color: var(--text-muted); }
 .agent-artifact-event { margin-inline-start: auto; font-family: var(--font-mono); color: var(--text-muted); }

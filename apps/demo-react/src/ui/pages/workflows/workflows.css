@@ -31,13 +31,13 @@
 .wf-tag[data-tone="success"] { color: var(--success); }
 
 /* Unlinked source chip: same box as a protocol chip, dashed warning border, a warning icon for a swatch. */
-.chip.wf-src-unlinked { gap: 8px; min-height: 30px; padding: 0 10px; border-radius: var(--radius-control); border: 1px dashed var(--warning); color: var(--text); font-weight: 600; }
-.chip.wf-src-unlinked .icon { color: var(--warning); }
-.chip.wf-src-unlinked .chip-label { gap: 8px; align-items: center; }
-.chip.wf-src-unlinked .chip-value { display: inline-flex; align-items: center; gap: 8px; }
-.chip.wf-src-unlinked .chip-count { color: inherit; font-weight: 400; }
-button.chip.wf-src-unlinked[aria-pressed="true"] { background: var(--warning); border-color: var(--warning); color: var(--on-proto); }
-button.chip.wf-src-unlinked[aria-pressed="true"] .icon { color: var(--on-proto); }
+.wf-src-unlinked { gap: 8px; min-height: 30px; padding: 0 10px; border-radius: var(--radius-control); border: 1px dashed var(--warning); color: var(--text); font-weight: 600; }
+.wf-src-unlinked .icon { color: var(--warning); }
+.wf-src-unlinked .chip-label { gap: 8px; align-items: center; }
+.wf-src-unlinked .chip-value { display: inline-flex; align-items: center; gap: 8px; }
+.wf-src-unlinked .chip-count { color: inherit; font-weight: 400; }
+button.wf-src-unlinked[aria-pressed="true"] { background: var(--warning); border-color: var(--warning); color: var(--on-proto); }
+button.wf-src-unlinked[aria-pressed="true"] .icon { color: var(--on-proto); }
 
 .wf-result-line { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 8px 20px; font: 400 13px var(--font-ui); color: var(--text-muted); }
 .wf-result-line p { margin: 0; }
@@ -92,10 +92,10 @@ button.chip.wf-src-unlinked[aria-pressed="true"] .icon { color: var(--on-proto);
 .wf-src-type { font: 400 10px var(--font-mono); color: var(--text-muted); }
 .wf-src-url { font: 400 12px var(--font-mono); color: var(--text-secondary); overflow-wrap: anywhere; }
 .wf-src-api { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px; min-width: 0; }
-.api-badge.wf-src-badge > span { padding-block: 2px; font-size: 12px; line-height: normal; }
-.api-badge.wf-src-badge > .api-badge-type { padding-inline: 7px; }
-.api-badge.wf-src-badge > .api-badge-name { padding-inline-start: 8px; }
-.api-badge.wf-src-badge > .api-badge-version { padding-inline-end: 8px; }
+.wf-src-badge > span { padding-block: 2px; font-size: 12px; line-height: normal; }
+.wf-src-badge > .api-badge-type { padding-inline: 7px; }
+.wf-src-badge > .api-badge-name { padding-inline-start: 8px; }
+.wf-src-badge > .api-badge-version { padding-inline-end: 8px; }
 .wf-linked { display: inline-flex; align-items: center; gap: 4px; font-weight: 600; color: var(--success); }
 .wf-not-linked { display: inline-flex; align-items: center; gap: 5px; padding: 1px 7px; border: 1px dashed var(--warning); border-radius: 4px; font-weight: 600; color: var(--warning); }
 .wf-src-ops { display: inline-flex; align-items: center; gap: 5px; color: var(--text-secondary); }
@@ -106,7 +106,7 @@ button.chip.wf-src-unlinked[aria-pressed="true"] .icon { color: var(--on-proto);
 .wf-warn-text { display: flex; flex-direction: column; gap: 2px; flex: 1 1 320px; min-width: 0; }
 .wf-warn-title { font: 600 14px var(--font-ui); color: var(--text); }
 .wf-warn-hint { font: 400 13px var(--font-ui); color: var(--text-secondary); }
-.button.wf-warn-btn { min-height: 34px; padding: 0 12px; gap: 8px; border-color: var(--border-strong); background: var(--surface); font-weight: 600; white-space: nowrap; }
+.wf-warn-btn { min-height: 34px; padding: 0 12px; gap: 8px; border-color: var(--border-strong); background: var(--surface); font-weight: 600; white-space: nowrap; }
 
 .wf-rows-box { overflow-x: auto; border-top: 1px solid var(--border); }
 .wf-rows { min-width: 1040px; font: 400 13px var(--font-ui); }
@@ -124,8 +124,7 @@ button.chip.wf-src-unlinked[aria-pressed="true"] .icon { color: var(--on-proto);
 .wf-cell-inputs { gap: 2px; }
 .wf-cell-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; }
 .wf-cell-run { display: flex; justify-content: flex-end; }
-.api-badge.wf-name-badge { max-width: 100%; white-space: nowrap; }
-.api-badge.wf-name-badge > .api-badge-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+.wf-name-badge > .api-badge-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .wf-id { font: 400 12px var(--font-mono); color: var(--text-secondary); }
 .wf-block { display: inline-flex; align-items: center; gap: 4px; padding: 0 6px; border: 1px solid var(--border-strong); border-radius: 4px; font: 600 11px var(--font-ui); color: var(--text-secondary); }
 .wf-note { font: 400 12px var(--font-ui); color: var(--text-muted); }
@@ -143,7 +142,7 @@ button.chip.wf-src-unlinked[aria-pressed="true"] .icon { color: var(--on-proto);
 .wf-result-word[data-result="never"] { color: var(--text-muted); }
 .wf-mock-state { display: inline-flex; align-items: center; gap: 6px; font-weight: 600; color: var(--text-muted); }
 .wf-mock-state[data-ready] { color: var(--text); }
-.button.wf-run-disabled:disabled { border-color: var(--border); color: var(--text-muted); opacity: 0.6; }
+.wf-cell-run .wf-run-disabled:disabled { border-color: var(--border); color: var(--text-muted); opacity: 0.6; }
 .wf-cell-run .button { padding: 0 12px; font-weight: 600; border-color: var(--border-strong); background: var(--surface); }
 .wf-cell-run .button .icon { width: 12px; height: 12px; stroke-width: 2.4; }
 
@@ -163,8 +162,8 @@ button.chip.wf-src-unlinked[aria-pressed="true"] .icon { color: var(--on-proto);
 .wf-onb { display: flex; flex-wrap: wrap; gap: 28px; padding: 32px clamp(16px, 3vw, 36px); border: 1.5px dashed var(--border-strong); border-radius: var(--radius-node); background: var(--canvas); }
 .wf-onb-main { flex: 1 1 380px; min-width: 0; display: flex; flex-direction: column; gap: 18px; }
 .wf-onb-head { display: flex; flex-direction: column; gap: 10px; }
-.api-badge.wf-onb-badge { align-self: flex-start; }
-.api-badge.wf-onb-badge > .api-badge-name { color: var(--text-muted); }
+.wf-onb-badge { align-self: flex-start; }
+.wf-onb-badge > .api-badge-name { color: var(--text-muted); }
 .wf-onb h2 { margin: 0; font: 600 22px/1.25 var(--font-ui); }
 .wf-onb-lead { margin: 0; max-width: 62ch; font: 400 15px/1.55 var(--font-ui); color: var(--text-secondary); }
 .wf-onb-steps { margin: 0; padding: 0; list-style: none; display: flex; flex-direction: column; gap: 14px; }

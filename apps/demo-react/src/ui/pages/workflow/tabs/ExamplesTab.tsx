@@ -116,7 +116,7 @@ export function ExamplesTab({ detail, runs, examples, serviceLabel }: ExamplesTa
                         : 'Not run';
                       return (
                         <span key={s.stepId} className="wf-ex-step" data-run={exp ? undefined : 'no'}>
-                          <Icon name={exp ? 'check-circle' : 'minus-circle'} size={12} strokeWidth={2.4} />
+                          <Icon name={exp ? 'check-circle' : 'minus-circle'} size={12} strokeWidth={2.4} className="wf-ex-step-icon" />
                           <span className="wf-ex-step-id">{s.stepId}</span>
                           <span className="wf-ex-muted">{what}</span>
                         </span>

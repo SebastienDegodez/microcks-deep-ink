@@ -1,5 +1,5 @@
 /* Behavior · Request simulator (prototype Behavior.dc.html, right column). Colors come from the design tokens only. */
-.sim.panel { border-color: var(--action); }
+.sim { border-color: var(--action); }
 .sim .panel-title { display: flex; align-items: center; gap: 8px; }
 .sim .sim-title-icon { color: var(--action); }
 
@@ -54,7 +54,7 @@
 .sim-send { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 10px; }
 .sim-send .choice { align-items: center; gap: 8px; }
 .sim-send .choice-label { font: 400 13px/18px var(--font-ui); color: var(--text-secondary); }
-.sim-send .checkbox { width: 18px; height: 18px; }
+.sim-send .sim-key { width: 18px; height: 18px; }
 
 /* Result card. */
 .sim-result {

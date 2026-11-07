@@ -160,7 +160,7 @@ export function TestTimeline({ runs, operations, selectedId, onSelect, matches, 
           {opStats.map((s) => (
             <li key={s.op.id} className="test-op-card">
               <div className="test-op-card-head">
-                <MethodTag method={s.op.verb} />
+                <MethodTag method={s.op.verb} className="test-op-method" />
                 <span className="test-op-card-path" title={s.op.path}>{s.op.path}</span>
                 <span className="test-op-card-rate" data-tone={s.tone}>{s.rate}%</span>
               </div>
