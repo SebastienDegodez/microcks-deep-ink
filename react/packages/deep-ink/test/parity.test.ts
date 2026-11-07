@@ -21,6 +21,8 @@ interface Case {
   children?: string;
   /** `<option>` children (Select), instead of `children`. */
   options?: Option[];
+  /** Render-prop child (Field): the named export of the package, given the control props and `props`. */
+  control?: { component: string; props?: Record<string, unknown> };
 }
 interface Option {
   label: string;
@@ -42,7 +44,13 @@ for (const file of files.filter((f) => f.endsWith('.cases.json')).sort()) {
         const name = c.component ?? component;
         const mod = (await import(`../src/${item}.tsx`)) as Record<string, ComponentType<Record<string, unknown>>>;
         expect(mod[name], `${name} is not exported by src/${item}.tsx`).toBeTypeOf('function');
-        const children = c.options ? c.options.map(({ label, ...o }) => createElement('option', { key: label, ...o }, label)) : c.children;
+        const index = (await import('../src/index')) as Record<string, ComponentType<Record<string, unknown>>>;
+        const control = c.control;
+        const children = control
+          ? (p: Record<string, unknown>) => createElement(index[control.component]!, { ...p, ...control.props })
+          : c.options
+            ? c.options.map(({ label, ...o }) => createElement('option', { key: label, ...o }, label))
+            : c.children;
         const html = renderToStaticMarkup(createElement(mod[name]!, c.props ?? {}, children)) + '\n';
         if (WRITE) writeFileSync(join(PARITY, out), html);
         else expect(existsSync(join(PARITY, out)) ? readFileSync(join(PARITY, out), 'utf8') : '', `${out} is stale: run \`pnpm parity\``).toBe(html);
