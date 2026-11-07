@@ -25,20 +25,23 @@ Useful URLs: `#/map` (screen map with a link to every screen), `#/workflows/past
 `#/tests/agent/3` (its conformance test, screen 19) and `#/sources/new` (add a source).
 
 `?fast` in the hash query (`#/workflows?fast`) or `localStorage['deep-ink-demo-fast'] = '1'` removes the
-simulated latency (120 to 350 ms, deterministic). The Playwright smoke run uses it. Streams tick every 1200 ms.
+simulated latency (120 to 350 ms, deterministic): with `http`, MSW `delay()` once per `/api/` request
+(`src/infrastructure/msw/handlers/latency.ts`, polled feeds excepted); with `memory`, `latency()` once per adapter call.
+The Playwright smoke run uses it. Streams tick every 1200 ms.
 
 ## Backends
 
 `createComposition({ backend })` in `src/composition-root.ts` picks the adapters; `main.tsx` reads `VITE_DEMO_BACKEND`.
 
-- `memory` (default): the in-memory adapters, no network.
-- `http` (`VITE_DEMO_BACKEND=http pnpm --filter demo-react dev`): features with adapters in `src/infrastructure/http/<feature>`
+- `http` (default of the browser build, `pnpm --filter demo-react dev` / `build`): features with adapters in `src/infrastructure/http/<feature>`
   call `api/...` (next to `index.html`) through `HttpClient` (`src/infrastructure/http/client.ts`, errors mapped to
   `NotFoundError`, `ValidationError`, `BackendError`). Mock Service Worker answers them: `src/infrastructure/msw/handlers/<feature>.ts`,
   served by `browser.ts` (the worker `public/mockServiceWorker.js`, registered with a relative URL so its scope is the demo's
   folder, quiet; an unhandled `/api/` request logs a console error, everything else bypasses it) and by `node.ts` in vitest.
   The first render waits for `worker.start()`. A feature without HTTP adapters falls back to memory (`httpFeatures` lists
-  the others). The `memory` build does not contain MSW.
+  the others). The worker turns the adapters' per-call latency off: the handlers delay each request once instead.
+- `memory` (`VITE_DEMO_BACKEND=memory pnpm --filter demo-react dev`): the in-memory adapters, no network; this build does
+  not contain MSW. `createComposition()` defaults to it, so tests stay in memory unless they pass `backend: 'http'`.
 - `testing` over HTTP: the Microcks test API v1.15 (`/api/tests...`, endpoints and demo-only extensions listed in
   `src/infrastructure/http/testing/microcks.ts`). A live run (`watch`) fetches the run once and replays its steps client-side,
   one per tick: Microcks has no test-progress stream (its UI polls `GET /api/tests/{id}`).
