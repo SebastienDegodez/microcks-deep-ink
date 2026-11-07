@@ -1,0 +1,7 @@
+{
+  "component": "Kbd",
+  "cases": [
+    { "name": "default", "children": "K" },
+    { "name": "class-and-attributes", "props": { "className": "shortcut", "title": "Control", "aria-label": "Control" }, "children": "Ctrl" }
+  ]
+}
