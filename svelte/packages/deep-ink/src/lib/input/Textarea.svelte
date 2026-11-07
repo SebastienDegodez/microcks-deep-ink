@@ -26,21 +26,13 @@
     className,
     defaultValue,
     value = $bindable(defaultValue),
-    onChange,
-    onInput,
-    oninput,
     ...rest
   }: Props = $props();
 </script>
 
 <textarea
   bind:value
-  {...reactEvents(rest)}
-  oninput={(e) => {
-    oninput?.(e);
-    onInput?.(e);
-    onChange?.(e);
-  }}
+  {...reactEvents(rest, { onChange: 'input' })}
   class={['input', className].filter(Boolean).join(' ')}
   data-mono={mono ? '' : undefined}
   data-size={size}
