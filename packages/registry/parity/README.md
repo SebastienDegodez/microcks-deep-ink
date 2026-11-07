@@ -8,7 +8,8 @@
 
 - `component`: the export name (the same in React and Svelte); a case may set its own `component` for another
   export of the same item (`Textarea` in `input.cases.json`); `props`: JSON props (React names, `className`);
-  `children`: optional text child; a function prop is written `{ "$fn": "tone" }`, read as `(x) => x.tone`
+  `children`: optional text child, or an array of text children (`["a", "b"]`: one array child in React, the
+  `children` prop in Svelte, for Exchange's pair); a function prop is written `{ "$fn": "tone" }`, read as `(x) => x.tone`
   (`rowTone`, `rowHref`: put the value on each row); a `style` prop is React's object of string values
   (`{ "--split-gap": "8px", "marginTop": "4px" }`), given to Svelte as the string `--split-gap:8px;margin-top:4px`; `options`: `<option>` children instead (`[{ "label": "25", "value": "25", "disabled": true }]`,
   `value` and `disabled` optional); `control`: render-prop child instead (Field), an export of the package given the

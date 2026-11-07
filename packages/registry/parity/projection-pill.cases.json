@@ -1,0 +1,8 @@
+{
+  "component": "ProjectionPill",
+  "cases": [
+    {"name": "default", "props": {}},
+    {"name": "title", "props": {"title": "A2A support is a proposed protocol module for Microcks v2"}},
+    {"name": "children-attributes", "props": {"className": "wide", "id": "p1", "data-testid": "pill", "aria-describedby": "d1"}, "children": "Projection · MCP module"}
+  ]
+}
