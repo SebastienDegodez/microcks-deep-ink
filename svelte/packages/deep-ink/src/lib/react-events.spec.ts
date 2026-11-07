@@ -1,31 +1,40 @@
 // Every component of the batch forwards any React-named handler and any data-* / aria-* attribute to the same element
 // as React: the root, the <input> of Checkbox, Radio and Switch, the <button> of CopyButton and ThemeToggle, the <dialog>
 // (or inline <div>) of CommandBar, the <figure> of CodeBlock (its <pre> with frame="none"), the root of the microcks
-// leaves (ExchangeCard, Exchange, RunMeta, RunOrigin, ProjectionPill, RunnerLog, Tile, TileGrid). Segmented, Tabs, TabPanel,
-// AppShell, Dialog, Menu and DataTable spread nothing in React, so they forward nothing.
+// leaves (ExchangeCard, Exchange, RunMeta, RunOrigin, ProjectionPill, RunnerLog, Tile, TileGrid, StatusBadge, StepStatus,
+// StepChecks, LiveIndicator, ResultBox), the band of ConformanceBand (its <div role="img"> or labelled <ul>, never the
+// summary wrapper). Segmented, Tabs, TabPanel, AppShell, Dialog, Menu, DataTable and BarChart spread nothing in React,
+// so they forward nothing.
 import { fireEvent, render } from '@testing-library/svelte';
 import { createRawSnippet, type Component } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
 import AppShell from './app-shell/AppShell.svelte';
+import BarChart from './bar-chart/BarChart.svelte';
 import Button from './button/Button.svelte';
 import ButtonLink from './button/ButtonLink.svelte';
 import Callout from './callout/Callout.svelte';
 import Checkbox from './checkbox/Checkbox.svelte';
 import Chip from './chip/Chip.svelte';
+import ConformanceBand from './conformance-band/ConformanceBand.svelte';
 import CodeBlock from './code-block/CodeBlock.svelte';
 import CommandBar from './command-bar/CommandBar.svelte';
 import CopyButton from './copy-button/CopyButton.svelte';
 import EmptyState from './empty-state/EmptyState.svelte';
 import Exchange from './exchange-card/Exchange.svelte';
 import ExchangeCard from './exchange-card/ExchangeCard.svelte';
+import LiveIndicator from './live-indicator/LiveIndicator.svelte';
 import Radio from './checkbox/Radio.svelte';
 import MethodTag from './method-tag/MethodTag.svelte';
 import ProjectionPill from './projection-pill/ProjectionPill.svelte';
 import { reactEvents } from './react-events';
+import ResultBox from './result-box/ResultBox.svelte';
 import RunMeta from './run-meta/RunMeta.svelte';
 import RunOrigin from './run-origin/RunOrigin.svelte';
 import RunnerLog from './runner-log/RunnerLog.svelte';
 import Segmented from './segmented/Segmented.svelte';
+import StatusBadge from './status-badge/StatusBadge.svelte';
+import StepChecks from './step-status/StepChecks.svelte';
+import StepStatus from './step-status/StepStatus.svelte';
 import Switch from './switch/Switch.svelte';
 import TabPanel from './tabs/TabPanel.svelte';
 import Tabs from './tabs/Tabs.svelte';
@@ -56,6 +65,13 @@ const cases: Array<[string, Component<any>, Record<string, unknown>, string]> = 
   ['RunnerLog', RunnerLog, { lines: [] }, 'section'],
   ['Tile', Tile, { title: 'T' }, 'article'],
   ['TileGrid', TileGrid, { label: 'L' }, 'section'],
+  ['StatusBadge', StatusBadge, { status: 'failed' }, '.status'],
+  ['StepStatus', StepStatus, { status: 'passed' }, '.step-status'],
+  ['StepChecks', StepChecks, { successCriteria: 'passed' }, 'ul'],
+  ['LiveIndicator', LiveIndicator, {}, '.live'],
+  ['ResultBox', ResultBox, {}, '.result-box'],
+  ['ConformanceBand', ConformanceBand, { outcomes: ['pass'] }, '[role="img"]'],
+  ['ConformanceBand labelled, with a summary', ConformanceBand, { outcomes: ['pass'], labels: ['a'], showSummary: true }, 'ul'],
 ];
 
 describe('React-named handlers and attributes', () => {
@@ -127,6 +143,7 @@ describe('React-named handlers and attributes', () => {
     ['Segmented', Segmented, { label: 'L', value: 'a', options: [{ id: 'a', label: 'A' }] }],
     ['Tabs', Tabs, { label: 'L', value: 'a', items: [{ id: 'a', label: 'A' }] }],
     ['TabPanel', TabPanel, { id: 'a', value: 'a' }],
+    ['BarChart', BarChart, { label: 'L', bars: [], max: 1, onSelect: () => {}, table: { caption: 'C', columns: [], rows: [] } }],
   ] as const)('%s forwards nothing, as React', (_, C, props) => {
     const onClick = vi.fn();
     const { container } = render(C as Component<Record<string, unknown>>, { props: { ...props, onClick, 'data-testid': 'x' } });
