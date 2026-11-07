@@ -10,7 +10,6 @@
 .wf-mu-panel h2 { margin: 0; font: 600 16px/1.3 var(--font-ui); }
 .wf-mu-intro { display: flex; flex-direction: column; gap: 6px; }
 .wf-mu-intro p { margin: 0; max-width: 72ch; font-size: 14px; line-height: 1.55; color: var(--text-secondary); }
-.wf-mu-mono { font-family: var(--font-mono); }
 .wf-mu-field { display: flex; flex-direction: column; gap: 8px; }
 .wf-mu-field label { font-weight: 600; }
 .wf-mu-row { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
@@ -56,5 +55,5 @@
 .wf-mu-panel[data-size='narrow'] .wf-mu-box { flex: none; }
 .wf-mu-box[data-size='curl'] .wf-mu-box-head { flex-wrap: nowrap; }
 .wf-mu-box[data-size='curl'] .wf-mu-box-title { min-width: 0; }
-.wf-mu-box-head .button { flex: none; }
-.wf-mu-row > .method { display: inline-flex; align-items: center; height: 38px; padding: 0 10px; box-sizing: border-box; font-size: 12px; }
+.wf-mu-box-head .wf-mu-box-btn { flex: none; }
+.wf-mu-row > .wf-mu-method { display: inline-flex; align-items: center; height: 38px; padding: 0 10px; box-sizing: border-box; font-size: 12px; }

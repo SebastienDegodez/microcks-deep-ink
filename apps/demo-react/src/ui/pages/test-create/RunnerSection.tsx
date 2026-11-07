@@ -1,6 +1,6 @@
 import type { CreateTestForm } from '@/application/testing';
 import type { TestTarget } from '@/domain/testing';
-import { Radio } from '@/ui/components/ui/checkbox';
+import { Radio } from '@microcks/deep-ink';
 import type { Draft, UpdateDraft } from './draft';
 import { FormSection } from './FormSection';
 

@@ -3,10 +3,7 @@ import { useState } from 'react';
 import { getTaskJson, isTerminalTaskState, type AgentTask } from '@/domain/agents';
 import { ago } from '@/ui/app/format';
 import { useAnnounce, useSubscription, useUseCases } from '@/ui/app';
-import { Button } from '@/ui/components/ui/button';
-import { CodeBlock } from '@/ui/components/ui/code-block';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { TaskStateTag } from '@/ui/components/ui/task-timeline';
+import { Button, CodeBlock, LiveIndicator, TaskStateTag } from '@microcks/deep-ink';
 
 
 /** Tasks created on the mock, streamed from the use case (1 s tick). */
@@ -44,7 +41,7 @@ export function AgentTasksTab({ serviceId, initial, onChanged }: { serviceId: st
           {/* Updates every second: a pause control keeps it under the user's control (WCAG 2.2.2). */}
           <Button variant="link" size="sm" onClick={live.toggle}>{live.paused ? 'Resume' : 'Pause'}</Button>
         </div>
-        <span className="agent-tasks-kept">Kept 24 h · same list as <span className="ex-mono">ListTasks</span> on any transport</span>
+        <span className="agent-tasks-kept">Kept 24 h · same list as <span className="demo-mono">ListTasks</span> on any transport</span>
       </div>
       <div className="agent-task-table-wrap">
         <table className="agent-task-table">

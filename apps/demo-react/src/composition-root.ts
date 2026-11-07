@@ -22,7 +22,15 @@ import { createObserveUseCases } from '@/application/observe';
 import { createTestingUseCases } from '@/application/testing';
 import type { Clock } from '@/application/ports/shared';
 import type { UseCases } from '@/application/use-cases';
+import { createHttpAgentsAdapters } from '@/infrastructure/http/agents';
+import { createHttpArazzoAdapters } from '@/infrastructure/http/arazzo';
+import { createHttpCatalogAdapters } from '@/infrastructure/http/catalog';
 import { createHttpClient, defaultApiBaseUrl, type HttpClient } from '@/infrastructure/http/client';
+import { createHttpCopilotAdapters } from '@/infrastructure/http/copilot';
+import { createHttpGovernAdapters } from '@/infrastructure/http/govern';
+import { createHttpImportingAdapters } from '@/infrastructure/http/importing';
+import { createHttpObserveAdapters } from '@/infrastructure/http/observe';
+import { createHttpTestingAdapters } from '@/infrastructure/http/testing';
 import { createInMemoryAgentAdapters } from '@/infrastructure/in-memory/agents';
 import { createInMemoryArazzoAdapters } from '@/infrastructure/in-memory/arazzo';
 import { createInMemoryCatalogAdapters } from '@/infrastructure/in-memory/catalog';
@@ -81,9 +89,18 @@ interface InMemoryAdapters {
 
 /**
  * HTTP adapters per feature: each factory returns the same ports as `createInMemory<Feature>Adapters`.
- * Empty for now: every feature falls back to memory until its `src/infrastructure/http/<feature>` lands.
+ * A feature missing here falls back to memory until its `src/infrastructure/http/<feature>` lands.
  */
-const HTTP_ADAPTERS: { [F in Feature]?: (deps: HttpDeps) => InMemoryAdapters[F] } = {};
+const HTTP_ADAPTERS: { [F in Feature]?: (deps: HttpDeps) => InMemoryAdapters[F] } = {
+  catalog: createHttpCatalogAdapters,
+  copilot: createHttpCopilotAdapters,
+  importing: createHttpImportingAdapters,
+  testing: createHttpTestingAdapters,
+  arazzo: createHttpArazzoAdapters,
+  observe: createHttpObserveAdapters,
+  govern: createHttpGovernAdapters,
+  agents: createHttpAgentsAdapters,
+};
 
 /** Builds every use case over the chosen backend. Call once at boot (or once per test). */
 export function createComposition(options: CompositionOptions = {}): Composition {

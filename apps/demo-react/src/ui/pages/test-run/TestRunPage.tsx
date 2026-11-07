@@ -12,19 +12,9 @@ import {
   type TestStepResult,
 } from '@/domain/testing';
 import { PageHeader, useAnnounce, usePageTitle, useQuery, useRelativeTime, useUseCases } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { ConformanceBand, type OperationResult } from '@/ui/components/ui/conformance-band';
-import { CiPanel } from '@/ui/components/ui/ci-panel';
+import { ApiBadge, Button, ConformanceBand, type OperationResult, CiPanel, Icon, StatusBadge, type Outcome, LiveIndicator, MethodTag, RunProgress, type RunSegment, RunnerLog, SectionLabel } from '@microcks/deep-ink';
 import { TEST_RESULT_WORD } from '@/ui/app/outcomes';
 import { useReplay } from '@/ui/app/use-replay';
-import { Icon } from '@/ui/components/ui/icon';
-import { StatusBadge, type Outcome } from '@/ui/components/ui/status-badge';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { MethodTag } from '@/ui/components/ui/method-tag';
-import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
-import { RunnerLog } from '@/ui/components/ui/runner-log';
-import { SectionLabel } from '@/ui/components/ui/section-label';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { useThrottledAnnounce } from '../tests/useThrottledAnnounce';
 import './test-run.css';
@@ -237,11 +227,11 @@ function RunView({ base }: { base: TestRun }) {
             </span>
             <span>
               <span className="tr-meta-key">{done ? 'Duration' : 'Elapsed'}</span>
-              <span className="tr-meta-mono">{elapsed} ms</span>
+              <span className="demo-mono">{elapsed} ms</span>
             </span>
             <span>
               <span className="tr-meta-key">Timeout</span>
-              <span className="tr-meta-mono">{waitSec} s</span>
+              <span className="demo-mono">{waitSec} s</span>
             </span>
             {base.launchedBy ? (
               <span>
@@ -297,18 +287,18 @@ function RunView({ base }: { base: TestRun }) {
                 </span>
                 {previous ? (
                   <span className="tr-trend" data-dir={delta < 0 ? 'down' : delta > 0 ? 'up' : 'flat'}>
-                    <Icon name={delta < 0 ? 'arrow-down' : delta > 0 ? 'arrow-up' : 'dash'} size={13} />
+                    <Icon name={delta < 0 ? 'arrow-down' : delta > 0 ? 'arrow-up' : 'dash'} size={13} strokeWidth={2.4} />
                     {delta === 0 ? 'Same as' : `${Math.abs(delta)} pts vs`} run #{previous.runId} <span className="tr-trend-prev">{previous.conformance}%</span>
                   </span>
                 ) : null}
               </div>
               <div className="tr-verdict-text">
                 <span className="tr-verdict-word" data-result={base.result}>
-                  <Icon name={base.result === 'passed' ? 'check' : base.result === 'failed' ? 'cross' : 'clock'} size={18} />
+                  <Icon name={base.result === 'passed' ? 'check' : base.result === 'failed' ? 'cross' : 'clock'} size={18} strokeWidth={2.6} />
                   {base.result === 'passed' ? 'Passed' : base.result === 'failed' ? 'Failed' : 'Timed out'}
                 </span>
                 <span className="tr-verdict-summary">
-                  <span className="tr-mono-strong">
+                  <span className="demo-mono-strong">
                     {passCount}/{total}
                   </span>{' '}
                   test steps passed ·{' '}
@@ -318,10 +308,10 @@ function RunView({ base }: { base: TestRun }) {
                 </span>
                 {brokenOps[0] && base.result === 'failed' && failedSchema ? (
                   <span className="tr-verdict-detail">
-                    <span className="tr-mono">
+                    <span className="demo-mono">
                       {brokenOps[0].method} {brokenOps[0].path}
                     </span>{' '}
-                    returns a body that does not match the <span className="tr-mono">{failedSchema}</span> schema.
+                    returns a body that does not match the <span className="demo-mono">{failedSchema}</span> schema.
                   </span>
                 ) : base.reason ? (
                   <span className="tr-verdict-detail">{base.reason}</span>
@@ -331,7 +321,7 @@ function RunView({ base }: { base: TestRun }) {
                     <Icon name="dispatcher" size={14} />
                     <span>
                       Same contract violation breaks workflow <strong>{related.workflowTitle}</strong> (run #{related.number}, schema validation) at step{' '}
-                      <span className="tr-mono">{related.stepId}</span>
+                      <span className="demo-mono">{related.stepId}</span>
                     </span>
                   </RouterLink>
                 ) : null}
@@ -370,7 +360,7 @@ function RunView({ base }: { base: TestRun }) {
                 copyLabel="Copy command"
                 footnote={
                   <>
-                    Set <span className="tr-mono">MICROCKS_CLIENT_SECRET</span> from the <span className="tr-mono">microcks-serviceaccount</span> credentials. The
+                    Set <span className="demo-mono">MICROCKS_CLIENT_SECRET</span> from the <span className="demo-mono">microcks-serviceaccount</span> credentials. The
                     same parameters work with the GitHub Action, GitLab CI, Jenkins and Tekton integrations.
                   </>
                 }
@@ -450,7 +440,7 @@ function RunView({ base }: { base: TestRun }) {
                       <span className="tr-step-ms">{isFin ? `${step.ms} ms` : '—'}</span>
                       <StatusBadge shape="bare" status={LOOK[st].status} label={LOOK[st].word} className="tr-state" />
                       <span className="tr-step-chevron" aria-hidden="true">
-                        {isFin ? <Icon name="chevron" size={16} /> : null}
+                        {isFin ? <Icon name="chevron" size={16} className="tr-step-chevron-icon" /> : null}
                       </span>
                     </button>
                     {open ? <StepDiff id={regionId} step={step} run={base} serviceId={base.serviceId} /> : null}
@@ -571,11 +561,11 @@ function StepDiff({ id, step, run, serviceId }: { id: string; step: TestStepResu
             ))}
           </ul>
           <p className="tr-diff-note">
-            The endpoint answered <span className="tr-mono">{code}</span> as the contract declares, but its body breaks the <span className="tr-mono">{schema}</span>{' '}
+            The endpoint answered <span className="demo-mono">{code}</span> as the contract declares, but its body breaks the <span className="demo-mono">{schema}</span>{' '}
             schema on {step.violations.length} {step.violations.length === 1 ? 'property' : 'properties'}. Fix the implementation
             {newEnum ? (
               <>
-                , or if <span className="tr-mono">{newEnum}</span> is an intended new status, add it to the contract and re-import
+                , or if <span className="demo-mono">{newEnum}</span> is an intended new status, add it to the contract and re-import
               </>
             ) : null}
             .{' '}
@@ -586,7 +576,7 @@ function StepDiff({ id, step, run, serviceId }: { id: string; step: TestStepResu
         </div>
       ) : (
         <p className="tr-diff-ok">
-          <Icon name="check" size={14} />
+          <Icon name="check" size={14} className="tr-diff-ok-icon" />
           <span>
             {isArray
               ? `Conformant. ${n} ${n === 1 ? 'item' : 'items'} checked against ${schema}, ${props} properties each, 0 violations. Status ${code} is declared by the contract.`

@@ -20,8 +20,8 @@ describe('MethodTag', () => {
   }
 
   it('forwards native attributes, class values, styles and event handlers', async () => {
-    const onClick = vi.fn();
-    const { container } = render(Composition, { onClick });
+    const onclick = vi.fn();
+    const { container } = render(Composition, { onclick });
     const tag = container.querySelector<HTMLSpanElement>('.method')!;
     expect(tag.title).toBe('Read operation');
     expect(tag.dataset.native).toBe('yes');
@@ -29,7 +29,7 @@ describe('MethodTag', () => {
     expect(tag.style.color).toBe('red');
     expect(tag.style.getPropertyValue('--method-min-width')).toBe('99px');
     await fireEvent.click(tag);
-    expect(onClick).toHaveBeenCalledOnce();
+    expect(onclick).toHaveBeenCalledOnce();
   });
 
   it('updates props without stale derived attributes', async () => {
@@ -156,18 +156,18 @@ describe('SummaryStrip', () => {
 });
 
 it('composes native Svelte snippets, part markup, and free links without losing the status word', () => {
-  const { container } = render(Composition, { onClick: () => {} });
+  const { container } = render(Composition, { onclick: () => {} });
   expect(container.querySelector('.summary-strip-value')?.textContent).toBe('3 APIs');
   expect(container.querySelector('.summary-strip-value strong')?.textContent).toBe('3');
   expect(container.querySelector('a')?.getAttribute('href')).toBe('/services');
   expect(container.querySelector('.summary-strip')?.getAttribute('aria-label')).toBe('Import summary');
   expect(container.querySelector('.summary-strip-sep.extra')?.getAttribute('aria-hidden')).toBe('true');
   expect(container.querySelector('.status')?.textContent?.trim()).toBe('Retrying · attempt 2 of 3');
-  expect(container.querySelectorAll('.status')[1].textContent?.trim()).toBe('Failed');
+  expect(container.querySelectorAll('.status')[1]!.textContent?.trim()).toBe('Failed');
 });
 
 it('has no structural accessibility violations in composed content', async () => {
-  const { container } = render(Composition, { onClick: () => {} });
+  const { container } = render(Composition, { onclick: () => {} });
   const result = await axe.run(container, { rules: { 'color-contrast': { enabled: false } } });
   expect(result.violations).toEqual([]);
 });

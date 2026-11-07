@@ -56,7 +56,7 @@ describe('native Button contract', () => {
     await fireEvent.click(button);
     await fireEvent.focus(button);
     expect(onclick).toHaveBeenCalledOnce();
-    expect(onclick.mock.calls[0][0]).toBeInstanceOf(MouseEvent);
+    expect(onclick.mock.calls[0]![0]).toBeInstanceOf(MouseEvent);
     expect(onfocus).toHaveBeenCalledOnce();
     expect(onsubmit).not.toHaveBeenCalled();
   });
@@ -139,7 +139,7 @@ it('reports unnamed icon-only controls once, including whitespace-only names', (
     render(Button, { iconOnly: true, icon: 'plus' });
     render(ButtonLink, { iconOnly: true, icon: 'plus' });
     expect(error).toHaveBeenCalledTimes(2);
-    expect(error.mock.calls[0][0]).toContain('needs an accessible name');
+    expect(error.mock.calls[0]![0]).toContain('needs an accessible name');
   } finally { error.mockRestore(); }
 });
 

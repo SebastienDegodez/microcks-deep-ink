@@ -7,14 +7,7 @@ import {
   isValidRegExp, scriptSample, storedSummary, type Behavior, type ParameterConstraint,
 } from '@/domain/catalog';
 import { PageHeader, useAnnounce, useQuery, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Icon } from '@/ui/components/ui/icon';
-import { MethodTag } from '@/ui/components/ui/method-tag';
-import { Panel } from '@/ui/components/ui/panel';
-import { Segmented } from '@/ui/components/ui/segmented';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
-import { SummaryStrip } from '@/ui/components/ui/summary-strip';
+import { ApiBadge, Button, Icon, MethodTag, Panel, Segmented, SplitPane, SplitPaneMain, SplitPaneSide, SummaryStrip } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { DispatcherPanel } from './DispatcherPanel';
 import { SimulatorPanel } from './SimulatorPanel';
@@ -89,7 +82,7 @@ export default function BehaviorPage() {
           title={operation.path}
           variant="mono"
           align="start"
-          breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}`, to: `/services/${svc.id}` }, { label: <span className="ex-mono">{`${operation.method} ${operation.path}`}</span> }]}
+          breadcrumb={[{ label: 'APIs & Services', to: '/services' }, { label: `${svc.name} ${svc.version}`, to: `/services/${svc.id}` }, { label: <span className="demo-mono">{`${operation.method} ${operation.path}`}</span> }]}
           leading={<MethodTag method={operation.method} protocol={svc.protocol} />}
           badge={<RouterLink to={`/services/${svc.id}`} className="behavior-api-link"><ApiBadge protocol={svc.protocol} name={svc.name} version={svc.version} size="sm" /></RouterLink>}
           description="Mock behavior: how Microcks picks a response for each incoming call, how long it waits, which parameters it checks and whether it keeps state. Try every change in the simulator before saving."
@@ -171,8 +164,8 @@ export default function BehaviorPage() {
                           </select>
                         </td>
                         <td><input className="cell-control" type="text" aria-label={`Name of ${who}`} placeholder="parameter name" value={c.name} onChange={(e) => setConstraint(i, { name: e.target.value })} /></td>
-                        <td className="is-center"><input type="checkbox" className="checkbox" aria-label={`${who} is required`} checked={c.required} onChange={(e) => setConstraint(i, { required: e.target.checked })} /></td>
-                        <td className="is-center"><input type="checkbox" className="checkbox" aria-label={`Recopy ${who}`} checked={Boolean(c.recopy)} onChange={(e) => setConstraint(i, { recopy: e.target.checked })} /></td>
+                        <td className="is-center"><input type="checkbox" className="checkbox constraint-check" aria-label={`${who} is required`} checked={c.required} onChange={(e) => setConstraint(i, { required: e.target.checked })} /></td>
+                        <td className="is-center"><input type="checkbox" className="checkbox constraint-check" aria-label={`Recopy ${who}`} checked={Boolean(c.recopy)} onChange={(e) => setConstraint(i, { recopy: e.target.checked })} /></td>
                         <td>
                           <input
                             className="cell-control cell-regexp"

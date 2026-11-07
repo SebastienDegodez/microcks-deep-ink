@@ -4,10 +4,16 @@ import { render } from 'svelte/server';
 import * as api from '../src/lib/index.js';
 import type { LiveIndicatorProps, MethodTagProps, StatusBadgeProps, SummaryStripProps, SummaryStripSepProps } from '../src/lib/index.js';
 
-it('exposes only the bounded public family and protocol mapping', () => {
+it('exposes the native family and every implemented upstream component', () => {
   expect(Object.keys(api).sort()).toEqual([
-    'Button', 'ButtonLink', 'LiveIndicator', 'MethodTag', 'PROTOCOL_ATTR', 'StatusBadge', 'SummaryStrip', 'SummaryStripSep',
-  ]);
+    'AppShell', 'Button', 'ButtonLink', 'Callout', 'Checkbox', 'Chip', 'CodeBlock', 'CommandBar', 'CopyButton',
+    'DataTable', 'DescriptionList', 'Dialog', 'Disclosure', 'EmptyState', 'Exchange', 'ExchangeCard', 'Field',
+    'ICON_NAMES', 'Icon', 'Input', 'Kbd', 'Link', 'LiveIndicator', 'Menu', 'Meter', 'MethodTag', 'OUTCOME_WORD',
+    'PROTOCOL_ATTR', 'Panel', 'Progress', 'ProjectionPill', 'Radio', 'RadioGroup', 'RunMeta', 'RunOrigin', 'RunnerLog',
+    'Segmented', 'Select', 'Skeleton', 'StatusBadge', 'SummaryStrip', 'SummaryStripSep', 'Switch',
+    'THEME_EVENT', 'THEME_STORAGE_KEY', 'TabPanel', 'Tabs', 'Textarea', 'ThemeToggle', 'Tile', 'TileGrid',
+    'getTheme', 'iconSize', 'requireName', 'restoreTheme', 'setTheme', 'sortRows',
+  ].sort());
 });
 
 it.each([

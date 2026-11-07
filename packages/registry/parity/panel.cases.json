@@ -1,0 +1,18 @@
+{
+  "component": "Panel",
+  "cases": [
+    {"name": "default", "props": {"title": "Operations", "actions": "Add example"}, "children": "Content"},
+    {"name": "no-title", "props": {"aria-label": "Summary"}, "children": "Content"},
+    {"name": "actions-only", "props": {"actions": "Refresh"}, "children": "Content"},
+    {"name": "heading-level-flush", "props": {"title": "Operations", "headingLevel": 3, "flush": true}, "children": "Rows"},
+    {"name": "label-title-padding-lg", "props": {"title": "Runner log", "titleStyle": "label", "padding": "lg"}, "children": "Log"},
+    {"name": "explicit-defaults", "props": {"title": "Last runs", "titleStyle": "heading", "padding": "md", "as": "section", "headingLevel": 2}, "children": "Runs"},
+    {"name": "as-aside", "props": {"as": "aside", "title": "Related", "headingLevel": 3}, "children": "Links"},
+    {"name": "as-div", "props": {"as": "div", "headingLevel": 1, "title": "Cockpit"}},
+    {"name": "as-article", "props": {"as": "article", "headingLevel": 4, "title": "A"}},
+    {"name": "level-5", "props": {"headingLevel": 5, "title": "Five"}},
+    {"name": "level-6", "props": {"headingLevel": 6, "title": "Six", "as": "div"}},
+    {"name": "class-and-attributes", "props": {"className": "wide", "id": "p1", "data-testid": "panel", "aria-labelledby": "outer"}, "children": "Body"},
+    {"name": "title-wins-over-labelledby", "props": {"title": "Named", "aria-labelledby": "outer"}}
+  ]
+}

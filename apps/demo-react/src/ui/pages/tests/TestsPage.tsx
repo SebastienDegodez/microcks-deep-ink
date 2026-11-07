@@ -2,14 +2,8 @@ import { useMemo, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router';
 import { filterRuns, type TestRunSummary } from '@/domain/testing';
 import { PageHeader, useQuery, useRelativeTime, usePageTitle, useUseCases } from '@/ui/app';
-import { ApiBadge, type ProofStatus } from '@/ui/components/ui/api-badge';
+import { ApiBadge, type ProofStatus, Icon, Segmented, Button, EmptyState, Select, DataTable, type DataTableColumn } from '@microcks/deep-ink';
 import { TEST_RESULT_ICON, TEST_RESULT_WORD } from '@/ui/app/outcomes';
-import { Icon } from '@/ui/components/ui/icon';
-import { Segmented } from '@/ui/components/ui/segmented';
-import { Button } from '@/ui/components/ui/button';
-import { EmptyState } from '@/ui/components/ui/empty-state';
-import { Select } from '@/ui/components/ui/select';
-import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { testRunHref } from '@/ui/app/format';
 import { fmtDuration, shortDate, TestTimeline, timelineRuns } from './TestTimeline';
@@ -260,14 +254,14 @@ function History({
         />
         <span className="tests-filter">
           <label htmlFor="tests-runner">Runner</label>
-          <Select id="tests-runner" size="sm" value={runner} onChange={(e) => { setRunner(e.target.value); setShowAll(false); }}>
+          <Select id="tests-runner" className="tests-filter-select" size="sm" value={runner} onChange={(e) => { setRunner(e.target.value); setShowAll(false); }}>
             <option value="all">All runners</option>
             {runners.map((r) => <option key={r} value={r}>{r}</option>)}
           </Select>
         </span>
         <span className="tests-filter">
           <label htmlFor="tests-endpoint">Endpoint</label>
-          <Select id="tests-endpoint" size="sm" value={environment} onChange={(e) => { setEnvironment(e.target.value); setShowAll(false); }}>
+          <Select id="tests-endpoint" className="tests-filter-select" size="sm" value={environment} onChange={(e) => { setEnvironment(e.target.value); setShowAll(false); }}>
             <option value="all">All endpoints</option>
             {environments.map(([env, url]) => <option key={env} value={env}>{env} · {url.replace(/^https?:\/\//, '')}</option>)}
           </Select>

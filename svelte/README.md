@@ -8,9 +8,12 @@ consumers choose their framework workspace. Private, version 0.0.0, not publishe
 ## Current scope
 
 Native Svelte 5 `Button`, `ButtonLink`, `MethodTag`, `StatusBadge`, `LiveIndicator`,
-`SummaryStrip` and `SummaryStripSep`; declarations and unchanged layered shared CSS; an isolated
-Svelte/Vite Storybook with 69 stories. No Svelte demo is implemented here and
-this is not a complete component port. See [the package README](packages/deep-ink/README.md).
+`SummaryStrip` and `SummaryStripSep`, plus every implemented upstream component
+(forms, navigation, tables, dialogs, application shell and presentational leaves).
+Declarations and layered shared CSS remain framework-isolated. The Svelte/Vite
+Storybook retains the 69 native-family stories. No Svelte demo is implemented
+here; remaining registry items are listed by `pnpm -C svelte/packages/deep-ink pending`.
+See [the package README](packages/deep-ink/README.md).
 
 The library uses `$props`, `$derived`, snippets, native `class`/DOM attributes
 and lowercase handlers such as `onclick`. Neither its public API nor its
@@ -30,6 +33,8 @@ pnpm -C svelte install --frozen-lockfile
 pnpm -C svelte build
 pnpm -C svelte check
 pnpm -C svelte test
+pnpm -C svelte lint
+pnpm -C svelte publint
 pnpm -C svelte check:boundaries
 pnpm -C svelte storybook               # port 6008
 pnpm -C svelte build:storybook
@@ -43,6 +48,8 @@ packs the actual package, installs it with npm in a unique workspace-local
 scratch consumer, typechecks, builds client/SSR, runs SSR and checks that React
 was not installed. Scratch files are removed, nothing is published.
 CI runs these checks in `.github/workflows/svelte.yml`.
+The workflow is reusable: `workflow_call` with `storybook: true` uploads
+`storybook-svelte` for the Pages assembly job.
 
 A one-off React/Svelte family pixel comparison passed 516/516 comparisons
 (129 cases, both themes, 800/320px, Chromium 156.0.8078.4, scale 1), using

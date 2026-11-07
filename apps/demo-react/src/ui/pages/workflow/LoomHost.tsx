@@ -3,22 +3,19 @@ import { LoadingBlock } from '@/ui/app/states';
 import type { LoomProps } from './loom-model';
 
 /**
- * The only door to the copied `WorkflowLoom` element wrapper (`src/ui/components/ui/workflow-loom.tsx`).
- *
- * The wrapper is an element item copied by the CLI after the Web Component bundles are built (gate 2).
- * Until it exists, `import.meta.glob` matches nothing and the page shows the `fallback` (the accessible steps
- * table) instead of failing the build. Once the file is copied, the Loom appears with no code change.
+ * The only door to the `WorkflowLoom` element wrapper, loaded lazily from the `@microcks/deep-ink/workflow-loom` subpath
+ * (its own chunk with the `<workflow-loom>` Web Component; `import('@microcks/deep-ink')` would not split, the barrel is
+ * imported statically). While it loads the page shows a loading block; if it fails to load or render, the `fallback`
+ * (the accessible steps table).
  *
  * Plan 3.4 API: props `sources, steps, threads, inputs, outputs, validatesSchemas, selectedStep, label` and the
  * event `onStepSelect`. The handler is tolerant to receive `{ stepId }`, a bare id or a CustomEvent.
  */
 type WrapperProps = LoomProps & { onStepSelect?: (event: unknown) => void; onLensSelect?: (event: unknown) => void };
 
-const loaders = import.meta.glob('../../components/ui/workflow-loom.tsx') as Record<string, () => Promise<{ WorkflowLoom: ComponentType<WrapperProps> }>>;
-const loader = Object.values(loaders)[0];
-const RemoteLoom = loader ? lazy(() => loader().then((m) => ({ default: m.WorkflowLoom }))) : undefined;
-
-export const LOOM_AVAILABLE = RemoteLoom !== undefined;
+const RemoteLoom = lazy(() =>
+  import('@microcks/deep-ink/workflow-loom').then((m) => ({ default: m.WorkflowLoom as ComponentType<WrapperProps> })),
+);
 
 /** The stepId of a select event; `{ stepId: undefined }` (the selected step pressed again) gives undefined. */
 export function stepIdOf(event: unknown): string | undefined {
@@ -58,7 +55,6 @@ export interface LoomHostProps extends LoomProps {
 }
 
 export function LoomHost({ onSelectStep, onSelectLens, fallback, ...props }: LoomHostProps) {
-  if (!RemoteLoom) return <>{fallback}</>;
   return (
     <LoomBoundary fallback={fallback}>
       <Suspense fallback={<LoadingBlock label="the loom" rows={1} />}>

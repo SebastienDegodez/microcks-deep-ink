@@ -1,6 +1,6 @@
 # @microcks/deep-ink (Svelte)
 
-**Bounded native Svelte 5 foundation, not the whole library/demo.** Private,
+**Native Svelte 5 components, not a Svelte application/demo.** Private,
 version 0.0.0, not published. `svelte-package` exports `.svelte` components,
 JavaScript, declarations and the shared CSS with its existing layers.
 The package has only a Svelte peer (`^5.19.0`, supporting class arrays/objects).
@@ -32,6 +32,32 @@ never implicitly injected by components; both CSS files are copied unchanged
 from the root registry build. No registry/React renderer enters the runtime.
 
 ## Public family
+
+The native family below is retained alongside all upstream exports: `AppShell`,
+`Callout`, `Checkbox`, `Radio`, `RadioGroup`, `Chip`, `CodeBlock`, `CommandBar`,
+`CopyButton`, `DescriptionList`, `Dialog`, `Disclosure`, `EmptyState`, `Exchange`,
+`ExchangeCard`, `Field`, `Icon`, `Input`, `Textarea`, `Kbd`, `Link`, `Menu`, `Panel`,
+`Meter`, `Progress`, `ProjectionPill`, `RunMeta`, `RunOrigin`, `RunnerLog`,
+`Segmented`, `Select`, `Skeleton`, `Switch`, `DataTable`, `Tabs`, `TabPanel`,
+`ThemeToggle`, `Tile` and `TileGrid`, plus their public type/helper modules.
+
+All ports use `class`, lowercase native DOM events and lowercase callback props
+(`onchange`, `onclose`, `onsortchange`, `onrowselect`, `onremove`, `onselect`).
+Use `oninput` for per-keystroke text input, `onchange` for committed changes,
+and `bind:value` / `bind:checked` for controlled state. DOM event capture uses
+`onclickcapture` etc.; no synthetic event names or handler translation remain.
+`Switch` separately forwards native `onchange` events and calls
+`oncheckedchange` with the boolean state.
+`RowLinkProps` uses `class` for its custom link snippet.
+
+The legacy `button/` and `method-tag/` component paths are forwarding wrappers,
+not separate implementations. Internal consumers render the canonical native
+components directly; button helpers and protocol mappings share the same bindings.
+
+Shared HTML parity cases are adapted only at the test-data boundary. Two
+intentional native accessibility/safety differences are asserted: a busy
+`ButtonLink` has no `href` or tab stop, and `RadioGroup` exposes `radiogroup`
+(which supports `aria-invalid`) rather than an implicit generic group.
 
 | Component | Supported variants / props |
 | --- | --- |
@@ -121,3 +147,19 @@ Loom is outside this family. Native React/Svelte renderers may share neutral
 data/event contracts and pure layout rules without sharing a rendering engine;
 exact visual/behavior equivalence must be validated before replacing the
 existing element.
+
+## Adding an item
+
+1. `src/lib/<item>/` (the registry item name): one `PascalCase.svelte` file per exported component, named after the
+   React export (`table/DataTable.svelte`); helpers and types in `.ts` / `.svelte.ts` modules (exported with
+   `export *`). Lowercase or `_`-prefixed `.svelte` files stay private. **No `<style>`**: the CSS is the registry CSS
+   (lint error).
+2. `pnpm gen:index` regenerates `src/lib/index.ts` from `packages/registry/items` (never edit it; the build runs
+   `--check`, `test/barrel.test.ts` rejects duplicate names).
+3. Spec next to it, `src/lib/<item>/<item>.spec.ts`: Testing Library, `@testing-library/user-event`,
+   `axeViolations` from `test/axe.ts` (jsdom; `test/setup.ts` polyfills `<dialog>` and popover).
+4. Parity with React: add `packages/registry/parity/<item>.cases.json`, run `pnpm -C react/packages/deep-ink parity`
+   and commit the `.html` files. `test/parity.ssr.test.ts` renders each case with `svelte/server` and compares the
+   normalised markup (`test/parity/normalise.ts`); see `packages/registry/parity/README.md`.
+
+Build: `pnpm build` at the repo root, then `pnpm -C svelte install --frozen-lockfile && pnpm -C svelte build`.

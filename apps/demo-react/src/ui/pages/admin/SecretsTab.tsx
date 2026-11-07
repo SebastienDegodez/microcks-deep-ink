@@ -9,12 +9,7 @@ import {
   type SecretFormKind,
 } from '@/domain/govern';
 import { useClock, useReturnFocus, useUseCases, type QueryResult } from '@/ui/app';
-import { Button } from '@/ui/components/ui/button';
-import { Field } from '@/ui/components/ui/field';
-import { Icon } from '@/ui/components/ui/icon';
-import { Input, Textarea } from '@/ui/components/ui/input';
-import { Segmented } from '@/ui/components/ui/segmented';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
+import { Button, Field, Icon, Input, Textarea, Segmented, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
 import './secrets.css';
@@ -112,7 +107,7 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
                   <tr data-selected={form?.id === s.id ? '' : undefined} data-confirming={confirming === s.id ? '' : undefined}>
                     <th scope="row">
                       <span className="ad-secret-name">
-                        <Icon name="key" size={16} />
+                        <Icon name="key" size={16} className="ad-secret-icon" />
                         <span className="ad-secret-text">
                           <span className="ad-secret-id">{s.name}</span>
                           <span className="ad-secret-desc">{s.description}</span>
@@ -134,7 +129,7 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
                     <tr className="ad-confirm-row">
                       <td colSpan={6}>
                         <div role="alert" className="ad-confirm">
-                          <Icon name="warning" size={14} />
+                          <Icon name="warning" size={14} className="ad-confirm-icon" />
                           <span className="ad-confirm-text">
                             Delete {s.name}? {used ? `${plural(used, 'importer')} still reference it and will fail on next run.` : 'No importer references it.'}
                           </span>
@@ -263,7 +258,7 @@ function SecretForm({ initial, names, onCancel, onSaved }: { initial: FormState;
             <Field label="Password">
               {(c) => (
                 <span className="ad-secret-input">
-                  <Input {...c} mono type={pw} autoComplete="new-password" placeholder={keep} value={f.secret} onChange={(e) => set({ secret: e.target.value })} />
+                  <Input {...c} className="ad-secret-control" mono type={pw} autoComplete="new-password" placeholder={keep} value={f.secret} onChange={(e) => set({ secret: e.target.value })} />
                   {showButton}
                 </span>
               )}
@@ -275,7 +270,7 @@ function SecretForm({ initial, names, onCancel, onSaved }: { initial: FormState;
             <Field label="Token">
               {(c) => (
                 <span className="ad-secret-input">
-                  <Input {...c} mono type={pw} autoComplete="off" placeholder={keep} value={f.secret} onChange={(e) => set({ secret: e.target.value })} />
+                  <Input {...c} className="ad-secret-control" mono type={pw} autoComplete="off" placeholder={keep} value={f.secret} onChange={(e) => set({ secret: e.target.value })} />
                   {showButton}
                 </span>
               )}
@@ -291,17 +286,17 @@ function SecretForm({ initial, names, onCancel, onSaved }: { initial: FormState;
               {(c) => <Input {...c} mono type="url" autoComplete="off" placeholder="https://keycloak.local:8180/realms/bakery/protocol/openid-connect/token" value={f.tokenUrl} onChange={(e) => set({ tokenUrl: e.target.value })} />}
             </Field>
             <div className="ad-form-row">
-              <Field label="Client ID">
+              <Field label="Client ID" className="ad-row-field">
                 {(c) => <Input {...c} mono autoComplete="off" placeholder={keep} value={f.user} onChange={(e) => set({ user: e.target.value })} />}
               </Field>
-              <Field label="Scopes">
+              <Field label="Scopes" className="ad-row-field">
                 {(c) => <Input {...c} mono autoComplete="off" placeholder="pastry:read" value={f.scopes} onChange={(e) => set({ scopes: e.target.value })} />}
               </Field>
             </div>
             <Field label="Client secret">
               {(c) => (
                 <span className="ad-secret-input">
-                  <Input {...c} mono type={pw} autoComplete="off" placeholder={keep} value={f.secret} onChange={(e) => set({ secret: e.target.value })} />
+                  <Input {...c} className="ad-secret-control" mono type={pw} autoComplete="off" placeholder={keep} value={f.secret} onChange={(e) => set({ secret: e.target.value })} />
                   {showButton}
                 </span>
               )}
@@ -324,7 +319,7 @@ function SecretForm({ initial, names, onCancel, onSaved }: { initial: FormState;
         ) : null}
 
         <div className="ad-lock-note ad-lock-note-sm">
-          <Icon name="lock" size={14} />
+          <Icon name="lock" size={14} className="ad-lock-icon" />
           <span>Values are stored in the Microcks database and never shown again. Importers and tests reference the Secret by its name.</span>
         </div>
         <div className="ad-form-footer">

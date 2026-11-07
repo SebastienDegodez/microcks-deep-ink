@@ -21,9 +21,9 @@
 .agent-transport-url { display: flex; flex-direction: column; gap: 6px; }
 .agent-transport-url > label { font-size: 12px; color: var(--text-muted); }
 .agent-transport-url-row { display: flex; gap: 6px; }
-.agent-transport-url-row > .input { flex: 1; min-width: 0; }
+.agent-transport-url-row > .agent-url-input { flex: 1; min-width: 0; }
 .agent-transport-stream { margin: 0; display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--text-secondary); }
-.agent-transport-stream > .icon { flex: none; color: var(--live-text); }
+.agent-stream-icon { flex: none; color: var(--live-text); }
 .agent-transport-sample { flex: 1; min-width: 0; }
 .agent-also { display: flex; flex-direction: column; gap: 4px; }
 .agent-also-label { font-size: 12px; color: var(--text-muted); }
@@ -36,10 +36,10 @@
 .agent-webhook-url { font-family: var(--font-mono); color: var(--link); overflow-wrap: anywhere; }
 .agent-webhook-ok { display: inline-flex; align-items: center; gap: 5px; color: var(--success); font-weight: 600; }
 .agent-note { display: flex; gap: 8px; padding: 10px 12px; border-radius: 6px; border: 1px solid var(--border-strong); background: var(--surface); font: 400 13px/1.5 var(--font-ui); }
-.agent-note > .icon { flex: none; margin-top: 2px; color: var(--text-muted); }
+.agent-note-icon { flex: none; margin-top: 2px; color: var(--text-muted); }
 .agent-answers-list { margin: 0; padding-left: 18px; display: flex; flex-direction: column; gap: 8px; font: 400 13px/1.5 var(--font-ui); color: var(--text-secondary); }
 /* Long sample lines scroll inside their block, never widen the page. The transport samples fill the card height. */
-.agent-card-panel > .code { contain: inline-size; }
+.agent-card-panel > .agent-panel-code { contain: inline-size; }
 .agent-transport-sample { display: flex; flex-direction: column; }
 .agent-transport-sample .code-caption { font-family: var(--font-mono); color: var(--text-secondary); }
 /* URL rows: 36px, mono 12, link ink on the surface; text-only Copy. */

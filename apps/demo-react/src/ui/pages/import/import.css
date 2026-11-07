@@ -59,7 +59,7 @@
 /* Recognized formats footer. */
 .formats { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 14px 20px; border-top: 1px solid var(--border); background: var(--surface); }
 .formats-label { margin-right: 4px; font: 400 13px/18px var(--font-ui); color: var(--text-muted); }
-.formats .chip { background: var(--canvas); }
+.formats .format-chip { background: var(--canvas); }
 
 /* Neutral note box (scheduled source, refusal note); `data-tone="warning"` borders it in warning. */
 .note-box {
@@ -67,13 +67,12 @@
   padding: 10px 12px; border: 1px solid var(--border); border-radius: 4px;
   background: var(--surface); color: var(--text-secondary); font: 400 13px/1.5 var(--font-ui);
 }
-.note-box > .icon { flex: none; margin-top: 1px; }
-.note-box[data-tone='info'] > .icon { color: var(--link); }
+.note-box-icon { flex: none; margin-top: 1px; }
+.note-box[data-tone='info'] > .note-box-icon { color: var(--link); }
 .note-box[data-tone='warning'] { border-color: var(--warning); }
-.note-box[data-tone='warning'] > .icon { color: var(--warning); }
+.note-box[data-tone='warning'] > .note-box-icon { color: var(--warning); }
 .note-box a { color: var(--link); font-weight: 500; text-decoration: none; }
 .note-box a:hover { text-decoration: underline; }
-.mono { font-family: var(--font-mono); }
 
 /* Preview and done cards. */
 .step-card { display: flex; flex-direction: column; gap: 20px; padding: 20px; border: 1px solid var(--border); border-radius: 8px; background: var(--canvas); }
@@ -85,7 +84,7 @@
 .step-head-text h2 { margin: 0; font: 600 19px/1.3 var(--font-ui); }
 .step-head-text p { margin: 0; font: 400 14px/1.5 var(--font-ui); color: var(--text-secondary); }
 .step-card[data-step='done'] .step-head { gap: 14px; }
-.step-card[data-step='done'] .step-head > .icon { flex: none; color: var(--success); }
+.step-card[data-step='done'] .step-head > .step-done-icon { flex: none; color: var(--success); }
 .step-card[data-step='done'] .step-head-text h2 { font-size: 21px; color: var(--success); }
 .step-section { display: flex; flex-direction: column; gap: 8px; }
 .step-section > p { margin: 0; max-width: 760px; font: 400 13px/1.5 var(--font-ui); color: var(--text-secondary); }
@@ -136,13 +135,13 @@
 .linked { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 6px 10px; }
 .linked-word { display: inline-flex; align-items: center; gap: 4px; font: 600 12px/16px var(--font-ui); color: var(--success); }
 .ops-found { display: inline-flex; align-items: center; gap: 6px; }
-.ops-found > .icon { color: var(--success); }
+.ops-found-icon { color: var(--success); }
 .overlay-line { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 0; max-width: 760px; font: 400 13px/1.5 var(--font-ui); color: var(--text-secondary); }
 .overlay-line code { font: 400 12px/16px var(--font-mono); color: var(--text); }
 
 /* Done: the created source, the badges, the mock URL. */
 .created-source { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; padding: 12px 14px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
-.created-source > .icon { color: var(--text-muted); }
+.created-source-icon { color: var(--text-muted); }
 .created-source-text { flex: 1 1 220px; min-width: 0; display: flex; flex-direction: column; gap: 2px; overflow-wrap: anywhere; }
 .created-source-name { font: 600 14px/20px var(--font-ui); }
 .created-source-detail { font: 400 12px/16px var(--font-mono); color: var(--text-muted); }
@@ -170,7 +169,6 @@
 .recent-list { list-style: none; margin: 0; padding: 0; }
 .recent-list > li { display: flex; flex-direction: column; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border); }
 .recent-line { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 8px; font: 400 13px/18px var(--font-ui); }
-.recent-line .api-badge { max-width: 100%; }
 .recent-when { font-size: 12px; color: var(--text-muted); }
 .recent-via { color: var(--text-secondary); }
 .recent-status { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; color: var(--success); }

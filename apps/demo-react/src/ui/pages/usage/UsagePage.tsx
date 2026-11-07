@@ -2,11 +2,7 @@ import { useId, useState } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import { USAGE_PERIODS, type UsagePeriod } from '@/domain/observe';
 import { PageHeader, usePageTitle, useQuery, useUseCases } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { SectionLabel } from '@/ui/components/ui/section-label';
-import { Segmented } from '@/ui/components/ui/segmented';
-import { Select } from '@/ui/components/ui/select';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
+import { ApiBadge, SectionLabel, Segmented, Select, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { ConformanceSection } from './ConformanceSection';
 import { HourlyChart } from './HourlyChart';
@@ -53,7 +49,7 @@ export default function UsagePage() {
               <SectionLabel as="label" htmlFor={selectId}>
                 Service
               </SectionLabel>
-              <Select id={selectId} value={scope} onChange={(e) => navigate(e.target.value === 'all' ? '/metrics' : `/metrics/${e.target.value}`)}>
+              <Select id={selectId} className="us-select" value={scope} onChange={(e) => navigate(e.target.value === 'all' ? '/metrics' : `/metrics/${e.target.value}`)}>
                 {(scopes.data ?? [{ id: 'all', label: 'All services' }]).map((o) => (
                   <option key={o.id} value={o.id}>
                     {o.label}

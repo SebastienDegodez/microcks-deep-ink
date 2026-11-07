@@ -3,8 +3,7 @@
 import { render, screen } from '@testing-library/react';
 import { useState } from 'react';
 import { describe, expect, it } from 'vitest';
-import { CopyButton } from '@/ui/components/ui/copy-button';
-import { Button } from '@microcks/deep-ink';
+import { CopyButton, WorkflowLoom } from '@microcks/deep-ink';
 
 describe('design system package', () => {
   it('shares the app React: a package component with hooks renders inside an app component with hooks', () => {
@@ -16,8 +15,8 @@ describe('design system package', () => {
     expect(screen.getByRole('button', { name: 'Copy the URL' })).toBeTruthy();
   });
 
-  it('resolves @/ui/components/ui/<item> to the package', async () => {
-    const viaAlias = await import('@/ui/components/ui/button');
-    expect(viaAlias.Button).toBe(Button);
+  it('resolves the lazy @microcks/deep-ink/workflow-loom subpath (LoomHost) to the package instance', async () => {
+    const viaSubpath = await import('@microcks/deep-ink/workflow-loom');
+    expect(viaSubpath.WorkflowLoom).toBe(WorkflowLoom);
   });
 });

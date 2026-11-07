@@ -5,17 +5,7 @@ import type { WorkflowDetail } from '@/application/arazzo';
 import { MONTHS } from '@/ui/app/format';
 import { useClock, useRelativeTime } from '@/ui/app';
 import { STATUS_ICON } from '@/ui/app/outcomes';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { Checkbox } from '@/ui/components/ui/checkbox';
-import { Facts } from '@/ui/components/ui/facts';
-import { Field } from '@/ui/components/ui/field';
-import { Icon } from '@/ui/components/ui/icon';
-import { Input } from '@/ui/components/ui/input';
-import { MethodTag } from '@/ui/components/ui/method-tag';
-import { Select } from '@/ui/components/ui/select';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
-import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
+import { Button, Callout, Checkbox, Facts, Field, Icon, Input, MethodTag, Select, SplitPane, SplitPaneMain, SplitPaneSide, DataTable, type DataTableColumn } from '@microcks/deep-ink';
 import { runPath } from '../../workflows/shared';
 import './sessions.css';
 
@@ -150,7 +140,7 @@ export function SessionsTab({ detail, sessions, runs }: SessionsTabProps) {
         <div className="wf-se-intro">
           <h2 id="wf-sess-title">Verification sessions</h2>
           <p>
-            A verification session checks that your application calls the APIs the way <span className="wf-se-mono">{workflow.workflowId}</span> says, while it runs
+            A verification session checks that your application calls the APIs the way <span className="demo-mono">{workflow.workflowId}</span> says, while it runs
             against the ordinary Microcks mocks. Your test opens a session, the application makes its calls carrying the session id, then the test asks Microcks to
             verify the calls it received.
           </p>
@@ -206,7 +196,7 @@ export function SessionsTab({ detail, sessions, runs }: SessionsTabProps) {
                   <Field
                     label={
                       <>
-                        <span className="wf-se-mono wf-se-name">{input.name}</span> · {input.name === 'size' ? 'S, M or L' : input.type}
+                        <span className="demo-mono wf-se-name">{input.name}</span> · {input.name === 'size' ? 'S, M or L' : input.type}
                       </>
                     }
                     error={errors[input.name]}
@@ -254,7 +244,7 @@ export function SessionsTab({ detail, sessions, runs }: SessionsTabProps) {
                       <Field
                         label={
                           <>
-                            Answered with the example of <span className="wf-se-mono wf-se-name">{step?.operationId}</span>
+                            Answered with the example of <span className="demo-mono wf-se-name">{step?.operationId}</span>
                           </>
                         }
                       >
@@ -271,7 +261,7 @@ export function SessionsTab({ detail, sessions, runs }: SessionsTabProps) {
                     </div>
                   </div>
                   <span className="wf-se-note">
-                    In the session, the mocks answer <span className="wf-se-mono">{failStep}</span> with this existing example of {serviceName}, so your application meets
+                    In the session, the mocks answer <span className="demo-mono">{failStep}</span> with this existing example of {serviceName}, so your application meets
                     the failure and runs its compensation.
                   </span>
                 </>
@@ -283,7 +273,7 @@ export function SessionsTab({ detail, sessions, runs }: SessionsTabProps) {
             <div className="wf-se-req-head">
               <h2 id="wf-req-title">
                 <MethodTag size="xs" method="POST" />
-                <span className="wf-se-mono wf-se-req-path">/api/arazzo/sessions</span>
+                <span className="demo-mono wf-se-req-path">/api/arazzo/sessions</span>
               </h2>
               <div className="wf-se-req-actions">
                 <Button size="sm" disabled={!valid} onClick={() => copy('body', JSON.stringify(body, null, 2))}>
@@ -300,7 +290,7 @@ export function SessionsTab({ detail, sessions, runs }: SessionsTabProps) {
             <div className="wf-se-answer">
               <span className="wf-se-answer-line">
                 <span className="wf-se-code">201</span>
-                <span className="wf-se-mono wf-se-sub">Location: /api/arazzo/sessions/{sessionId}</span>
+                <span className="demo-mono wf-se-sub">Location: /api/arazzo/sessions/{sessionId}</span>
               </span>
               <span className="wf-se-note">400 with the reason in plain text when Microcks refuses the session, for an unknown step or example.</span>
             </div>
@@ -326,7 +316,7 @@ export function SessionsTab({ detail, sessions, runs }: SessionsTabProps) {
                     <li key={s.id}>
                       <button type="button" className="wf-se-item" aria-pressed={s.id === selected?.id} onClick={() => setSelectedId(s.id)}>
                         <span className="wf-se-item-head">
-                          <span className="wf-se-mono wf-se-strong">{s.id}</span>
+                          <span className="demo-mono wf-se-strong">{s.id}</span>
                           <span className="wf-se-state" data-state={s.state}>
                             <span aria-hidden="true" className="wf-se-dot" />
                             {s.state}
@@ -351,7 +341,7 @@ export function SessionsTab({ detail, sessions, runs }: SessionsTabProps) {
             <SplitPaneMain className="wf-se-detail">
               <div className="wf-se-detail-head">
                 <h3>
-                  Session <span className="wf-se-mono">{selected.id}</span>
+                  Session <span className="demo-mono">{selected.id}</span>
                 </h3>
                 <span className="wf-se-muted">{metaOf(selected)}</span>
               </div>
@@ -417,7 +407,7 @@ export function SessionsTab({ detail, sessions, runs }: SessionsTabProps) {
                     </Button>
                   ) : null;
                 })()}
-                {selected.state === 'open' ? <span className="wf-se-mono wf-se-sub">POST /api/arazzo/sessions/{selected.id}/verification</span> : null}
+                {selected.state === 'open' ? <span className="demo-mono wf-se-sub">POST /api/arazzo/sessions/{selected.id}/verification</span> : null}
                 <span className="wf-se-muted">
                   {selected.verification
                     ? `Verified ${relative(runOf(selected)?.startedAt ?? selected.closedAt ?? selected.openedAt)} against the Microcks mocks.`

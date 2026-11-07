@@ -7,3 +7,7 @@ for (const expected of ['data-protocol="rest"', 'data-size="compact"', 'data-pul
 }
 if (body.includes('href="/never"')) throw new Error('Loading link must not navigate');
 console.log('Packed Svelte consumer SSR: all seven public components rendered');
+for (const expected of ['packed-shortcut', 'Packed protocols', 'role="radiogroup"', 'Packed rows', 'Packed row', 'Packed panel', 'Packed input', 'Packed checkbox']) {
+  if (!body.includes(expected)) throw new Error(`Packed upstream component SSR missing ${expected}`);
+}
+console.log('Packed upstream controls, table, tabs and dialog compiled and rendered');

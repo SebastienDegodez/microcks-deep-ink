@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { Button, ButtonLink, MethodTag, StatusBadge, LiveIndicator, SummaryStrip, SummaryStripSep, PROTOCOL_ATTR } from '@microcks/deep-ink';
+  import { Button, ButtonLink, MethodTag, StatusBadge, LiveIndicator, SummaryStrip, SummaryStripSep, PROTOCOL_ATTR, Kbd, Input, Checkbox, RadioGroup, DataTable, Tabs, TabPanel, Dialog } from '@microcks/deep-ink';
   import type { ButtonProps, ButtonLinkProps, IconName, SummaryStripPart, Outcome, Protocol, MethodTagProps } from '@microcks/deep-ink';
   import '@microcks/deep-ink/styles.no-fonts.css';
   const protocol: Protocol = 'REST';
@@ -12,6 +12,8 @@
   const icon: IconName = 'never-tested';
   const button: ButtonProps = { variant: 'outline', tone: 'link', size: 'xs', icon, class: { packed: true } };
   const link: ButtonLinkProps = { href: '#details', icon: 'external', target: '_self' };
+  let selection = $state('rest');
+  let fieldValue = $state('Native');
 </script>
 
 <main>
@@ -27,4 +29,13 @@
     <SummaryStripSep /><a href="#details">Details</a>
   </SummaryStrip>
   <p id="details">Clicks: {clicks}</p>
+  <Kbd class="packed-shortcut">Enter</Kbd>
+  <Input aria-label="Packed input" bind:value={fieldValue} oninput={() => clicks++} />
+  <Checkbox label="Packed checkbox" />
+  <RadioGroup legend="Packed protocols" options={[{ value: 'rest', label: 'REST' }]} bind:value={selection} />
+  <DataTable caption="Packed rows" columns={[{ key: 'name', header: 'Name', rowHeader: true }]} rows={[{ name: 'Packed row' }]} rowKey={(row) => row.name} />
+  <Tabs label="Packed tabs" items={[{ id: 'rest', label: 'REST' }]} bind:value={selection}>
+    <TabPanel id="rest" value={selection}>Packed panel</TabPanel>
+  </Tabs>
+  <Dialog open={false} onclose={() => {}} title="Packed dialog" />
 </main>

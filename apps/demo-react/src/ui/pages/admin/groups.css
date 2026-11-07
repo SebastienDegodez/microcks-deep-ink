@@ -24,11 +24,9 @@
   display: inline-flex; align-items: center; justify-content: center; width: 40px; height: 36px; padding: 0;
   border: 1px solid var(--border); border-radius: var(--radius-control); background: transparent; color: var(--success); cursor: pointer;
 }
-.ad-cell > .icon { stroke-width: 2.8; }
 .ad-cell[data-state="member"] { border-color: var(--success); background: var(--surface); }
 .ad-cell[data-state="add"] { border: 1px dashed var(--action); background: var(--selected); color: var(--action); }
 .ad-cell[data-state="remove"] { border: 1px dashed var(--danger); color: var(--danger); }
-.ad-cell[data-state="remove"] > .icon { stroke-width: 2.6; }
 .ad-cell:hover { background: var(--raised); }
 .ad-cell-dot { width: 5px; height: 5px; border-radius: var(--radius-pill); background: var(--border); }
 

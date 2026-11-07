@@ -4,16 +4,7 @@ import { Link as RouterLink, useParams, useSearchParams } from 'react-router';
 import type { ExampleGroup } from '@/domain/copilot';
 import type { Example, Operation } from '@/domain/shared';
 import { PageHeader, useAnnounce, useQuery, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { CopyButton } from '@/ui/components/ui/copy-button';
-import { Icon } from '@/ui/components/ui/icon';
-import { LiveIndicator } from '@microcks/deep-ink';
-import { Textarea } from '@/ui/components/ui/input';
-import { MethodTag } from '@/ui/components/ui/method-tag';
-import { OpPickList } from '@/ui/components/ui/op-pick';
-import { SectionLabel } from '@/ui/components/ui/section-label';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
+import { ApiBadge, Button, CopyButton, Icon, LiveIndicator, Textarea, MethodTag, OpPickList, SectionLabel, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { fresh, ProposalRow, type Item, type MockTarget } from './ProposalRow';
 
@@ -232,7 +223,7 @@ export default function CopilotPage() {
         descriptionWidth={780}
       />
       <div role="note" className="copilot-rule">
-        <Icon name="spark" size={15} />
+        <Icon name="spark" size={15} className="copilot-rule-icon" />
         <span><strong>AI examples are never served by the mock, counted in conformance tests or exported until a person accepts them.</strong> Accepted examples keep an AI provenance tag on the Service.</span>
       </div>
 
@@ -333,7 +324,7 @@ export default function CopilotPage() {
               </p>
               {Array.from({ length: count }, (_, i) => (
                 <div key={i} aria-hidden="true" className="copilot-skeleton" style={{ opacity: 1 - i * 0.15 }}>
-                  <Icon name="spark" size={14} />
+                  <Icon name="spark" size={14} className="copilot-skeleton-icon" />
                   <span className="copilot-skeleton-bars">
                     <span style={{ width: `${46 + ((i * 17) % 30)}%` }} />
                     <span style={{ width: `${28 + ((i * 23) % 26)}%` }} />
@@ -345,7 +336,7 @@ export default function CopilotPage() {
             </>
           ) : state.items.length === 0 ? (
             <div className="copilot-empty">
-              <Icon name="spark" size={22} />
+              <Icon name="spark" size={22} className="copilot-empty-icon" />
               <h3>No proposal for this operation yet</h3>
               <p>Choose how many examples you want, add a hint if useful, then generate. Proposals appear here as ghost rows for review.</p>
             </div>

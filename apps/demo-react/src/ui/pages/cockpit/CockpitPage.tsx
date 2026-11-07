@@ -6,15 +6,7 @@ import type { OperationOutcome } from '@/domain/testing';
 import type { Protocol, ServiceSummary } from '@/domain/shared';
 import type { TraceCall } from '@/domain/observe';
 import { PageHeader, useAnnounce, useQuery, useRelativeTime, useSubscription, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { Chip } from '@/ui/components/ui/chip';
-import { ConformanceBand, type OperationResult } from '@/ui/components/ui/conformance-band';
-import { Icon } from '@/ui/components/ui/icon';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { SplitPane, SplitPaneMain } from '@/ui/components/ui/split-pane';
-import { StatCard, StatGrid } from '@/ui/components/ui/stat-card';
+import { ApiBadge, Button, Callout, Chip, ConformanceBand, type OperationResult, Icon, LiveIndicator, SplitPane, SplitPaneMain, StatCard, StatGrid } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { PROTOCOL_ORDER, fmt, operationUnit, pluralize, testRunHref } from '@/ui/app/format';
 import { buildAttention } from './attention';
@@ -152,7 +144,7 @@ export default function CockpitPage() {
         size="lg"
         description={
           <>
-            <span className="ex-mono">microcks.local:8080</span> · {headerDate(data.asOf)} ·{' '}
+            <span className="demo-mono">microcks.local:8080</span> · {headerDate(data.asOf)} ·{' '}
             {empty ? 'fresh install, nothing imported yet' : `${live.length} mocks live, ${attention.length} items need attention`}
           </>
         }
@@ -203,8 +195,8 @@ export default function CockpitPage() {
             <span style={{ flex: `${failedRuns} 1 0`, background: 'var(--danger)' }} />
           </div>
           <div className="kpi-counts">
-            <span className="tone-success"><Icon name="check-circle" size={14} /> {passedRuns} passed</span>
-            <span className="tone-danger"><Icon name="x-circle" size={14} /> {failedRuns} failed</span>
+            <span className="tone-success"><Icon name="check-circle" size={14} strokeWidth={2.2} /> {passedRuns} passed</span>
+            <span className="tone-danger"><Icon name="x-circle" size={14} strokeWidth={2.2} /> {failedRuns} failed</span>
           </div>
           <span className="kpi-workflows">
             <RouterLink to="/workflows"><Icon name="dispatcher" size={12} />Workflows {empty ? 0 : 5}</RouterLink>
@@ -252,7 +244,7 @@ export default function CockpitPage() {
                         aria-label={`Mark step ${i + 1} as ${isDone ? 'not done' : 'done'}`}
                         onClick={() => setDone({ ...done, [step.id]: !isDone })}
                       >
-                        {isDone ? <Icon name="check" size={14} /> : i + 1}
+                        {isDone ? <Icon name="check" size={14} strokeWidth={2.6} /> : i + 1}
                       </button>
                       <div className="start-step-text">
                         <span className="start-step-title">{step.title}</span>
@@ -387,7 +379,7 @@ export default function CockpitPage() {
                 return (
                   <RouterLink key={r.id} to={testRunHref(r)} className="recent-test" data-ok={ok ? '' : undefined}>
                     <span className="recent-test-result">
-                      <Icon name={ok ? 'check-circle' : 'x-circle'} size={15} />
+                      <Icon name={ok ? 'check-circle' : 'x-circle'} size={15} strokeWidth={2.2} />
                       {ok ? 'Passed' : 'Failed'}
                     </span>
                     <span className="recent-test-what">

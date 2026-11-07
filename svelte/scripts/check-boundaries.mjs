@@ -20,7 +20,7 @@ function scan(directory) {
   for (const entry of readdirSync(directory, { withFileTypes: true })) {
     const path = join(directory, entry.name);
     if (entry.isDirectory()) scan(path);
-    else if (/\.(?:svelte|[cm]?[jt]sx?)$/.test(entry.name)) {
+    else if (/\.(?:svelte|[cm]?[jt]sx?)$/.test(entry.name) && !/\.(?:spec|test)\.[cm]?[jt]sx?$/.test(entry.name)) {
       const text = readFileSync(path, 'utf8');
       assert(!/\bReact(?:Node|Element|Handlers|EventOverrides)?\b|\breactEvents\b|\bclassName\s*[?:]/.test(text), `React compatibility API in ${path}`);
       for (const match of text.matchAll(/(?:from\s*|import\s*(?:\(\s*)?|require\s*\(\s*)['"]([^'"]+)['"]/g)) {

@@ -1,8 +1,6 @@
-import '../tests/page-kit.css';
 import type { FlowCounts, TopologyEdge, TraceCall, TraceTopology } from '@/domain/observe';
 import { fmt } from '@/ui/app/format';
-import { Icon } from '@/ui/components/ui/icon';
-import { SectionLabel } from '@/ui/components/ui/section-label';
+import { Icon, SectionLabel } from '@microcks/deep-ink';
 
 /** Graph geometry of the prototype: 56px nodes on a 72px slot, six slots per 416px column. */
 const SLOT = 72;
@@ -163,7 +161,7 @@ export function CallGraph({ topology, counts, filter, focus, onFocus, flash }: P
                 <button key={x.id} {...nodeProps(x.id)} data-kind={!x.ok ? 'miss' : event ? 'event' : 'rest'}>
                   {hidden('Example, status')}{' '}
                   <span className="tr2-code" data-miss={x.ok ? undefined : ''}>
-                    <Icon name={x.ok ? 'check' : 'warning'} size={11} />
+                    <Icon name={x.ok ? 'check' : 'warning'} size={11} strokeWidth={3} />
                     {x.code}
                   </span>{' '}
                   <span className="tr2-node-text">

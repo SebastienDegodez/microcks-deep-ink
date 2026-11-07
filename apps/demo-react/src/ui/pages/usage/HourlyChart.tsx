@@ -1,7 +1,6 @@
 import { useId, useState } from 'react';
 import { formatCount, type UsageView } from '@/domain/observe';
-import { BarChart } from '@/ui/components/ui/bar-chart';
-import { Panel } from '@/ui/components/ui/panel';
+import { BarChart, Panel } from '@microcks/deep-ink';
 import './chart.css';
 
 /**

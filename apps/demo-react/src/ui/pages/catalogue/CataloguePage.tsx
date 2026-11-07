@@ -5,16 +5,7 @@ import { Link as RouterLink } from 'react-router';
 import { labelFromString, labelToString, type Protocol, type ServiceSummary } from '@/domain/shared';
 import type { ServiceFilter } from '@/domain/catalog';
 import { PageHeader, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Chip } from '@/ui/components/ui/chip';
-import { ConformanceBand, type OperationResult } from '@/ui/components/ui/conformance-band';
-import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
-import { EmptyState } from '@/ui/components/ui/empty-state';
-import { Icon } from '@/ui/components/ui/icon';
-import { FilterBar, FilterReset, FilterRow, FilterSearch } from '@/ui/components/ui/filter-bar';
-import { Segmented } from '@/ui/components/ui/segmented';
-import { StatusBadge } from '@/ui/components/ui/status-badge';
+import { ApiBadge, Button, Chip, ConformanceBand, type OperationResult, DataTable, type DataTableColumn, EmptyState, Icon, FilterBar, FilterReset, FilterRow, FilterSearch, Segmented, StatusBadge } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { PROTOCOL_ORDER, fmt, operationUnit, pluralize } from '@/ui/app/format';
 
@@ -75,7 +66,7 @@ export default function CataloguePage() {
   const labelChips = (s: ServiceSummary) => (
     <span className="catalogue-labels">
       {s.labels.map((l) => (
-        <Chip key={labelToString(l)} size="sm" labelKey={l.key}>
+        <Chip key={labelToString(l)} size="sm" labelKey={l.key} className="catalogue-label-chip">
           {l.value}
         </Chip>
       ))}
@@ -221,7 +212,7 @@ export default function CataloguePage() {
           {data.services.map((s) => (
             <article key={s.id} className="catalogue-card">
               <div className="catalogue-card-head">
-                <ApiBadge protocol={s.protocol} name={s.name} version={s.version} size="card" />
+                <ApiBadge protocol={s.protocol} name={s.name} version={s.version} size="card" className="catalogue-card-badge" />
                 <span className="catalogue-format">{s.format} · {pluralize(s.operationCount, operationUnit(s.protocol))}</span>
               </div>
               <div className="catalogue-shields">
@@ -246,9 +237,9 @@ export default function CataloguePage() {
         <span>{data.services.length} of {data.total} · page 1 of 1</span>
         <nav aria-label="Pagination" className="catalogue-pager-nav">
           <span className="catalogue-pager-size">20 per page</span>
-          <Button size="sm" variant="secondary" icon="chevron-left" iconOnly aria-label="Previous page" disabled />
+          <Button size="sm" variant="secondary" icon="chevron-left" iconOnly aria-label="Previous page" disabled className="catalogue-pager-btn" />
           <span className="catalogue-pager-page" aria-current="page">1</span>
-          <Button size="sm" variant="secondary" icon="chevron" iconOnly aria-label="Next page" disabled />
+          <Button size="sm" variant="secondary" icon="chevron" iconOnly aria-label="Next page" disabled className="catalogue-pager-btn" />
         </nav>
       </footer>
     </div>

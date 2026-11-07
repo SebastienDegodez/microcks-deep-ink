@@ -1,0 +1,10 @@
+{
+  "component": "Link",
+  "cases": [
+    {"name": "default", "props": {"href": "/docs/dispatchers"}, "children": "dispatcher guide"},
+    {"name": "external", "props": {"href": "https://www.openapis.org/arazzo-specification", "external": true}, "children": "Arazzo specification"},
+    {"name": "external-overrides-target-rel", "props": {"href": "https://microcks.io", "external": true, "target": "_self", "rel": "author"}, "children": "Microcks"},
+    {"name": "target-rel-and-attributes", "props": {"href": "#docs", "target": "_top", "rel": "help", "className": "strong", "id": "l1", "aria-current": "page"}, "children": "Docs"},
+    {"name": "external-false", "props": {"href": "#arazzo", "external": false}, "children": "Read the Arazzo guide"}
+  ]
+}

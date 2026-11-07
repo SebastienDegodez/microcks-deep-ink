@@ -2,12 +2,7 @@ import './agent-skills.css';
 import { useId, useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 import type { AgentProfile, AgentTaskState, Conversation, ScriptPart, ScriptStep } from '@/domain/agents';
-import { Chip } from '@/ui/components/ui/chip';
-import { Icon, type IconName } from '@/ui/components/ui/icon';
-import { SectionLabel } from '@/ui/components/ui/section-label';
-import { SkillList, type SkillItem } from '@/ui/components/ui/skill-list';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
-import { TaskStateTag, TaskTimeline, type TaskTimelineNode } from '@/ui/components/ui/task-timeline';
+import { Chip, Icon, type IconName, SectionLabel, SkillList, type SkillItem, SplitPane, SplitPaneMain, SplitPaneSide, TaskStateTag, TaskTimeline, type TaskTimelineNode } from '@microcks/deep-ink';
 
 const FALLBACK_ID = '__fallback';
 
@@ -72,7 +67,7 @@ function StepBody({ step, streamed, serviceLink }: { step: ScriptStep; streamed:
       return (
         <div className="agent-artifact">
           <div className="agent-artifact-head">
-            <Icon name="file" size={14} />
+            <Icon name="file" size={14} className="agent-artifact-icon" />
             <span className="agent-artifact-name">{step.name}</span>
             <span className="agent-artifact-id">artifactId {step.artifactId}</span>
             <span className="agent-artifact-event">{streamed ? 'TaskArtifactUpdateEvent' : 'task.artifacts'}</span>
@@ -88,7 +83,7 @@ function StepBody({ step, streamed, serviceLink }: { step: ScriptStep; streamed:
       return (
         <div className="agent-chunks">
           <div className="agent-chunks-head">
-            <Icon name="file" size={14} />
+            <Icon name="file" size={14} className="agent-artifact-icon" />
             <span className="agent-artifact-name">{step.name}</span>
             <span className="agent-artifact-id">artifactId {step.artifactId} · streamed in {step.chunks.length} chunks</span>
             <span className="agent-artifact-event">TaskArtifactUpdateEvent</span>
@@ -106,7 +101,7 @@ function StepBody({ step, streamed, serviceLink }: { step: ScriptStep; streamed:
             ))}
           </ol>
           <span className="agent-chunks-note">
-            Assembled artifact: parts <span className="agent-chunks-parts">[{step.chunks.map((c) => `"${c.text}"`).join(', ')}]</span>. The stream closes on <span className="ex-mono">lastChunk: true</span>, then the final status update.
+            Assembled artifact: parts <span className="agent-chunks-parts">[{step.chunks.map((c) => `"${c.text}"`).join(', ')}]</span>. The stream closes on <span className="demo-mono">lastChunk: true</span>, then the final status update.
           </span>
         </div>
       );
@@ -186,7 +181,7 @@ export function AgentSkillsTab({ agent }: { agent: AgentProfile }) {
         <SectionLabel as="p" size="sm" weight="regular" split lineHeight="snug" className="agent-rail-head"><span>{agent.skills.length} skills</span><span>calls · 24 h</span></SectionLabel>
         <SkillList label={`Skills of ${agent.name} ${agent.version}`} skills={items} selectedId={skillId} onSelectSkill={pick} />
         <p className="agent-rail-note">
-          Each skill of the Agent Card is served as an operation. Its conversations come from the <span className="ex-mono">APIExamples</span> artifact, keyed by skill id.
+          Each skill of the Agent Card is served as an operation. Its conversations come from the <span className="demo-mono">APIExamples</span> artifact, keyed by skill id.
         </p>
       </SplitPaneSide>
       <SplitPaneMain as="section" className="agent-detail" aria-label="Skill detail">
@@ -268,12 +263,12 @@ export function AgentSkillsTab({ agent }: { agent: AgentProfile }) {
               <span className="agent-dispatcher-sep" aria-hidden="true" />
               <span className="agent-dispatcher-item">
                 <span className="ex-muted">uses</span>
-                <RouterLink className="agent-dispatcher-link" to={serviceLink}>API Pastry 2.0 · <span className="ex-mono">GET /pastries/{'{name}'}</span></RouterLink>
+                <RouterLink className="agent-dispatcher-link" to={serviceLink}>API Pastry 2.0 · <span className="demo-mono">GET /pastries/{'{name}'}</span></RouterLink>
               </span>
             </>
           ) : null}
           {fallbackSelected ? (
-            <span className="ex-secondary">No match answers a task in state <span className="ex-mono">rejected</span>, not an HTTP error.</span>
+            <span className="ex-secondary">No match answers a task in state <span className="demo-mono">rejected</span>, not an HTTP error.</span>
           ) : null}
         </div>
       </SplitPaneMain>

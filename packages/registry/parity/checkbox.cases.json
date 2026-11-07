@@ -1,0 +1,15 @@
+{
+  "component": "Checkbox",
+  "cases": [
+    {"name": "default", "props": {"label": "Validate responses against the schema"}},
+    {"name": "checked", "props": {"label": "Validate", "checked": true, "readOnly": true}},
+    {"name": "default-checked-description", "props": {"label": "Run on every import", "description": "Triggers a conformance test whenever the contract changes.", "defaultChecked": true}},
+    {"name": "disabled", "props": {"label": "Disabled, unchecked", "disabled": true}},
+    {"name": "disabled-checked", "props": {"label": "Disabled, checked", "disabled": true, "defaultChecked": true}},
+    {"name": "variant-card", "props": {"label": "Card", "variant": "card", "name": "c", "value": "1"}},
+    {"name": "variant-compact-attributes", "props": {"label": "GET /pastries", "variant": "compact", "className": "mine", "id": "x1", "aria-describedby": "hint", "description": "One op"}},
+    {"name": "radio", "component": "Radio", "props": {"label": "Fallback", "name": "d", "value": "fallback", "defaultChecked": true, "description": "Uses a default response."}},
+    {"name": "radio-group", "component": "RadioGroup", "props": {"legend": "Dispatcher", "name": "dispatcher", "value": "json", "options": [{"value": "uri", "label": "URI parts"}, {"value": "json", "label": "JSON body", "description": "Uses a JSON pointer."}, {"value": "script", "label": "Script", "disabled": true}]}},
+    {"name": "radio-group-all", "component": "RadioGroup", "props": {"legend": "Mode", "name": "mode", "required": true, "help": "How the test runs.", "error": "Pick a mode.", "variant": "card", "className": "wide", "value": null, "options": [{"value": "a", "label": "A"}, {"value": "b", "label": "B"}]}}
+  ]
+}

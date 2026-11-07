@@ -1,10 +1,7 @@
 import { useState } from 'react';
 import type { AdminGroup, AdminUser, Role } from '@/domain/govern';
 import { useUseCases, type QueryResult } from '@/ui/app';
-import { Chip } from '@/ui/components/ui/chip';
-import { FilterSearch } from '@/ui/components/ui/filter-bar';
-import { Select } from '@/ui/components/ui/select';
-import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
+import { Chip, FilterSearch, Select, DataTable, type DataTableColumn } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
 import './users.css';
@@ -105,7 +102,7 @@ export function UsersTab({ users, groups, notify, onChanged }: { users: QueryRes
   return (
     <div className="ad-tab" aria-busy={users.status === 'loading'}>
       <div className="ad-toolbar">
-        <FilterSearch label="Filter users" placeholder="Filter by name, username or email…" autoComplete="off" value={query} onChange={(e) => setQuery(e.target.value)} />
+        <FilterSearch className="ad-search" label="Filter users" placeholder="Filter by name, username or email…" autoComplete="off" value={query} onChange={(e) => setQuery(e.target.value)} />
         <span className="ad-meta">{plural(all.length, 'user')} · {count('admin')} admin · {plural(count('manager'), 'manager')}</span>
       </div>
       <DataTable

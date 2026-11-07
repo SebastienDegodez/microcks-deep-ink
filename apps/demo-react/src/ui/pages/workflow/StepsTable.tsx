@@ -1,10 +1,7 @@
 import { Link } from 'react-router';
 import { criteriaText, type ArazzoDocument, type Action, type Step, type Workflow, type WorkflowRun } from '@/domain/arazzo';
 import { STATUS_ICON } from '@/ui/app/outcomes';
-import { Button } from '@/ui/components/ui/button';
-import { Icon } from '@/ui/components/ui/icon';
-import { MethodTag } from '@/ui/components/ui/method-tag';
-import { DataTable, type DataTableColumn } from '@/ui/components/ui/table';
+import { Button, Icon, MethodTag, DataTable, type DataTableColumn } from '@microcks/deep-ink';
 import { effectiveDependencies, stepResultLine } from './loom-model';
 import { stepChecksOf, stepStatusOf } from './run-facts';
 

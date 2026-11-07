@@ -4,7 +4,7 @@ import { RouterProvider } from 'react-router/dom';
 import { createComposition, parseBackend } from '@/composition-root';
 import { UseCasesProvider } from '@/ui/app';
 import { createAppRouter } from '@/ui/app/router';
-import { restoreTheme } from '@/ui/components/ui/theme-toggle.theme';
+import { restoreTheme } from '@microcks/deep-ink';
 // Design-system styles first (tokens, base and every component, layered), then the demo shell's own CSS.
 import '@microcks/deep-ink/styles.css';
 import '@/ui/app/app.css';

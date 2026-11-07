@@ -1,9 +1,6 @@
 import './states.css';
 import { NotFoundError } from '@/application/shared';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { EmptyState } from '@/ui/components/ui/empty-state';
-import { Skeleton } from '@/ui/components/ui/skeleton';
+import { Button, Callout, EmptyState, Skeleton } from '@microcks/deep-ink';
 
 /**
  * Loading placeholder: `aria-busy`, and a polite status "Loading {label}" for assistive technology.

@@ -3,27 +3,10 @@ import './service.css';
 import { useState, type HTMLAttributes } from 'react';
 import { Link as RouterLink, useNavigate, useParams, useSearchParams } from 'react-router';
 import { formatDay, formatHourMinute } from '@/domain/importing';
-import { buildSnippet, exampleUrlPath, paramLines, requestHead, type SnippetFormat, type WorkflowUsage } from '@/domain/catalog';
+import { buildSnippet, exampleUrl, paramLines, requestHead, type SnippetFormat, type WorkflowUsage } from '@/domain/catalog';
 import { labelToString, type Example, type Operation } from '@/domain/shared';
 import { PageHeader, useAnnounce, useClock, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { Chip } from '@/ui/components/ui/chip';
-import { CodeBlock } from '@/ui/components/ui/code-block';
-import { CopyButton } from '@/ui/components/ui/copy-button';
-import { Exchange, ExchangeCard } from '@/ui/components/ui/exchange-card';
-import { FactRow, Facts } from '@/ui/components/ui/facts';
-import { Icon, type IconName } from '@/ui/components/ui/icon';
-import { Input } from '@/ui/components/ui/input';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { Menu } from '@/ui/components/ui/menu';
-import { MethodTag } from '@/ui/components/ui/method-tag';
-import { OpPickList } from '@/ui/components/ui/op-pick';
-import { SectionLabel } from '@/ui/components/ui/section-label';
-import { SummaryStrip, SummaryStripSep } from '@/ui/components/ui/summary-strip';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
-import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
+import { ApiBadge, Button, Callout, Chip, CodeBlock, CopyButton, Exchange, ExchangeCard, FactRow, Facts, Icon, type IconName, Input, LiveIndicator, Menu, MethodTag, OpPickList, SectionLabel, SummaryStrip, SummaryStripSep, SplitPane, SplitPaneMain, SplitPaneSide, TabPanel, Tabs } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import AgentPage from '../agent/AgentPage';
 import { MONTHS, fmt, pluralize } from '@/ui/app/format';
@@ -91,7 +74,7 @@ function WorkflowResult({ usage, relative }: { usage: WorkflowUsage; relative: (
   }
   return (
     <span className="wf-usage-result" data-tone={tone}>
-      <Icon name={icon} size={13} />
+      <Icon name={icon} size={13} strokeWidth={2.2} />
       {text}
     </span>
   );
@@ -164,7 +147,7 @@ function ApiServicePage() {
   const spec = currentOp && selected
     ? { method: currentOp.method, pathTemplate: currentOp.path, example: selected, mockBase: det.mockBase, mcpBase: det.mcp?.httpUrl ?? '', mcpTool: currentOp.mcpTool }
     : undefined;
-  const mockUrl = spec ? `${det.mockBase}${exampleUrlPath(spec.pathTemplate, spec.example.request.params)}` : det.mockBase;
+  const mockUrl = spec ? exampleUrl(spec) : det.mockBase;
   const allUsages = usages.data ?? [];
   const stepRefs = allUsages.flatMap((u) => (u.steps ?? []).filter((s) => s.catalogOperationId === currentOp?.id).map((s) => ({ ref: `${u.summary} › ${s.stepId}`, operationId: s.operationId })));
   const recentRuns = (runs.data ?? []).slice(0, RECENT_RUNS);
@@ -286,7 +269,7 @@ function ApiServicePage() {
                 <div className="op-detail-head">
                   <div className="op-detail-title">
                     <div className="op-detail-title-row">
-                      <MethodTag method={currentOp.method} protocol={svc.protocol} />
+                      <MethodTag method={currentOp.method} protocol={svc.protocol} className="op-detail-method" />
                       <h2>{currentOp.path}</h2>
                     </div>
                     <span className="op-detail-summary">{currentOp.summary}{currentOp.mcpTool ? <> · MCP tool <span className="op-detail-tool">{currentOp.mcpTool}</span></> : null}</span>
@@ -297,7 +280,7 @@ function ApiServicePage() {
                 <div className="op-mock">
                   <SectionLabel as="label" htmlFor="mock-url">Mock URL</SectionLabel>
                   <div className="op-mock-url">
-                    <Input id="mock-url" mono readOnly value={mockUrl} />
+                    <Input id="mock-url" mono readOnly value={mockUrl} className="op-mock-url-input" />
                     <CopyButton value={mockUrl} size="md" label="Copy" />
                   </div>
                   {spec ? (
@@ -402,7 +385,7 @@ function ApiServicePage() {
                       <SplitPaneMain className="example-detail">
                         {selected.reviewState === 'pending' ? (
                           <Callout tone="ai" variant="outline" title="">
-                            Proposed by AI from the contract's <span className="ex-mono">{schemaName}</span> schema. The mock only serves it once accepted.
+                            Proposed by AI from the contract's <span className="demo-mono">{schemaName}</span> schema. The mock only serves it once accepted.
                           </Callout>
                         ) : null}
                         <Exchange>
@@ -463,7 +446,7 @@ function ApiServicePage() {
                   </div>
                   <CopyButton value={det.mcp.clientConfig} label="Copy MCP config" size="md" variant="primary" />
                 </div>
-                <p className="agent-card-lead">Every mock operation is published as an MCP tool. An AI agent discovers it via <span className="ex-mono">tools/list</span> and calls it with arguments derived from the contract's schemas: path, query and body grouped under <span className="ex-mono">params.arguments</span>.</p>
+                <p className="agent-card-lead">Every mock operation is published as an MCP tool. An AI agent discovers it via <span className="demo-mono">tools/list</span> and calls it with arguments derived from the contract's schemas: path, query and body grouped under <span className="demo-mono">params.arguments</span>.</p>
                 <div className="agent-card-block">
                   <SectionLabel as="h3">Endpoints</SectionLabel>
                   {[
@@ -484,7 +467,7 @@ function ApiServicePage() {
                       <div className="tool-card-main">
                         <span className="tool-card-name">{t.name}</span>
                         <span className="tool-card-desc">{t.description}</span>
-                        <span className="tool-card-op"><MethodTag method={t.method} protocol={svc.protocol} className="tool-card-method" /><span className="ex-mono">{t.path}</span></span>
+                        <span className="tool-card-op"><MethodTag method={t.method} protocol={svc.protocol} className="tool-card-method" /><span className="demo-mono">{t.path}</span></span>
                       </div>
                       <ScrollPre aria-label={`Input schema of ${t.name}`} className="tool-card-schema">{t.inputSchema}</ScrollPre>
                     </div>
@@ -507,7 +490,7 @@ function ApiServicePage() {
             <div className="runs-card-head">
               <div className="runs-card-title">
                 <h2 id="runs-title">Latest test runs</h2>
-                {latestRun ? <span><span className="ex-mono">{latestRun.runner}</span> against <span className="ex-mono">{latestRun.endpoint}</span></span> : null}
+                {latestRun ? <span><span className="demo-mono">{latestRun.runner}</span> against <span className="demo-mono">{latestRun.endpoint}</span></span> : null}
               </div>
               <div className="runs-card-actions">
                 <Button asChild variant="secondary" className="runs-card-all"><RouterLink to={`/tests/service/${svc.id}`}>All runs</RouterLink></Button>
@@ -524,7 +507,7 @@ function ApiServicePage() {
                       <RouterLink to={`/tests/runner/${r.id}`} className="run-list-row">
                         <span className="run-list-id">#{r.id}</span>
                         <span className="run-list-status" data-tone={tone}>
-                          <Icon name={tone === 'passed' ? 'check-circle' : tone === 'running' ? 'running' : 'x-circle'} size={14} />
+                          <Icon name={tone === 'passed' ? 'check-circle' : tone === 'running' ? 'running' : 'x-circle'} size={14} strokeWidth={2.2} />
                           {tone === 'passed' ? 'Passed' : tone === 'running' ? 'Running' : 'Failed'}
                         </span>
                         <span className="run-list-score">{r.passed}/{r.total}</span>

@@ -4,7 +4,7 @@ import Composition from './Composition.svelte';
 import { LiveIndicator } from '../src/lib/index.js';
 
 it('server-renders native snippets, attributes and the mandatory outcome word', () => {
-  const { body } = render(Composition, { props: { onClick: () => {} } });
+  const { body } = render(Composition, { props: { onclick: () => {} } });
   expect(body).toContain('data-protocol="rest"');
   expect(body).toContain('aria-hidden="true"');
   expect(body).toContain('View services');

@@ -22,6 +22,9 @@ try {
   for (const file of ['dist/index.js', 'dist/index.d.ts', 'dist/Button.svelte', 'dist/ButtonLink.svelte', 'dist/internal/icon-data.js', 'dist/MethodTag.svelte', 'dist/StatusBadge.svelte', 'dist/LiveIndicator.svelte', 'dist/SummaryStrip.svelte', 'dist/SummaryStripSep.svelte', 'dist/styles.css', 'dist/styles.no-fonts.css']) {
     assert(paths.includes(file), `Tarball missing ${file}`);
   }
+  for (const match of readFileSync(join(library, 'dist/index.js'), 'utf8').matchAll(/default as (\w+) \} from '\.\/([^']+)';/g)) {
+    assert(paths.includes(`dist/${match[2]}`), `Tarball missing exported component ${match[1]}`);
+  }
   assert(!paths.some((path) => /(?:test|spec|react-events|node_modules)/.test(path)), 'Unexpected tarball contents');
   cpSync(join(workspace, 'test/consumer'), consumer, { recursive: true });
   const versions = {};
@@ -53,7 +56,7 @@ try {
   }
   for (const file of paths.filter((path) => /\.(?:js|ts|svelte)$/.test(path))) {
     const text = readFileSync(join(installed, file), 'utf8');
-    assert(!/\bReact(?:Node|Element|Handlers)?\b|\breactEvents\b|(?:from|import)\s*['"]react(?:\/|-dom|['"])/.test(text), `React coupling in packed ${file}`);
+    assert(!/\bReact(?:Node|Element|Handlers)?\b|\breactEvents\b|\bclassName\s*[?:]|(?:from|import)\s*['"]react(?:\/|-dom|['"])/.test(text), `React coupling in packed ${file}`);
   }
   console.log(run(join(consumer, 'node_modules/.bin/svelte-check'), ['--tsconfig', './tsconfig.json', '--fail-on-warnings'], consumer).trim());
   run(join(consumer, 'node_modules/.bin/vite'), ['build'], consumer);

@@ -2,10 +2,7 @@ import './workflows.css';
 import { Link as RouterLink } from 'react-router';
 import type { ReactNode } from 'react';
 import type { RunOrigin as RunOriginModel, RunTarget as RunTargetModel, WorkflowRun } from '@/domain/arazzo';
-import { Button } from '@/ui/components/ui/button';
-import { Icon } from '@/ui/components/ui/icon';
-import { RunOrigin } from '@/ui/components/ui/run-origin';
-import { RunTarget } from '@/ui/components/ui/run-target';
+import { Button, Icon, RunOrigin, RunTarget } from '@microcks/deep-ink';
 
 /* ------------------------------------------------------------------------------------------ routes */
 

@@ -5,7 +5,6 @@
 .wf-ex-head { display: flex; flex-wrap: wrap; align-items: flex-start; justify-content: space-between; gap: 10px; }
 .wf-ex-intro { display: flex; flex-direction: column; gap: 6px; flex: 1 1 480px; min-width: 0; }
 .wf-ex-lead { margin: 0; max-width: 80ch; font-size: 14px; line-height: 1.55; color: var(--text-secondary); }
-.wf-ex-mono { font-family: var(--font-mono); }
 .wf-ex-overlay { margin: 0; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--bg); color: var(--text-secondary); font: 400 12px/1.6 var(--font-mono); white-space: pre-wrap; overflow-wrap: anywhere; }
 .wf-ex-list { display: flex; flex-direction: column; gap: 10px; }
 .wf-ex-card { display: flex; flex-direction: column; gap: 12px; padding: 14px 16px; border: 1px solid var(--border); border-radius: 8px; background: var(--surface); }
@@ -16,16 +15,16 @@
 .wf-ex-facts { margin: 0; line-height: normal; display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 210px), 1fr)); gap: 10px 20px; }
 .wf-ex-facts dt { font-size: 12px; color: var(--text-muted); }
 .wf-ex-facts dd { margin: 4px 0 0; }
-.wf-ex-facts dd.wf-ex-mono { font-size: 12px; }
+.wf-ex-facts dd.demo-mono { font-size: 12px; }
 .wf-ex-facts dd[data-empty] { color: var(--text-muted); }
 .wf-ex-dt-next { margin-top: 8px; }
 .wf-ex-tags { display: flex; flex-wrap: wrap; gap: 4px; }
 .wf-ex-tag { padding: 1px 6px; border-radius: 4px; background: var(--raised); font: 400 12px/1.4 var(--font-mono); }
 .wf-ex-steps { display: flex; flex-direction: column; gap: 3px; }
 .wf-ex-step { display: flex; flex-wrap: wrap; align-items: center; gap: 2px 6px; font-size: 12px; }
-.wf-ex-step .icon { color: var(--success); }
+.wf-ex-step .wf-ex-step-icon { color: var(--success); }
 .wf-ex-step-id { font-family: var(--font-mono); color: var(--text); }
-.wf-ex-step[data-run='no'] .icon, .wf-ex-step[data-run='no'] .wf-ex-step-id { color: var(--text-muted); }
+.wf-ex-step[data-run='no'] .wf-ex-step-icon, .wf-ex-step[data-run='no'] .wf-ex-step-id { color: var(--text-muted); }
 .wf-ex-muted { color: var(--text-muted); font-size: 12px; }
 .wf-ex-muted a { color: var(--link); text-decoration: underline; text-underline-offset: 3px; }
 .wf-ex-judged { display: flex; flex-direction: column; gap: 2px; }

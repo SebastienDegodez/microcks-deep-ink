@@ -1,0 +1,11 @@
+{
+  "component": "CommandBar",
+  "cases": [
+    {"name": "inline", "props": {"inline": true, "items": [{"id": "svc", "label": "Open API Pastry 2.0", "kind": "service", "protocol": "REST", "hint": "service"}, {"id": "run", "label": "Run a test on API Pastry 2.0", "kind": "action", "keywords": ["test", "run"]}, {"id": "op", "label": "GET /pastries", "kind": "operation", "hint": "operation"}]}},
+    {"name": "inline-protocols-tests", "props": {"inline": true, "label": "Search", "placeholder": "Find…", "globalShortcut": false, "className": "wide", "id": "cb", "data-testid": "cb", "role": "ignored", "items": [{"id": "a", "label": "SOAP svc", "kind": "service", "protocol": "SOAP"}, {"id": "b", "label": "Events", "kind": "service", "protocol": "EVENT"}, {"id": "c", "label": "Grpc", "kind": "service", "protocol": "gRPC"}, {"id": "d", "label": "Graph", "kind": "operation", "protocol": "GRAPHQL"}, {"id": "e", "label": "Direct", "kind": "service", "protocol": "DIRECT"}, {"id": "f", "label": "Agent", "kind": "service", "protocol": "A2A"}, {"id": "g", "label": "Last run", "kind": "test"}, {"id": "h", "label": "Op", "kind": "operation"}]}},
+    {"name": "inline-empty", "props": {"inline": true, "items": []}},
+    {"name": "modal-open", "props": {"open": true, "label": "Search and commands", "items": [{"id": "run", "label": "Run a test", "kind": "action", "hint": "action"}, {"id": "t", "label": "Test #4", "kind": "test", "hint": "test"}]}},
+    {"name": "modal-closed", "props": {"open": false, "className": "x", "data-testid": "cb", "items": [{"id": "run", "label": "Run a test", "kind": "action"}]}},
+    {"name": "modal-uncontrolled-no-shortcut", "props": {"globalShortcut": false, "items": [{"id": "run", "label": "Run a test", "kind": "action"}]}}
+  ]
+}

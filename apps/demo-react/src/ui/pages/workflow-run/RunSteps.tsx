@@ -2,11 +2,7 @@ import { useId, useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 import { formatDuration } from '@/domain/shared';
 import { handoversOf, runContext, stepOffsets, stoppedStep, type Step, type StepResult, type Workflow, type WorkflowRun } from '@/domain/arazzo';
-import { Chip } from '@/ui/components/ui/chip';
-import { CodeBlock } from '@/ui/components/ui/code-block';
-import { Icon } from '@/ui/components/ui/icon';
-import { StatusBadge } from '@/ui/components/ui/status-badge';
-import { MethodTag } from '@/ui/components/ui/method-tag';
+import { Chip, CodeBlock, Icon, StatusBadge, MethodTag } from '@microcks/deep-ink';
 import { Verdict } from './run-parts';
 
 export type Phase = 'done' | 'running' | 'waiting';
@@ -249,7 +245,7 @@ function StepBody({ step, def, run, running }: { step: StepResult; def?: Step; r
     <>
       {!running && schema.state === 'fail' ? (
         <p className="wfr-step-failure">
-          <Icon name="x-circle" size={14} />
+          <Icon name="x-circle" size={14} className="wfr-failure-icon" />
           <span className="wfr-mono">Step failed: {schema.message}</span>
         </p>
       ) : null}
@@ -337,7 +333,7 @@ function StepBody({ step, def, run, running }: { step: StepResult; def?: Step; r
                   <span className="wfr-code-chip">{a.httpStatus}</span>
                   <span className="wfr-attempt-ms">{ms(a.ms)}</span>
                   <span className="wfr-attempt-note">
-                    <Icon name={failedAttempt ? 'cross' : 'check'} size={12} strokeWidth={2.4} />
+                    <Icon name={failedAttempt ? 'cross' : 'check'} size={12} strokeWidth={2.4} className="wfr-attempt-icon" />
                     <span>
                       {outcome} → {next}
                     </span>
@@ -466,7 +462,7 @@ function StepBody({ step, def, run, running }: { step: StepResult; def?: Step; r
 
       {!running && coherence ? (
         <div role="note" className="wfr-coherence">
-          <Icon name="info" size={16} />
+          <Icon name="info" size={16} className="wfr-coherence-icon" />
           <div className="wfr-coherence-body">
             <p>
               <strong>The mocks do not form a coherent scenario.</strong> GetPastries returns “{listName}”, but <span className="wfr-mono">{coherence.operationId}</span> has no
@@ -503,7 +499,7 @@ function StepBody({ step, def, run, running }: { step: StepResult; def?: Step; r
             )}
           </div>
           <div className="wfr-flow" data-kind={step.flow.kind}>
-            <Icon name={step.flow.kind === 'next' ? 'arrow-right' : step.flow.kind === 'end' ? 'stop' : 'x-circle'} size={16} />
+            <Icon name={step.flow.kind === 'next' ? 'arrow-right' : step.flow.kind === 'end' ? 'stop' : 'x-circle'} size={16} className="wfr-flow-icon" />
             <span className="wfr-flow-text">
               <span className="wfr-flow-title">{step.flow.title}</span>
               <span className="wfr-flow-detail">{step.flow.text}</span>

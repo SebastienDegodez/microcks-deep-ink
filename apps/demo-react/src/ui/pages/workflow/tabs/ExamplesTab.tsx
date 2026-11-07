@@ -3,8 +3,7 @@ import { Link } from 'react-router';
 import type { WorkflowExample, WorkflowRun } from '@/domain/arazzo';
 import type { WorkflowDetail } from '@/application/arazzo';
 import { useQuery, useRelativeTime, useUseCases } from '@/ui/app';
-import { Button } from '@/ui/components/ui/button';
-import { Icon } from '@/ui/components/ui/icon';
+import { Button, Icon } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { runPath, runSetupPath } from '../../workflows/shared';
 import { originWord } from '../run-facts';
@@ -53,7 +52,7 @@ export function ExamplesTab({ detail, runs, examples, serviceLabel }: ExamplesTa
             {examples.length} recorded {examples.length === 1 ? 'example' : 'examples'}
           </h2>
           <p className="wf-ex-lead">
-            From the ArazzoSources overlay <span className="wf-ex-mono">{document.overlay}</span>, identified by {document.title} {document.version}. An example gives
+            From the ArazzoSources overlay <span className="demo-mono">{document.overlay}</span>, identified by {document.title} {document.version}. An example gives
             inputs and what the run must show: step statuses, where it ends and its outputs. Running an example judges the run against it.
           </p>
         </div>
@@ -117,7 +116,7 @@ export function ExamplesTab({ detail, runs, examples, serviceLabel }: ExamplesTa
                         : 'Not run';
                       return (
                         <span key={s.stepId} className="wf-ex-step" data-run={exp ? undefined : 'no'}>
-                          <Icon name={exp ? 'check-circle' : 'minus-circle'} size={12} strokeWidth={2.4} />
+                          <Icon name={exp ? 'check-circle' : 'minus-circle'} size={12} strokeWidth={2.4} className="wf-ex-step-icon" />
                           <span className="wf-ex-step-id">{s.stepId}</span>
                           <span className="wf-ex-muted">{what}</span>
                         </span>
@@ -127,9 +126,9 @@ export function ExamplesTab({ detail, runs, examples, serviceLabel }: ExamplesTa
                 </div>
                 <div>
                   <dt>Expected end</dt>
-                  <dd className="wf-ex-mono">{ex.stopsAt ? `Stops at ${ex.stopsAt}` : 'Runs to its end'}</dd>
+                  <dd className="demo-mono">{ex.stopsAt ? `Stops at ${ex.stopsAt}` : 'Runs to its end'}</dd>
                   <dt className="wf-ex-dt-next">Expected outputs</dt>
-                  <dd className="wf-ex-mono" data-empty={outputs.length ? undefined : ''}>
+                  <dd className="demo-mono" data-empty={outputs.length ? undefined : ''}>
                     {outputs.length ? outputs.map(([k, v]) => `${k} = ${v}`).join(', ') : 'None expected'}
                   </dd>
                 </div>
@@ -162,7 +161,7 @@ export function ExamplesTab({ detail, runs, examples, serviceLabel }: ExamplesTa
           {document.sources.map((s, i) => (
             <span key={s.name}>
               {i > 0 ? ', ' : null}
-              <span className="wf-ex-mono">{s.name}</span>
+              <span className="demo-mono">{s.name}</span>
               {s.link.status === 'linked' ? ` → ${serviceLabel?.(s.link.serviceId) ?? s.link.serviceId}` : ' (not linked)'}
             </span>
           ))}

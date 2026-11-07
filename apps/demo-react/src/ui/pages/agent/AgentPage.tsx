@@ -6,13 +6,7 @@ import { totalsOf } from '@/domain/agents';
 import { formatDay, formatHourMinute } from '@/domain/importing';
 import { ago } from '@/ui/app/format';
 import { PageHeader, useAnnounce, useQuery, usePageTitle, useUseCases } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Chip } from '@/ui/components/ui/chip';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { Menu } from '@/ui/components/ui/menu';
-import { ProjectionPill } from '@/ui/components/ui/projection-pill';
-import { TabPanel, Tabs } from '@/ui/components/ui/tabs';
+import { ApiBadge, Button, Chip, LiveIndicator, Menu, ProjectionPill, TabPanel, Tabs } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { AgentCardTab } from './AgentCardTab';
 import { AgentMockTab } from './AgentMockTab';
@@ -102,7 +96,7 @@ export default function AgentPage() {
         <div className="agent-head-row">
           {a.labels.map((l) => <Chip key={l} variant="outline">{l}</Chip>)}
           <span className="agent-import-line">
-            A2A spec {a.specVersion} · imported {formatDay(a.importedAt)} at {formatHourMinute(a.importedAt)} from <span className="ex-mono">{a.importedFrom.replace(/^https?:\/\//, '')}</span>
+            A2A spec {a.specVersion} · imported {formatDay(a.importedAt)} at {formatHourMinute(a.importedAt)} from <span className="demo-mono">{a.importedFrom.replace(/^https?:\/\//, '')}</span>
           </span>
         </div>
         <div className="agent-head-row" data-gap="badges">

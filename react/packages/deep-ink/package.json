@@ -10,6 +10,10 @@
       "types": "./dist/index.d.ts",
       "default": "./dist/index.js"
     },
+    "./workflow-loom": {
+      "types": "./dist/workflow-loom.d.ts",
+      "default": "./dist/workflow-loom.js"
+    },
     "./styles.css": "./dist/styles.css",
     "./styles.no-fonts.css": "./dist/styles.no-fonts.css",
     "./package.json": "./package.json"
@@ -26,6 +30,7 @@
     "build": "node scripts/sync-elements.mjs && node scripts/gen-index.mjs --check && rm -rf dist && vite build && tsc -p tsconfig.build.json && node scripts/finish-types.mjs && node scripts/build-css.mjs",
     "gen:index": "node scripts/gen-index.mjs",
     "test": "vitest run --maxWorkers=2",
+    "parity": "PARITY_WRITE=1 vitest run test/parity.test.ts",
     "typecheck": "tsc -p tsconfig.json",
     "lint": "eslint src",
     "publint": "publint",

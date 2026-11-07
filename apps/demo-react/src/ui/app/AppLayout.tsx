@@ -1,11 +1,7 @@
 import { useMemo, useState } from 'react';
 import { Link, Outlet, useMatches, useNavigate } from 'react-router';
 import type { CommandItem as CatalogCommand } from '@/domain/catalog/types';
-import { AppShell, type ShellNavItem } from '@/ui/components/ui/app-shell';
-import { Button } from '@/ui/components/ui/button';
-import { Icon } from '@/ui/components/ui/icon';
-import { CommandBar, type CommandItem } from '@/ui/components/ui/command-bar';
-import { ThemeToggle } from '@/ui/components/ui/theme-toggle';
+import { AppShell, type ShellNavItem, Button, Icon, CommandBar, type CommandItem, ThemeToggle } from '@microcks/deep-ink';
 import { useQuery } from './hooks';
 import { LiveAnnouncerProvider } from './announcer';
 import microcksLogo from './microcks-logo.svg';

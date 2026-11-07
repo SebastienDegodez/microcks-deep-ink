@@ -1,10 +1,6 @@
 import { Link as RouterLink } from 'react-router';
 import type { ImportResult } from '@/domain/importing';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { CopyButton } from '@/ui/components/ui/copy-button';
-import { Icon } from '@/ui/components/ui/icon';
-import { ProjectionPill } from '@/ui/components/ui/projection-pill';
+import { ApiBadge, Button, CopyButton, Icon, ProjectionPill } from '@microcks/deep-ink';
 
 interface ImportDoneProps {
   result: ImportResult;
@@ -24,7 +20,7 @@ export function ImportDone({ result, onReset, nextScanMinutes }: ImportDoneProps
   return (
     <div className="step-card" data-step="done">
       <div role="status" className="step-head">
-        <Icon name="check-circle" size={32} />
+        <Icon name="check-circle" size={32} className="step-done-icon" />
         <div className="step-head-text">
           <h2>{result.outcome === 'direct' ? 'Mock created and live' : 'Source created'}</h2>
           <p>{doneSub(result, nextScanMinutes)}</p>
@@ -33,7 +29,7 @@ export function ImportDone({ result, onReset, nextScanMinutes }: ImportDoneProps
 
       {result.createdSource ? (
         <div className="created-source">
-          <Icon name="database" size={16} />
+          <Icon name="database" size={16} className="created-source-icon" />
           <span className="created-source-text">
             <span className="created-source-name">{result.createdSource.name}</span>
             <span className="created-source-detail">{result.createdSource.detail}</span>

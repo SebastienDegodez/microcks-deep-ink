@@ -1,7 +1,5 @@
 import { CI_FORMATS, CI_STEPS, ciDiffLegend, type CiFormat, type diffCiLines } from '@/domain/testing';
-import { Chip } from '@/ui/components/ui/chip';
-import { CodeBlock } from '@/ui/components/ui/code-block';
-import { Icon } from '@/ui/components/ui/icon';
+import { Chip, CodeBlock, Icon } from '@microcks/deep-ink';
 
 interface CiAsideProps {
   uid: string;
@@ -39,7 +37,7 @@ export function CiAside({ uid, ciTab, onTabChange, lines, serviceLabel, oauth }:
       </p>
       {oauth ? (
         <div className="tc-callout-outline" role="note">
-          <Icon name="warning" size={14} />
+          <Icon name="warning" size={14} className="tc-callout-icon" />
           <span>OAuth2 settings only apply to this run from the UI: the CLI, the GitHub Action and the Tekton task shown here do not carry them.</span>
         </div>
       ) : null}

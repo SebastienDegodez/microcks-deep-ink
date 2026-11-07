@@ -1,0 +1,10 @@
+{
+  "component": "Menu",
+  "cases": [
+    {"name": "default", "props": {"label": "Actions", "items": [{"id": "copy", "label": "Copy service id"}, {"id": "test", "label": "Run a test", "href": "/tests/create"}, {"id": "off", "label": "Archive", "disabled": true}, {"id": "del", "label": "Delete service", "danger": true}]}},
+    {"name": "icon-only-end-ghost-sm", "props": {"label": "More actions", "icon": "more", "iconOnly": true, "variant": "ghost", "size": "sm", "align": "end", "className": "row-menu", "items": [{"id": "a", "label": "A"}]}},
+    {"name": "icon-label", "props": {"label": "Export", "icon": "download", "variant": "primary", "items": [{"id": "json", "label": "JSON", "href": "#json"}]}},
+    {"name": "separator-description-disabled-link", "props": {"label": "More actions", "icon": "more-vertical", "iconOnly": true, "items": [{"id": "copy", "label": "Copy workflowId"}, {"id": "docs", "label": "Docs", "href": "/docs", "disabled": true}, {"id": "del", "label": "Delete workflow", "danger": true, "disabled": true, "separatorBefore": true, "description": "Workflows are removed with their Arazzo document."}]}},
+    {"name": "children", "props": {"label": "Actions", "items": [{"id": "a", "label": "A", "danger": true, "href": "/a", "description": "Danger link"}]}, "children": "Extra"}
+  ]
+}

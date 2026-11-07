@@ -160,10 +160,10 @@ describe('backend switch', () => {
     expect(createComposition()).toMatchObject({ backend: 'memory', httpFeatures: [] });
   });
 
-  it('falls back to memory per feature when the http backend has no adapter for it', async () => {
+  it('serves every feature over http with the http backend', async () => {
     const composition = createComposition({ backend: 'http', apiBaseUrl: 'http://demo.test/api/' });
-    expect(composition).toMatchObject({ backend: 'http', httpFeatures: [] });
-    expect(await composition.useCases.catalog.listServices()).toHaveLength(11);
+    expect(composition).toMatchObject({ backend: 'http', httpFeatures: ['catalog', 'copilot', 'importing', 'testing', 'arazzo', 'observe', 'govern', 'agents'] });
+    expect(composition.useCases.copilot.export([], 'json')).toBeDefined();
   });
 
   it('parses VITE_DEMO_BACKEND', () => {

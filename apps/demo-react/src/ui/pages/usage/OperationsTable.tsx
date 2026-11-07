@@ -1,10 +1,7 @@
 import { useId } from 'react';
 import { Link as RouterLink } from 'react-router';
 import { formatCount, formatTrend, type UsageTableRow, type UsageView } from '@/domain/observe';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { MethodTag } from '@/ui/components/ui/method-tag';
-import { Panel } from '@/ui/components/ui/panel';
+import { ApiBadge, LiveIndicator, MethodTag, Panel } from '@microcks/deep-ink';
 import './table.css';
 
 const trendDir = (pct: number) => (pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat');

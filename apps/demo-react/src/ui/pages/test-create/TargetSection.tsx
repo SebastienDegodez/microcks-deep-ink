@@ -1,11 +1,7 @@
 import type { Ref } from 'react';
 import type { CreateTestForm } from '@/application/testing';
 import type { TestTarget } from '@/domain/testing';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Chip } from '@/ui/components/ui/chip';
-import { Field } from '@/ui/components/ui/field';
-import { Icon } from '@/ui/components/ui/icon';
-import { Input } from '@/ui/components/ui/input';
+import { ApiBadge, Chip, Field, Icon, Input } from '@microcks/deep-ink';
 import type { Draft, UpdateDraft } from './draft';
 import { FormSection } from './FormSection';
 

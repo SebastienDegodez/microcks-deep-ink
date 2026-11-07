@@ -23,7 +23,7 @@
   padding: 10px 14px; border-radius: 6px; border: 1px dashed var(--warning); background: var(--canvas);
   font-size: 13px; line-height: 1.5; color: var(--text-secondary);
 }
-.copilot-rule > .icon { flex: none; margin-top: 2px; color: var(--warning); }
+.copilot-rule-icon { flex: none; margin-top: 2px; color: var(--warning); }
 .copilot-rule strong { color: var(--text); font-weight: 600; }
 
 /* Two columns: registry split-pane, settings side (300-380px at every width), proposals main */
@@ -72,14 +72,14 @@
   display: flex; flex-direction: column; align-items: flex-start; gap: 10px; padding: 28px;
   border-radius: 12px; border: 1.5px dashed var(--border-strong);
 }
-.copilot-empty > .icon { color: var(--warning); stroke-width: 1.8; }
+.copilot-empty-icon { color: var(--warning); stroke-width: 1.8; }
 .copilot-empty h3 { margin: 0; font-size: 15px; font-weight: 600; line-height: 1.4; }
 .copilot-empty p { margin: 0; max-width: 520px; font-size: 13px; line-height: 1.5; color: var(--text-secondary); }
 
 .copilot-generating { display: flex; flex-direction: column; gap: 10px; }
 .copilot-generating-line { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 0; font-size: 13px; color: var(--text-secondary); }
 .copilot-skeleton { display: flex; align-items: center; gap: 12px; padding: 14px; border-radius: 8px; border: 1px dashed var(--warning); }
-.copilot-skeleton > .icon { color: var(--warning); }
+.copilot-skeleton-icon { color: var(--warning); }
 .copilot-skeleton-bars { display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .copilot-skeleton-bars > span { display: block; height: 10px; border-radius: 4px; background: var(--raised); }
 .copilot-skeleton-bars > span + span { height: 8px; background: var(--surface); }
@@ -115,7 +115,7 @@
   display: flex; align-items: flex-start; gap: 8px; margin: 0 12px 10px; padding: 7px 10px; border-radius: 4px;
   background: var(--surface); font-size: 12px; line-height: 1.5; color: var(--warning);
 }
-.proposal-conflict > .icon { flex: none; margin-top: 2px; }
+.proposal-conflict-icon { flex: none; margin-top: 2px; }
 .proposal-body { padding: 0 12px 12px; }
 
 /* Request / response cards: registry exchange-card (sm). The prototype pads the blocks after the first 8px 12px. */

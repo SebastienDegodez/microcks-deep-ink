@@ -1,6 +1,6 @@
 import type { RunStatus } from '@/domain/arazzo';
 import type { TestRunSummary } from '@/domain/testing';
-import type { IconName } from '@/ui/components/ui/icon';
+import type { IconName } from '@microcks/deep-ink';
 
 /** Result of a test run. */
 export type TestResult = TestRunSummary['result'];

@@ -1,6 +1,6 @@
 import type { WorkflowRun } from '@/domain/arazzo';
 import { RUN_STATUS_ICON, RUN_STATUS_WORD } from '@/ui/app/outcomes';
-import { Icon } from '@/ui/components/ui/icon';
+import { Icon } from '@microcks/deep-ink';
 import { runPick } from './loom-model';
 
 /** "Results & values from" run picker shared by the Loom and Steps tabs: the last four runs, as pressed buttons. */
@@ -27,7 +27,7 @@ export function RunPicker({ runs, run, onPick, label, caption }: { runs: Workflo
             data-status={r.status}
             onClick={() => onPick(r.number)}
           >
-            <Icon name={RUN_STATUS_ICON[r.status]} size={13} strokeWidth={2.2} />
+            <Icon name={RUN_STATUS_ICON[r.status]} size={13} strokeWidth={2.2} className="wf-run-pick-icon" />
             {n}
             <span className="wf-run-pick-target">
               <span className="sr-only"> </span>

@@ -1,12 +1,9 @@
-import '../tests/page-kit.css';
 import { useId, useRef, useState, type FormEvent } from 'react';
 import { Link as RouterLink, useNavigate, useSearchParams } from 'react-router';
 import type { CreateTestForm } from '@/application/testing';
 import { buildCiSnippet, diffCiLines, parseTimeout, summarizeSelection, validateTestForm, type CiFormat, type TestTarget } from '@/domain/testing';
 import { PageHeader, useQuery, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
+import { ApiBadge, Button, Callout } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { AuthSection } from './AuthSection';
 import { CiAside } from './CiAside';

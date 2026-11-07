@@ -1,7 +1,6 @@
 /* Agent test run (19). The registry items (matrix, lanes, progress, log) keep their own look; this file lays out the page. */
 .agent-test { display: flex; flex-direction: column; gap: 22px; line-height: normal; }
-.agent-test .mono { font-family: var(--font-mono); }
-.agent-test code.mono { font-size: inherit; background: none; padding: 0; }
+.agent-test code.demo-mono { font-size: inherit; background: none; padding: 0; }
 .agent-test .muted { color: var(--text-muted); }
 
 /* Header: badges centred on the title row; the meta line is the description, at full width. */
@@ -20,10 +19,10 @@
 .setup-col { display: flex; flex-direction: column; gap: 20px; min-width: 0; }
 .setup-col[data-col='main'] { flex: 3 1 460px; }
 .setup-col[data-col='side'] { flex: 2 1 320px; }
-.setup-url .input { max-width: 620px; color: var(--link); }
-.setup-secret .select { max-width: 360px; font-family: var(--font-mono); }
+.setup-url-input { max-width: 620px; color: var(--link); }
+.setup-secret-select { max-width: 360px; font-family: var(--font-mono); }
 .setup-secret-warn .help { color: var(--warning); }
-.setup-timeout .input { max-width: 160px; }
+.setup-timeout-input { max-width: 160px; }
 .setup-unit { font-weight: 400; }
 .setup-fieldset { display: flex; flex-direction: column; gap: 8px; min-width: 0; margin: 0; padding: 0; border: 0; }
 .setup-fieldset > legend { margin-bottom: 8px; padding: 0; font: 600 13px/normal var(--font-ui); }
@@ -47,8 +46,8 @@
 .conversation-option-id { flex: 1 1 200px; min-width: 0; font: 600 13px/normal var(--font-mono); overflow-wrap: anywhere; }
 .conversation-option-skill, .conversation-option-expect { display: inline-flex; align-items: baseline; gap: 6px; min-width: 0; }
 .conversation-option-skill { flex: 0 1 170px; }
-.conversation-option-skill .mono { color: var(--text-secondary); }
-.conversation-option-skill .mono[data-none] { color: var(--text-muted); }
+.conversation-option-skill .demo-mono { color: var(--text-secondary); }
+.conversation-option-skill .demo-mono[data-none] { color: var(--text-muted); }
 .conversation-option-turns { flex: 0 1 90px; color: var(--text-secondary); }
 .conversation-option-expect { flex: 0 1 150px; }
 
@@ -94,7 +93,7 @@
   color: var(--link); font: 400 13px/normal var(--font-ui); text-align: start; cursor: pointer;
 }
 .failure-link:hover { text-decoration: underline; }
-.failure-link > .icon { flex: none; margin-top: 2px; color: var(--danger); stroke-width: 2.8; }
+.failure-link-icon { flex: none; margin-top: 2px; color: var(--danger); stroke-width: 2.8; }
 .failure-link-cell { font-family: var(--font-mono); font-weight: 600; }
 .transport-scores { display: flex; flex-direction: column; gap: 8px; }
 .transport-scores-caption { font-size: 12px; color: var(--text-muted); }
@@ -135,7 +134,7 @@
   display: flex; align-items: flex-start; gap: 6px; align-self: flex-end; max-width: 420px; margin: 0; padding-top: 6px;
   font-size: 12px; line-height: 1.5; color: var(--danger);
 }
-.lifecycle-note > .icon { flex: none; margin-top: 2px; stroke-width: 2.4; }
+.lifecycle-icon { flex: none; margin-top: 2px; stroke-width: 2.4; }
 
 .agent-test .exchange { display: flex; flex-direction: column; overflow: hidden; border: 1px solid var(--border); border-radius: 6px; }
 .agent-test .exchange[data-highlight] { border-color: var(--danger); }

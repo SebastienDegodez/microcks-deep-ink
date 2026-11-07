@@ -30,7 +30,7 @@
 
 .ad-snap-preview { display: flex; flex-direction: column; gap: 10px; }
 .ad-snap-filerow { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; background: var(--surface); }
-.ad-snap-filerow > .icon { flex: none; color: var(--text-secondary); }
+.ad-snap-file-icon { flex: none; color: var(--text-secondary); }
 .ad-snap-filerow > .ad-link-button { padding: 2px 6px; }
 .ad-snap-filename { flex: 1; min-width: 0; font: 400 13px/normal var(--font-mono); overflow-wrap: anywhere; }
 .ad-snap-items { display: flex; flex-direction: column; gap: 10px; margin: 0; padding: 0; list-style: none; }

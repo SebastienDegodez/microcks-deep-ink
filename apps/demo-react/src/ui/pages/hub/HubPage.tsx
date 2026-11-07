@@ -13,18 +13,7 @@ import {
 } from '@/domain/govern';
 import { plural } from '@/ui/app/format';
 import { PageHeader, useAnnounce, usePageTitle, useQuery, useReturnFocus, useUseCases } from '@/ui/app';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { Chip } from '@/ui/components/ui/chip';
-import { RadioGroup } from '@/ui/components/ui/checkbox';
-import { FilterSearch } from '@/ui/components/ui/filter-bar';
-import { Icon } from '@/ui/components/ui/icon';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { Panel } from '@/ui/components/ui/panel';
-import { SectionLabel } from '@/ui/components/ui/section-label';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
-import { Tile, TileGrid } from '@/ui/components/ui/tile';
+import { ApiBadge, Button, Callout, Chip, RadioGroup, FilterSearch, Icon, LiveIndicator, Panel, SectionLabel, SplitPane, SplitPaneMain, SplitPaneSide, Tile, TileGrid } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import './hub.css';
 
@@ -90,7 +79,7 @@ export default function HubPage() {
         description="Community packages of API mocks and conformance tests. Install one to get its Services, examples and tests in this instance, once or kept in sync."
         actions={
           <span className="hb-connected">
-            <Icon name="check" size={14} />
+            <Icon name="check" size={14} className="hb-connected-icon" />
             Connected to
             <span className="hb-connected-url">{HUB_URL}</span>
           </span>
@@ -211,7 +200,7 @@ function PackageTile({
           {status === 'installed' ? (
             <>
               <span className="hb-installed">
-                <Icon name="check" size={15} />
+                <Icon name="check" size={15} strokeWidth={2.4} />
                 Installed
               </span>
               <Button asChild size="tile">
@@ -277,7 +266,7 @@ function Detail({
         </div>
         <p className="hb-detail-desc">{pkg.description}</p>
         <span className="hb-detail-meta">
-          maintained by community · {metaOf(pkg)} · <span className="hb-mono">hub.microcks.io/package/{pkg.id}</span>
+          maintained by community · {metaOf(pkg)} · <span className="demo-mono">hub.microcks.io/package/{pkg.id}</span>
         </span>
       </div>
 
@@ -301,10 +290,10 @@ function Detail({
                 <span>
                   {plural(a.operations[v] ?? 0, 'operation')} · {a.examples[v] ?? 0} examples
                 </span>
-                <span className="hb-mono">{a.contracts}</span>
+                <span className="demo-mono">{a.contracts}</span>
                 {a.inCatalogue.includes(v) ? (
                   <span className="hb-exists">
-                    <Icon name="check" size={12} />
+                    <Icon name="check" size={12} strokeWidth={2.6} />
                     already in your catalogue
                   </span>
                 ) : null}
@@ -382,7 +371,7 @@ function Detail({
         {status === 'installed' ? (
           <>
             <span className="hb-installed">
-              <Icon name="check" size={15} />
+              <Icon name="check" size={15} strokeWidth={2.4} />
               Installed
             </span>
             <Button variant="primary" asChild>

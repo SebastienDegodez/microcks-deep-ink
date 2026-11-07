@@ -2,12 +2,7 @@ import { useId, useRef, useState } from 'react';
 import { Link } from 'react-router';
 import type { Snapshot, SnapshotImportPreviewItem } from '@/domain/govern';
 import { useQuery, useReturnFocus, useUseCases } from '@/ui/app';
-import { ApiBadge, type Protocol } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { DropZone } from '@/ui/components/ui/drop-zone';
-import { Icon } from '@/ui/components/ui/icon';
-import { SectionLabel } from '@/ui/components/ui/section-label';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
+import { ApiBadge, type Protocol, Button, DropZone, Icon, SectionLabel, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
 import './snapshots.css';
@@ -127,7 +122,7 @@ function ImportCard({ notify }: { notify: Notify }) {
         <DropZone
           size="sm"
           heading="Drop a snapshot here"
-          hint={<>A <code className="ad-mono">microcks-repository.json</code> exported from any Microcks instance</>}
+          hint={<>A <code className="demo-mono">microcks-repository.json</code> exported from any Microcks instance</>}
           accept="application/json,.json"
           multiple={false}
           chooseLabel="Choose a file"
@@ -138,7 +133,7 @@ function ImportCard({ notify }: { notify: Notify }) {
       ) : (
         <div className="ad-snap-preview">
           <div className="ad-snap-filerow">
-            <Icon name="file-plain" size={15} />
+            <Icon name="file-plain" size={15} className="ad-snap-file-icon" />
             <span className="ad-snap-filename">{fileName}</span>
             {result ? null : <button type="button" id={`${inputId}-change`} className="ad-link-button" aria-label={`Change file ${fileName}`} onClick={clear}>Change</button>}
           </div>

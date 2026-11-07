@@ -1,9 +1,6 @@
 import type { Ref } from 'react';
 import type { CreateTestForm } from '@/application/testing';
-import { Field } from '@/ui/components/ui/field';
-import { Input } from '@/ui/components/ui/input';
-import { Select } from '@/ui/components/ui/select';
-import { Switch } from '@/ui/components/ui/switch';
+import { Field, Input, Select, Switch } from '@microcks/deep-ink';
 import type { Draft, UpdateDraft } from './draft';
 import { FormSection } from './FormSection';
 

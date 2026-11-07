@@ -18,16 +18,7 @@ import {
 import { formatClock, formatDuration } from '@/domain/shared';
 import { RUN_SCENARIOS, type RunScenario } from '@/application/arazzo';
 import { PageHeader, useQuery, useRelativeTime, useSubscription, useUseCases, usePageTitle } from '@/ui/app';
-import { Chip } from '@/ui/components/ui/chip';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { Button } from '@/ui/components/ui/button';
-import { Facts } from '@/ui/components/ui/facts';
-import { Icon } from '@/ui/components/ui/icon';
-import { StatusBadge } from '@/ui/components/ui/status-badge';
-import { DataTable } from '@/ui/components/ui/table';
-import { LiveIndicator } from '@/ui/components/ui/live-indicator';
-import { RunMeta } from '@/ui/components/ui/run-meta';
-import { RunProgress, type RunSegment } from '@/ui/components/ui/run-progress';
+import { Chip, ApiBadge, Button, Facts, Icon, StatusBadge, DataTable, LiveIndicator, RunMeta, RunProgress, type RunSegment } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { ButtonRouterLink, runPath, runSetupPath, workflowPath } from '../workflows/shared';
 import { RunApiPanel, RunBadges, Verdict, implementationsText, runBreadcrumb } from './run-parts';
@@ -455,13 +446,13 @@ function Summary({ run, totals, workflow }: { run: WorkflowRun; totals: { calls:
       <div className="wfr-actions">
         {run.relatedTestRunId ? (
           <RouterLink to={`/tests/runner/${run.relatedTestRunId}`} className="wfr-action" data-tone="danger">
-            <Icon name="warning" size={14} strokeWidth={2.4} />
+            <Icon name="warning" size={14} strokeWidth={2.4} className="wfr-action-icon" />
             Same bug in test run #{run.relatedTestRunId}
           </RouterLink>
         ) : null}
         {run.coherence[0] ? (
           <RouterLink to={`/services/pastry2/copilot?op=get-name&hint=${encodeURIComponent(run.coherence[0].copilotHint)}`} className="wfr-action" data-tone="action">
-            <Icon name="sparkles" size={14} />
+            <Icon name="sparkles" size={14} className="wfr-action-icon" />
             Generate the example with the AI Copilot
           </RouterLink>
         ) : null}

@@ -236,7 +236,7 @@
   color: var(--text-secondary);
 }
 
-.tc-ops-toggle.button {
+.tc-ops-toggle {
   min-height: 0;
   padding: 0;
   font-size: 12px;
@@ -254,7 +254,7 @@
   font-weight: 400;
 }
 
-.tc-op-label .method {
+.tc-op-label .tc-op-method {
   min-width: 52px;
   padding: 2px 5px;
   font-size: 10px;
@@ -415,7 +415,7 @@
 }
 
 /* Outline compact button, set in mono with the lighter border (page-specific). */
-.tc-apikey.button {
+.tc-apikey {
   border-color: var(--border);
   color: var(--text-secondary);
   font-family: var(--font-mono);
@@ -497,10 +497,6 @@
   row-gap: 0;
 }
 
-.tc-ci-code .code-tabs {
-  flex-wrap: wrap;
-}
-
 /* Copy wraps under the tabs, on the left. */
 .tc-ci-code > figcaption .code-copy.button {
   margin-inline-start: 0;
@@ -538,7 +534,7 @@
   line-height: 1.5;
 }
 
-.tc-callout-outline > .icon {
+.tc-callout-icon {
   flex: none;
   margin-top: 2px;
 }

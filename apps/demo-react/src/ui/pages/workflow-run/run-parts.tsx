@@ -1,9 +1,6 @@
 import type { ReactNode } from 'react';
 import { Link as RouterLink } from 'react-router';
-import { ApiBadge } from '@/ui/components/ui/api-badge';
-import { CodeBlock } from '@/ui/components/ui/code-block';
-import { CopyButton } from '@/ui/components/ui/copy-button';
-import { Icon } from '@/ui/components/ui/icon';
+import { ApiBadge, CodeBlock, CopyButton, Icon } from '@microcks/deep-ink';
 import './workflow-run.css';
 
 /* Pieces shared by the run setup page and the run page (the prototype is one page in two phases). */

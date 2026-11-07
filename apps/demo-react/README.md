@@ -40,6 +40,25 @@ simulated latency (120 to 350 ms, deterministic). The Playwright smoke run uses 
   folder, quiet; an unhandled `/api/` request logs a console error, everything else bypasses it) and by `node.ts` in vitest.
   The first render waits for `worker.start()`. A feature without HTTP adapters falls back to memory (`httpFeatures` lists
   the others). The `memory` build does not contain MSW.
+- `testing` over HTTP: the Microcks test API v1.15 (`/api/tests...`, endpoints and demo-only extensions listed in
+  `src/infrastructure/http/testing/microcks.ts`). A live run (`watch`) fetches the run once and replays its steps client-side,
+  one per tick: Microcks has no test-progress stream (its UI polls `GET /api/tests/{id}`).
+
+### Port contract tests
+
+Each feature has ONE contract suite, `src/application/ports/__contracts__/<feature>.contract.ts`
+(`describe<Feature>PortContract(name, makeAdapters)`): the observable behaviour of its ports, through their interface only
+(seed results, ordering, filters, not-found, mutations visible on re-read, stream subscribe/unsubscribe under fake timers).
+Stream checks are timing-agnostic (`takeEmissions`/`nextEmission` await emissions and assert their order and content, never that
+they arrive synchronously); `src/infrastructure/in-memory/async-streams.contract.test.ts` reruns the suites with asynchronous delivery.
+The in-memory adapters are the reference and pass it in `src/infrastructure/in-memory/<feature>/<feature>.contract.test.ts`.
+
+The same suites run over HTTP + MSW (`msw/node`) in `src/infrastructure/http/port-contracts.test.ts`, through
+`describePortContractOverHttp` (`src/infrastructure/msw/http.contract.ts`). A feature without HTTP adapters is reported as `todo`.
+To plug a feature in: add `createHttp<Feature>Adapters({ http, clock })` in `src/infrastructure/http/<feature>` and its handlers in
+`src/infrastructure/msw/handlers/<feature>.ts`, then set `http: createHttp<Feature>Adapters` on the feature's row (plus
+`handlers: () => [...]` when the handlers keep a seeded state, so each test starts from the seed). `*.contract.ts` files are
+test-only: `lint:arch` lets them import vitest and MSW, and only tests may import them.
 
 ## Layers
 
@@ -60,7 +79,7 @@ simulated latency (120 to 350 ms, deterministic). The Playwright smoke run uses 
 | `src/infrastructure/in-memory/shared` | `FixedClock` (2026-11-03T09:10:04Z), `latency()`, `createStream`/`createTickingStream`/`createSequenceStream`, **seeds** (services, Arazzo documents, workflows, runs, sessions), `seed-ids.ts` | domain, application |
 | `src/ui/app` | Providers and hooks (`useUseCases`, `useQuery`, `useSubscription`, `usePageTitle`, `useAnnounce`), `PageHeader`, `DemoBanner`, `AppLayout`, `routes.ts`, `router.tsx` | application (types), domain, ui, `react`, `react-router` |
 | `src/ui/pages/<screen>/<Name>Page.tsx` | One lazy page per route | same as `ui` |
-| `@/ui/components/ui/<item>` | The design system: an alias of the `@microcks/deep-ink` package (see below) | |
+| `@microcks/deep-ink` | The design system package (see below) | |
 
 ### The dependency rule
 
@@ -78,7 +97,7 @@ Enforced by `.dependency-cruiser.cjs` (every rule has severity `error`, `pnpm li
   `src/infrastructure/msw` and tests only; `src/infrastructure/msw` by `src/main.tsx` and tests only; `msw/node.ts` by tests only.
 - No module imports `@microcks-deep-ink/*`.
 - No circular dependency (dynamic imports count), no `domain/<a>` to `domain/<b>` (except `shared`), no `application/<a>` to `application/<b>`.
-- `vitest` and Testing Library only appear in `*.test.ts(x)` files.
+- `vitest` and Testing Library only appear in `*.test.ts(x)` files and the port contract suites (`*.contract.ts`), which only tests import.
 
 Tests follow the same rules. Write use-case tests that need the in-memory adapters next to the adapters
 (`src/infrastructure/in-memory/<feature>/*.test.ts`) or in `src/composition-root.test.ts`. Tests that render the router
@@ -132,9 +151,8 @@ pnpm -C react install --frozen-lockfile && pnpm -C react build
 pnpm --filter demo-react dev
 ```
 
-`src/main.tsx` imports `@microcks/deep-ink/styles.css` once. Pages import `@/ui/components/ui/<item>` (or `@microcks/deep-ink`):
-`vite.config.ts` aliases every `@/ui/components/ui/...` import to the package, and `tsconfig.json` maps it to the package types.
-The one file left in `src/ui/components/ui` (`workflow-loom.tsx`) re-exports the Loom for `LoomHost`'s lazy `import.meta.glob`.
+`src/main.tsx` imports `@microcks/deep-ink/styles.css` once. Pages import `@microcks/deep-ink`;
+`LoomHost` loads the Loom with a dynamic `import('@microcks/deep-ink/workflow-loom')`, so it stays in its own lazy chunk.
 Fix components in the package (`react/packages/deep-ink/src`), never in the demo.
 
 ## Data

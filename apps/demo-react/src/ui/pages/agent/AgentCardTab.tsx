@@ -1,12 +1,7 @@
 import './agent-card.css';
 import { useState } from 'react';
 import { CARD_SECTIONS, cardLines, diffCards, missingCardFields, sectionRanges, serveCardFromMock, type AgentProfile } from '@/domain/agents';
-import { CopyButton } from '@/ui/components/ui/copy-button';
-import { Icon } from '@/ui/components/ui/icon';
-import { Input } from '@/ui/components/ui/input';
-import { SectionLabel } from '@/ui/components/ui/section-label';
-import { Segmented } from '@/ui/components/ui/segmented';
-import { SplitPane, SplitPaneMain, SplitPaneSide } from '@/ui/components/ui/split-pane';
+import { CopyButton, Icon, Input, SectionLabel, Segmented, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 
 type Tok = { v: string; k: 'key' | 'colon' | 'str' | 'num' | 'lit' | 'punct' | 'plain' };
 
@@ -95,8 +90,8 @@ export function AgentCardTab({ agent }: { agent: AgentProfile }) {
         </div>
         {isMock ? (
           <p className="agent-card-mock-note">
-            Microcks serves this copy of the card. Only <span className="ex-mono">supportedInterfaces</span> changes: every transport points at the mock, in the same order, so JSON-RPC stays preferred.{' '}
-            <span className="ex-mono">securitySchemes</span> is kept as declared; the mock accepts any bearer token.
+            Microcks serves this copy of the card. Only <span className="demo-mono">supportedInterfaces</span> changes: every transport points at the mock, in the same order, so JSON-RPC stays preferred.{' '}
+            <span className="demo-mono">securitySchemes</span> is kept as declared; the mock accepts any bearer token.
           </p>
         ) : null}
         {/* The scroll container must be keyboard reachable (WCAG 2.1.1), so it is focusable and named, as in CodeBlock. */}

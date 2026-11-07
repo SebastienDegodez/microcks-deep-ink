@@ -4,10 +4,7 @@ import { callTotals, stoppedStep, type WorkflowRun } from '@/domain/arazzo';
 import { formatDuration } from '@/domain/shared/time';
 import type { WorkflowDetail } from '@/application/arazzo';
 import { useQuery, useRelativeTime, useUseCases } from '@/ui/app';
-import { Button } from '@/ui/components/ui/button';
-import { Callout } from '@/ui/components/ui/callout';
-import { Icon } from '@/ui/components/ui/icon';
-import { MethodTag } from '@/ui/components/ui/method-tag';
+import { Button, Callout, Icon, MethodTag } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { workflowPath } from '../../workflows/shared';
 import './mock-url.css';
@@ -86,7 +83,7 @@ export function MockUrlTab({ detail, runs, onShowRuns }: { detail: WorkflowDetai
           <h2 id="wf-mu-title">Mock URL</h2>
           <p>
             POST the inputs as JSON: Microcks plays the workflow on its mocks and answers with its outputs. An application can call one business operation instead
-            of chaining the {workflow.steps.length} calls itself. Each call is a run of <span className="wf-mu-mono">{workflow.workflowId}</span> with the origin
+            of chaining the {workflow.steps.length} calls itself. Each call is a run of <span className="demo-mono">{workflow.workflowId}</span> with the origin
             Mock URL, listed in Runs.
           </p>
         </div>
@@ -101,7 +98,7 @@ export function MockUrlTab({ detail, runs, onShowRuns }: { detail: WorkflowDetai
             </Button>
           </div>
           <span className="wf-mu-help">
-            <span className="wf-mu-mono">/arazzo/{'{title}'}/{'{version}'}/{'{workflowId}'}</span>, encoded like the Mock URLs of APIs.
+            <span className="demo-mono">/arazzo/{'{title}'}/{'{version}'}/{'{workflowId}'}</span>, encoded like the Mock URLs of APIs.
           </span>
         </div>
 
@@ -185,7 +182,7 @@ export function MockUrlTab({ detail, runs, onShowRuns }: { detail: WorkflowDetai
           <pre className="wf-mu-pre">{JSON.stringify(chosen.body, null, 2)}</pre>
         </div>
         <span className="wf-mu-note">
-          Every answer but a refusal carries the header <span className="wf-mu-mono">X-Microcks-Arazzo-Run-Id</span>, so the caller can open the run.
+          Every answer but a refusal carries the header <span className="demo-mono">X-Microcks-Arazzo-Run-Id</span>, so the caller can open the run.
         </span>
       </section>
     </div>
