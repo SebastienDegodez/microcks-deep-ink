@@ -17,14 +17,16 @@
  * Live streams (Live traces, Cockpit ticker): Microcks has no feed of mock calls (no SSE, no WebSocket), and no new
  * one is invented. Each subscription polls `GET /api/demo/{traces,traffic}/calls?after=<last seq>&limit=1`, the next
  * poll `intervalMs` (3200 ms for traces, 1200 ms for the ticker, as the in-memory streams) after the previous one
- * settles: one request in flight at most, missed ticks skipped (no catch-up burst), see `pollingStream`. It emits what
+ * settles: one request in flight at most, missed ticks skipped (no catch-up burst), see `pollingStream`
+ * (`src/infrastructure/http/polling.ts`). It emits what
  * comes back, in order; the trace filter is applied on the client.
  */
 import { matchesTraceFilter, type Period, type TraceCall } from '@/domain/observe';
 import type { MetricsRepository, TraceStream, TrafficStream } from '@/application/ports/observe';
 import type { Clock } from '@/application/ports/shared';
-import { NotFoundError, type Listener, type Unsubscribe } from '@/application/shared';
+import { NotFoundError } from '@/application/shared';
 import type { HttpClient } from '@/infrastructure/http/client';
+import { pollingStream } from '@/infrastructure/http/polling';
 import type { MicrocksCounter, MicrocksService } from '@/infrastructure/http/catalog/dto';
 import type {
   DemoTraceCalls,
@@ -51,42 +53,6 @@ export interface HttpObserveAdapters {
 /** Same paces as the in-memory streams. */
 export const TRACE_POLL_MS = 3200;
 export const TRAFFIC_POLL_MS = 1200;
-
-/**
- * A stream that polls `fetchAfter(<seq of the last emitted call>, signal)` and emits what it returns, in order.
- * Self-scheduling: the next poll is scheduled `intervalMs` after the previous one SETTLES, so at most one request is
- * in flight and a stall (slow answer, throttled tab) never triggers a burst of catch-up requests: missed ticks are
- * skipped, the stream simply resumes from the last seq. A failed poll is skipped the same way. Unsubscribing clears
- * the pending tick and aborts the request in flight (its answer, if any, is dropped).
- */
-function pollingStream(fetchAfter: (after: number | undefined, signal: AbortSignal) => Promise<TraceCall[]>, intervalMs: number) {
-  return (listener: Listener<TraceCall>): Unsubscribe => {
-    let after: number | undefined;
-    let stopped = false;
-    let timer: ReturnType<typeof setTimeout> | undefined;
-    const controller = new AbortController();
-    const poll = async () => {
-      timer = undefined;
-      try {
-        const calls = await fetchAfter(after, controller.signal);
-        for (const call of calls) {
-          if (stopped) return;
-          after = call.seq;
-          listener(call);
-        }
-      } catch {
-        // Skipped: the next tick asks again from the same seq.
-      }
-      if (!stopped) timer = setTimeout(poll, intervalMs);
-    };
-    timer = setTimeout(poll, intervalMs);
-    return () => {
-      stopped = true;
-      if (timer !== undefined) clearTimeout(timer);
-      controller.abort();
-    };
-  };
-}
 
 export function createHttpObserveAdapters({ http, clock }: HttpObserveDeps): HttpObserveAdapters {
   const today = () => clock.now().toISOString().slice(0, 10);
@@ -152,7 +118,7 @@ export function createHttpObserveAdapters({ http, clock }: HttpObserveDeps): Htt
 
   const calls = (feed: 'traces' | 'traffic') => (after: number | undefined, signal: AbortSignal) =>
     http.get<DemoTraceCalls>(`demo/${feed}/calls`, { query: { after, limit: 1 }, signal });
-  const traceFeed = pollingStream(calls('traces'), TRACE_POLL_MS);
+  const traceFeed = pollingStream(calls('traces'), { intervalMs: TRACE_POLL_MS, seq: (c: TraceCall) => c.seq });
 
   const traces: TraceStream = {
     subscribe: (filter, listener) => traceFeed((call) => (matchesTraceFilter(call, filter) ? listener(call) : undefined)),
@@ -169,7 +135,7 @@ export function createHttpObserveAdapters({ http, clock }: HttpObserveDeps): Htt
   };
 
   const traffic: TrafficStream = {
-    subscribe: pollingStream(calls('traffic'), TRAFFIC_POLL_MS),
+    subscribe: pollingStream(calls('traffic'), { intervalMs: TRAFFIC_POLL_MS, seq: (c: TraceCall) => c.seq }),
     recent: (limit) => http.get<DemoTraceCalls>('demo/traffic/recent', { query: { limit } }),
   };
 
