@@ -34,6 +34,16 @@ export function exampleUrlPath(pathTemplate: string, params: Record<string, stri
   return query.length ? `${path}?${query.map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`).join('&')}` : path;
 }
 
+/**
+ * The mock URL of the example. An HTTP mock base ends with a path the operation path is appended to as-is; an event
+ * (`kafka://microcks-kafka:9092`) or gRPC (`grpc://microcks.local:9090`) base is a bare host, so the channel or method
+ * (`user-signedup`, `HelloService/greeting`) is joined with a `/`, which keeps the URL parseable.
+ */
+export function exampleUrl(spec: Pick<SnippetSpec, 'mockBase' | 'pathTemplate' | 'example'>, path = exampleUrlPath(spec.pathTemplate, spec.example.request.params)): string {
+  const sep = /^https?:/.test(spec.mockBase) || path.startsWith('/') ? '' : '/';
+  return `${spec.mockBase}${sep}${path}`;
+}
+
 function compactBody(body: string | undefined): string {
   if (!body) return '';
   try {
@@ -44,7 +54,7 @@ function compactBody(body: string | undefined): string {
 }
 
 export function curlSnippet(spec: SnippetSpec): string {
-  const url = `${spec.mockBase}${exampleUrlPath(spec.pathTemplate, spec.example.request.params)}`;
+  const url = exampleUrl(spec);
   const body = compactBody(spec.example.request.body);
   return (
     `curl -X ${spec.method} '${url}' \\\n  -H 'Accept: application/json'` +
@@ -66,7 +76,7 @@ export function httpieSnippet(spec: SnippetSpec): string {
       json = '';
     }
   }
-  return `http ${spec.method} '${spec.mockBase}${path}' Accept:application/json${extras}${json}`;
+  return `http ${spec.method} '${exampleUrl(spec, path)}' Accept:application/json${extras}${json}`;
 }
 
 export function mcpSnippet(spec: SnippetSpec): string {
@@ -88,7 +98,7 @@ export function buildSnippet(format: SnippetFormat, spec: SnippetSpec): string {
 
 /** The raw HTTP request the example stands for, as the Request pane of the Service screen shows it. */
 export function requestHead(spec: SnippetSpec): string {
-  const url = new URL(`${spec.mockBase}${exampleUrlPath(spec.pathTemplate, spec.example.request.params)}`);
+  const url = new URL(exampleUrl(spec));
   return (
     `${spec.method} ${url.pathname}${url.search} HTTP/1.1\nHost: ${url.host}\nAccept: application/json` +
     (spec.example.request.body ? '\nContent-Type: application/json' : '')
