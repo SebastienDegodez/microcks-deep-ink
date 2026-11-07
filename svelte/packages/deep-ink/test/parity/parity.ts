@@ -18,7 +18,8 @@ export interface ParityCase {
   /** Another export of the same item (Textarea in input), instead of the file's `component`. */
   component?: string;
   props?: Record<string, unknown>;
-  children?: string;
+  /** A text child, or an array of text children: React gets it as one array child, Svelte as the `children` prop. */
+  children?: string | string[];
   /** `<option>` children (Select), instead of `children`. */
   options?: ParityOption[];
   /** Render-prop child (Field): the named export of the package, given the control props and `props`. */

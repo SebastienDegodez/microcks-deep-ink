@@ -1,4 +1,4 @@
-<!-- Renders one parity case: the component with the case props and, when given, a text child, <option> children or a render-prop control. -->
+<!-- Renders one parity case: the component with the case props and, when given, a text child (an array of them as the `children` prop), <option> children or a render-prop control. -->
 <script lang="ts">
   import type { Component } from 'svelte';
   import type { ParityOption } from './parity';
@@ -13,7 +13,7 @@
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     component: Component<any>;
     props?: Record<string, unknown>;
-    text?: string;
+    text?: string | string[];
     options?: ParityOption[];
     control?: { component: unknown; props?: Record<string, unknown> };
   } = $props();
@@ -31,6 +31,8 @@
       {:else}<option value={o.value} disabled={o.disabled}>{o.label}</option>{/if}
     {/each}
   </C>
+{:else if Array.isArray(text)}
+  <C {...props} children={text} />
 {:else if text === undefined}
   <C {...props} />
 {:else}
