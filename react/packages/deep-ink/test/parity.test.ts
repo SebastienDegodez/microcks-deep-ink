@@ -15,6 +15,8 @@ const WRITE = process.env.PARITY_WRITE === '1';
 
 interface Case {
   name: string;
+  /** Another export of the same item (Textarea in input), instead of the file's `component`. */
+  component?: string;
   props?: Record<string, unknown>;
   children?: string;
 }
@@ -30,9 +32,10 @@ for (const file of files.filter((f) => f.endsWith('.cases.json')).sort()) {
       const out = `${item}.${c.name}.html`;
       expected.add(out);
       it(c.name, async () => {
+        const name = c.component ?? component;
         const mod = (await import(`../src/${item}.tsx`)) as Record<string, ComponentType<Record<string, unknown>>>;
-        expect(mod[component], `${component} is not exported by src/${item}.tsx`).toBeTypeOf('function');
-        const html = renderToStaticMarkup(createElement(mod[component]!, c.props ?? {}, c.children)) + '\n';
+        expect(mod[name], `${name} is not exported by src/${item}.tsx`).toBeTypeOf('function');
+        const html = renderToStaticMarkup(createElement(mod[name]!, c.props ?? {}, c.children)) + '\n';
         if (WRITE) writeFileSync(join(PARITY, out), html);
         else expect(existsSync(join(PARITY, out)) ? readFileSync(join(PARITY, out), 'utf8') : '', `${out} is stale: run \`pnpm parity\``).toBe(html);
       });

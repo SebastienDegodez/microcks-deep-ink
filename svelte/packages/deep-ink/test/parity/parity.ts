@@ -14,6 +14,8 @@ export const PARITY = join(__dirname, '..', '..', 'node_modules', '@microcks-dee
 
 export interface ParityCase {
   name: string;
+  /** Another export of the same item (Textarea in input), instead of the file's `component`. */
+  component?: string;
   props?: Record<string, unknown>;
   children?: string;
 }
