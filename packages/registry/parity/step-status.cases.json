@@ -1,0 +1,17 @@
+{
+  "component": "StepStatus",
+  "cases": [
+    {"name": "passed", "props": {"status": "passed"}},
+    {"name": "failed", "props": {"status": "failed"}},
+    {"name": "not-run", "props": {"status": "not-run"}},
+    {"name": "failed-one-attempt", "props": {"status": "failed", "attempts": 1}},
+    {"name": "failed-three-attempts", "props": {"status": "failed", "attempts": 3}},
+    {"name": "passed-one-attempt", "props": {"status": "passed", "attempts": 1}},
+    {"name": "passed-two-attempts", "props": {"status": "passed", "attempts": 2}},
+    {"name": "failed-zero-attempts", "props": {"status": "failed", "attempts": 0}},
+    {"name": "attributes", "props": {"status": "passed", "className": "wide", "id": "s1", "data-testid": "step", "aria-label": "Step 1 passed"}},
+    {"name": "checks", "component": "StepChecks", "props": {"successCriteria": "passed", "schemaValidation": "failed"}},
+    {"name": "checks-off-not-evaluated", "component": "StepChecks", "props": {"successCriteria": "off", "schemaValidation": "not-evaluated"}},
+    {"name": "checks-single-attributes", "component": "StepChecks", "props": {"successCriteria": "failed", "className": "wide", "id": "c1", "data-testid": "checks", "aria-label": "Checks"}}
+  ]
+}

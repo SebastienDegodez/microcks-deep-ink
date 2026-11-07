@@ -1,0 +1,16 @@
+{
+  "component": "ConformanceBand",
+  "cases": [
+    {"name": "full", "props": {"outcomes": ["pass", "pass", "fail", "untested"]}},
+    {"name": "empty", "props": {"outcomes": []}},
+    {"name": "mini", "props": {"outcomes": ["pass", "untested", "fail"], "size": "mini"}},
+    {"name": "mini-ignores-summary-labels", "props": {"outcomes": ["pass", "fail"], "size": "mini", "showSummary": true, "labels": ["a", "b"]}},
+    {"name": "summary-high", "props": {"outcomes": ["pass", "pass", "pass", "pass", "pass", "pass", "pass", "pass", "pass", "pass", "pass", "fail"], "showSummary": true}},
+    {"name": "summary-mid-skill", "props": {"outcomes": ["pass", "fail"], "showSummary": true, "unit": "skill"}},
+    {"name": "summary-low-empty", "props": {"outcomes": [], "showSummary": true}},
+    {"name": "labelled", "props": {"outcomes": ["pass", "fail", "untested"], "labels": ["GET /pastries · passed", "PATCH /pastries/{name} · failed", "DELETE /pastries · untested"]}},
+    {"name": "labelled-summary", "props": {"outcomes": ["pass", "pass", "fail"], "labels": ["GET /a", "GET /b", "GET /c"], "showSummary": true}},
+    {"name": "attributes", "props": {"outcomes": ["pass"], "className": "wide", "id": "c1", "data-testid": "band", "role": "list", "aria-label": "x", "showSummary": true}},
+    {"name": "labelled-attributes", "props": {"outcomes": ["fail"], "labels": ["GET /a"], "className": "wide", "id": "c2", "data-testid": "band", "aria-label": "x"}}
+  ]
+}

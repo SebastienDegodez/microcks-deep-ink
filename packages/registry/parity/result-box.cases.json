@@ -1,0 +1,19 @@
+{
+  "component": "ResultBox",
+  "cases": [
+    {"name": "default", "children": "Secret gitlab-bakery created."},
+    {"name": "warning", "props": {"tone": "warning"}, "children": "Retry later."},
+    {"name": "danger", "props": {"tone": "danger", "title": "Import failed"}, "children": "The file is not valid YAML."},
+    {"name": "neutral-title-action", "props": {"tone": "neutral", "title": "checkout-beer cannot run", "action": "Link source"}, "children": "Import the Beer Catalog first."},
+    {"name": "info-live-off", "props": {"tone": "info", "live": "off"}, "children": "Static note"},
+    {"name": "md-dismiss", "props": {"size": "md", "onDismiss": {"$fn": "x"}}, "children": "Saved."},
+    {"name": "dismiss-label-sm", "props": {"size": "sm", "onDismiss": {"$fn": "x"}, "dismissLabel": "Close"}, "children": "Saved."},
+    {"name": "icon-override", "props": {"tone": "info", "icon": "info"}, "children": "Note"},
+    {"name": "icon-null", "props": {"icon": null}, "children": "No icon"},
+    {"name": "flat-raised", "props": {"tone": "danger", "icon": "cross", "title": "The agent answered a canceled task", "bordered": false, "surface": "raised", "live": "off"}, "children": "A canceled task must stay terminal."},
+    {"name": "bordered-surface-explicit", "props": {"bordered": true, "surface": "surface", "live": "status", "tone": "success"}, "children": "Done."},
+    {"name": "title-only", "props": {"title": "Done"}},
+    {"name": "empty", "props": {}},
+    {"name": "attributes", "props": {"className": "wide", "id": "r1", "data-testid": "result", "aria-live": "assertive"}, "children": "x"}
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "component": "StatusBadge",
+  "cases": [
+    {"name": "conformant", "props": {"status": "conformant"}},
+    {"name": "failed-sm", "props": {"status": "failed", "size": "sm"}},
+    {"name": "partial-lg", "props": {"status": "partial", "size": "lg"}},
+    {"name": "running-bare", "props": {"status": "running", "shape": "bare"}},
+    {"name": "never", "props": {"status": "never"}},
+    {"name": "never-bare-sm", "props": {"status": "never", "shape": "bare", "size": "sm"}},
+    {"name": "conformant-bare-lg", "props": {"status": "conformant", "shape": "bare", "size": "lg"}},
+    {"name": "failed-bare-md", "props": {"status": "failed", "shape": "bare", "size": "md"}},
+    {"name": "conformant-sm-circled", "props": {"status": "conformant", "size": "sm", "shape": "circled"}},
+    {"name": "unknown-status", "props": {"status": "bogus"}},
+    {"name": "label", "props": {"status": "partial", "label": "2 of 3 pass"}},
+    {"name": "label-zero", "props": {"status": "failed", "label": 0}},
+    {"name": "label-false", "props": {"status": "running", "label": false}},
+    {"name": "label-null", "props": {"status": "running", "label": null}},
+    {"name": "label-empty", "props": {"status": "running", "label": ""}},
+    {"name": "label-blank", "props": {"status": "running", "label": "   "}},
+    {"name": "label-empty-array", "props": {"status": "running", "label": []}},
+    {"name": "label-array-of-nothing", "props": {"status": "running", "label": [false, null, " "]}},
+    {"name": "label-array", "props": {"status": "running", "label": ["Retrying · attempt ", 2, " of 3"]}},
+    {"name": "attributes", "props": {"status": "failed", "className": "wide", "id": "s1", "role": "status", "data-testid": "badge", "aria-live": "polite", "title": "Last run"}}
+  ]
+}
