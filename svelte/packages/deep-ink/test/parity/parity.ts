@@ -47,10 +47,16 @@ export function reactHtml(item: string, name: string, dir = PARITY): string {
   return readFileSync(join(dir, `${item}.${name}.html`), 'utf8');
 }
 
+/** A JSON stand-in for a function prop: `{ "$fn": "tone" }` is `(x) => x.tone` (rowTone, rowHref...). */
+export const decode = (props: Record<string, unknown> = {}) =>
+  Object.fromEntries(
+    Object.entries(props).map(([k, v]) => [k, v && typeof v === 'object' && '$fn' in v ? (x: Record<string, unknown>) => x[(v as { $fn: string }).$fn] : v]),
+  );
+
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function svelteHtml(component: Component<any>, c: ParityCase): string {
   const control = c.control && { component: (barrel as Record<string, unknown>)[c.control.component], props: c.control.props };
-  return render(Harness, { props: { component, props: c.props ?? {}, text: c.children, options: c.options, control } }).body;
+  return render(Harness, { props: { component, props: decode(c.props), text: c.children, options: c.options, control } }).body;
 }
 
 /** Both sides normalised, ready for `expect(svelte).toBe(react)`. */

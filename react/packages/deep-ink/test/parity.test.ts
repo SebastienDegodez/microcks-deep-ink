@@ -24,6 +24,12 @@ interface Case {
   /** Render-prop child (Field): the named export of the package, given the control props and `props`. */
   control?: { component: string; props?: Record<string, unknown> };
 }
+/** A JSON stand-in for a function prop: `{ "$fn": "tone" }` is `(x) => x.tone` (rowTone, rowHref...). */
+const decode = (props: Record<string, unknown> = {}) =>
+  Object.fromEntries(
+    Object.entries(props).map(([k, v]) => [k, v && typeof v === 'object' && '$fn' in v ? (x: Record<string, unknown>) => x[(v as { $fn: string }).$fn] : v]),
+  );
+
 interface Option {
   label: string;
   value?: string;
@@ -51,7 +57,7 @@ for (const file of files.filter((f) => f.endsWith('.cases.json')).sort()) {
           : c.options
             ? c.options.map(({ label, ...o }) => createElement('option', { key: label, ...o }, label))
             : c.children;
-        const html = renderToStaticMarkup(createElement(mod[name]!, c.props ?? {}, children)) + '\n';
+        const html = renderToStaticMarkup(createElement(mod[name]!, decode(c.props), children)) + '\n';
         if (WRITE) writeFileSync(join(PARITY, out), html);
         else expect(existsSync(join(PARITY, out)) ? readFileSync(join(PARITY, out), 'utf8') : '', `${out} is stale: run \`pnpm parity\``).toBe(html);
       });
