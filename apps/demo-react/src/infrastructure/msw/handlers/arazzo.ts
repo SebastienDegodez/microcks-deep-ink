@@ -4,12 +4,13 @@
  * (https://github.com/SebastienDegodez/microcks/tree/feature/arazzo); the demo-only ones are marked.
  *
  * The handlers delegate to the in-memory arazzo adapters (their seeds and their state: a run started, saved or created
- * by a session verification is listed and read afterwards; a linked source unblocks its workflows).
+ * by a session verification is listed and read afterwards; a linked source unblocks its workflows, and
+ * `PUT .../sources` replaces the links as the POC does: a source left out is unlinked).
  * `GET /api/arazzo/runs/{runId}/progress` serves the frames of a run (`runFrames`, one per attempt then the final run)
  * after `after`, so the run page polls the same frames the in-memory runner streams.
  */
 import { http, HttpResponse, type AnyHandler } from 'msw';
-import { DEFAULT_RUN_TIMEOUT_MS, runFrames, type WorkflowRun } from '@/domain/arazzo';
+import { DEFAULT_RUN_TIMEOUT_MS, runFrames, type ArazzoDocument, type Workflow, type WorkflowRun } from '@/domain/arazzo';
 import type { Clock } from '@/application/ports/shared';
 import { NotFoundError } from '@/application/shared';
 import type { ArazzoImportAnalysisDto, ArazzoLinksRequestDto, ArazzoRunFrameDto, ArazzoRunLaunchDto, ArazzoSessionRequestDto } from '@/infrastructure/http/arazzo/dto';
@@ -44,19 +45,46 @@ export function createArazzoHandlers(deps: { clock?: Clock } = {}): AnyHandler[]
   const created = <T extends Record<string, unknown>>(body: T, location: string) => HttpResponse.json(body, { status: 201, headers: { location } });
   const knownDocument = async (id: string) => (await documents.document(id)) !== undefined;
 
+  /**
+   * `PUT .../sources` REPLACES the links, as the POC does (`ArazzoImportService.relinkSources`): a source left out is
+   * unlinked. The in-memory port only links, so the sources unlinked this way are kept here and applied when serving.
+   */
+  const unlinked = new Map<string, Set<string>>();
+  const unlinkedOf = (documentId: string) => unlinked.get(documentId) ?? new Set<string>();
+  const served = (doc: ArazzoDocument): ArazzoDocument => {
+    const off = unlinkedOf(doc.id);
+    if (off.size === 0) return doc;
+    return {
+      ...doc,
+      sources: doc.sources.map((s) => (off.has(s.name) ? { ...s, link: { status: 'not-linked', expectedFile: s.url.replace(/^.*\//, '') } } : s)),
+    };
+  };
+  const servedWorkflow = (workflow: Workflow): Workflow => {
+    const off = workflow.steps.find((step) => unlinkedOf(workflow.documentId).has(step.sourceName))?.sourceName;
+    return off
+      ? { ...workflow, runnability: { runnable: false, reason: 'source-not-linked', message: `Workflow ${workflow.workflowId} cannot run until ${off} is linked` } }
+      : workflow;
+  };
+
   return [
     // --- Aligned with the POC --------------------------------------------------------------------------------------
-    http.get(`${API}/arazzo/documents`, async () => HttpResponse.json(await documents.documents())),
+    http.get(`${API}/arazzo/documents`, async () => HttpResponse.json((await documents.documents()).map(served))),
     http.get(`${API}/arazzo/documents/:documentId/workflows/:workflowId`, async ({ params }) => {
       const workflow = await documents.workflow(param(params, 'documentId'), param(params, 'workflowId'));
-      return workflow ? HttpResponse.json(workflow) : notFound('Workflow', param(params, 'workflowId'));
+      return workflow ? HttpResponse.json(servedWorkflow(workflow)) : notFound('Workflow', param(params, 'workflowId'));
     }),
     http.put(`${API}/arazzo/documents/:documentId/sources`, ({ params, request }) =>
       guard(async () => {
-        const { links } = (await request.json()) as ArazzoLinksRequestDto;
-        let document;
-        for (const [sourceName, ref] of Object.entries(links ?? {})) document = await documents.linkSource(param(params, 'documentId'), sourceName, ref.serviceId);
-        return document ? HttpResponse.json(document) : notFound('Arazzo document', param(params, 'documentId'));
+        const id = param(params, 'documentId');
+        const before = await documents.document(id);
+        if (!before) return notFound('Arazzo document', id);
+        const { links = {} } = (await request.json()) as Partial<ArazzoLinksRequestDto>;
+        for (const name of Object.keys(links)) {
+          if (!before.sources.some((s) => s.name === name)) return notFound('Source description', name);
+        }
+        for (const [name, ref] of Object.entries(links)) await documents.linkSource(id, name, ref.serviceId);
+        unlinked.set(id, new Set(before.sources.map((s) => s.name).filter((name) => !(name in links))));
+        return HttpResponse.json(served((await documents.document(id))!));
       }),
     ),
     http.post(`${API}/arazzo/documents/:documentId/analysis`, async ({ params }) => {

@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+import type { ArazzoDocument } from '@/domain/arazzo';
 import type { StartRunRequest } from '@/application/ports/arazzo';
 import { createInMemoryArazzoAdapters } from '@/infrastructure/in-memory/arazzo';
 import {
@@ -113,7 +114,12 @@ describe('requests (POC bodies)', () => {
   });
 
   it('links a source with a ServiceRef and filters runs by workflow (POC) and origin (demo)', () => {
-    expect(toLinksRequest('beerCatalog', 'beer')).toEqual({ links: { beerCatalog: { serviceId: 'beer' } } });
+    const doc = { sources: [
+      { name: 'beerCatalog', type: 'openapi', url: './beer.yaml', link: { status: 'not-linked', expectedFile: 'beer.yaml' } },
+      { name: 'stock', type: 'openapi', url: './stock.yaml', link: { status: 'linked', serviceId: 'stock', protocol: 'REST', operationsFound: '1 of 1 found' } },
+    ] } as const satisfies Pick<ArazzoDocument, 'sources'>;
+    // The POC PUT replaces every link: the other linked sources are sent again.
+    expect(toLinksRequest(doc, 'beerCatalog', 'beer')).toEqual({ links: { beerCatalog: { serviceId: 'beer' }, stock: { serviceId: 'stock' } } });
     expect(toRunsQuery({ documentId: 'pastry', workflowId: 'w', origin: 'mock-url' })).toEqual({ workflow: 'w', origin: 'mock-url' });
   });
 

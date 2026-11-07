@@ -6,9 +6,11 @@
  * Aligned with the POC (`Arazzo{Document,Workflow,Run,RunHistory,Session,MockUrl}Controller`):
  * - `GET /arazzo/documents`: `documents()`, `document(id)` (found in the list) and the workflow ids of `workflows()`;
  * - `GET /arazzo/documents/{documentId}/workflows/{workflowId}`: `workflow()`, and each workflow of `workflows()`;
- * - `PUT /arazzo/documents/{documentId}/sources` (`ArazzoLinksRequest`): `linkSource()`, then the document is read again;
+ * - `PUT /arazzo/documents/{documentId}/sources` (`ArazzoLinksRequest`, which REPLACES every link): `linkSource()` sends the
+ *   changed link with the other linked sources unchanged, then reads the document again;
  * - `POST /arazzo/documents/{documentId}/analysis` (`ArazzoImportAnalysis`): `validate()`;
- * - `GET /arazzo/documents/{documentId}/runs?workflow=`: `runs.list()`, once per document when none is given;
+ * - `GET /arazzo/documents/{documentId}/runs?workflow=`: `runs.list()`, once per document when none is given (a POC
+ *   `WorkflowRunSummary` has no document id: the path gives it);
  * - `POST /arazzo/documents/{documentId}/workflows/{workflowId}/runs` (`ArazzoRunLaunchDTO`): `runner.start()`,
  *   which reads the `id` of the run in the answer;
  * - `GET /arazzo/runs/{runId}`: `runs.get()`;
@@ -90,7 +92,10 @@ export function createHttpArazzoAdapters({ http, microcksBase = new URL('..', de
       return readWorkflow(await findDocument(documentId), documentId, workflowId);
     },
     async linkSource(documentId, sourceName, serviceId) {
-      await http.put(`${docPath(documentId)}/sources`, toLinksRequest(sourceName, serviceId));
+      const before = await findDocument(documentId);
+      if (!before) throw new NotFoundError('Arazzo document', documentId);
+      // The POC replaces every link: the other linked sources are sent again, unchanged.
+      await http.put(`${docPath(documentId)}/sources`, toLinksRequest(before, sourceName, serviceId));
       const document = await findDocument(documentId);
       if (!document) throw new NotFoundError('Arazzo document', documentId);
       return document;
@@ -104,8 +109,14 @@ export function createHttpArazzoAdapters({ http, microcksBase = new URL('..', de
   const runs: WorkflowRunRepository = {
     async list(filter = {}) {
       const ids = filter.documentId ? [filter.documentId] : (await listDocuments()).map((d) => d.id);
-      const pages = await Promise.all(ids.map((id) => orUndefined(http.get<ArazzoRunDto[]>(`${docPath(id)}/runs`, { query: toRunsQuery(filter) }))));
-      return pages.flatMap((page) => page ?? []).map(toRun).filter((r) => matchesRunFilter(r, filter));
+      const pages = await Promise.all(
+        ids.map(async (documentId) => {
+          const page = await orUndefined(http.get<ArazzoRunDto[]>(`${docPath(documentId)}/runs`, { query: toRunsQuery(filter) }));
+          // A POC summary has no document id: the path of the history gives it.
+          return (page ?? []).map((dto) => toRun(dto, { documentId }));
+        }),
+      );
+      return pages.flat().filter((r) => matchesRunFilter(r, filter));
     },
     get: async (runId) => {
       const dto = await orUndefined(http.get<ArazzoRunDto>(`arazzo/runs/${enc(runId)}`));
@@ -147,7 +158,7 @@ export function createHttpArazzoAdapters({ http, microcksBase = new URL('..', de
         intervalMs: RUN_POLL_MS,
         immediate: true,
         seq: (frame) => frame.seq,
-        isLast: (frame) => frame.run.status !== 'RUNNING',
+        isLast: (frame) => toRun(frame.run).status !== 'RUNNING',
         isFatal: (error) => error instanceof NotFoundError,
       })((frame) => listener(toRun(frame.run))),
   };
