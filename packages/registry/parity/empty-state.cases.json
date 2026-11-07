@@ -1,0 +1,12 @@
+{
+  "component": "EmptyState",
+  "cases": [
+    {"name": "default", "props": {"title": "No services yet"}},
+    {"name": "body-actions", "props": {"title": "No services yet", "actions": "Import a contract"}, "children": "Import a contract to create mocks."},
+    {"name": "icon-start-h3", "props": {"title": "No service matches", "icon": "search-x", "align": "start", "headingLevel": 3}, "children": "Try another search."},
+    {"name": "center-h1", "props": {"title": "Nothing", "align": "center", "headingLevel": 1}},
+    {"name": "h4", "props": {"title": "Nothing", "headingLevel": 4}},
+    {"name": "h5", "props": {"title": "Nothing", "headingLevel": 5}},
+    {"name": "h6-attributes", "props": {"title": "Nothing", "headingLevel": 6, "className": "wide", "id": "e1", "data-testid": "empty", "aria-labelledby": "other", "role": "region"}}
+  ]
+}
