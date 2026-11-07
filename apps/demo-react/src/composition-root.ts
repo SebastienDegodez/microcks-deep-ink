@@ -22,6 +22,7 @@ import { createObserveUseCases } from '@/application/observe';
 import { createTestingUseCases } from '@/application/testing';
 import type { Clock } from '@/application/ports/shared';
 import type { UseCases } from '@/application/use-cases';
+import { createHttpCatalogAdapters } from '@/infrastructure/http/catalog';
 import { createHttpClient, defaultApiBaseUrl, type HttpClient } from '@/infrastructure/http/client';
 import { createInMemoryAgentAdapters } from '@/infrastructure/in-memory/agents';
 import { createInMemoryArazzoAdapters } from '@/infrastructure/in-memory/arazzo';
@@ -81,9 +82,11 @@ interface InMemoryAdapters {
 
 /**
  * HTTP adapters per feature: each factory returns the same ports as `createInMemory<Feature>Adapters`.
- * Empty for now: every feature falls back to memory until its `src/infrastructure/http/<feature>` lands.
+ * A feature missing here falls back to memory until its `src/infrastructure/http/<feature>` lands.
  */
-const HTTP_ADAPTERS: { [F in Feature]?: (deps: HttpDeps) => InMemoryAdapters[F] } = {};
+const HTTP_ADAPTERS: { [F in Feature]?: (deps: HttpDeps) => InMemoryAdapters[F] } = {
+  catalog: createHttpCatalogAdapters,
+};
 
 /** Builds every use case over the chosen backend. Call once at boot (or once per test). */
 export function createComposition(options: CompositionOptions = {}): Composition {

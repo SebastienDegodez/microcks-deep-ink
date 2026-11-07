@@ -17,9 +17,11 @@ import { describeGovernPortContract, type GovernOwnPorts } from '@/application/p
 import { describeImportingPortContract, type ImportingOwnPorts } from '@/application/ports/__contracts__/importing.contract';
 import { describeObservePortContract, type ObserveOwnPorts } from '@/application/ports/__contracts__/observe.contract';
 import { describeTestingPortContract, type TestingOwnPorts } from '@/application/ports/__contracts__/testing.contract';
+import { createHttpCatalogAdapters } from '@/infrastructure/http/catalog';
+import { createCatalogHandlers } from '@/infrastructure/msw/handlers/catalog';
 import { describePortContractOverHttp } from '@/infrastructure/msw/http.contract';
 
-describePortContractOverHttp<CatalogPorts>({ feature: 'catalog', contract: describeCatalogPortContract, http: undefined });
+describePortContractOverHttp<CatalogPorts>({ feature: 'catalog', contract: describeCatalogPortContract, http: createHttpCatalogAdapters, handlers: createCatalogHandlers });
 describePortContractOverHttp<CopilotOwnPorts>({ feature: 'copilot', contract: describeCopilotPortContract, http: undefined });
 describePortContractOverHttp<ImportingOwnPorts>({ feature: 'importing', contract: describeImportingPortContract, http: undefined });
 describePortContractOverHttp<TestingOwnPorts>({ feature: 'testing', contract: describeTestingPortContract, http: undefined });
