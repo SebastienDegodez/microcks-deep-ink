@@ -7,13 +7,34 @@ describe('normaliseHtml', () => {
     expect(n('<p title="a&quot;b">x &amp; y</p>')).toBe(n(`<p title='a"b'>x &#38; y</p>`));
   });
 
-  it('ignores whitespace between and inside text nodes, and comments', () => {
+  it('ignores comments, and the formatting whitespace between and at the edges of blocks', () => {
     expect(n('<ul>\n  <li> a   b </li>\n  <li>c</li>\n</ul>')).toBe(n('<ul><!--[--><li>a b</li><li>c</li><!--]--></ul>'));
     expect(n('<b>Ctrl<!----> K</b>')).toBe(n('<b>Ctrl K</b>'));
+    expect(n('<div>\n  <p>a</p>\n  <p>b</p>\n</div>\n')).toBe(n('<div><p>a</p><p>b</p></div>'));
+    expect(n('<p>a<br>\n  b</p>')).toBe(n('<p>a<br>b</p>'));
+    expect(n('<button>\n  <span>Go</span>\n</button>')).toBe(n('<button><span>Go</span></button>'));
   });
 
-  it('keeps whitespace inside <pre> and <textarea>', () => {
+  it('collapses runs of whitespace to one space, also across inline elements', () => {
+    expect(n('<span>a  \n\t b</span>')).toBe(n('<span>a b</span>'));
+    expect(n('<p>a <b> b</b></p>')).toBe(n('<p>a <b>b</b></p>'));
+    expect(n('<span>a&nbsp; b</span>')).not.toBe(n('<span>a b</span>'));
+  });
+
+  it('keeps a space vs no space inside text and between inline siblings', () => {
+    expect(n('<span>a b</span>')).not.toBe(n('<span>ab</span>'));
+    expect(n('<div><span>a</span> <span>b</span></div>')).not.toBe(n('<div><span>a</span><span>b</span></div>'));
+    expect(n('<div><label>a</label>\n  <span>b</span></div>')).not.toBe(n('<div><label>a</label><span>b</span></div>'));
+    expect(n('<p>a <button>b</button></p>')).not.toBe(n('<p>a<button>b</button></p>'));
+    expect(n('<p>x<span> a</span></p>')).not.toBe(n('<p>x<span>a</span></p>'));
+  });
+
+  it('keeps whitespace inside <pre>, <code> and <textarea> exactly', () => {
     expect(n('<pre>a\n  b</pre>')).not.toBe(n('<pre>a b</pre>'));
+    expect(n('<p><code>a  b</code></p>')).not.toBe(n('<p><code>a b</code></p>'));
+    expect(n('<p><code> a</code></p>')).not.toBe(n('<p><code>a</code></p>'));
+    expect(n('<textarea>a\n</textarea>')).not.toBe(n('<textarea>a</textarea>'));
+    expect(n('<pre>a\n  b</pre>')).toBe('<pre>\n  "a\\n  b"\n</pre>');
   });
 
   it('ignores class token order and duplicates, empty class and style, and style spacing', () => {
@@ -37,7 +58,7 @@ describe('normaliseHtml', () => {
     expect(n('<label for="a"></label><input id="b">')).not.toBe(n('<label for="a"></label><input id="a">'));
   });
 
-  it('prints one node per line, indented', () => {
-    expect(n('<p class="x">a<b>b</b></p>')).toBe('<p class="x">\n  a\n  <b>\n    b\n  </b>\n</p>');
+  it('prints one node per line, indented, text quoted', () => {
+    expect(n('<p class="x">a<b>b</b></p>')).toBe('<p class="x">\n  "a"\n  <b>\n    "b"\n  </b>\n</p>');
   });
 });

@@ -13,5 +13,8 @@
 - The `.html` files are generated, never edited: `pnpm -C react/packages/deep-ink parity` renders every case with
   `renderToStaticMarkup`. `pnpm -C react test` fails when a file is stale or orphaned.
 - `pnpm -C svelte test` renders the same cases with `svelte/server` and compares both after normalisation
-  (attribute and class order, whitespace, comments, generated ids: `svelte/packages/deep-ink/test/parity/normalise.ts`).
+  (attribute and class order, comments, generated ids: `svelte/packages/deep-ink/test/parity/normalise.ts`).
+  Only formatting whitespace is ignored: runs collapse to one space and whitespace at block edges or between blocks
+  drops, but a space inside text or between inline siblings (`<label>a</label> <span>b</span>`) must match, and
+  `<pre>`/`<code>`/`<textarea>` text must match exactly. The rule is documented at the top of `normalise.ts`.
   Cases of a component not yet implemented in Svelte are reported as todo.
