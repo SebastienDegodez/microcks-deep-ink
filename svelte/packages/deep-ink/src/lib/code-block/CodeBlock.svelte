@@ -9,7 +9,7 @@
   import type { HTMLAttributes } from 'svelte/elements';
   import Icon from '../icon/Icon.svelte';
   import { reactEvents, type ReactHandlers } from '../react-events';
-  import CopyButton from './_CopyButton.svelte';
+  import CopyButton from '../copy-button/CopyButton.svelte';
   import type { CodeLine, CodeTab } from './code-block';
 
   type Props = Omit<HTMLAttributes<HTMLElement>, 'class' | 'children'> &
@@ -155,7 +155,7 @@
             >{#each tabs as t (t.id)}<button type="button" aria-pressed={t.id === tab} onclick={() => onTabChange?.(t.id)}>{t.label}</button
               >{/each}</span
           >{/if}<span class="code-caption" id={captionId} data-title={source ? '' : undefined}>{caption ?? ''}</span
-        >{#if source}<span class="code-source">{source}</span>{/if}{#if copy}<CopyButton {value} className="code-copy" />{/if}
+        >{#if source}<span class="code-source">{source}</span>{/if}{#if copy}<CopyButton {value} variant="link" className="code-copy" />{/if}
       </figcaption>
     {/if}
     <pre bind:this={pre} {...regionProps} style={maxHeightCss}>{@render body()}</pre>
