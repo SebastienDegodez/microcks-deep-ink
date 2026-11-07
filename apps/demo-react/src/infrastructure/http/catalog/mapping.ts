@@ -4,15 +4,16 @@
  */
 import type { LabelCount } from '@/domain/catalog';
 import { labelToString, type Dispatcher, type Example, type Operation, type Protocol, type ServiceSummary } from '@/domain/shared';
-import type {
-  DemoExampleReview,
-  DemoOperationExtras,
-  DemoServiceExtras,
-  MicrocksExchange,
-  MicrocksLabelsMap,
-  MicrocksOperation,
-  MicrocksService,
-  MicrocksServiceType,
+import {
+  AI_COPILOT_SOURCE,
+  type DemoExampleReview,
+  type DemoOperationExtras,
+  type DemoServiceExtras,
+  type MicrocksExchange,
+  type MicrocksLabelsMap,
+  type MicrocksOperation,
+  type MicrocksService,
+  type MicrocksServiceType,
 } from './dto';
 
 const TYPE_BY_PROTOCOL: Record<Protocol, MicrocksServiceType> = {
@@ -116,10 +117,11 @@ export function toServiceExtras(service: ServiceSummary, operations: Operation[]
  */
 export function toExchange(example: Example, operation: string, protocol?: Protocol): MicrocksExchange {
   const params = Object.entries(example.request.params);
+  const source = example.aiGenerated ? { sourceArtifact: AI_COPILOT_SOURCE } : {};
   if (protocol === 'EVENT' && params.length === 0 && example.request.body === undefined && example.response.status === 200) {
     return {
       type: 'unidirEvent',
-      eventMessage: { id: example.id, name: example.name, operationId: operation, mediaType: 'application/json', content: example.response.body },
+      eventMessage: { id: example.id, name: example.name, operationId: operation, mediaType: 'application/json', content: example.response.body, ...source },
     };
   }
   return {
@@ -131,6 +133,7 @@ export function toExchange(example: Example, operation: string, protocol?: Proto
       responseId: example.id,
       queryParameters: params.map(([name, value]) => ({ name, value })),
       ...(example.request.body !== undefined ? { content: example.request.body } : {}),
+      ...source,
     },
     response: {
       id: example.id,
@@ -139,6 +142,7 @@ export function toExchange(example: Example, operation: string, protocol?: Proto
       status: String(example.response.status),
       mediaType: 'application/json',
       content: example.response.body,
+      ...source,
     },
   };
 }
@@ -192,10 +196,18 @@ export function fromOperationDto(operation: MicrocksOperation, extras: DemoOpera
   };
 }
 
+/**
+ * An exchange as an example. Microcks marks the exchanges accepted through the AI Copilot with
+ * `sourceArtifact: 'AI Copilot'`: they read as accepted AI examples unless the demo review flags say otherwise.
+ */
 export function fromExchange(exchange: MicrocksExchange, review: DemoExampleReview = {}): Example {
+  const sources = exchange.type === 'unidirEvent' ? [exchange.eventMessage] : [exchange.request, exchange.response];
+  const fromCopilot = sources.some((m) => m?.sourceArtifact === AI_COPILOT_SOURCE);
+  const aiGenerated = review.aiGenerated ?? (fromCopilot ? true : undefined);
+  const reviewState = review.reviewState ?? (fromCopilot ? ('accepted' as const) : undefined);
   const flags = {
-    ...(review.aiGenerated !== undefined ? { aiGenerated: review.aiGenerated } : {}),
-    ...(review.reviewState ? { reviewState: review.reviewState } : {}),
+    ...(aiGenerated !== undefined ? { aiGenerated } : {}),
+    ...(reviewState ? { reviewState } : {}),
   };
   if (exchange.type === 'unidirEvent') {
     const message = exchange.eventMessage;
@@ -223,4 +235,133 @@ export function fromLabelsMap(labels: MicrocksLabelsMap, services: Pick<Microcks
     values.map((value) => ({ label: { key, value }, count: services.filter((s) => s.metadata?.labels?.[key] === value).length })),
   );
   return counts.filter((c) => c.count > 0).sort((a, b) => labelToString(a.label).localeCompare(labelToString(b.label)));
+}
+
+// --- AI Copilot exchanges -----------------------------------------------------------------------------------------
+
+/** Microcks service types whose operations exchange events (`UnidirectionalEvent`), not request/response pairs. */
+export const isEventServiceType = (type: MicrocksServiceType | undefined): boolean => type === 'EVENT' || type === 'GENERIC_EVENT';
+
+/** How Microcks dispatches an operation: the service type, `Operation.dispatcher` and `Operation.dispatcherRules`. */
+export interface DispatchTarget {
+  serviceType?: MicrocksServiceType;
+  dispatcher?: string;
+  dispatcherRules?: string;
+}
+
+/** The root dispatcher of a `FALLBACK`/`PROXY_FALLBACK` operation (its rules are JSON), else the operation's own. */
+function rootDispatcher({ dispatcher, dispatcherRules = '' }: DispatchTarget): { dispatcher: string; dispatcherRules: string } {
+  if ((dispatcher === 'FALLBACK' || dispatcher === 'PROXY_FALLBACK') && dispatcherRules.trim().startsWith('{')) {
+    try {
+      const parsed = JSON.parse(dispatcherRules) as DispatchTarget;
+      return { dispatcher: parsed.dispatcher ?? '', dispatcherRules: parsed.dispatcherRules ?? '' };
+    } catch {
+      // Not JSON: dispatched as is.
+    }
+  }
+  return { dispatcher: dispatcher ?? '', dispatcherRules };
+}
+
+const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+
+/**
+ * `DispatchCriteriaHelper.buildFrom{Parts,Params}Map` and `extractFromParamMap`: the params named in the rule (word
+ * boundaries, `-` excluded), sorted by name.
+ */
+function criteriaOf(rule: string, params: Record<string, string>, separator: '/' | '?'): string {
+  return Object.keys(params)
+    .sort()
+    .filter((name) => new RegExp(`(^|[^-])\\b${escapeRegExp(name)}\\b([^-]|$)`).test(rule))
+    .map((name) => `${separator}${name}=${params[name]}`)
+    .join('');
+}
+
+/** Jackson's `JsonNode.asText()` of a JSON value: scalars as text, objects and arrays as an empty string. */
+const asText = (value: unknown): string => (value !== null && typeof value === 'object' ? '' : String(value));
+
+function jsonObject(text: string | undefined): Record<string, unknown> | undefined {
+  if (!text) return undefined;
+  try {
+    const parsed: unknown = JSON.parse(text);
+    return parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+const textValues = (object: Record<string, unknown>) => Object.fromEntries(Object.entries(object).map(([k, v]) => [k, asText(v)]));
+
+/**
+ * The arguments a `QUERY_ARGS` operation dispatches on (`AICopilotHelper`): the `variables` of a GraphQL request
+ * body, the fields of a gRPC request body. A demo example without such a body carries them as its query args (params).
+ */
+function queryArgsOf(serviceType: MicrocksServiceType | undefined, request: Example['request']): Record<string, string> | undefined {
+  const body = jsonObject(request.body);
+  if (serviceType === 'GRAPHQL') {
+    const variables = body?.variables;
+    return variables !== null && typeof variables === 'object' && !Array.isArray(variables) ? textValues(variables as Record<string, unknown>) : request.params;
+  }
+  if (serviceType === 'GRPC') return body ? textValues(body) : request.params;
+  return undefined;
+}
+
+/**
+ * The `dispatchCriteria` Microcks computes for an AI Copilot request (`AICopilotHelper`, `DispatchCriteriaHelper`):
+ * what the mock matches an incoming call against. `URI_PARTS` -> `/name=Tarte Tatin`, `URI_PARAMS` -> `?size=S`,
+ * `URI_ELEMENTS` -> both, `QUERY_ARGS` (GraphQL and gRPC only, as Microcks) -> `?id=1`. Undefined (no criteria sent,
+ * as Microcks leaves it null) for the other dispatchers: `JSON_BODY`, `SCRIPT`, `QUERY_HEADER`, `QUERY_MATCH`...
+ */
+export function dispatchCriteriaOf(target: DispatchTarget, request: Example['request']): string | undefined {
+  const { dispatcher, dispatcherRules } = rootDispatcher(target);
+  const [parts = '', query = ''] = dispatcherRules.includes('??') ? dispatcherRules.split('??') : [dispatcherRules, dispatcherRules];
+  switch (dispatcher) {
+    case 'URI_PARTS':
+      return criteriaOf(parts, request.params, '/');
+    case 'URI_PARAMS':
+      return criteriaOf(query, request.params, '?');
+    case 'URI_ELEMENTS':
+      return criteriaOf(parts, request.params, '/') + criteriaOf(query, request.params, '?');
+    case 'QUERY_ARGS': {
+      const args = queryArgsOf(target.serviceType, request);
+      return args ? criteriaOf(dispatcherRules, args, '?') : undefined;
+    }
+    default:
+      return undefined;
+  }
+}
+
+/**
+ * An example as the exchange of Microcks' AI Copilot (`GET` answer, `POST /copilot/samples/{id}` body): an
+ * `UnidirectionalEvent` for an event operation, else a `RequestResponsePair` whose response carries the dispatch
+ * criteria Microcks serves it with. Ids are kept (the demo reads them back), the `AI Copilot` source is Microcks' job.
+ */
+export function toCopilotExchange(example: Example, operation: string, target: DispatchTarget): MicrocksExchange {
+  if (isEventServiceType(target.serviceType)) {
+    return {
+      type: 'unidirEvent',
+      eventMessage: { id: example.id, name: example.name, operationId: operation, mediaType: 'application/json', content: example.response.body },
+    };
+  }
+  const params = example.request.params;
+  const dispatchCriteria = dispatchCriteriaOf(target, example.request);
+  return {
+    type: 'reqRespPair',
+    request: {
+      id: `${example.id}-request`,
+      name: example.name,
+      operationId: operation,
+      responseId: example.id,
+      queryParameters: Object.entries(params).map(([name, value]) => ({ name, value })),
+      ...(example.request.body !== undefined ? { content: example.request.body } : {}),
+    },
+    response: {
+      id: example.id,
+      name: example.name,
+      operationId: operation,
+      status: String(example.response.status),
+      mediaType: 'application/json',
+      content: example.response.body,
+      ...(dispatchCriteria !== undefined ? { dispatchCriteria } : {}),
+    },
+  };
 }

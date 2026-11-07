@@ -2,6 +2,7 @@ import type { AnyHandler } from 'msw';
 import { createAgentsHandlers } from './agents';
 import { createArazzoHandlers } from './arazzo';
 import { createCatalogHandlers } from './catalog';
+import { createCopilotHandlers } from './copilot';
 import { createGovernHandlers } from './govern';
 import { createImportingHandlers } from './importing';
 import { createObserveHandlers } from './observe';
@@ -15,6 +16,7 @@ export { API } from './api';
  */
 export const handlers: AnyHandler[] = [
   ...createCatalogHandlers(),
+  ...createCopilotHandlers(),
   ...createImportingHandlers(),
   ...createAgentsHandlers(),
   ...createTestingHandlers(),

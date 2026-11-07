@@ -62,7 +62,12 @@ interface MicrocksMessage {
   operationId: string;
   content?: string;
   headers?: MicrocksHeader[];
+  /** Artifact the message comes from; `AI Copilot` for the exchanges accepted through `POST /api/copilot/samples/{id}`. */
+  sourceArtifact?: string | null;
 }
+
+/** `sourceArtifact` Microcks gives the exchanges added by the AI Copilot (`ServiceService.AI_COPILOT_SOURCE`). */
+export const AI_COPILOT_SOURCE = 'AI Copilot';
 
 /** `components/schemas/Request`. */
 export interface MicrocksRequest extends MicrocksMessage {

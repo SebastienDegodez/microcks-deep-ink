@@ -1,0 +1,208 @@
+// @vitest-environment node
+/**
+ * Generation -> accept -> catalogue read over HTTP + MSW: an accepted Copilot proposal is stored with Microcks'
+ * `POST /api/copilot/samples/{id}?operation=` (a JSON `Exchange[]`, 201 with no body), never with a demo-only write.
+ */
+import { http as mswHttp, HttpResponse } from 'msw';
+import { afterAll, afterEach, beforeAll, beforeEach, describe, expect, it } from 'vitest';
+import { createCopilotUseCases } from '@/application/copilot';
+import { createHttpClient } from '@/infrastructure/http/client';
+import { createHttpCatalogAdapters } from '@/infrastructure/http/catalog';
+import type { MicrocksExchange, MicrocksRequestResponsePair } from '@/infrastructure/http/catalog/dto';
+import { fromExchange } from '@/infrastructure/http/catalog/mapping';
+import { FixedClock } from '@/infrastructure/in-memory/shared';
+import { createCatalogHandlers } from '@/infrastructure/msw/handlers/catalog';
+import { createCopilotHandlers } from '@/infrastructure/msw/handlers/copilot';
+import { server } from '@/infrastructure/msw/node';
+import { createHttpCopilotAdapters } from '.';
+
+interface Seen {
+  method: string;
+  path: string;
+  operation: string | null;
+  body?: unknown;
+  status?: number;
+  responseText?: string;
+}
+
+describe('accepting a Copilot proposal over http', () => {
+  const seen: Seen[] = [];
+  beforeAll(() => server.listen({ onUnhandledFrame: 'error' }));
+  beforeEach(() => {
+    seen.length = 0;
+    server.use(...createCatalogHandlers(), ...createCopilotHandlers());
+  });
+  afterEach(() => server.resetHandlers());
+  afterAll(() => server.close());
+
+  /** Records every call (method, path, `operation`, body, status and response text) on its way through MSW. */
+  const recordingFetch: typeof fetch = async (input, init) => {
+    const url = new URL(String(input));
+    const response = await fetch(input, init);
+    seen.push({
+      method: init?.method ?? 'GET',
+      path: url.pathname.replace(/^\/api\//, ''),
+      operation: url.searchParams.get('operation'),
+      body: typeof init?.body === 'string' ? JSON.parse(init.body) : undefined,
+      status: response.status,
+      responseText: await response.clone().text(),
+    });
+    return response;
+  };
+
+  const useCases = () => {
+    const http = createHttpClient({ baseUrl: 'http://demo.test/api/', fetch: recordingFetch });
+    const clock = new FixedClock();
+    const { catalog } = createHttpCatalogAdapters({ http, clock });
+    const { copilot } = createHttpCopilotAdapters({ http, clock });
+    return { copilot: createCopilotUseCases({ copilot, catalog }), catalog };
+  };
+
+  it('POSTs the Microcks exchanges to /copilot/samples/{id}?operation= and reads the example back as accepted AI', async () => {
+    const { copilot, catalog } = useCases();
+    const [proposal] = await copilot.generate({ serviceId: 'pastry2', operationId: 'get-name', count: 1, hint: 'Tarte Tatin' });
+    expect(proposal).toMatchObject({ name: 'Tarte Tatin', reviewState: 'pending' });
+    await copilot.accept('pastry2', 'get-name', proposal!);
+
+    const writes = seen.filter((s) => s.method !== 'GET');
+    expect(writes).toHaveLength(1);
+    expect(writes[0]).toMatchObject({ method: 'POST', path: 'copilot/samples/pastry2', operation: 'GET /pastries/{name}', status: 201, responseText: '' });
+    const body = writes[0]!.body as MicrocksExchange[];
+    expect(body).toHaveLength(1);
+    expect(body[0]).toMatchObject({
+      type: 'reqRespPair',
+      request: { name: 'Tarte Tatin', queryParameters: [{ name: 'name', value: 'Tarte Tatin' }] },
+      response: { name: 'Tarte Tatin', status: '200', mediaType: 'application/json', dispatchCriteria: '/name=Tarte Tatin' },
+    });
+    expect(seen.some((s) => s.method !== 'GET' && s.path.startsWith('demo/'))).toBe(false);
+
+    const examples = await catalog.examples('pastry2', 'get-name');
+    expect(examples.at(-1)).toMatchObject({ id: proposal!.id, name: 'Tarte Tatin', aiGenerated: true, reviewState: 'accepted' });
+  });
+
+  it('keeps the URI_PARAMS dispatch criteria of a list proposal (GET /pastries?size=)', async () => {
+    const { copilot } = useCases();
+    const [proposal] = await copilot.generate({ serviceId: 'pastry2', operationId: 'get-list', count: 1 });
+    await copilot.accept('pastry2', 'get-list', proposal!);
+    const post = seen.find((s) => s.method === 'POST')!;
+    expect(post).toMatchObject({ path: 'copilot/samples/pastry2', operation: 'GET /pastries', status: 201 });
+    expect((post.body as MicrocksRequestResponsePair[])[0]?.response.dispatchCriteria).toBe(`?size=${proposal!.request.params.size}`);
+  });
+
+  it('generates and accepts an event API proposal as a UnidirectionalEvent (orders, AsyncAPI)', async () => {
+    const { copilot, catalog } = useCases();
+    const [proposal] = await copilot.generate({ serviceId: 'orders', operationId: 'publish-order', count: 1 });
+    const generated = seen.find((s) => s.path === 'copilot/samples/orders')!;
+    expect(generated.operation).toBe('PUBLISH pastry-orders-events');
+    expect(JSON.parse(generated.responseText!)).toEqual([
+      expect.objectContaining({ type: 'unidirEvent', eventMessage: expect.objectContaining({ name: proposal!.name }), demo: { params: { '/orderId': 'sample-1' } } }),
+    ]);
+    expect(proposal!.request.params).toEqual({ '/orderId': 'sample-1' });
+    seen.length = 0;
+    await copilot.accept('orders', 'publish-order', proposal!);
+    const post = seen.find((s) => s.method === 'POST')!;
+    expect(post).toMatchObject({ path: 'copilot/samples/orders', operation: 'PUBLISH pastry-orders-events', status: 201 });
+    expect(post.body).toEqual([
+      { type: 'unidirEvent', eventMessage: { id: proposal!.id, name: proposal!.name, operationId: 'PUBLISH pastry-orders-events', mediaType: 'application/json', content: proposal!.response.body } },
+    ]);
+    expect((await catalog.examples('orders', 'publish-order')).at(-1)).toMatchObject({ id: proposal!.id, aiGenerated: true, reviewState: 'accepted' });
+  });
+
+  it('accepts a Microcks-generated event (usersignedup: no ids, nulls) as the same UnidirectionalEvent', async () => {
+    const microcksEvent = {
+      type: 'unidirEvent',
+      eventMessage: { id: null, name: 'Laurent signed up', operationId: null, headers: null, mediaType: 'application/json', content: '{"id":"7d1b","fullName":"Laurent Broudoux"}', dispatchCriteria: null },
+    };
+    server.use(mswHttp.get('*/api/copilot/samples/usersignedup', () => HttpResponse.json([microcksEvent])));
+    const { copilot } = useCases();
+    const [proposal] = await copilot.generate({ serviceId: 'usersignedup', operationId: 'user-signedup', count: 1 });
+    expect(proposal).toMatchObject({ id: 'ai-user-signedup-laurent-signed-up', request: { params: {} }, response: { status: 200, body: microcksEvent.eventMessage.content } });
+    await copilot.accept('usersignedup', 'user-signedup', proposal!);
+    const post = seen.find((s) => s.method === 'POST')!;
+    expect(post.status).toBe(201);
+    expect(post.body).toEqual([
+      { type: 'unidirEvent', eventMessage: { id: proposal!.id, name: 'Laurent signed up', operationId: post.operation, mediaType: 'application/json', content: microcksEvent.eventMessage.content } },
+    ]);
+  });
+
+  it('keeps the QUERY_ARGS criteria of a Microcks GraphQL sample (variables of the request body)', async () => {
+    const microcksSample = {
+      type: 'reqRespPair',
+      request: { id: null, name: 'Movie 1', content: JSON.stringify({ query: 'query movie($id: ID!) { movie(id: $id) { title } }', variables: { id: '1' } }), queryParameters: [{ name: 'id', value: '1' }] },
+      response: { id: null, name: 'Movie 1', status: '200', mediaType: 'application/json', content: '{"data":{"movie":{"title":"Matrix"}}}', dispatchCriteria: '?id=1' },
+    };
+    server.use(mswHttp.get('*/api/copilot/samples/movie', () => HttpResponse.json([microcksSample])));
+    const { copilot } = useCases();
+    const [proposal] = await copilot.generate({ serviceId: 'movie', operationId: 'movie', count: 1 });
+    await copilot.accept('movie', 'movie', proposal!);
+    const post = seen.find((s) => s.method === 'POST')!;
+    expect(post).toMatchObject({ path: 'copilot/samples/movie', operation: 'QUERY movie', status: 201 });
+    expect((post.body as MicrocksRequestResponsePair[])[0]).toMatchObject({
+      request: { content: microcksSample.request.content, queryParameters: [{ name: 'id', value: '1' }] },
+      response: { dispatchCriteria: '?id=1' },
+    });
+  });
+
+  it('keeps the QUERY_ARGS criteria of a mock GraphQL proposal (query args)', async () => {
+    const { copilot } = useCases();
+    const [proposal] = await copilot.generate({ serviceId: 'movie', operationId: 'movies', count: 1 });
+    await copilot.accept('movie', 'movies', proposal!);
+    const post = seen.find((s) => s.method === 'POST')!;
+    expect(post.status).toBe(201);
+    expect((post.body as MicrocksRequestResponsePair[])[0]?.response.dispatchCriteria).toBe(`?title=${proposal!.request.params.title}`);
+  });
+
+  it('the mock refuses what Microcks would store but never serve: a pair for an event API, a wrong criteria', async () => {
+    const post = (service: string, operation: string, body: unknown) =>
+      fetch(`http://demo.test/api/copilot/samples/${service}?operation=${encodeURIComponent(operation)}`, {
+        method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body),
+      });
+    const pair = (criteria?: string) => ({
+      type: 'reqRespPair',
+      request: { name: 'Tarte Tatin', queryParameters: [{ name: 'name', value: 'Tarte Tatin' }] },
+      response: { name: 'Tarte Tatin', status: '200', content: '{}', ...(criteria !== undefined ? { dispatchCriteria: criteria } : {}) },
+    });
+    expect((await post('orders', 'PUBLISH pastry-orders-events', [pair()])).status).toBe(400);
+    expect((await post('pastry2', 'GET /pastries/{name}', [pair()])).status).toBe(400);
+    expect((await post('pastry2', 'GET /pastries/{name}', [pair('/name=Paris-Brest')])).status).toBe(400);
+    expect((await post('pastry2', 'GET /pastries/{name}', [pair('/name=Tarte Tatin')])).status).toBe(201);
+  });
+
+  it('answers 403 with no body for an unknown operation, as Microcks', async () => {
+    const response = await fetch('http://demo.test/api/copilot/samples/pastry2?operation=GET%20%2Fnope', {
+      method: 'POST', headers: { 'content-type': 'application/json' }, body: '[]',
+    });
+    expect(response.status).toBe(403);
+  });
+
+  it('a plain Microcks backend: the operation id is the operation name, no demo write', async () => {
+    const posts: { url: string; body: unknown }[] = [];
+    server.use(
+      mswHttp.get('*/api/demo/services/:id', () => new HttpResponse(null, { status: 404 })),
+      mswHttp.post('*/api/copilot/samples/:id', async ({ request }) => {
+        posts.push({ url: request.url, body: await request.json() });
+        return new HttpResponse(null, { status: 201 });
+      }),
+    );
+    const { catalog } = useCases();
+    const example = { id: 'x', name: 'Tarte Tatin', request: { params: { name: 'Tarte Tatin' } }, response: { status: 200, body: '{}' }, aiGenerated: true, reviewState: 'accepted' as const };
+    await catalog.addExamples('64f1c0ffee', 'GET /pastries/{name}', [example]);
+    expect(posts).toHaveLength(1);
+    expect(new URL(posts[0]!.url).searchParams.get('operation')).toBe('GET /pastries/{name}');
+    expect(seen.some((s) => s.method !== 'GET' && s.path.startsWith('demo/'))).toBe(false);
+  });
+});
+
+describe('reading Microcks exchanges stored by the AI Copilot', () => {
+  it('reads `sourceArtifact: AI Copilot` as an accepted AI example, without demo review flags', () => {
+    const stored = {
+      type: 'reqRespPair',
+      request: { id: 'r1', name: 'Tarte Tatin', operationId: 'pastry2-GET /pastries/{name}', sourceArtifact: 'AI Copilot', responseId: 's1', queryParameters: [{ name: 'name', value: 'Tarte Tatin' }] },
+      response: { id: 's1', name: 'Tarte Tatin', operationId: 'pastry2-GET /pastries/{name}', sourceArtifact: 'AI Copilot', status: '200', content: '{}', dispatchCriteria: '/name=Tarte Tatin' },
+    } as MicrocksRequestResponsePair;
+    expect(fromExchange(stored)).toMatchObject({ id: 's1', aiGenerated: true, reviewState: 'accepted' });
+    expect(fromExchange(stored, { reviewState: 'pending' })).toMatchObject({ aiGenerated: true, reviewState: 'pending' });
+    const plain = { ...stored, request: { ...stored.request, sourceArtifact: 'pastry.yaml' }, response: { ...stored.response, sourceArtifact: 'pastry.yaml' } } as MicrocksExchange;
+    expect(fromExchange(plain)).not.toHaveProperty('aiGenerated');
+  });
+});
