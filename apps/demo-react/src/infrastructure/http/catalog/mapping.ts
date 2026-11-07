@@ -242,14 +242,15 @@ export function fromLabelsMap(labels: MicrocksLabelsMap, services: Pick<Microcks
 /** Microcks service types whose operations exchange events (`UnidirectionalEvent`), not request/response pairs. */
 export const isEventServiceType = (type: MicrocksServiceType | undefined): boolean => type === 'EVENT' || type === 'GENERIC_EVENT';
 
-/** How Microcks dispatches an operation: `Operation.dispatcher` and `Operation.dispatcherRules`. */
+/** How Microcks dispatches an operation: the service type, `Operation.dispatcher` and `Operation.dispatcherRules`. */
 export interface DispatchTarget {
+  serviceType?: MicrocksServiceType;
   dispatcher?: string;
   dispatcherRules?: string;
 }
 
 /** The root dispatcher of a `FALLBACK`/`PROXY_FALLBACK` operation (its rules are JSON), else the operation's own. */
-function rootDispatcher({ dispatcher, dispatcherRules = '' }: DispatchTarget): Required<DispatchTarget> {
+function rootDispatcher({ dispatcher, dispatcherRules = '' }: DispatchTarget): { dispatcher: string; dispatcherRules: string } {
   if ((dispatcher === 'FALLBACK' || dispatcher === 'PROXY_FALLBACK') && dispatcherRules.trim().startsWith('{')) {
     try {
       const parsed = JSON.parse(dispatcherRules) as DispatchTarget;
@@ -263,7 +264,10 @@ function rootDispatcher({ dispatcher, dispatcherRules = '' }: DispatchTarget): R
 
 const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-/** `DispatchCriteriaHelper.buildFrom{Parts,Params}Map`: the params named in the rule, sorted by name. */
+/**
+ * `DispatchCriteriaHelper.buildFrom{Parts,Params}Map` and `extractFromParamMap`: the params named in the rule (word
+ * boundaries, `-` excluded), sorted by name.
+ */
 function criteriaOf(rule: string, params: Record<string, string>, separator: '/' | '?'): string {
   return Object.keys(params)
     .sort()
@@ -272,21 +276,55 @@ function criteriaOf(rule: string, params: Record<string, string>, separator: '/'
     .join('');
 }
 
+/** Jackson's `JsonNode.asText()` of a JSON value: scalars as text, objects and arrays as an empty string. */
+const asText = (value: unknown): string => (value !== null && typeof value === 'object' ? '' : String(value));
+
+function jsonObject(text: string | undefined): Record<string, unknown> | undefined {
+  if (!text) return undefined;
+  try {
+    const parsed: unknown = JSON.parse(text);
+    return parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+const textValues = (object: Record<string, unknown>) => Object.fromEntries(Object.entries(object).map(([k, v]) => [k, asText(v)]));
+
 /**
- * The `dispatchCriteria` Microcks computes for a request (`AICopilotHelper`, `DispatchCriteriaHelper`): what the mock
- * matches an incoming call against. `URI_PARTS` -> `/name=Tarte Tatin`, `URI_PARAMS` -> `?size=S`, `URI_ELEMENTS` ->
- * both; undefined for the dispatchers that read the body or a script.
+ * The arguments a `QUERY_ARGS` operation dispatches on (`AICopilotHelper`): the `variables` of a GraphQL request
+ * body, the fields of a gRPC request body. A demo example without such a body carries them as its query args (params).
  */
-export function dispatchCriteriaOf(target: DispatchTarget, params: Record<string, string>): string | undefined {
+function queryArgsOf(serviceType: MicrocksServiceType | undefined, request: Example['request']): Record<string, string> | undefined {
+  const body = jsonObject(request.body);
+  if (serviceType === 'GRAPHQL') {
+    const variables = body?.variables;
+    return variables !== null && typeof variables === 'object' && !Array.isArray(variables) ? textValues(variables as Record<string, unknown>) : request.params;
+  }
+  if (serviceType === 'GRPC') return body ? textValues(body) : request.params;
+  return undefined;
+}
+
+/**
+ * The `dispatchCriteria` Microcks computes for an AI Copilot request (`AICopilotHelper`, `DispatchCriteriaHelper`):
+ * what the mock matches an incoming call against. `URI_PARTS` -> `/name=Tarte Tatin`, `URI_PARAMS` -> `?size=S`,
+ * `URI_ELEMENTS` -> both, `QUERY_ARGS` (GraphQL and gRPC only, as Microcks) -> `?id=1`. Undefined (no criteria sent,
+ * as Microcks leaves it null) for the other dispatchers: `JSON_BODY`, `SCRIPT`, `QUERY_HEADER`, `QUERY_MATCH`...
+ */
+export function dispatchCriteriaOf(target: DispatchTarget, request: Example['request']): string | undefined {
   const { dispatcher, dispatcherRules } = rootDispatcher(target);
   const [parts = '', query = ''] = dispatcherRules.includes('??') ? dispatcherRules.split('??') : [dispatcherRules, dispatcherRules];
   switch (dispatcher) {
     case 'URI_PARTS':
-      return criteriaOf(parts, params, '/');
+      return criteriaOf(parts, request.params, '/');
     case 'URI_PARAMS':
-      return criteriaOf(query, params, '?');
+      return criteriaOf(query, request.params, '?');
     case 'URI_ELEMENTS':
-      return criteriaOf(parts, params, '/') + criteriaOf(query, params, '?');
+      return criteriaOf(parts, request.params, '/') + criteriaOf(query, request.params, '?');
+    case 'QUERY_ARGS': {
+      const args = queryArgsOf(target.serviceType, request);
+      return args ? criteriaOf(dispatcherRules, args, '?') : undefined;
+    }
     default:
       return undefined;
   }
@@ -297,15 +335,15 @@ export function dispatchCriteriaOf(target: DispatchTarget, params: Record<string
  * `UnidirectionalEvent` for an event operation, else a `RequestResponsePair` whose response carries the dispatch
  * criteria Microcks serves it with. Ids are kept (the demo reads them back), the `AI Copilot` source is Microcks' job.
  */
-export function toCopilotExchange(example: Example, operation: string, target: DispatchTarget & { event: boolean }): MicrocksExchange {
-  if (target.event) {
+export function toCopilotExchange(example: Example, operation: string, target: DispatchTarget): MicrocksExchange {
+  if (isEventServiceType(target.serviceType)) {
     return {
       type: 'unidirEvent',
       eventMessage: { id: example.id, name: example.name, operationId: operation, mediaType: 'application/json', content: example.response.body },
     };
   }
   const params = example.request.params;
-  const dispatchCriteria = dispatchCriteriaOf(target, params);
+  const dispatchCriteria = dispatchCriteriaOf(target, example.request);
   return {
     type: 'reqRespPair',
     request: {

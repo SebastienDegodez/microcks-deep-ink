@@ -64,7 +64,7 @@ describe('suggested exchanges', () => {
   it('round-trips the in-memory proposals through the mock exchanges, ids included', async () => {
     const { copilot } = createInMemoryCopilotAdapters({ clock: new FixedClock() });
     const proposals = await copilot.suggestExamples('pastry2', 'patch-name', { count: 3 });
-    const exchanges = JSON.parse(JSON.stringify(proposals.map((p) => toSuggestedExchange(p, 'PATCH /pastries/{name}', { event: false, dispatcher: 'URI_PARTS', dispatcherRules: 'name' })))) as MicrocksSuggestedExchange[];
+    const exchanges = JSON.parse(JSON.stringify(proposals.map((p) => toSuggestedExchange(p, 'PATCH /pastries/{name}', { serviceType: 'REST', dispatcher: 'URI_PARTS', dispatcherRules: 'name' })))) as MicrocksSuggestedExchange[];
     expect(fromSuggestedExchanges(exchanges, 'patch-name')).toEqual(proposals);
   });
 });
@@ -111,28 +111,55 @@ describe('createHttpCopilotAdapters', () => {
 });
 
 describe('dispatchCriteriaOf (Microcks DispatchCriteriaHelper)', () => {
+  const req = (params: Record<string, string>, body?: string) => ({ params, ...(body !== undefined ? { body } : {}) });
+
   it('builds the criteria of the URI dispatchers, params sorted by name and filtered by the rule', () => {
-    expect(dispatchCriteriaOf({ dispatcher: 'URI_PARTS', dispatcherRules: 'name' }, { name: 'Tarte Tatin' })).toBe('/name=Tarte Tatin');
-    expect(dispatchCriteriaOf({ dispatcher: 'URI_PARTS', dispatcherRules: 'year && month' }, { year: '2026', month: '11', other: 'x' })).toBe('/month=11/year=2026');
-    expect(dispatchCriteriaOf({ dispatcher: 'URI_PARAMS', dispatcherRules: 'size' }, { size: 'S' })).toBe('?size=S');
-    expect(dispatchCriteriaOf({ dispatcher: 'URI_ELEMENTS', dispatcherRules: 'id ?? format' }, { format: 'json', id: '42' })).toBe('/id=42?format=json');
-    expect(dispatchCriteriaOf({ dispatcher: 'URI_PARAMS', dispatcherRules: 'page' }, { 'page-size': '10' })).toBe('');
+    expect(dispatchCriteriaOf({ dispatcher: 'URI_PARTS', dispatcherRules: 'name' }, req({ name: 'Tarte Tatin' }))).toBe('/name=Tarte Tatin');
+    expect(dispatchCriteriaOf({ dispatcher: 'URI_PARTS', dispatcherRules: 'year && month' }, req({ year: '2026', month: '11', other: 'x' }))).toBe('/month=11/year=2026');
+    expect(dispatchCriteriaOf({ dispatcher: 'URI_PARAMS', dispatcherRules: 'size' }, req({ size: 'S' }))).toBe('?size=S');
+    expect(dispatchCriteriaOf({ dispatcher: 'URI_ELEMENTS', dispatcherRules: 'id ?? format' }, req({ format: 'json', id: '42' }))).toBe('/id=42?format=json');
+    expect(dispatchCriteriaOf({ dispatcher: 'URI_PARAMS', dispatcherRules: 'page' }, req({ 'page-size': '10' }))).toBe('');
   });
 
-  it('uses the root dispatcher of a FALLBACK and nothing for the body/script dispatchers', () => {
+  it('QUERY_ARGS: GraphQL variables, gRPC body fields (extractFromParamMap), else the query args', () => {
+    const graphql = { serviceType: 'GRAPHQL' as const, dispatcher: 'QUERY_ARGS', dispatcherRules: 'id' };
+    expect(dispatchCriteriaOf(graphql, req({ id: '1' }, JSON.stringify({ query: 'query movie($id: ID!) { movie(id: $id) { title } }', variables: { id: 1 } })))).toBe('?id=1');
+    expect(dispatchCriteriaOf(graphql, req({ id: '7' }))).toBe('?id=7');
+    expect(dispatchCriteriaOf({ ...graphql, dispatcherRules: 'title && year' }, req({}, JSON.stringify({ variables: { year: 1999, title: 'Matrix', cast: ['Neo'] } })))).toBe('?title=Matrix?year=1999');
+    expect(dispatchCriteriaOf({ serviceType: 'GRPC', dispatcher: 'QUERY_ARGS', dispatcherRules: 'firstname' }, req({}, '{"firstname":"Laurent","lastname":"B"}'))).toBe('?firstname=Laurent');
+    expect(dispatchCriteriaOf({ serviceType: 'GRPC', dispatcher: 'QUERY_ARGS', dispatcherRules: 'firstname' }, req({ firstname: 'Ada' }))).toBe('?firstname=Ada');
+  });
+
+  it('uses the root dispatcher of a FALLBACK and omits what Microcks does not compute', () => {
     const fallback = JSON.stringify({ dispatcher: 'URI_PARTS', dispatcherRules: 'name', fallback: 'Millefeuille' });
-    expect(dispatchCriteriaOf({ dispatcher: 'FALLBACK', dispatcherRules: fallback }, { name: 'Eclair' })).toBe('/name=Eclair');
-    expect(dispatchCriteriaOf({ dispatcher: 'JSON_BODY', dispatcherRules: '/orderId' }, { '/orderId': '1' })).toBeUndefined();
-    expect(dispatchCriteriaOf({}, { name: 'x' })).toBeUndefined();
+    expect(dispatchCriteriaOf({ dispatcher: 'FALLBACK', dispatcherRules: fallback }, req({ name: 'Eclair' }))).toBe('/name=Eclair');
+    expect(dispatchCriteriaOf({ dispatcher: 'FALLBACK', dispatcherRules: '' }, req({ name: 'Eclair' }))).toBeUndefined();
+    expect(dispatchCriteriaOf({ dispatcher: 'JSON_BODY', dispatcherRules: '/orderId' }, req({ '/orderId': '1' }))).toBeUndefined();
+    expect(dispatchCriteriaOf({ dispatcher: 'SCRIPT', dispatcherRules: 'return "x"' }, req({ name: 'x' }))).toBeUndefined();
+    expect(dispatchCriteriaOf({ dispatcher: 'QUERY_HEADER', dispatcherRules: 'x-id' }, req({ 'x-id': '1' }))).toBeUndefined();
+    // QUERY_ARGS of a SOAP or A2A service: Microcks' Copilot computes none.
+    expect(dispatchCriteriaOf({ serviceType: 'SOAP_HTTP', dispatcher: 'QUERY_ARGS', dispatcherRules: 'name' }, req({ name: 'x' }))).toBeUndefined();
+    expect(dispatchCriteriaOf({}, req({ name: 'x' }))).toBeUndefined();
   });
 
   it('serialises a proposal as Microcks would accept it: criteria on a pair, eventMessage for an event API', () => {
     const example = { id: 'ai-1', name: 'Tarte Tatin', request: { params: { name: 'Tarte Tatin' } }, response: { status: 200, body: '{}' } };
-    expect(toCopilotExchange(example, 'GET /pastries/{name}', { event: false, dispatcher: 'URI_PARTS', dispatcherRules: 'name' })).toMatchObject({
+    expect(toCopilotExchange(example, 'GET /pastries/{name}', { serviceType: 'REST', dispatcher: 'URI_PARTS', dispatcherRules: 'name' })).toMatchObject({
       type: 'reqRespPair', response: { dispatchCriteria: '/name=Tarte Tatin', status: '200' },
     });
-    expect(toCopilotExchange({ ...example, request: { params: { '/orderId': '1' } } }, 'PUBLISH orders', { event: true })).toEqual({
+    expect(toCopilotExchange({ ...example, request: { params: { '/orderId': '1' } } }, 'PUBLISH orders', { serviceType: 'EVENT' })).toEqual({
       type: 'unidirEvent', eventMessage: { id: 'ai-1', name: 'Tarte Tatin', operationId: 'PUBLISH orders', mediaType: 'application/json', content: '{}' },
     });
+  });
+});
+
+describe('event proposals', () => {
+  it('carry their params in the demo-only `demo.params` of the GET answer, read when present', () => {
+    const example = { id: 'ai-user-signedup-1', name: 'Generated 1', request: { params: { '/id': 'sample-1' } }, response: { status: 200, body: '{}' }, aiGenerated: true as const, reviewState: 'pending' as const };
+    const exchange = toSuggestedExchange(example, 'SUBSCRIBE user-signedup', { serviceType: 'EVENT', dispatcher: 'JSON_BODY', dispatcherRules: '/id' });
+    expect(exchange).toMatchObject({ type: 'unidirEvent', demo: { params: { '/id': 'sample-1' } } });
+    expect(fromSuggestedExchanges([exchange], 'user-signedup')).toEqual([example]);
+    const plain = { type: 'unidirEvent', eventMessage: { name: 'Generated 1', content: '{}' } } as MicrocksSuggestedExchange;
+    expect(fromSuggestedExchanges([plain], 'user-signedup')[0]?.request).toEqual({ params: {} });
   });
 });

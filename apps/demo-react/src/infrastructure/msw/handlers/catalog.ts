@@ -1,5 +1,5 @@
 import { http, HttpResponse, type AnyHandler } from 'msw';
-import type { Example, Operation, ServiceSummary } from '@/domain/shared';
+import type { Example, ServiceSummary } from '@/domain/shared';
 import type { Behavior } from '@/domain/catalog';
 import type { Clock } from '@/application/ports/shared';
 import type {
@@ -10,7 +10,18 @@ import type {
   MicrocksService,
   MicrocksServiceView,
 } from '@/infrastructure/http/catalog/dto';
-import { dispatchCriteriaOf, fromExchange, operationName, toExchange, toLabelsMap, toServiceDto, toServiceExtras } from '@/infrastructure/http/catalog/mapping';
+import {
+  dispatchCriteriaOf,
+  fromExchange,
+  isEventServiceType,
+  operationName,
+  toExchange,
+  toLabelsMap,
+  toServiceDto,
+  toServiceExtras,
+  toServiceType,
+  type DispatchTarget,
+} from '@/infrastructure/http/catalog/mapping';
 import { createInMemoryCatalogAdapters } from '@/infrastructure/in-memory/catalog';
 import { API } from './api';
 
@@ -61,11 +72,10 @@ export function createCatalogHandlers(deps: { clock?: Clock } = {}): AnyHandler[
   const id = (params: Record<string, unknown>, key = 'id') => String(params[key]);
 
   /** Why Microcks would store this accepted exchange but never serve it (wrong exchange type, wrong criteria). */
-  function copilotExchangeProblem(exchange: MicrocksExchange, event: boolean, operation: Operation): string | undefined {
-    if (event) return exchange.type === 'unidirEvent' ? undefined : `An event operation expects unidirEvent exchanges, not ${exchange.type}`;
+  function copilotExchangeProblem(exchange: MicrocksExchange, target: DispatchTarget): string | undefined {
+    if (isEventServiceType(target.serviceType)) return exchange.type === 'unidirEvent' ? undefined : `An event operation expects unidirEvent exchanges, not ${exchange.type}`;
     if (exchange.type !== 'reqRespPair') return `A request/response operation expects reqRespPair exchanges, not ${exchange.type}`;
-    const params = Object.fromEntries((exchange.request.queryParameters ?? []).map((p) => [p.name, p.value]));
-    const expected = dispatchCriteriaOf({ dispatcher: operation.dispatcher, dispatcherRules: operation.rule }, params);
+    const expected = dispatchCriteriaOf(target, fromExchange(exchange).request);
     const actual = exchange.response.dispatchCriteria;
     return expected === undefined || actual === expected ? undefined : `dispatchCriteria ${JSON.stringify(actual ?? null)} would not be served: expected ${JSON.stringify(expected)}`;
   }
@@ -90,8 +100,9 @@ export function createCatalogHandlers(deps: { clock?: Clock } = {}): AnyHandler[
       const operation = (await catalog.operations(id(params))).find((o) => operationName(o) === operationNameParam);
       if (!operation) return new HttpResponse(null, { status: 403 });
       const exchanges = (await request.json()) as MicrocksExchange[];
-      const event = (await catalog.get(id(params)))?.protocol === 'EVENT';
-      const invalid = exchanges.map((e) => copilotExchangeProblem(e, event, operation)).find(Boolean);
+      const service = await catalog.get(id(params));
+      const target = { serviceType: service && toServiceType(service.protocol), dispatcher: operation.dispatcher, dispatcherRules: operation.rule };
+      const invalid = exchanges.map((e) => copilotExchangeProblem(e, target)).find(Boolean);
       if (invalid) return HttpResponse.json({ message: invalid }, { status: 400 });
       const accepted = exchanges.map((e) => fromExchange(e, { aiGenerated: true, reviewState: 'accepted' }));
       await catalog.addExamples(id(params), operation.id, accepted);

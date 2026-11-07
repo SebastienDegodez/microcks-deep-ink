@@ -37,8 +37,16 @@ export interface MicrocksSuggestedResponse extends MicrocksSuggestedMessage {
  */
 export type MicrocksSuggestedExchange =
   | { type: 'reqRespPair'; request: MicrocksSuggestedRequest; response: MicrocksSuggestedResponse }
-  | { type: 'unidirEvent'; eventMessage: MicrocksSuggestedResponse }
+  | { type: 'unidirEvent'; eventMessage: MicrocksSuggestedResponse; demo?: DemoEventExtras | null }
   | { type: 'reqReplyEvent' };
+
+/**
+ * Proposition v2 / not in Microcks API: the request parameters the demo shows on an event proposal (a Microcks
+ * `UnidirectionalEvent` has none). Optional: a plain Microcks answer has no `demo` and reads with no parameter.
+ */
+export interface DemoEventExtras {
+  params?: Record<string, string> | null;
+}
 
 /**
  * `GET /api/copilot/workflow-context/{serviceId}?hint=`: the workflow run that lacks the hinted example, 204 when

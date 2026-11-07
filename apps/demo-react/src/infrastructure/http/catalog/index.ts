@@ -31,7 +31,7 @@ import type {
   MicrocksService,
   MicrocksServiceView,
 } from './dto';
-import { fromExchange, fromLabelsMap, fromOperationDto, fromServiceDto, isEventServiceType, toCopilotExchange, toExchange } from './mapping';
+import { fromExchange, fromLabelsMap, fromOperationDto, fromServiceDto, toCopilotExchange, toExchange } from './mapping';
 
 export interface HttpCatalogDeps {
   http: HttpClient;
@@ -137,7 +137,7 @@ export function createHttpCatalogAdapters({ http }: HttpCatalogDeps): HttpCatalo
           orUndefined(http.get<MicrocksService>(`services/${enc(id)}`)),
         ]);
         const dispatch = read?.operations?.find((o) => o.name === operation);
-        const target = { event: isEventServiceType(read?.type), dispatcher: dispatch?.dispatcher, dispatcherRules: dispatch?.dispatcherRules };
+        const target = { serviceType: read?.type, dispatcher: dispatch?.dispatcher, dispatcherRules: dispatch?.dispatcherRules };
         await http.post(`copilot/samples/${enc(id)}`, accepted.map((e) => toCopilotExchange(e, operation, target)), { query: { operation } });
       }
       if (others.length === 0) return;

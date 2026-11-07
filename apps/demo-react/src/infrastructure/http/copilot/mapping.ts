@@ -9,11 +9,14 @@ import type { MicrocksSuggestedExchange } from './dto';
 const slug = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '');
 
 /**
- * A proposal as the exchange Microcks' Copilot answers: an event for an event API, else a request/response pair with
- * its `dispatchCriteria` (the demo keeps the ids so proposals stay stable).
+ * A proposal as the exchange Microcks' Copilot answers: an event for an event API (with the demo-only `demo.params`
+ * when it has some), else a request/response pair with its `dispatchCriteria` (the demo keeps the ids so proposals
+ * stay stable).
  */
-export function toSuggestedExchange(example: Example, operation: string, target: DispatchTarget & { event: boolean }): MicrocksSuggestedExchange {
-  return toCopilotExchange(example, operation, target);
+export function toSuggestedExchange(example: Example, operation: string, target: DispatchTarget): MicrocksSuggestedExchange {
+  const exchange = toCopilotExchange(example, operation, target);
+  const params = example.request.params;
+  return exchange.type === 'unidirEvent' && Object.keys(params).length > 0 ? { ...exchange, demo: { params } } : exchange;
 }
 
 /** One suggested exchange as a pending AI example, or undefined for an exchange the demo does not show. */
@@ -25,7 +28,7 @@ function fromSuggestedExchange(exchange: MicrocksSuggestedExchange, opId: string
     return {
       id: message?.id || fallbackId(name),
       name,
-      request: { params: {} },
+      request: { params: { ...(exchange.demo?.params ?? {}) } },
       response: { status: 200, body: message?.content ?? '' },
       aiGenerated: true,
       reviewState: 'pending',

@@ -95,8 +95,9 @@ describe('accepting a Copilot proposal over http', () => {
     const generated = seen.find((s) => s.path === 'copilot/samples/orders')!;
     expect(generated.operation).toBe('PUBLISH pastry-orders-events');
     expect(JSON.parse(generated.responseText!)).toEqual([
-      expect.objectContaining({ type: 'unidirEvent', eventMessage: expect.objectContaining({ name: proposal!.name }) }),
+      expect.objectContaining({ type: 'unidirEvent', eventMessage: expect.objectContaining({ name: proposal!.name }), demo: { params: { '/orderId': 'sample-1' } } }),
     ]);
+    expect(proposal!.request.params).toEqual({ '/orderId': 'sample-1' });
     seen.length = 0;
     await copilot.accept('orders', 'publish-order', proposal!);
     const post = seen.find((s) => s.method === 'POST')!;
@@ -122,6 +123,33 @@ describe('accepting a Copilot proposal over http', () => {
     expect(post.body).toEqual([
       { type: 'unidirEvent', eventMessage: { id: proposal!.id, name: 'Laurent signed up', operationId: post.operation, mediaType: 'application/json', content: microcksEvent.eventMessage.content } },
     ]);
+  });
+
+  it('keeps the QUERY_ARGS criteria of a Microcks GraphQL sample (variables of the request body)', async () => {
+    const microcksSample = {
+      type: 'reqRespPair',
+      request: { id: null, name: 'Movie 1', content: JSON.stringify({ query: 'query movie($id: ID!) { movie(id: $id) { title } }', variables: { id: '1' } }), queryParameters: [{ name: 'id', value: '1' }] },
+      response: { id: null, name: 'Movie 1', status: '200', mediaType: 'application/json', content: '{"data":{"movie":{"title":"Matrix"}}}', dispatchCriteria: '?id=1' },
+    };
+    server.use(mswHttp.get('*/api/copilot/samples/movie', () => HttpResponse.json([microcksSample])));
+    const { copilot } = useCases();
+    const [proposal] = await copilot.generate({ serviceId: 'movie', operationId: 'movie', count: 1 });
+    await copilot.accept('movie', 'movie', proposal!);
+    const post = seen.find((s) => s.method === 'POST')!;
+    expect(post).toMatchObject({ path: 'copilot/samples/movie', operation: 'QUERY movie', status: 201 });
+    expect((post.body as MicrocksRequestResponsePair[])[0]).toMatchObject({
+      request: { content: microcksSample.request.content, queryParameters: [{ name: 'id', value: '1' }] },
+      response: { dispatchCriteria: '?id=1' },
+    });
+  });
+
+  it('keeps the QUERY_ARGS criteria of a mock GraphQL proposal (query args)', async () => {
+    const { copilot } = useCases();
+    const [proposal] = await copilot.generate({ serviceId: 'movie', operationId: 'movies', count: 1 });
+    await copilot.accept('movie', 'movies', proposal!);
+    const post = seen.find((s) => s.method === 'POST')!;
+    expect(post.status).toBe(201);
+    expect((post.body as MicrocksRequestResponsePair[])[0]?.response.dispatchCriteria).toBe(`?title=${proposal!.request.params.title}`);
   });
 
   it('the mock refuses what Microcks would store but never serve: a pair for an event API, a wrong criteria', async () => {
