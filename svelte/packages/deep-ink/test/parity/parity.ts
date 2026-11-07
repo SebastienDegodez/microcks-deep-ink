@@ -56,8 +56,14 @@ export const decode = (props: Record<string, unknown> = {}) =>
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 export function svelteHtml(component: Component<any>, c: ParityCase): string {
+  const props = { ...c.props, ...(c.props?.style && typeof c.props.style === 'object' ? { style: styleString(c.props.style as Record<string, string>) } : {}) };
   const control = c.control && { component: (barrel as Record<string, unknown>)[c.control.component], props: c.control.props };
-  return render(Harness, { props: { component, props: decode(c.props), text: c.children, options: c.options, control } }).body;
+  return render(Harness, { props: { component, props: decode(props), text: c.children, options: c.options, control } }).body;
+}
+
+/** A React `style` object of a case as the Svelte `style` string: `{ "--x": "1px", "fontSize": "2px" }` -> `--x:1px;font-size:2px`. */
+function styleString(style: Record<string, string>): string {
+  return Object.entries(style).map(([k, v]) => `${k.startsWith('--') ? k : k.replace(/[A-Z]/g, (c) => `-${c.toLowerCase()}`)}:${v}`).join(';');
 }
 
 /** Both sides normalised, ready for `expect(svelte).toBe(react)`. */

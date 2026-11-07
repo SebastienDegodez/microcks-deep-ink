@@ -1,0 +1,26 @@
+{
+  "component": "SplitPane",
+  "cases": [
+    {"name": "default", "children": "Panes"},
+    {"name": "widths", "props": {"sideWidth": "300px", "sideMax": "380px", "mainWidth": "600px", "gap": "24px"}},
+    {"name": "side-max-none", "props": {"sideMax": "none"}},
+    {"name": "stretch-balanced", "props": {"align": "stretch", "balanced": true}},
+    {"name": "keep-side-max", "props": {"sideWidth": "360px", "sideMax": "360px", "keepSideMax": true}},
+    {"name": "explicit-defaults", "props": {"align": "start", "balanced": false, "keepSideMax": false}},
+    {"name": "class-and-attributes", "props": {"className": "wide", "id": "sp", "data-testid": "split", "aria-busy": "true"}},
+    {"name": "side", "component": "SplitPaneSide", "children": "list"},
+    {"name": "side-nav", "component": "SplitPaneSide", "props": {"as": "nav", "aria-label": "Operations"}, "children": "list"},
+    {"name": "side-aside", "component": "SplitPaneSide", "props": {"as": "aside", "aria-label": "Filters", "className": "x"}},
+    {"name": "side-ul", "component": "SplitPaneSide", "props": {"as": "ul"}},
+    {"name": "main", "component": "SplitPaneMain", "children": "detail"},
+    {"name": "main-section", "component": "SplitPaneMain", "props": {"as": "section", "aria-label": "Operation detail", "data-testid": "m"}, "children": "detail"},
+    {"name": "main-ol", "component": "SplitPaneMain", "props": {"as": "ol"}},
+    {"name": "main-div-explicit", "component": "SplitPaneMain", "props": {"as": "div", "id": "m1"}},
+    {"name": "side-section", "component": "SplitPaneSide", "props": {"as": "section", "aria-label": "Filters"}},
+    {"name": "side-ol", "component": "SplitPaneSide", "props": {"as": "ol"}},
+    {"name": "main-aside", "component": "SplitPaneMain", "props": {"as": "aside", "aria-label": "Help"}},
+    {"name": "main-nav", "component": "SplitPaneMain", "props": {"as": "nav", "aria-label": "Steps"}},
+    {"name": "main-ul", "component": "SplitPaneMain", "props": {"as": "ul"}},
+    {"name": "style-override", "props": {"sideWidth": "300px", "gap": "24px", "style": {"--split-gap": "8px", "color": "red"}}}
+  ]
+}
