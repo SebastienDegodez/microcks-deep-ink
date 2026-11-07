@@ -28,8 +28,8 @@
 
 <div class="progress-field">
   <div class="progress-head">
-    <label class="progress-label" for={fieldId}>{label}</label>
-    <span class="progress-value">{valueText ?? `${value} / ${max}`}</span>
+    <label class="progress-label" for={fieldId}>{label}</label
+    ><span class="progress-value">{valueText ?? `${value} / ${max}`}</span>
   </div>
   <meter
     {...reactEvents(rest)}

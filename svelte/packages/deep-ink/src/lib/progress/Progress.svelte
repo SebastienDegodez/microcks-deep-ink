@@ -26,8 +26,8 @@
 
 <div class="progress-field">
   <div class="progress-head">
-    <label class="progress-label" for={fieldId}>{label}</label>
-    <span class="progress-value">{percent === undefined ? 'In progress' : `${percent}%`}</span>
+    <label class="progress-label" for={fieldId}>{label}</label
+    ><span class="progress-value">{percent === undefined ? 'In progress' : `${percent}%`}</span>
   </div>
   <progress {...reactEvents(rest)} id={fieldId} class={['progress', className].filter(Boolean).join(' ')} {value} {max}></progress>
 </div>
