@@ -1,10 +1,20 @@
 const KEY = 'deep-ink-demo-fast';
 let forced: 'fast' | 'normal' | undefined;
 let sequence = 0;
+let perCall = true;
 
 /** Forces the latency mode (tests, Storybook). `undefined` goes back to auto-detection. */
 export function setLatencyMode(mode: 'fast' | 'normal' | undefined): void {
   forced = mode;
+}
+
+/**
+ * Turns the per-call latency of the in-memory adapters on or off (fast mode aside). The `http` backend turns it off:
+ * the MSW handlers delegate to the in-memory adapters, and the network delay is simulated ONCE per request by
+ * `delay()` in the handlers (`src/infrastructure/msw/handlers/latency.ts`), never per adapter call.
+ */
+export function setPerCallLatency(enabled: boolean): void {
+  perCall = enabled;
 }
 
 /**
@@ -34,9 +44,9 @@ export function nextLatencyMs(): number {
   return 120 + ((sequence * 97) % 231);
 }
 
-/** Resolves after the simulated network latency. Every in-memory adapter awaits it once per call. */
+/** Resolves after the simulated network latency. Every in-memory adapter awaits it once per call (see `setPerCallLatency`). */
 export function latency(): Promise<void> {
-  if (isFastMode()) return Promise.resolve();
+  if (!perCall || isFastMode()) return Promise.resolve();
   const ms = nextLatencyMs();
   return new Promise((resolve) => setTimeout(resolve, ms));
 }
