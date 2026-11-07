@@ -39,6 +39,9 @@ simulated latency (120 to 350 ms, deterministic). The Playwright smoke run uses 
   folder, quiet; an unhandled `/api/` request logs a console error, everything else bypasses it) and by `node.ts` in vitest.
   The first render waits for `worker.start()`. A feature without HTTP adapters falls back to memory (`httpFeatures` lists
   the others). The `memory` build does not contain MSW.
+- `testing` over HTTP: the Microcks test API v1.15 (`/api/tests...`, endpoints and demo-only extensions listed in
+  `src/infrastructure/http/testing/microcks.ts`). A live run (`watch`) fetches the run once and replays its steps client-side,
+  one per tick: Microcks has no test-progress stream (its UI polls `GET /api/tests/{id}`).
 
 ### Port contract tests
 
