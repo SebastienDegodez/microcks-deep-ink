@@ -10,7 +10,7 @@
   "scripts": {
     "build": "pnpm --filter @microcks/deep-ink build",
     "check": "pnpm -r --if-present check",
-    "test": "pnpm --filter @microcks/deep-ink test",
+    "test": "pnpm --filter @microcks/deep-ink test && pnpm --filter storybook-svelte test",
     "check:boundaries": "node scripts/check-boundaries.mjs",
     "storybook": "pnpm --filter storybook-svelte storybook",
     "build:storybook": "pnpm --filter storybook-svelte build-storybook",

@@ -7,6 +7,7 @@
     "storybook": "node scripts/gen-exports.mjs && storybook dev -p 6008 --disable-telemetry",
     "build-storybook": "node scripts/gen-exports.mjs && storybook build -o storybook-static --disable-telemetry",
     "check": "node scripts/gen-exports.mjs && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+    "test": "node --test scripts/story-source.test.mjs",
     "gen:exports": "node scripts/gen-exports.mjs"
   },
   "dependencies": {
