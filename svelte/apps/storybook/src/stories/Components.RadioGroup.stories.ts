@@ -18,16 +18,16 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 export const WithError: StoryObj<typeof WithErrorComposition> = {
   name: 'Error',
-  render: () => ({ Component: WithErrorComposition })
+  render: () => ({ Component: WithErrorComposition, props: {} })
 };
 
 export const Cards: StoryObj<typeof CardsComposition> = {
-  render: () => ({ Component: CardsComposition })
+  render: () => ({ Component: CardsComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

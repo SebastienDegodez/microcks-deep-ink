@@ -13,17 +13,17 @@ export default {
 } satisfies Meta<typeof DropZone>;
 
 export const Default: StoryObj<typeof DefaultExample> = {
-  render: () => ({ Component: DefaultExample }),
+  render: () => ({ Component: DefaultExample, props: {} }),
 };
 
 export const Single: StoryObj = {
   name: 'Single file',
-  render: () => ({ Component: SingleExample }),
+  render: () => ({ Component: SingleExample, props: {} }),
 };
 
 export const Small: StoryObj = {
   name: 'Small, in a panel (Admin snapshots)',
-  render: () => ({ Component: SmallExample }),
+  render: () => ({ Component: SmallExample, props: {} }),
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

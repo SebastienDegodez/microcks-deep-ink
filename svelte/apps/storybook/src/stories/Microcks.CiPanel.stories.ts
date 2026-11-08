@@ -15,7 +15,7 @@ export default {
 
 
 export const Default: StoryObj<typeof DefaultExample> = {
-  render: () => ({ Component: DefaultExample }),
+  render: () => ({ Component: DefaultExample, props: {} }),
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

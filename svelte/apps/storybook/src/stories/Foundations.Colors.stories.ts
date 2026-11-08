@@ -7,4 +7,4 @@ export default {
   parameters: itemParams(['tokens'], 'Every token has a value in both themes. Switch the theme in the toolbar: names stay, values change. Text roles are at least 4.5:1 and control borders at least 3:1 on every ground (enforced by the tokens contrast test).', { controls: { disable: true } }),
 } satisfies Meta;
 
-export const Default: StoryObj = { render: () => ({ Component: Composition }) };
+export const Default: StoryObj = { render: () => ({ Component: Composition, props: {} }) };

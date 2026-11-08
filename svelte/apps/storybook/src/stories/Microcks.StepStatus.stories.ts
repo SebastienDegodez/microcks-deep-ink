@@ -12,11 +12,11 @@ export default {
 } satisfies Meta<typeof StepStatus>;
 
 export const Default: StoryObj = {
-  render: () => ({ Component: DefaultExample }),
+  render: () => ({ Component: DefaultExample, props: {} }),
 };
 
 export const Checks: StoryObj = {
-  render: () => ({ Component: ChecksExample }),
+  render: () => ({ Component: ChecksExample, props: {} }),
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

@@ -15,23 +15,23 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `align="end"` opens the list towards the start of the page, for a menu at the right edge. */
 export const AlignEnd: StoryObj<typeof AlignEndComposition> = {
   name: 'Aligned to the end',
-  render: () => ({ Component: AlignEndComposition })
+  render: () => ({ Component: AlignEndComposition, props: {} })
 };
 
 export const IconOnly: StoryObj<typeof IconOnlyComposition> = {
   name: 'Icon only',
-  render: () => ({ Component: IconOnlyComposition })
+  render: () => ({ Component: IconOnlyComposition, props: {} })
 };
 
 export const SeparatorAndDescription: StoryObj<typeof SeparatorAndDescriptionComposition> = {
   name: 'Separator and description',
-  render: () => ({ Component: SeparatorAndDescriptionComposition })
+  render: () => ({ Component: SeparatorAndDescriptionComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

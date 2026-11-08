@@ -15,18 +15,18 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `align="start"` for an empty panel inside a page; `headingLevel` follows the page outline. */
 export const AlignStart: StoryObj<typeof AlignStartComposition> = {
   name: 'Aligned to the start',
-  render: () => ({ Component: AlignStartComposition })
+  render: () => ({ Component: AlignStartComposition, props: {} })
 };
 
 export const NoResults: StoryObj<typeof NoResultsComposition> = {
   name: 'No results (icon)',
-  render: () => ({ Component: NoResultsComposition })
+  render: () => ({ Component: NoResultsComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

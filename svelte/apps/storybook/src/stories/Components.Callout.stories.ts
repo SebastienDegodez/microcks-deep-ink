@@ -17,28 +17,28 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `live="polite"` announces the callout when it appears. Use it for a message that follows an action. */
 export const LivePolite: StoryObj<typeof LivePoliteComposition> = {
   name: 'Announced (polite and assertive)',
-  render: () => ({ Component: LivePoliteComposition })
+  render: () => ({ Component: LivePoliteComposition, props: {} })
 };
 
 export const AI: StoryObj<typeof AIComposition> = {
   name: 'AI generated',
-  render: () => ({ Component: AIComposition })
+  render: () => ({ Component: AIComposition, props: {} })
 };
 
 export const Live: StoryObj<typeof LiveComposition> = {
   name: 'Announced',
-  render: () => ({ Component: LiveComposition })
+  render: () => ({ Component: LiveComposition, props: {} })
 };
 
 export const Outline: StoryObj<typeof OutlineComposition> = {
   name: 'Outline note',
-  render: () => ({ Component: OutlineComposition })
+  render: () => ({ Component: OutlineComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

@@ -15,15 +15,15 @@ export default {
 } satisfies Meta<typeof SplitPane>;
 
 
-export const ListAndDetail: StoryObj<typeof ListAndDetailView> = { name: 'List and detail', render: () => ({ Component: ListAndDetailView }) };
+export const ListAndDetail: StoryObj<typeof ListAndDetailView> = { name: 'List and detail', render: () => ({ Component: ListAndDetailView, props: {} }) };
 
 /** `align="stretch"` makes both panes as tall as the taller one; `balanced` shares the width; `gap` sets the spacing. */
-export const StretchAndBalanced: StoryObj<typeof StretchAndBalancedView> = { name: 'Stretch, balanced and gap', render: () => ({ Component: StretchAndBalancedView }) };
+export const StretchAndBalanced: StoryObj<typeof StretchAndBalancedView> = { name: 'Stretch, balanced and gap', render: () => ({ Component: StretchAndBalancedView, props: {} }) };
 
-export const DetailFirst: StoryObj<typeof DetailFirstView> = { name: 'Wide list, detail on the right (Traces, Hub)', render: () => ({ Component: DetailFirstView }) };
+export const DetailFirst: StoryObj<typeof DetailFirstView> = { name: 'Wide list, detail on the right (Traces, Hub)', render: () => ({ Component: DetailFirstView, props: {} }) };
 
 /** `keepSideMax` keeps the side cap below 720px: the rail stays 360px wide instead of filling the row (Service, Copilot). */
-export const KeepSideMax: StoryObj<typeof KeepSideMaxView> = { name: 'Keep the side cap on narrow screens', render: () => ({ Component: KeepSideMaxView }) };
+export const KeepSideMax: StoryObj<typeof KeepSideMaxView> = { name: 'Keep the side cap on narrow screens', render: () => ({ Component: KeepSideMaxView, props: {} }) };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof SplitPane> = { render: (args) => ({ Component: PlaygroundView, props: args }),

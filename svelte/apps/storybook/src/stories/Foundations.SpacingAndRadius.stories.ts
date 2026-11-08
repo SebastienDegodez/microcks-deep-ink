@@ -7,4 +7,4 @@ export default {
   parameters: itemParams(['tokens'], 'Space follows a 4px rhythm. The shape of a corner has a meaning: controls are near-square, badges are tight, panels and nodes are rounder, only pills are round.', { controls: { disable: true } }),
 } satisfies Meta;
 
-export const Default: StoryObj = { render: () => ({ Component: Composition }) };
+export const Default: StoryObj = { render: () => ({ Component: Composition, props: {} }) };

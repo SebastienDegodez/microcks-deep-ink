@@ -17,31 +17,31 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 export const DotsAndIcons: StoryObj<typeof DotsAndIconsComposition> = {
   name: 'Dots and icons',
-  render: () => ({ Component: DotsAndIconsComposition })
+  render: () => ({ Component: DotsAndIconsComposition, props: {} })
 };
 
 export const Joined: StoryObj<typeof JoinedComposition> = {
-  render: () => ({ Component: JoinedComposition })
+  render: () => ({ Component: JoinedComposition, props: {} })
 };
 
 export const JoinedPrimary: StoryObj<typeof JoinedPrimaryComposition> = {
   name: 'Joined, primary tone',
-  render: () => ({ Component: JoinedPrimaryComposition })
+  render: () => ({ Component: JoinedPrimaryComposition, props: {} })
 };
 
 export const StatusIcons: StoryObj<typeof StatusIconsComposition> = {
   name: 'Toned icons, selected fill (Sources)',
-  render: () => ({ Component: StatusIconsComposition })
+  render: () => ({ Component: StatusIconsComposition, props: {} })
 };
 
 export const Compact: StoryObj<typeof CompactComposition> = {
   name: 'Joined sm and wide track (Behavior, Usage)',
-  render: () => ({ Component: CompactComposition })
+  render: () => ({ Component: CompactComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

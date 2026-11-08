@@ -18,33 +18,33 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `size="sm"` for dense toolbars; `surface="bg"` on a field that sits on a panel. */
 export const Small: StoryObj<typeof SmallComposition> = {
-  render: () => ({ Component: SmallComposition })
+  render: () => ({ Component: SmallComposition, props: {} })
 };
 
 export const Mono: StoryObj<typeof MonoComposition> = {
-  render: () => ({ Component: MonoComposition })
+  render: () => ({ Component: MonoComposition, props: {} })
 };
 
 export const Invalid: StoryObj<typeof InvalidComposition> = {
-  render: () => ({ Component: InvalidComposition })
+  render: () => ({ Component: InvalidComposition, props: {} })
 };
 
 export const Multiline: StoryObj<typeof MultilineComposition> = {
-  render: () => ({ Component: MultilineComposition })
+  render: () => ({ Component: MultilineComposition, props: {} })
 };
 
 export const Disabled: StoryObj<typeof DisabledComposition> = {
-  render: () => ({ Component: DisabledComposition })
+  render: () => ({ Component: DisabledComposition, props: {} })
 };
 
 export const OnPageBackground: StoryObj<typeof OnPageBackgroundComposition> = {
   name: 'On the page background',
-  render: () => ({ Component: OnPageBackgroundComposition })
+  render: () => ({ Component: OnPageBackgroundComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

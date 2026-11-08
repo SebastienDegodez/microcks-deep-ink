@@ -14,19 +14,19 @@ export default {
 } satisfies Meta<typeof RunProgress>;
 
 export const Running: StoryObj = {
-  render: () => ({ Component: RunningExample }),
+  render: () => ({ Component: RunningExample, props: {} }),
 };
 
 /** Paused: the note is read before "Step forward" (it comes first in the DOM) and is still shown under the counts. */
 export const PausedNoteFirst: StoryObj = {
   name: 'Paused (note read before the action)',
-  render: () => ({ Component: PausedNoteFirstExample }),
+  render: () => ({ Component: PausedNoteFirstExample, props: {} }),
 };
 
 /** A custom `label` for the progress bar and a `gap` between the segments. */
 export const LabelAndGap: StoryObj = {
   name: 'Label and gap',
-  render: () => ({ Component: LabelAndGapExample }),
+  render: () => ({ Component: LabelAndGapExample, props: {} }),
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

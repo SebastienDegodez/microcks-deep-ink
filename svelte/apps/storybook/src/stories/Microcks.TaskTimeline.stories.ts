@@ -17,26 +17,26 @@ export default {
 } satisfies Meta<typeof TaskTimeline>;
 
 export const States: StoryObj = {
-  render: () => ({ Component: StatesExample }),
+  render: () => ({ Component: StatesExample, props: {} }),
 };
 
 /** The terminal states `auth-required`, `canceled` and `rejected`, a ghost tag, a custom `label` and `showUnreached={false}`. */
 export const OtherStates: StoryObj = {
   name: 'Other states',
-  render: () => ({ Component: OtherStatesExample }),
+  render: () => ({ Component: OtherStatesExample, props: {} }),
 };
 
 export const Timeline: StoryObj = {
-  render: () => ({ Component: TimelineExample }),
+  render: () => ({ Component: TimelineExample, props: {} }),
 };
 
 export const Selectable: StoryObj<typeof SelectableExample> = {
-  render: () => ({ Component: SelectableExample }),
+  render: () => ({ Component: SelectableExample, props: {} }),
 };
 
 export const StateMachineDiff: StoryObj = {
   name: 'State-machine diff',
-  render: () => ({ Component: StateMachineDiffExample }),
+  render: () => ({ Component: StateMachineDiffExample, props: {} }),
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

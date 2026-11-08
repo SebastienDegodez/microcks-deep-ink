@@ -14,18 +14,18 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `size` and `variant` come from the button; `copiedLabel` is the label after a successful copy. */
 export const SizesAndVariants: StoryObj<typeof SizesAndVariantsComposition> = {
   name: 'Sizes and variants',
-  render: () => ({ Component: SizesAndVariantsComposition })
+  render: () => ({ Component: SizesAndVariantsComposition, props: {} })
 };
 
 export const IconOnly: StoryObj<typeof IconOnlyComposition> = {
   name: 'Icon only',
-  render: () => ({ Component: IconOnlyComposition })
+  render: () => ({ Component: IconOnlyComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

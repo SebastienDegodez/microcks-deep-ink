@@ -23,35 +23,35 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `idPrefix` keeps tab and panel ids unique when two tab lists share a page. */
 export const IdPrefix: StoryObj<typeof IdPrefixComposition> = {
   name: 'Two lists on a page (idPrefix)',
-  render: () => ({ Component: IdPrefixComposition })
+  render: () => ({ Component: IdPrefixComposition, props: {} })
 };
 
 export const ManualActivation: StoryObj<typeof ManualActivationComposition> = {
   name: 'Manual activation',
   parameters: { docs: { description: { story: 'Arrow keys only move focus; Enter or Space selects. Use it when a panel is expensive to load.' } } },
-  render: () => ({ Component: ManualActivationComposition })
+  render: () => ({ Component: ManualActivationComposition, props: {} })
 };
 
 export const WithDisabledTab: StoryObj<typeof WithDisabledTabComposition> = {
   name: 'Disabled tab',
-  render: () => ({ Component: WithDisabledTabComposition })
+  render: () => ({ Component: WithDisabledTabComposition, props: {} })
 };
 
 export const LiveAndAlert: StoryObj<typeof LiveAndAlertComposition> = {
   name: 'Live dot and warning count',
   parameters: { docs: { description: { story: 'A live dot before the label (read "Tasks, live") and a warning pill (read "Users, 2 pending changes").' } } },
-  render: () => ({ Component: LiveAndAlertComposition })
+  render: () => ({ Component: LiveAndAlertComposition, props: {} })
 };
 
 export const CardWithIcons: StoryObj<typeof CardWithIconsComposition> = {
   name: 'Card variant, icons and hints (Import)',
-  render: () => ({ Component: CardWithIconsComposition })
+  render: () => ({ Component: CardWithIconsComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

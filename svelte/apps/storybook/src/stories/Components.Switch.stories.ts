@@ -15,19 +15,19 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 export const WithDescription: StoryObj<typeof WithDescriptionComposition> = {
-  render: () => ({ Component: WithDescriptionComposition })
+  render: () => ({ Component: WithDescriptionComposition, props: {} })
 };
 
 export const Disabled: StoryObj<typeof DisabledComposition> = {
-  render: () => ({ Component: DisabledComposition })
+  render: () => ({ Component: DisabledComposition, props: {} })
 };
 
 export const Large: StoryObj<typeof LargeComposition> = {
-  render: () => ({ Component: LargeComposition })
+  render: () => ({ Component: LargeComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

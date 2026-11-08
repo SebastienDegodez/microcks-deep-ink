@@ -17,22 +17,22 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `as` picks the landmark element: here an `aside`. */
 export const AsAside: StoryObj<typeof AsAsideComposition> = {
   name: 'As an aside',
-  render: () => ({ Component: AsAsideComposition })
+  render: () => ({ Component: AsAsideComposition, props: {} })
 };
 
 export const Flush: StoryObj<typeof FlushComposition> = {
-  render: () => ({ Component: FlushComposition })
+  render: () => ({ Component: FlushComposition, props: {} })
 };
 
 export const LabelTitle: StoryObj<typeof LabelTitleComposition> = {
   name: 'Label title, large padding',
-  render: () => ({ Component: LabelTitleComposition })
+  render: () => ({ Component: LabelTitleComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

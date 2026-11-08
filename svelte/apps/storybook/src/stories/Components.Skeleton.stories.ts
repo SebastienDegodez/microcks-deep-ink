@@ -13,12 +13,12 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `width` sets the width of the last line or of a single block. */
 export const Widths: StoryObj<typeof WidthsComposition> = {
-  render: () => ({ Component: WidthsComposition })
+  render: () => ({ Component: WidthsComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

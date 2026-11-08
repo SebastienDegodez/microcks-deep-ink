@@ -11,7 +11,7 @@ export default {
 } satisfies Meta<typeof RunOrigin>;
 
 export const Default: StoryObj = {
-  render: () => ({ Component: DefaultExample }),
+  render: () => ({ Component: DefaultExample, props: {} }),
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

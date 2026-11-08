@@ -17,30 +17,30 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `removeLabel` names the remove button: it reads "Remove REST filter". */
 export const RemoveLabel: StoryObj<typeof RemoveLabelComposition> = {
   name: 'Remove button label',
-  render: () => ({ Component: RemoveLabelComposition })
+  render: () => ({ Component: RemoveLabelComposition, props: {} })
 };
 
 export const Variants: StoryObj<typeof VariantsComposition> = {
-  render: () => ({ Component: VariantsComposition })
+  render: () => ({ Component: VariantsComposition, props: {} })
 };
 
 export const Toggle: StoryObj<typeof ToggleComposition> = {
-  render: () => ({ Component: ToggleComposition })
+  render: () => ({ Component: ToggleComposition, props: {} })
 };
 
 export const Removable: StoryObj<typeof RemovableComposition> = {
-  render: () => ({ Component: RemovableComposition })
+  render: () => ({ Component: RemovableComposition, props: {} })
 };
 
 export const Filters: StoryObj<typeof FiltersComposition> = {
   name: 'Filters (labels and protocols)',
-  render: () => ({ Component: FiltersComposition })
+  render: () => ({ Component: FiltersComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

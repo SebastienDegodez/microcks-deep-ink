@@ -12,7 +12,7 @@ export default {
 } satisfies Meta<typeof ProjectionPill>;
 
 
-export const Default: StoryObj<typeof DefaultView> = { render: () => ({ Component: DefaultView }) };
+export const Default: StoryObj<typeof DefaultView> = { render: () => ({ Component: DefaultView, props: {} }) };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<{ children?: string; title?: string }> = { render: (args) => ({ Component: PlaygroundView, props: args }),

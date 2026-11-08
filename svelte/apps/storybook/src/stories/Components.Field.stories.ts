@@ -16,16 +16,16 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 export const Required: StoryObj<typeof RequiredComposition> = {
-  render: () => ({ Component: RequiredComposition })
+  render: () => ({ Component: RequiredComposition, props: {} })
 };
 
 export const WithError: StoryObj<typeof WithErrorComposition> = {
   name: 'Error',
-  render: () => ({ Component: WithErrorComposition })
+  render: () => ({ Component: WithErrorComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

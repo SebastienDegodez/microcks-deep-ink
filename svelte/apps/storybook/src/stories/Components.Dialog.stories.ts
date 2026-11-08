@@ -16,16 +16,16 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `size="sm"` for confirmations, `size="lg"` for wide content. `closeOnBackdrop` also closes on a click outside. */
 export const Sizes: StoryObj<typeof SizesComposition> = {
-  render: () => ({ Component: SizesComposition })
+  render: () => ({ Component: SizesComposition, props: {} })
 };
 
 export const Destructive: StoryObj<typeof DestructiveComposition> = {
-  render: () => ({ Component: DestructiveComposition })
+  render: () => ({ Component: DestructiveComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

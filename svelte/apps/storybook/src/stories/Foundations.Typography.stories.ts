@@ -7,4 +7,4 @@ export default {
   parameters: itemParams(['tokens'], 'Type roles are CSS shorthands (`font: var(--type-body)`). Sizes are in px for the specimen; use rem in product code so the text follows the user setting.', { controls: { disable: true } }),
 } satisfies Meta;
 
-export const Default: StoryObj = { render: () => ({ Component: Composition }) };
+export const Default: StoryObj = { render: () => ({ Component: Composition, props: {} }) };

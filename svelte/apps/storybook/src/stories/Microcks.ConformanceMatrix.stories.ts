@@ -14,9 +14,9 @@ export default {
 } satisfies Meta<typeof ConformanceMatrix>;
 
 const FOOTER = { label: 'Conversations passed', cells: [{ text: '2/3', tone: 'danger' as const }, { text: '1/3' }, { text: '2/3', tone: 'danger' as const }] };
-export const Default: StoryObj<typeof DefaultView> = { render: () => ({ Component: DefaultView }) };
+export const Default: StoryObj<typeof DefaultView> = { render: () => ({ Component: DefaultView, props: {} }) };
 
-export const SelectableCells: StoryObj<typeof SelectableCellsView> = { render: () => ({ Component: SelectableCellsView }) };
+export const SelectableCells: StoryObj<typeof SelectableCellsView> = { render: () => ({ Component: SelectableCellsView, props: {} }) };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof ConformanceMatrix> = { render: (args) => ({ Component: PlaygroundView, props: args }),

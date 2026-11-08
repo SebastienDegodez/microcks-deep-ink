@@ -14,11 +14,11 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 export const Small: StoryObj<typeof SmallComposition> = {
-  render: () => ({ Component: SmallComposition })
+  render: () => ({ Component: SmallComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

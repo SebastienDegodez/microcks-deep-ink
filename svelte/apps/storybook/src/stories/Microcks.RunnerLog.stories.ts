@@ -16,17 +16,17 @@ export default {
 
 
 export const Streaming: StoryObj = {
-  render: () => ({ Component: StreamingExample }),
+  render: () => ({ Component: StreamingExample, props: {} }),
 };
 
 /** The `WARN` level: a warning that does not fail the step. */
 export const WithWarning: StoryObj = {
   name: 'With a warning',
-  render: () => ({ Component: WithWarningExample }),
+  render: () => ({ Component: WithWarningExample, props: {} }),
 };
 
 export const Completed: StoryObj = {
-  render: () => ({ Component: CompletedExample }),
+  render: () => ({ Component: CompletedExample, props: {} }),
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

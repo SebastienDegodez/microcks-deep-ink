@@ -14,11 +14,11 @@ export default {
 } satisfies Meta<typeof Tile>;
 
 
-export const Packages: StoryObj<typeof PackagesView> = { name: 'Hub packages (selectable)', render: () => ({ Component: PackagesView }) };
+export const Packages: StoryObj<typeof PackagesView> = { name: 'Hub packages (selectable)', render: () => ({ Component: PackagesView, props: {} }) };
 
-export const Links: StoryObj<typeof LinksView> = { name: 'Link tiles (services)', render: () => ({ Component: LinksView }) };
+export const Links: StoryObj<typeof LinksView> = { name: 'Link tiles (services)', render: () => ({ Component: LinksView, props: {} }) };
 
-export const Static: StoryObj<typeof StaticView> = { name: 'Static tile', render: () => ({ Component: StaticView }) };
+export const Static: StoryObj<typeof StaticView> = { name: 'Static tile', render: () => ({ Component: StaticView, props: {} }) };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof Tile> = { render: (args) => ({ Component: PlaygroundView, props: args }),

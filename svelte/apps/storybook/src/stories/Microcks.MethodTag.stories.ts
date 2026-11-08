@@ -14,11 +14,11 @@ export default {
 } satisfies Meta<typeof MethodTag>;
 
 
-export const Default: StoryObj<typeof DefaultView> = { render: () => ({ Component: DefaultView }) };
+export const Default: StoryObj<typeof DefaultView> = { render: () => ({ Component: DefaultView, props: {} }) };
 
-export const AlignedInAList: StoryObj<typeof AlignedInAListView> = { name: 'Aligned in a list', render: () => ({ Component: AlignedInAListView }) };
+export const AlignedInAList: StoryObj<typeof AlignedInAListView> = { name: 'Aligned in a list', render: () => ({ Component: AlignedInAListView, props: {} }) };
 
-export const Small: StoryObj<typeof SmallView> = { name: 'Small and extra small', render: () => ({ Component: SmallView }) };
+export const Small: StoryObj<typeof SmallView> = { name: 'Small and extra small', render: () => ({ Component: SmallView, props: {} }) };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof MethodTag> = { render: (args) => ({ Component: PlaygroundView, props: args }),

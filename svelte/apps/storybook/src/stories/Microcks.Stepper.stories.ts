@@ -14,21 +14,21 @@ export default {
 } satisfies Meta<typeof Stepper>;
 
 export const Progress: StoryObj = {
-  render: () => ({ Component: ProgressExample }),
+  render: () => ({ Component: ProgressExample, props: {} }),
 };
 
 /** `direction="vertical"` for a narrow column; `doneLabel` changes the word read for finished steps. */
 export const Vertical: StoryObj = {
-  render: () => ({ Component: VerticalExample }),
+  render: () => ({ Component: VerticalExample, props: {} }),
 };
 
 export const Instructions: StoryObj = {
-  render: () => ({ Component: InstructionsExample }),
+  render: () => ({ Component: InstructionsExample, props: {} }),
 };
 
 export const CircledPlan: StoryObj = {
   name: 'List with circled numbers (WorkflowRun plan)',
-  render: () => ({ Component: CircledPlanExample }),
+  render: () => ({ Component: CircledPlanExample, props: {} }),
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

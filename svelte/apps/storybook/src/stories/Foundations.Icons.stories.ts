@@ -7,6 +7,6 @@ export default {
   parameters: itemParams(['icon'], 'Inline stroke icons, 2px stroke, `currentColor`. Hidden from assistive technology next to text; pass `label` to make one meaningful. No emoji.', { controls: { disable: true } }),
 } satisfies Meta;
 
-export const Default: StoryObj = { render: () => ({ Component: Composition }) };
+export const Default: StoryObj = { render: () => ({ Component: Composition, props: {} }) };
 
 export const Meaningful: StoryObj = { name: 'With a label', render: () => ({ Component: Composition, props: { meaningful: true } }) };

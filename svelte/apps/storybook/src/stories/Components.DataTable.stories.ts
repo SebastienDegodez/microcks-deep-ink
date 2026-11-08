@@ -37,46 +37,46 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `renderRowLink` renders the row link with your router instead of a plain `<a>`. */
 export const RouterLinks: StoryObj<typeof RouterLinksComposition> = {
   name: 'Router links (renderRowLink)',
-  render: () => ({ Component: RouterLinksComposition })
+  render: () => ({ Component: RouterLinksComposition, props: {} })
 };
 
 export const Sortable: StoryObj<typeof SortableComposition> = {
-  render: () => ({ Component: SortableComposition })
+  render: () => ({ Component: SortableComposition, props: {} })
 };
 
 export const RowLinks: StoryObj<typeof RowLinksComposition> = {
   name: 'Row links',
-  render: () => ({ Component: RowLinksComposition })
+  render: () => ({ Component: RowLinksComposition, props: {} })
 };
 
 export const Compact: StoryObj<typeof CompactComposition> = {
-  render: () => ({ Component: CompactComposition })
+  render: () => ({ Component: CompactComposition, props: {} })
 };
 
 export const Empty: StoryObj<typeof EmptyComposition> = {
-  render: () => ({ Component: EmptyComposition })
+  render: () => ({ Component: EmptyComposition, props: {} })
 };
 
 export const HiddenHeader: StoryObj<typeof HiddenHeaderComposition> = {
   name: 'Hidden column header',
-  render: () => ({ Component: HiddenHeaderComposition })
+  render: () => ({ Component: HiddenHeaderComposition, props: {} })
 };
 
 export const SentenceCase: StoryObj<typeof SentenceCaseComposition> = {
   name: 'Sentence-case headers, row headers and row tones',
-  render: () => ({ Component: SentenceCaseComposition })
+  render: () => ({ Component: SentenceCaseComposition, props: {} })
 };
 
 /** `layout="fixed"` with column `width`, `scroll={false}` (no region, no tab stop) and `onRowSelect`: the row header is a toggle button with `aria-pressed`. */
 export const SelectableRowHeader: StoryObj<typeof SelectableRowHeaderComposition> = {
   name: 'Fixed layout, no scroll region, selectable row header',
-  render: () => ({ Component: SelectableRowHeaderComposition })
+  render: () => ({ Component: SelectableRowHeaderComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

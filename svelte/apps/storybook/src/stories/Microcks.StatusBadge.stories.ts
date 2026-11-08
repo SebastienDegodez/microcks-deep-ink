@@ -15,13 +15,13 @@ export default {
 } satisfies Meta<typeof StatusBadge>;
 
 
-export const Default: StoryObj<typeof DefaultView> = { render: () => ({ Component: DefaultView }) };
+export const Default: StoryObj<typeof DefaultView> = { render: () => ({ Component: DefaultView, props: {} }) };
 
-export const Small: StoryObj<typeof SmallView> = { render: () => ({ Component: SmallView }) };
+export const Small: StoryObj<typeof SmallView> = { render: () => ({ Component: SmallView, props: {} }) };
 
-export const Large: StoryObj<typeof LargeView> = { name: 'Large (page-level status)', render: () => ({ Component: LargeView }) };
+export const Large: StoryObj<typeof LargeView> = { name: 'Large (page-level status)', render: () => ({ Component: LargeView, props: {} }) };
 
-export const Bare: StoryObj<typeof BareView> = { name: 'Bare (step outcomes)', render: () => ({ Component: BareView }) };
+export const Bare: StoryObj<typeof BareView> = { name: 'Bare (step outcomes)', render: () => ({ Component: BareView, props: {} }) };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof StatusBadge> = { render: (args) => ({ Component: PlaygroundView, props: args }),

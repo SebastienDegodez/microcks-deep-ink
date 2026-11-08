@@ -15,13 +15,13 @@ export default {
 } satisfies Meta<typeof SummaryStrip>;
 
 
-export const Saved: StoryObj<typeof SavedView> = { render: () => ({ Component: SavedView }) };
+export const Saved: StoryObj<typeof SavedView> = { render: () => ({ Component: SavedView, props: {} }) };
 
-export const Dispatcher: StoryObj<typeof DispatcherView> = { name: 'Dispatcher summary (values in text)', render: () => ({ Component: DispatcherView }) };
+export const Dispatcher: StoryObj<typeof DispatcherView> = { name: 'Dispatcher summary (values in text)', render: () => ({ Component: DispatcherView, props: {} }) };
 
-export const Canvas: StoryObj<typeof CanvasView> = { name: 'Canvas (Agent test setup)', render: () => ({ Component: CanvasView }) };
+export const Canvas: StoryObj<typeof CanvasView> = { name: 'Canvas (Agent test setup)', render: () => ({ Component: CanvasView, props: {} }) };
 
-export const FromContent: StoryObj<typeof FromContentView> = { name: 'Built from content', render: () => ({ Component: FromContentView }) };
+export const FromContent: StoryObj<typeof FromContentView> = { name: 'Built from content', render: () => ({ Component: FromContentView, props: {} }) };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof SummaryStrip> = { render: (args) => ({ Component: PlaygroundView, props: args }),

@@ -14,12 +14,12 @@ export default {
 } satisfies Meta<typeof ExchangeCard>;
 
 
-export const ServiceExample: StoryObj<typeof ServiceExampleView> = { name: 'Service example', render: () => ({ Component: ServiceExampleView }) };
+export const ServiceExample: StoryObj<typeof ServiceExampleView> = { name: 'Service example', render: () => ({ Component: ServiceExampleView, props: {} }) };
 
 /** `statusTone` colours the status; `headingLevel` fits the card in the page outline (`none` for no heading). */
-export const StatusTones: StoryObj<typeof StatusTonesView> = { name: 'Status tones and heading level', render: () => ({ Component: StatusTonesView }) };
+export const StatusTones: StoryObj<typeof StatusTonesView> = { name: 'Status tones and heading level', render: () => ({ Component: StatusTonesView, props: {} }) };
 
-export const Compact: StoryObj<typeof CompactView> = { name: 'Compact head (Copilot)', render: () => ({ Component: CompactView }) };
+export const Compact: StoryObj<typeof CompactView> = { name: 'Compact head (Copilot)', render: () => ({ Component: CompactView, props: {} }) };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof ExchangeCard> = { render: (args) => ({ Component: PlaygroundView, props: args }),

@@ -25,62 +25,62 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `startLine` for an excerpt, and `tabsLabel` to name the tab list. */
 export const ExcerptWithTabs: StoryObj<typeof ExcerptWithTabsComposition> = {
   name: 'Excerpt and named tabs',
-  render: () => ({ Component: ExcerptWithTabsComposition })
+  render: () => ({ Component: ExcerptWithTabsComposition, props: {} })
 };
 
 export const WithBadLine: StoryObj<typeof WithBadLineComposition> = {
   name: 'Failing line',
-  render: () => ({ Component: WithBadLineComposition })
+  render: () => ({ Component: WithBadLineComposition, props: {} })
 };
 
 export const Scrolling: StoryObj<typeof ScrollingComposition> = {
-  render: () => ({ Component: ScrollingComposition })
+  render: () => ({ Component: ScrollingComposition, props: {} })
 };
 
 export const FormatTabs: StoryObj<typeof FormatTabsComposition> = {
   name: 'Format tabs',
-  render: () => ({ Component: FormatTabsComposition })
+  render: () => ({ Component: FormatTabsComposition, props: {} })
 };
 
 export const Plain: StoryObj<typeof PlainComposition> = {
-  render: () => ({ Component: PlainComposition })
+  render: () => ({ Component: PlainComposition, props: {} })
 };
 
 export const Numbered: StoryObj<typeof NumberedComposition> = {
   name: 'Line numbers and inline note',
-  render: () => ({ Component: NumberedComposition })
+  render: () => ({ Component: NumberedComposition, props: {} })
 };
 
 export const ChangedLines: StoryObj<typeof ChangedLinesComposition> = {
   name: 'Changed lines (diff)',
-  render: () => ({ Component: ChangedLinesComposition })
+  render: () => ({ Component: ChangedLinesComposition, props: {} })
 };
 
 export const SchemaMismatch: StoryObj<typeof SchemaMismatchComposition> = {
   name: 'Narrow gutter, danger frame (schema mismatch)',
-  render: () => ({ Component: SchemaMismatchComposition })
+  render: () => ({ Component: SchemaMismatchComposition, props: {} })
 };
 
 export const RegionLabel: StoryObj<typeof RegionLabelComposition> = {
   name: 'Same caption, distinct region names',
-  render: () => ({ Component: RegionLabelComposition })
+  render: () => ({ Component: RegionLabelComposition, props: {} })
 };
 
 /** `source` at the end of the header, the caption as an uppercase title, on the raised fill (`headerTone="raised"`). */
 export const SourceRaisedHeader: StoryObj<typeof SourceRaisedHeaderComposition> = {
   name: 'Source and raised header',
-  render: () => ({ Component: SourceRaisedHeaderComposition })
+  render: () => ({ Component: SourceRaisedHeaderComposition, props: {} })
 };
 
 /** `bare`: no frame, no header, no padding, for a `<pre>` inside a card. `focusable="overflow"`: a region only when it scrolls. */
 export const Bare: StoryObj<typeof BareComposition> = {
-  render: () => ({ Component: BareComposition })
+  render: () => ({ Component: BareComposition, props: {} })
 };
 
 /**
@@ -91,7 +91,7 @@ export const Bare: StoryObj<typeof BareComposition> = {
  */
 export const PreOnly: StoryObj<typeof PreOnlyComposition> = {
   name: 'Pre only (frame="none")',
-  render: () => ({ Component: PreOnlyComposition })
+  render: () => ({ Component: PreOnlyComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

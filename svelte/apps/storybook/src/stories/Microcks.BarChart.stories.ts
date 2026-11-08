@@ -14,12 +14,12 @@ export default {
 } satisfies Meta<typeof BarChart>;
 
 const RUNS = Array.from({ length: 20 }, (_, i) => { const id = String(100 + i); const failed = i % 6 === 4; const ms = 700 + ((i * 337) % 1900); return { id, failed, ms }; });
-export const ConformanceTimeline: StoryObj<typeof ConformanceTimelineView> = { name: 'Runs (Tests)', render: () => ({ Component: ConformanceTimelineView }) };
+export const ConformanceTimeline: StoryObj<typeof ConformanceTimelineView> = { name: 'Runs (Tests)', render: () => ({ Component: ConformanceTimelineView, props: {} }) };
 
 /** `grid` lines, `ticksEnd` on the right, a `minHeight` for zero values and an `overlay`. */
-export const GridAndOverlay: StoryObj<typeof GridAndOverlayView> = { name: 'Grid, end ticks and overlay', render: () => ({ Component: GridAndOverlayView }) };
+export const GridAndOverlay: StoryObj<typeof GridAndOverlayView> = { name: 'Grid, end ticks and overlay', render: () => ({ Component: GridAndOverlayView, props: {} }) };
 
-export const PerHour: StoryObj<typeof PerHourView> = { name: 'Per hour, future slots (Usage)', render: () => ({ Component: PerHourView }) };
+export const PerHour: StoryObj<typeof PerHourView> = { name: 'Per hour, future slots (Usage)', render: () => ({ Component: PerHourView, props: {} }) };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof BarChart> = { render: (args) => ({ Component: PlaygroundView, props: args }),

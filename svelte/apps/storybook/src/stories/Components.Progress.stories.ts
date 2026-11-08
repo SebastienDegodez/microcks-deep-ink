@@ -14,18 +14,18 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `Progress.max` for a count, and `Meter.min` for a range that does not start at zero. */
 export const CustomRange: StoryObj<typeof CustomRangeComposition> = {
   name: 'Custom range',
-  render: () => ({ Component: CustomRangeComposition })
+  render: () => ({ Component: CustomRangeComposition, props: {} })
 };
 
 export const MeterStory: StoryObj<typeof MeterStoryComposition> = {
   name: 'Meter',
-  render: () => ({ Component: MeterStoryComposition })
+  render: () => ({ Component: MeterStoryComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

@@ -18,17 +18,17 @@ export default {
 
 export const Default: StoryObj<typeof DefaultComposition> = {
   name: 'Inline',
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `globalShortcut={false}` turns Ctrl/\u2318K off, for a page that has its own shortcut. */
 export const NoShortcut: StoryObj<typeof NoShortcutComposition> = {
   name: 'Without the global shortcut',
-  render: () => ({ Component: NoShortcutComposition })
+  render: () => ({ Component: NoShortcutComposition, props: {} })
 };
 
 export const Modal: StoryObj<typeof ModalComposition> = {
-  render: () => ({ Component: ModalComposition })
+  render: () => ({ Component: ModalComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
@@ -39,5 +39,5 @@ export const Playground: StoryObj<typeof PlaygroundComposition> = {
 
 export const Inline: StoryObj<typeof InlineComposition> = {
   name: 'Inline (long placeholder)',
-  render: () => ({ Component: InlineComposition })
+  render: () => ({ Component: InlineComposition, props: {} })
 };

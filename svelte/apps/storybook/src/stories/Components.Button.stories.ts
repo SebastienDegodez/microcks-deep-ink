@@ -18,35 +18,35 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 export const FormFooter: StoryObj<typeof FormFooterComposition> = {
   name: 'Form footer, inline delete',
-  render: () => ({ Component: FormFooterComposition })
+  render: () => ({ Component: FormFooterComposition, props: {} })
 };
 
 export const Sizes: StoryObj<typeof SizesComposition> = {
-  render: () => ({ Component: SizesComposition })
+  render: () => ({ Component: SizesComposition, props: {} })
 };
 
 export const WithIcon: StoryObj<typeof WithIconComposition> = {
   name: 'Icons',
-  render: () => ({ Component: WithIconComposition })
+  render: () => ({ Component: WithIconComposition, props: {} })
 };
 
 export const States: StoryObj<typeof StatesComposition> = {
-  render: () => ({ Component: StatesComposition })
+  render: () => ({ Component: StatesComposition, props: {} })
 };
 
 export const AsLink: StoryObj<typeof AsLinkComposition> = {
   name: 'As a link',
-  render: () => ({ Component: AsLinkComposition })
+  render: () => ({ Component: AsLinkComposition, props: {} })
 };
 
 export const CardFooter: StoryObj<typeof CardFooterComposition> = {
   name: 'Card footer (tile, 36px)',
-  render: () => ({ Component: CardFooterComposition })
+  render: () => ({ Component: CardFooterComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */

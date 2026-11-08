@@ -22,7 +22,7 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
-  render: () => ({ Component: DefaultComposition })
+  render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
@@ -39,5 +39,5 @@ export const Playground: StoryObj<typeof PlaygroundComposition> = {
 /** `navLabel` and `skipLinkLabel` translate the landmark names; `topbarCenter` fills the middle of the top bar; `renderLink` plugs a router link. */
 export const Customised: StoryObj<typeof CustomisedComposition> = {
   name: 'Labels, centre slot and router link',
-  render: () => ({ Component: CustomisedComposition })
+  render: () => ({ Component: CustomisedComposition, props: {} })
 };
