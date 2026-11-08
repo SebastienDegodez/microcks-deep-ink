@@ -21,3 +21,5 @@ react/apps/storybook/.storybook/copy-panel/exports.generated.json
 svelte/apps/storybook/.storybook/copy-panel/exports.generated.json
 
 svelte/packages/deep-ink/src/lib/internal/elements/
+
+*storybook.log

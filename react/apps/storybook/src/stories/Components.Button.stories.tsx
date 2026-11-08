@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react-vite';
 import React from 'react';
+import { expect } from 'storybook/test';
 import { Button, ButtonLink } from '@microcks/deep-ink';
 import { itemParams } from './_meta';
 
@@ -20,6 +21,21 @@ export const Default: StoryObj = {
       <Button variant="danger">Delete service</Button>
     </div>
   ),
+};
+
+/** Proves the preview loads `@microcks/deep-ink/styles.css`: an unstyled button would not be 40px / 44px high. */
+export const CssCheck: StoryObj = {
+  tags: ['ai-generated', '!dev', '!autodocs', '!manifest'],
+  render: () => (
+    <div className="inline">
+      <Button variant="primary">Run test</Button>
+      <Button variant="primary" size="lg">Launch test</Button>
+    </div>
+  ),
+  play: async ({ canvas }) => {
+    await expect(getComputedStyle(canvas.getByRole('button', { name: 'Run test' })).height).toBe('40px');
+    await expect(getComputedStyle(canvas.getByRole('button', { name: 'Launch test' })).height).toBe('44px');
+  },
 };
 
 export const FormFooter: StoryObj = {
