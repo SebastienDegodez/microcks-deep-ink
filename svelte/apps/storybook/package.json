@@ -8,27 +8,36 @@
     "build-storybook": "node scripts/gen-exports.mjs && storybook build -o storybook-static --disable-telemetry",
     "check": "node scripts/gen-exports.mjs && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
     "test": "node --test scripts/story-source.test.mjs",
-    "gen:exports": "node scripts/gen-exports.mjs"
+    "gen:exports": "node scripts/gen-exports.mjs",
+    "test:stories": "node scripts/gen-exports.mjs && vitest --project storybook run"
   },
   "dependencies": {
     "@microcks-deep-ink/storybook-shared": "link:../../../apps/shared",
     "@microcks/deep-ink": "workspace:*"
   },
   "devDependencies": {
+    "@chromatic-com/storybook": "^5.6.0",
     "@microcks-deep-ink/plugin-sdk": "link:../../../packages/plugin-sdk",
     "@microcks-deep-ink/registry": "link:../../../packages/registry",
-    "@storybook/addon-a11y": "^10.6.5",
-    "@storybook/addon-docs": "^10.6.5",
-    "@storybook/svelte-vite": "^10.6.5",
+    "@storybook/addon-a11y": "^10.6.6",
+    "@storybook/addon-docs": "^10.6.6",
+    "@storybook/addon-vitest": "^10.6.6",
+    "@storybook/svelte-vite": "^10.6.6",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "@vitest/browser-playwright": "^5.1.0",
+    "@vitest/coverage-v8": "^5.1.0",
+    "playwright": "^1.65.0",
+    "prettier": "^3.9.10",
+    "prettier-plugin-svelte": "^3.5.2",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "storybook": "^10.6.5",
+    "storybook": "^10.6.6",
     "svelte": "^5.57.0",
     "svelte-check": "^4.7.8",
     "typescript": "~6.0.3",
-    "vite": "^8.3.6"
+    "vite": "^8.3.6",
+    "vitest": "^5.1.0"
   }
 }

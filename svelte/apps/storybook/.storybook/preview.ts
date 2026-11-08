@@ -2,6 +2,7 @@ import type { Preview } from '@storybook/svelte-vite';
 import '@microcks/deep-ink/styles.css';
 import '@microcks-deep-ink/storybook-shared/foundations.css';
 import './docs/docs.css';
+import './svelte-syntax';
 import { theme } from './theme';
 import { DocsPage } from './docs/DocsPage';
 import ThemeFrame from './ThemeFrame.svelte';

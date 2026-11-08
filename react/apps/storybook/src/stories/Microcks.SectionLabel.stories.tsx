@@ -17,7 +17,7 @@ export const Uses: StoryObj = {
         <SectionLabel as="label" htmlFor="sl-url">Mock URL</SectionLabel>
         <input id="sl-url" className="input" readOnly value="https://microcks.acme.io/rest/API+Pastry/2.0" />
       </div>
-      <SectionLabel as="h2" size="sm">1 · Operation</SectionLabel>
+      <SectionLabel as="h3" size="sm">1 · Operation</SectionLabel>
       <SectionLabel size="sm" weight="regular" split>
         <span>3 operations</span>
         <span>calls · 7 d</span>
