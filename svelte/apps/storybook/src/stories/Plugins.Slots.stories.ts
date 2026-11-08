@@ -1,3 +1,4 @@
+import exampleSource0 from './Plugins.Slots.svelte?raw';
 import type { Meta, StoryObj } from '@storybook/svelte-vite';
 import { registerDemoPlugin } from '@microcks-deep-ink/storybook-shared/demo-plugin';
 import Slots from './Plugins.Slots.svelte';
@@ -6,6 +7,6 @@ const meta = { title: 'Plugins/Slots', parameters: itemParams(['plugin-slot', 'p
 export default meta;
 type Story = StoryObj<typeof meta>;
 const story = (variant: string, name: string): Story => ({ name, render: (() => ({ Component: Slots, props: { variant } })) as never });
-export const CockpitWidgets = story('CockpitWidgets', 'cockpit.widgets');
-export const ConditionalTab = story('ConditionalTab', 'service.tabs (when)');
-export const NavContribution = story('NavContribution', 'nav.items');
+export const CockpitWidgets = { ...(story('CockpitWidgets', 'cockpit.widgets')), parameters: { docs: { source: { code: exampleSource0, language: 'svelte', type: 'code' } } } };
+export const ConditionalTab = { ...(story('ConditionalTab', 'service.tabs (when)')), parameters: { docs: { source: { code: exampleSource0, language: 'svelte', type: 'code' } } } };
+export const NavContribution = { ...(story('NavContribution', 'nav.items')), parameters: { docs: { source: { code: exampleSource0, language: 'svelte', type: 'code' } } } };

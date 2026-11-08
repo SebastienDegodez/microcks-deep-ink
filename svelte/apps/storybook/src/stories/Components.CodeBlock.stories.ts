@@ -1,3 +1,17 @@
+import exampleSource0 from './Components.CodeBlock/Default.svelte?raw';
+import exampleSource1 from './Components.CodeBlock/ExcerptWithTabs.svelte?raw';
+import exampleSource2 from './Components.CodeBlock/WithBadLine.svelte?raw';
+import exampleSource3 from './Components.CodeBlock/Scrolling.svelte?raw';
+import exampleSource4 from './Components.CodeBlock/FormatTabs.svelte?raw';
+import exampleSource5 from './Components.CodeBlock/Plain.svelte?raw';
+import exampleSource6 from './Components.CodeBlock/Numbered.svelte?raw';
+import exampleSource7 from './Components.CodeBlock/ChangedLines.svelte?raw';
+import exampleSource8 from './Components.CodeBlock/SchemaMismatch.svelte?raw';
+import exampleSource9 from './Components.CodeBlock/RegionLabel.svelte?raw';
+import exampleSource10 from './Components.CodeBlock/SourceRaisedHeader.svelte?raw';
+import exampleSource11 from './Components.CodeBlock/Bare.svelte?raw';
+import exampleSource12 from './Components.CodeBlock/PreOnly.svelte?raw';
+import exampleSource13 from './Components.CodeBlock/Playground.svelte?raw';
 import DefaultComposition from './Components.CodeBlock/Default.svelte';
 import ExcerptWithTabsComposition from './Components.CodeBlock/ExcerptWithTabs.svelte';
 import WithBadLineComposition from './Components.CodeBlock/WithBadLine.svelte';
@@ -25,61 +39,73 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
+  parameters: { docs: { source: { code: exampleSource0, language: 'svelte', type: 'code' } } },
   render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `startLine` for an excerpt, and `tabsLabel` to name the tab list. */
 export const ExcerptWithTabs: StoryObj<typeof ExcerptWithTabsComposition> = {
+  parameters: { docs: { source: { code: exampleSource1, language: 'svelte', type: 'code' } } },
   name: 'Excerpt and named tabs',
   render: () => ({ Component: ExcerptWithTabsComposition, props: {} })
 };
 
 export const WithBadLine: StoryObj<typeof WithBadLineComposition> = {
+  parameters: { docs: { source: { code: exampleSource2, language: 'svelte', type: 'code' } } },
   name: 'Failing line',
   render: () => ({ Component: WithBadLineComposition, props: {} })
 };
 
 export const Scrolling: StoryObj<typeof ScrollingComposition> = {
+  parameters: { docs: { source: { code: exampleSource3, language: 'svelte', type: 'code' } } },
   render: () => ({ Component: ScrollingComposition, props: {} })
 };
 
 export const FormatTabs: StoryObj<typeof FormatTabsComposition> = {
+  parameters: { docs: { source: { code: exampleSource4, language: 'svelte', type: 'code' } } },
   name: 'Format tabs',
   render: () => ({ Component: FormatTabsComposition, props: {} })
 };
 
 export const Plain: StoryObj<typeof PlainComposition> = {
+  parameters: { docs: { source: { code: exampleSource5, language: 'svelte', type: 'code' } } },
   render: () => ({ Component: PlainComposition, props: {} })
 };
 
 export const Numbered: StoryObj<typeof NumberedComposition> = {
+  parameters: { docs: { source: { code: exampleSource6, language: 'svelte', type: 'code' } } },
   name: 'Line numbers and inline note',
   render: () => ({ Component: NumberedComposition, props: {} })
 };
 
 export const ChangedLines: StoryObj<typeof ChangedLinesComposition> = {
+  parameters: { docs: { source: { code: exampleSource7, language: 'svelte', type: 'code' } } },
   name: 'Changed lines (diff)',
   render: () => ({ Component: ChangedLinesComposition, props: {} })
 };
 
 export const SchemaMismatch: StoryObj<typeof SchemaMismatchComposition> = {
+  parameters: { docs: { source: { code: exampleSource8, language: 'svelte', type: 'code' } } },
   name: 'Narrow gutter, danger frame (schema mismatch)',
   render: () => ({ Component: SchemaMismatchComposition, props: {} })
 };
 
 export const RegionLabel: StoryObj<typeof RegionLabelComposition> = {
+  parameters: { docs: { source: { code: exampleSource9, language: 'svelte', type: 'code' } } },
   name: 'Same caption, distinct region names',
   render: () => ({ Component: RegionLabelComposition, props: {} })
 };
 
 /** `source` at the end of the header, the caption as an uppercase title, on the raised fill (`headerTone="raised"`). */
 export const SourceRaisedHeader: StoryObj<typeof SourceRaisedHeaderComposition> = {
+  parameters: { docs: { source: { code: exampleSource10, language: 'svelte', type: 'code' } } },
   name: 'Source and raised header',
   render: () => ({ Component: SourceRaisedHeaderComposition, props: {} })
 };
 
 /** `bare`: no frame, no header, no padding, for a `<pre>` inside a card. `focusable="overflow"`: a region only when it scrolls. */
 export const Bare: StoryObj<typeof BareComposition> = {
+  parameters: { docs: { source: { code: exampleSource11, language: 'svelte', type: 'code' } } },
   render: () => ({ Component: BareComposition, props: {} })
 };
 
@@ -90,12 +116,14 @@ export const Bare: StoryObj<typeof BareComposition> = {
  * keyboard reachable, WCAG 2.1.1; use `overflow` when it may scroll).
  */
 export const PreOnly: StoryObj<typeof PreOnlyComposition> = {
+  parameters: { docs: { source: { code: exampleSource12, language: 'svelte', type: 'code' } } },
   name: 'Pre only (frame="none")',
   render: () => ({ Component: PreOnlyComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof PlaygroundComposition> = {
+  parameters: { docs: { source: { code: exampleSource13, language: 'svelte', type: 'code' } } },
   args: { code: 'GET /pastries/{name}\nAccept: application/json\n\n200 OK\n{ "name": "Millefeuille", "price": 3.9 }', language: 'http', caption: 'Request and response', label: 'Example exchange', copy: true, variant: 'framed', lineNumbers: true, startLine: 1, gutter: 'wide', tone: undefined, maxHeight: 240, source: 'pastry.http', headerTone: undefined, focusable: 'always', frame: 'figure' },
   argTypes: {
     variant: { control: 'inline-radio', options: ['framed', 'plain', 'bare'] },

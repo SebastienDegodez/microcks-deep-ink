@@ -1,3 +1,6 @@
+import exampleSource0 from './Components.Skeleton/Default.svelte?raw';
+import exampleSource1 from './Components.Skeleton/Widths.svelte?raw';
+import exampleSource2 from './Components.Skeleton/Playground.svelte?raw';
 import DefaultComposition from './Components.Skeleton/Default.svelte';
 import WidthsComposition from './Components.Skeleton/Widths.svelte';
 import PlaygroundComposition from './Components.Skeleton/Playground.svelte';
@@ -13,16 +16,19 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
+  parameters: { docs: { source: { code: exampleSource0, language: 'svelte', type: 'code' } } },
   render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `width` sets the width of the last line or of a single block. */
 export const Widths: StoryObj<typeof WidthsComposition> = {
+  parameters: { docs: { source: { code: exampleSource1, language: 'svelte', type: 'code' } } },
   render: () => ({ Component: WidthsComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof PlaygroundComposition> = {
+  parameters: { docs: { source: { code: exampleSource2, language: 'svelte', type: 'code' } } },
   args: { lines: 3, width: '60%' },
   render: (args) => ({ Component: PlaygroundComposition, props: args })
 };
