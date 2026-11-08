@@ -8,7 +8,46 @@
     "skipLibCheck": true,
     "allowJs": true,
     "esModuleInterop": true,
-    "resolveJsonModule": true
+    "resolveJsonModule": true,
+    "jsx": "react-jsx",
+    "paths": {
+      "@microcks/deep-ink": [
+        "./node_modules/@microcks/deep-ink/dist/index.d.ts"
+      ],
+      "@microcks-deep-ink/plugin-sdk": [
+        "./node_modules/@microcks-deep-ink/plugin-sdk"
+      ],
+      "@microcks-deep-ink/registry/*": [
+        "./node_modules/@microcks-deep-ink/registry/*"
+      ],
+      "react": [
+        "./node_modules/@types/react"
+      ],
+      "react/*": [
+        "./node_modules/@types/react/*"
+      ],
+      "react-dom": [
+        "./node_modules/@types/react-dom"
+      ],
+      "react-dom/*": [
+        "./node_modules/@types/react-dom/*"
+      ],
+      "storybook/manager-api": [
+        "./node_modules/storybook/dist/manager-api/index.d.ts"
+      ],
+      "storybook/theming": [
+        "./node_modules/storybook/dist/theming/index.d.ts"
+      ],
+      "storybook/internal/components": [
+        "./node_modules/storybook/dist/components/index.d.ts"
+      ]
+    }
   },
-  "include": ["src/**/*.ts", "src/**/*.svelte", ".storybook/**/*.ts", "vite.config.ts"]
+  "include": [
+    "src/**/*.ts",
+    "src/**/*.svelte",
+    ".storybook/**/*.ts",
+    "vite.config.ts",
+    ".storybook/**/*.tsx"
+  ]
 }

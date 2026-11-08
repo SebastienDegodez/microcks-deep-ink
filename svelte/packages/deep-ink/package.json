@@ -17,11 +17,19 @@
     "./styles.no-fonts.css": "./dist/styles.no-fonts.css",
     "./package.json": "./package.json"
   },
-  "files": ["dist", "!dist/**/*.spec.*", "!dist/**/*.test.*"],
-  "sideEffects": ["**/*.css"],
+  "files": [
+    "dist",
+    "!dist/**/*.spec.*",
+    "!dist/**/*.test.*"
+  ],
+  "sideEffects": [
+    "**/*.css",
+    "./dist/internal/elements/*.js",
+    "./src/lib/internal/elements/*.js"
+  ],
   "scripts": {
-    "build": "node scripts/build-icons.mjs && node scripts/gen-index.mjs --check && rm -rf dist && svelte-package -i src/lib -o dist && node scripts/build-css.mjs",
-    "check": "node scripts/build-icons.mjs && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+    "build": "node scripts/sync-elements.mjs && node scripts/build-icons.mjs && node scripts/gen-index.mjs --check && rm -rf dist && svelte-package -i src/lib -o dist && node scripts/build-css.mjs",
+    "check": "node scripts/sync-elements.mjs && node scripts/build-icons.mjs && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
     "test": "pnpm build && vitest run --config vitest.config.ts --maxWorkers=2",
     "prepack": "pnpm build",
     "gen:index": "node scripts/gen-index.mjs",

@@ -1,0 +1,1 @@
+<script lang="ts">import { ProjectionPill } from "@microcks/deep-ink"; let { children = "Projection · v2 module", ...args }: { children?: string; title?: string } = $props();</script><ProjectionPill {...args}>{children}</ProjectionPill>

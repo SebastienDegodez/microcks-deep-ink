@@ -6,13 +6,19 @@ import type { LiveIndicatorProps, MethodTagProps, StatusBadgeProps, SummaryStrip
 
 it('exposes the native family and every implemented upstream component', () => {
   expect(Object.keys(api).sort()).toEqual([
-    'AppShell', 'Button', 'ButtonLink', 'Callout', 'Checkbox', 'Chip', 'CodeBlock', 'CommandBar', 'CopyButton',
-    'DataTable', 'DescriptionList', 'Dialog', 'Disclosure', 'EmptyState', 'Exchange', 'ExchangeCard', 'Field',
-    'ICON_NAMES', 'Icon', 'Input', 'Kbd', 'Link', 'LiveIndicator', 'Menu', 'Meter', 'MethodTag', 'OUTCOME_WORD',
-    'PROTOCOL_ATTR', 'Panel', 'Progress', 'ProjectionPill', 'Radio', 'RadioGroup', 'RunMeta', 'RunOrigin', 'RunnerLog',
-    'Segmented', 'Select', 'Skeleton', 'StatusBadge', 'SummaryStrip', 'SummaryStripSep', 'Switch',
-    'THEME_EVENT', 'THEME_STORAGE_KEY', 'TabPanel', 'Tabs', 'Textarea', 'ThemeToggle', 'Tile', 'TileGrid',
-    'getTheme', 'iconSize', 'requireName', 'restoreTheme', 'setTheme', 'sortRows',
+    'AiGhostRow', 'ApiBadge', 'AppShell', 'BarChart', 'Button', 'ButtonLink', 'Callout', 'Checkbox',
+    'Chip', 'CiPanel', 'CodeBlock', 'CommandBar', 'ConformanceBand', 'ConformanceMatrix', 'CopyButton', 'DataTable',
+    'DescriptionList', 'Dialog', 'Disclosure', 'DropZone', 'EmptyState', 'Exchange', 'ExchangeCard', 'FactRow',
+    'Facts', 'Field', 'FilterBar', 'FilterReset', 'FilterRow', 'FilterSearch', 'ICON_NAMES', 'Icon',
+    'Input', 'Kbd', 'Link', 'LiveIndicator', 'Menu', 'Meter', 'MethodTag', 'MockUrl',
+    'OUTCOME_WORD', 'OpPickList', 'OperationList', 'OperationRow', 'PROTOCOL_ATTR', 'Panel', 'PluginSlot', 'Progress',
+    'ProjectionPill', 'Radio', 'RadioGroup', 'ResultBox', 'RunMeta', 'RunOrigin', 'RunProgress', 'RunTarget',
+    'RunnerLog', 'SectionLabel', 'Segmented', 'Select', 'Skeleton', 'SkillList', 'SplitPane', 'SplitPaneMain',
+    'SplitPaneSide', 'StatCard', 'StatGrid', 'StatusBadge', 'StepChecks', 'StepStatus', 'Stepper', 'SummaryStrip',
+    'SummaryStripSep', 'Switch', 'TASK_STATES', 'TASK_TERMINAL', 'THEME_EVENT', 'THEME_STORAGE_KEY', 'TabPanel', 'Tabs',
+    'TaskLanes', 'TaskStateTag', 'TaskTimeline', 'Textarea', 'ThemeToggle', 'Tile', 'TileGrid', 'WorkflowLoom',
+    'cellKey', 'conformanceLabel', 'filesReadyMessage', 'getPluginHost', 'getTheme', 'iconSize', 'isTerminalState', 'requireName',
+    'restoreTheme', 'setTheme', 'snippetFor', 'sortRows',
   ].sort());
 });
 
@@ -47,7 +53,7 @@ const nativeSeparator: SummaryStripSepProps = { title: 'Divider' };
 const incompatibleHandler: MethodTagProps = { method: 'GET', onClick: () => {} };
 // @ts-expect-error Native Svelte uses class, never className.
 const incompatibleClass: StatusBadgeProps = { status: 'never', className: 'custom' };
-// @ts-expect-error StatusBadge label is text; rich context uses a Svelte snippet.
+// @ts-expect-error StatusBadge rich labels are snippets, never React element objects.
 const incompatibleLabel: StatusBadgeProps = { status: 'running', label: { type: 'strong' } };
 // @ts-expect-error The separator is always decorative.
 const accessibleSeparator: SummaryStripSepProps = { 'aria-hidden': false };

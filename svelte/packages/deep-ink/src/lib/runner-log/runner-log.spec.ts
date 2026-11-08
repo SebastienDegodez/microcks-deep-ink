@@ -1,3 +1,4 @@
+import userEvent from '@testing-library/user-event';
 import { render, screen } from '@testing-library/svelte';
 import { createRawSnippet } from 'svelte';
 import { describe, expect, it } from 'vitest';
@@ -34,5 +35,24 @@ describe('RunnerLog', () => {
     expect(screen.getByRole('log', { name: 'Conformance log' }).querySelector('li:last-child .runner-log-text')!.textContent).toBe('second');
     expect(screen.getByText('live · streaming')).toBeTruthy();
     expect(await axeViolations(container)).toEqual([]);
+  });
+});
+
+describe('runner-log parity updates', () => {
+  it('is a log named by its heading, writes levels, and remains keyboard reachable', async () => {
+    const user = userEvent.setup();
+    const { container, rerender } = render(RunnerLog, { status: '2 lines · completed', lines: [
+      { time: '09:10:04', level: 'SEND', text: 'GET /pastries' },
+      { time: '09:10:05', level: 'FAIL', text: 'price', error: true },
+    ] });
+    const log = screen.getByRole('log', { name: 'Runner log' });
+    expect(log.querySelectorAll('li')).toHaveLength(2);
+    expect(log.textContent).toContain('FAIL');
+    expect(log.querySelector('[data-error]')?.getAttribute('data-level')).toBe('FAIL');
+    await user.tab();
+    expect(document.activeElement).toBe(log);
+    expect(await axeViolations(container)).toEqual([]);
+    await rerender({ title: 'Run #118', lines: [{ time: '09:10:06', level: 'WARN', text: 'slow', emphasis: true }] });
+    expect(screen.getByRole('log', { name: 'Run #118' }).querySelector('[data-emphasis]')).toBeTruthy();
   });
 });

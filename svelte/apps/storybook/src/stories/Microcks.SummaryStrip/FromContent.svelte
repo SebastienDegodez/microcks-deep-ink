@@ -1,0 +1,1 @@
+<script>import { SummaryStrip, SummaryStripSep } from '@microcks/deep-ink';</script><SummaryStrip style="max-width:900px"><span class="summary-strip-label">Saved</span><span class="summary-strip-value">URI_PARTS · rule: name</span><SummaryStripSep/><span class="summary-strip-value">delay 0 ms fixed</span><SummaryStripSep/><a href="#/behavior">Edit the behaviour</a></SummaryStrip>

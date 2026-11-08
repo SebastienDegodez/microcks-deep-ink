@@ -1,0 +1,32 @@
+[
+  {
+    "file": "ibm-plex-sans.ttf",
+    "family": "IBM Plex Sans",
+    "weight": "100 900",
+    "sha256": "3b031aa4216174205bd8471f88a49b91f093169e9e87bd5262242bc5967fe2e3"
+  },
+  {
+    "file": "jetbrains-mono-latin-wght-normal.woff2",
+    "family": "JetBrains Mono",
+    "weight": "100 800",
+    "sha256": "18be452724bfdc236c074ca94a249a7f41a86752c7d04ab258ce9ed5651f6a7e"
+  },
+  {
+    "file": "alegreya-sans-sc-latin-400-normal.woff2",
+    "family": "Alegreya Sans SC",
+    "weight": "400",
+    "sha256": "3947636f89fc7ec4d42127bce3d13e824fd754f91dbff4cf2c0cf56637214951"
+  },
+  {
+    "file": "alegreya-sans-sc-latin-500-normal.woff2",
+    "family": "Alegreya Sans SC",
+    "weight": "500",
+    "sha256": "83c3cc6232249869051282f4fefc0b5026549cfe624db3cb8eff4051919c94eb"
+  },
+  {
+    "file": "alegreya-sans-sc-latin-700-normal.woff2",
+    "family": "Alegreya Sans SC",
+    "weight": "700",
+    "sha256": "d04c0ee096b4ca0f8dccc04324766c29b68701db5a14ff0476e98c48d7107a7b"
+  }
+]

@@ -1,0 +1,118 @@
+import { Meta } from '@storybook/addon-docs/blocks';
+
+<Meta title="Getting started" />
+
+# Getting started
+
+`@microcks/deep-ink` is **not on npm**: the package is `private`. You build it from a clone of the Deep Ink repo and link it into your Svelte app.
+
+## Install from a clone
+
+Build the root packages first (tokens, element bundles, registry CSS), then the Svelte workspace:
+
+```bash
+git clone https://github.com/SebastienDegodez/microcks-deep-ink.git
+cd microcks-deep-ink
+pnpm install && pnpm build
+pnpm -C svelte install && pnpm -C svelte build
+```
+
+In your app's `package.json`, point the dependency at the built package (`svelte ^5` is a peer dependency):
+
+```json
+{
+  "dependencies": {
+    "@microcks/deep-ink": "link:../microcks-deep-ink/svelte/packages/deep-ink",
+    "svelte": "^5.57.0"
+  }
+}
+```
+
+### One Svelte with a `link:` dependency
+
+The linked package has its own `node_modules`. Make Vite resolve a single Svelte:
+
+```ts
+// vite.config.ts
+import { defineConfig } from 'vite';
+import { svelte } from '@sveltejs/vite-plugin-svelte';
+
+export default defineConfig({
+  plugins: [svelte()],
+  resolve: { dedupe: ['svelte'] },
+});
+```
+
+The package exports its declarations and Svelte entry point. TypeScript uses
+`moduleResolution: "bundler"`; no React types or runtime are needed.
+
+## Styles
+
+Import the stylesheet **once**, in your entry file, **before** your own CSS:
+
+```ts
+import '@microcks/deep-ink/styles.css';
+import './app.css';
+```
+
+`styles.css` loads the fonts from Google Fonts. If you self-host fonts, import `@microcks/deep-ink/styles.no-fonts.css` instead.
+The components import no CSS themselves.
+
+### Cascade layers
+
+The tokens are unlayered custom properties on `:root`. Everything else sits in two cascade layers:
+
+```css
+@layer deep-ink.base, deep-ink.components;
+```
+
+Unlayered CSS beats any layer, so **your app CSS always wins**, without `!important` and whatever the specificity.
+
+### No prefix
+
+Class names are plain: `.button`, `.tabs`, `.sr-only`. There is no prefix and no `--css-prefix` option: the layers provide the isolation.
+
+## Theming
+
+Dark (Deep Ink) is the default; `data-theme="light"` on `<html>` switches to Paper. The package exports the helpers:
+
+```ts
+import { restoreTheme, setTheme, ThemeToggle } from '@microcks/deep-ink';
+
+restoreTheme();     // at startup: applies the saved theme (localStorage key "microcks-theme")
+setTheme('light');  // sets data-theme, saves it and dispatches "microcks-theme-change"
+```
+
+`<ThemeToggle />` is a ready-made button over the same helpers. To adjust the look, override tokens in your unlayered CSS:
+
+```css
+:root,
+[data-theme='dark'] {
+  --action: #5b8def;
+}
+```
+
+## Use a component
+
+```svelte
+<script>
+  import { Button } from '@microcks/deep-ink';
+</script>
+
+<Button variant="primary">Run test</Button>
+```
+
+## Web Components
+
+Two items remain Web Components, for heavy logic: `<workflow-loom>` (Arazzo workflows) and `<plugin-slot>` (plugin host).
+Their bundles ship in the package and register when you import the Svelte wrappers, `WorkflowLoom` and `PluginSlot`:
+
+```svelte
+<script>
+  import { PluginSlot } from '@microcks/deep-ink';
+</script>
+
+<PluginSlot point="service.tabs" context={{ theme: 'dark' }} />
+```
+
+Everything else, including the command bar, is native Svelte. See the **Elements** section for the props of both wrappers.

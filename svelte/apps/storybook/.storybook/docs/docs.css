@@ -1,0 +1,15 @@
+/* Prism marks method calls in code blocks as `.token.method`, which also matches the MethodTag class (`.method`, layered).
+   Undo the tag look there. Unlayered, so it beats the layer; `:where` keeps the color at zero specificity for the Prism theme. */
+.prismjs .token.method {
+  display: inline;
+  min-width: 0;
+  padding: 0;
+  background: none;
+  border-radius: 0;
+  font: inherit;
+  text-align: inherit;
+  white-space: inherit;
+}
+:where(.prismjs .token.method) {
+  color: inherit;
+}

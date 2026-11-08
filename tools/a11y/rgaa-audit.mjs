@@ -9,6 +9,7 @@
 // Exit codes: 0 no blocking finding, 1 at least one blocking finding (non-compliant criterion), 2 usage error or the
 // audit could not run completely (browser missing, page failed to load). See README.md.
 import { spawn } from 'node:child_process';
+import { storybookJobs } from './storybook-jobs.mjs';
 import { existsSync, mkdirSync, mkdtempSync, readFileSync, readdirSync, rmSync, writeFileSync } from 'node:fs';
 import { homedir, tmpdir } from 'node:os';
 import { basename, dirname, join, resolve } from 'node:path';
@@ -29,6 +30,7 @@ Inputs (at least one):
                           (array of strings/objects, or {"baseUrl","routes":[...]}), or a text file, one URL per line.
   --base-url <url>        Base for relative entries of --urls-from (and for a Storybook index read from disk).
 Options:
+  --include-docs         Also audit MDX/autodocs entries (including native Svelte embedded stories).
   --kind auto|page|story  "story" drops page-level checks (8.x, 9.x, 12.6, 12.7). auto = story when the URL
                           contains iframe.html. Default auto.
   --theme dark,light      Themes to audit (sets localStorage["microcks-theme"], &globals=theme:X for Storybook,
@@ -58,7 +60,7 @@ function parseArgs(argv) {
   const o = {
     urls: [], urlsFrom: null, baseUrl: null, kind: 'auto', themes: ['dark', 'light'], engines: ['a11ylint', 'axe'],
     axeMinImpact: 'serious', knownIssues: null, formats: ['json', 'md'], out: 'a11y-report', includeUntested: false,
-    concurrency: 4, timeout: 30000, settle: 800, limit: 0, browser: null, quiet: false, raw: false,
+    includeDocs: false, concurrency: 4, timeout: 30000, settle: 800, limit: 0, browser: null, quiet: false, raw: false,
   };
   const list = (v) => v.split(',').map((s) => s.trim()).filter(Boolean);
   for (let i = 0; i < argv.length; i++) {
@@ -78,6 +80,7 @@ function parseArgs(argv) {
       case '--known-issues': o.knownIssues = val(); break;
       case '--format': o.formats = list(val()); break;
       case '--out': o.out = val(); break;
+      case '--include-docs': o.includeDocs = true; break;
       case '--include-untested': o.includeUntested = true; break;
       case '--concurrency': o.concurrency = Math.max(1, Number(val())); break;
       case '--timeout': o.timeout = Number(val()); break;
@@ -119,9 +122,7 @@ async function resolveJobs(o) {
     const base = o.baseUrl || (fromUrl ? o.urlsFrom.replace(/[^/]*$/, '') : null);
     const rel = (u) => (/^[a-z][a-z0-9+.-]*:/i.test(u) ? u : new URL(u, base || pathToFileURL(process.cwd() + '/').href).href);
     if (data && data.entries) {
-      for (const e of Object.values(data.entries)) {
-        if (e.type === 'story') jobs.push({ url: rel(`iframe.html?id=${encodeURIComponent(e.id)}&viewMode=story`), label: e.id, kind: 'story' });
-      }
+      jobs.push(...storybookJobs(data.entries, rel, o.includeDocs));
     } else {
       const routes = Array.isArray(data) ? data : data?.routes ?? text.split('\n').map((s) => s.trim()).filter(Boolean);
       const routeBase = data?.baseUrl || base;

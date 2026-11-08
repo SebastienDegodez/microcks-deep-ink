@@ -1,0 +1,1 @@
+<script>import { Tile } from '@microcks/deep-ink';</script><div style="max-width:360px"><Tile title="Pastry concierge" meta="A2A Agent Card · spec 1.0"><p>No link: the tile is a plain article.</p></Tile></div>

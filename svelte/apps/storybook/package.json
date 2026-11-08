@@ -4,16 +4,26 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "storybook": "storybook dev -p 6008 --disable-telemetry",
-    "build-storybook": "storybook build -o storybook-static --disable-telemetry",
-    "check": "svelte-check --tsconfig ./tsconfig.json --fail-on-warnings"
+    "storybook": "node scripts/gen-exports.mjs && storybook dev -p 6008 --disable-telemetry",
+    "build-storybook": "node scripts/gen-exports.mjs && storybook build -o storybook-static --disable-telemetry",
+    "check": "node scripts/gen-exports.mjs && svelte-check --tsconfig ./tsconfig.json --fail-on-warnings",
+    "gen:exports": "node scripts/gen-exports.mjs"
   },
   "dependencies": {
+    "@microcks-deep-ink/storybook-shared": "link:../../../apps/shared",
     "@microcks/deep-ink": "workspace:*"
   },
   "devDependencies": {
+    "@microcks-deep-ink/plugin-sdk": "link:../../../packages/plugin-sdk",
+    "@microcks-deep-ink/registry": "link:../../../packages/registry",
+    "@storybook/addon-a11y": "^10.6.5",
+    "@storybook/addon-docs": "^10.6.5",
     "@storybook/svelte-vite": "^10.6.5",
     "@sveltejs/vite-plugin-svelte": "^7.3.1",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "react": "^19.3.1",
+    "react-dom": "^19.3.1",
     "storybook": "^10.6.5",
     "svelte": "^5.57.0",
     "svelte-check": "^4.7.8",

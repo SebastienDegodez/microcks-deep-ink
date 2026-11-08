@@ -1,0 +1,1 @@
+<script lang="ts">import { ExchangeCard } from '@microcks/deep-ink'; import type { ComponentProps } from 'svelte'; let args: ComponentProps<typeof ExchangeCard> = $props();</script><ExchangeCard {...args}/>

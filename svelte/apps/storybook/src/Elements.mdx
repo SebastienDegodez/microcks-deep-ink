@@ -1,0 +1,48 @@
+import * as Showcase from './stories/Docs.Showcase.stories';
+import { Meta, Canvas, Source } from '@storybook/addon-docs/blocks';
+import { TierItems } from '../.storybook/docs/TierItems';
+
+<Meta title="Usage/Elements" />
+
+> **DEMO.** A design system proposal for the Microcks UI v2, not an official release. `@microcks/deep-ink` is not published on npm: see **Getting started**.
+
+# Elements
+
+The **element** tier holds the only two Web Components, kept where the logic is heavy:
+
+- `<workflow-loom>` draws an Arazzo workflow: lanes per source, steps, data threads, `retry` and `end` actions, and a built-in table view.
+- `<plugin-slot>` is the plugin host: it renders the contributions of installed plugins for an extension point, in light DOM.
+
+Each ships as a self-contained bundle inside the package, with a thin Svelte wrapper, `WorkflowLoom` and `PluginSlot`.
+Importing the wrapper registers the element: there is nothing else to load.
+The wrappers set the properties (`steps`, `context`) and turn the element events into callbacks (`onstepselect`, `onlensselect`).
+
+## When to use it
+
+- `WorkflowLoom` to show an Arazzo workflow, at design time or for a run. Pass `tableToggle={false}` when the page already has its own Steps table.
+- `PluginSlot` at each extension point of the shell (`nav.items`, `service.tabs`, `cockpit.widgets`...). Its children are the fallback when no plugin contributes.
+- In Svelte, always use the wrappers rather than the bare tags. In plain HTML or Angular, copy the bundle with the item.
+
+## Items
+
+The list is generated at build time from the registry (`packages/registry/items/*.json`, `"tier": "element"`). Each name links to its Docs page.
+
+<TierItems tier="element" caption="Element items in the registry" />
+
+## Examples
+
+Live examples rendered with `@microcks/deep-ink`; the code below each one is the full source.
+
+### A two-step workflow
+
+`WorkflowLoom` with one source, two steps and two data threads. Focus the loom, move with the arrow keys and press Enter to select a step.
+
+<Canvas of={Showcase.UpdatePrice} sourceState="none" />
+<Source code={updatePriceCode} language="html" dark />
+
+### An extension point with a fallback
+
+`PluginSlot` inside a `Panel`. No plugin contributes to `service.header.badges` here, so the slot shows its children.
+
+<Canvas of={Showcase.ServicePanels} sourceState="none" />
+<Source code={servicePanelsCode} language="html" dark />

@@ -31,13 +31,30 @@ Import `styles.no-fonts.css` instead to load fonts yourself. CSS is explicit,
 never implicitly injected by components; both CSS files are copied unchanged
 from the root registry build. No registry/React renderer enters the runtime.
 
+## Shared web elements
+
+`PluginSlot` and `WorkflowLoom` wrap the same self-registering Web Component
+bundles as the other framework packages. Their custom elements are defined only
+in the browser; server rendering emits the element hosts safely. `PluginSlot`
+accepts a `point`, optional `context` and `outlined`, and a fallback snippet.
+`getPluginHost()` accesses the global plugin registry. `WorkflowLoom` accepts
+its sources, steps and threads as properties; `onstepselect` and
+`onlensselect` receive event detail objects. Both expose `bind:element`.
+
+Before building this package, build the root `packages/plugin-sdk`,
+`packages/tokens`, `packages/registry`, and `packages/core` packages. The Svelte
+build copies the core element bundles into its own distribution; consumers do
+not need the core package at runtime.
+
 ## Public family
 
 The native family below is retained alongside all upstream exports: `AppShell`,
 `Callout`, `Checkbox`, `Radio`, `RadioGroup`, `Chip`, `CodeBlock`, `CommandBar`,
 `CopyButton`, `DescriptionList`, `Dialog`, `Disclosure`, `EmptyState`, `Exchange`,
 `ExchangeCard`, `Field`, `Icon`, `Input`, `Textarea`, `Kbd`, `Link`, `Menu`, `Panel`,
-`Meter`, `Progress`, `ProjectionPill`, `RunMeta`, `RunOrigin`, `RunnerLog`,
+`Meter`, `Progress`, `ProjectionPill`, `RunMeta`, `RunOrigin`, `RunProgress`,
+`RunTarget`, `RunnerLog`, `StepStatus`, `StepChecks`, `Stepper`, `CiPanel`,
+`DropZone`, `TaskStateTag`, `TaskTimeline`, `TaskLanes`,
 `Segmented`, `Select`, `Skeleton`, `Switch`, `DataTable`, `Tabs`, `TabPanel`,
 `ThemeToggle`, `Tile` and `TileGrid`, plus their public type/helper modules.
 
@@ -49,6 +66,17 @@ and `bind:value` / `bind:checked` for controlled state. DOM event capture uses
 `Switch` separately forwards native `onchange` events and calls
 `oncheckedchange` with the boolean state.
 `RowLinkProps` uses `class` for its custom link snippet.
+
+Run components share the reference DOM/classes and accessible naming. `RunProgress`
+keeps the current step's polite announcement outside its busy bar, and reads its
+`note` before the `action` control. Pass rich content through named snippets
+(`action`, `note`, `pill`, `hint`, `footnote`, `status`) or snippet-valued step/meta
+items. `Stepper` writes completion text and marks the current ordered-list item.
+`TaskTimeline` uses `onselectnode(index | undefined)` to select/clear a node;
+`TaskLanes` is a keyboard-reachable comparison region. `DropZone` uses a real,
+labelled file input and `onfiles(File[])`; drag/drop only enhances that input.
+It resets the picker after selection so the same files can be chosen again.
+The `accept` attribute is a picker hint, not file validation.
 
 The legacy `button/` and `method-tag/` component paths are forwarding wrappers,
 not separate implementations. Internal consumers render the canonical native
@@ -64,7 +92,7 @@ intentional native accessibility/safety differences are asserted: a busy
 | `Button` | Native action, default `type="button"`; variants primary/secondary/outline/ghost/link/dashed/danger; sizes xs/sm/compact/tile/md/lg; tone danger/link; confirm, all registry icon names, iconOnly, loading/disabled; children snippet; bind:element |
 | `ButtonLink` | Same styling/contents on a native navigation anchor; href/target/rel and native handlers; bind:element; loading/disabled (or aria-disabled=true) removes href/tab stop and suppresses activation |
 | `MethodTag` | `method`, `protocol` REST/SOAP/EVENT/gRPC/GRAPHQL/DIRECT/A2A; `size` md/sm/xs; nonzero `minWidth` in px; zero/omitted retains host/default width, matching the React reference |
-| `StatusBadge` | `status` conformant/failed/partial/running/never; `size` md/sm/lg; `shape` circled/bare; text `label`; `children` snippet for supplemental rich context |
+| `StatusBadge` | `status` conformant/failed/partial/running/never; `size` md/sm/lg; `shape` circled/bare; text/snippet `label`; `children` snippet for supplemental rich context |
 | `LiveIndicator` | `label`, `paused`, `pausedLabel`; `size` md/sm/compact/lg; `variant` pill/inline/box/dot; `pulse` (default true) |
 | `SummaryStrip` | `parts` with `text: string \| Snippet`, `kind` value/label, `sep`; `gap` normal/roomy; `values` secondary/text; `variant` default/canvas; `lineHeight` fixed/inherit; free `children` snippet |
 | `SummaryStripSep` | Decorative separator; native span attributes except `aria-hidden`, which is always true |
@@ -163,3 +191,25 @@ existing element.
    normalised markup (`test/parity/normalise.ts`); see `packages/registry/parity/README.md`.
 
 Build: `pnpm build` at the repo root, then `pnpm -C svelte install --frozen-lockfile && pnpm -C svelte build`.
+
+## Charts and split layouts
+
+`BarChart` exports `BarChartBar`, `BarChartTable`, `BarTone` and `BarChartProps`.
+Pass `onselect(id)` and update `selectedId` to control selection. Arrow keys,
+Home and End move focus between selectable bars, skipping future slots. The
+required `table` is the visually hidden text equivalent; `overlay` is a
+Svelte snippet. Heights, ticks, grid lines and selection styles match React.
+
+`ConformanceBand` exports `OperationResult`, `conformanceLabel` and
+`ConformanceBandProps`; labelled bands are named lists, unlabelled bands are
+named images. `ConformanceMatrix` exports the `MatrixColumn`, `MatrixGroup`,
+row/cell/footer types and `cellKey`. Use `onselectcell(key)` with `selectedKey`;
+pressing the selected finished cell clears it. Queued/running cells are text.
+
+`SplitPane`, `SplitPaneSide` and `SplitPaneMain` preserve reading order,
+landmarks and the React wrapping layout's width/gap/alignment variables.
+The React SplitPane API has no resize handle or keyboard/pointer resizing.
+
+`StatusBadge.label` accepts a text value or snippet for a formatted replacement
+word; blank text retains the default status word. `children` remains available
+for supplemental context.

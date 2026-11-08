@@ -11,6 +11,12 @@ on:
     branches: [main]
     paths:
       - "svelte/**"
+      - "react/apps/storybook/src/**"
+      - "react/packages/deep-ink/**"
+      - "react/pnpm-lock.yaml"
+      - "apps/shared/**"
+      - "packages/core/**"
+      - "packages/plugin-sdk/**"
       - "packages/tokens/**"
       - "packages/registry/src/css/**"
       - "packages/registry/src/angular/icon.ts"
@@ -23,6 +29,12 @@ on:
   pull_request:
     paths:
       - "svelte/**"
+      - "react/apps/storybook/src/**"
+      - "react/packages/deep-ink/**"
+      - "react/pnpm-lock.yaml"
+      - "apps/shared/**"
+      - "packages/core/**"
+      - "packages/plugin-sdk/**"
       - "packages/tokens/**"
       - "packages/registry/src/css/**"
       - "packages/registry/src/angular/icon.ts"
@@ -54,17 +66,36 @@ jobs:
           cache-dependency-path: |
             pnpm-lock.yaml
             svelte/pnpm-lock.yaml
-      # CSS needs only tokens and the registry CSS build. Button icons are parsed from the
-      # registry's icon.ts literals at build time: no full registry, Stencil or Angular runtime.
-      - run: pnpm install --frozen-lockfile --filter @microcks-deep-ink/tokens --filter @microcks-deep-ink/registry
+            react/pnpm-lock.yaml
+      # The reference React package needs the two element bundles; docs/Copy read the built registry; stories import apps/shared.
+      - run: pnpm install --frozen-lockfile --filter @microcks-deep-ink/core... --filter @microcks-deep-ink/registry... --filter @microcks-deep-ink/storybook-shared...
       - run: pnpm --filter @microcks-deep-ink/tokens build
-      - run: pnpm --filter @microcks-deep-ink/registry exec node scripts/build-css.mjs
+      - run: pnpm --filter @microcks-deep-ink/plugin-sdk build
+      - run: pnpm --filter @microcks-deep-ink/core build
+      - run: pnpm --filter @microcks-deep-ink/registry build
+      - run: pnpm -C react install --frozen-lockfile
+      - run: pnpm -C react build
       - run: pnpm -C svelte install --frozen-lockfile
       - run: pnpm -C svelte lint
       - run: pnpm -C svelte build
       - run: pnpm -C svelte check
       - run: pnpm -C svelte test
       - run: pnpm -C svelte check:boundaries
+      - run: node --test apps/shared/copy-panel/model.test.ts tools/a11y/storybook-jobs.test.mjs
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m pip install -r svelte/test/parity/requirements.txt
+      - run: python -m playwright install --with-deps chromium
+      - run: pnpm -C svelte parity
+      - uses: actions/upload-artifact@v7
+        if: always()
+        with:
+          name: svelte-story-parity
+          path: |
+            svelte/test/parity/.artifacts/report.json
+            svelte/test/parity/.artifacts/*.png
+          if-no-files-found: warn
       - run: pnpm -C svelte build:storybook
       - uses: actions/upload-artifact@v7
         if: inputs.storybook

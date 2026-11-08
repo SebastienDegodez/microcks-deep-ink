@@ -10,6 +10,7 @@ import {
   asFramework,
   buildPanelItems,
   cliCommands,
+  importSnippet,
   type CopyFramework,
   type DeepInkParameter,
   type PanelFile,
@@ -143,7 +144,7 @@ function SourceView({ file, announce }: { file: PanelFile; announce: (m: string)
   );
 }
 
-export function CopyPanel({ framework: defaultFramework }: { framework: CopyFramework }) {
+export function CopyPanel({ framework: defaultFramework, exports = {} }: { framework: CopyFramework; exports?: Record<string, string[]> }) {
   const param = useParameter<DeepInkParameter | undefined>('deepInk', undefined);
   const [globals] = useGlobals();
   const theme = useTheme() as unknown as {
@@ -179,6 +180,7 @@ export function CopyPanel({ framework: defaultFramework }: { framework: CopyFram
   const current = panelItems.find((p) => p.item.name === itemName) ?? panelItems[0];
   const fileTabs = current?.files ?? [];
   const file = fileTabs.find((f) => f.id === fileId) ?? fileTabs[0];
+  const frameworks: CopyFramework[] = defaultFramework === 'svelte' ? ['svelte', 'html'] : FRAMEWORKS;
   const commands = cliCommands(requested.filter((n) => !unknown.includes(n)), framework);
   const uid = useId();
 
@@ -205,7 +207,7 @@ export function CopyPanel({ framework: defaultFramework }: { framework: CopyFram
           <header className="dc-head">
             <h2 className="dc-h">Copy {FRAMEWORK_LABEL[framework]} source</h2>
             <div role="group" aria-label="Framework" className="dc-seg">
-              {FRAMEWORKS.map((f) => (
+              {frameworks.map((f) => (
                 <button key={f} type="button" className="dc-seg-btn" aria-pressed={f === framework} onClick={() => setChosen(f)}>
                   {FRAMEWORK_LABEL[f]}
                 </button>
@@ -219,6 +221,15 @@ export function CopyPanel({ framework: defaultFramework }: { framework: CopyFram
             </p>
           ) : null}
 
+          {framework === 'svelte' ? (
+            <section aria-labelledby={`${uid}-use`} className="dc-sec">
+              <h3 id={`${uid}-use`} className="dc-h3">Import</h3>
+              <p className="dc-meta"><code>@microcks/deep-ink</code> · peer dependency <code>svelte ^5</code> · build it from a clone</p>
+              <CopyButton value={importSnippet(requested, exports)} label="import" announce={announce} />
+              <pre className="dc-pre" tabIndex={0} aria-label="Import to write"><code>{importSnippet(requested, exports)}</code></pre>
+              <p className="dc-meta">Nothing to copy: native components and styles come from the package. Switch to HTML for recipes and CSS.</p>
+            </section>
+          ) : <>
           <section aria-labelledby={`${uid}-cli`} className="dc-sec">
             <h3 id={`${uid}-cli`} className="dc-h3">
               CLI
@@ -262,6 +273,7 @@ export function CopyPanel({ framework: defaultFramework }: { framework: CopyFram
               )}
             </section>
           ) : null}
+          </>}
         </>
       )}
     </div>
