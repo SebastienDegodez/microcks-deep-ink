@@ -6,6 +6,7 @@ import exampleSource4 from './Components.Button/States.svelte?raw';
 import exampleSource5 from './Components.Button/AsLink.svelte?raw';
 import exampleSource6 from './Components.Button/CardFooter.svelte?raw';
 import exampleSource7 from './Components.Button/Playground.svelte?raw';
+import exampleSource8 from './Components.Button/CssCheck.svelte?raw';
 import DefaultComposition from './Components.Button/Default.svelte';
 import FormFooterComposition from './Components.Button/FormFooter.svelte';
 import SizesComposition from './Components.Button/Sizes.svelte';
@@ -14,8 +15,10 @@ import StatesComposition from './Components.Button/States.svelte';
 import AsLinkComposition from './Components.Button/AsLink.svelte';
 import CardFooterComposition from './Components.Button/CardFooter.svelte';
 import PlaygroundComposition from './Components.Button/Playground.svelte';
+import CssCheckComposition from './Components.Button/CssCheck.svelte';
 import type { Meta, StoryObj } from '@storybook/svelte-vite';
 import { Button, ButtonLink } from '@microcks/deep-ink';
+import { expect } from 'storybook/test';
 import { itemParams } from './_meta';
 
 
@@ -28,6 +31,17 @@ export default {
 export const Default: StoryObj<typeof DefaultComposition> = {
   parameters: { docs: { source: { code: exampleSource0, language: 'svelte', type: 'code' } } },
   render: () => ({ Component: DefaultComposition, props: {} })
+};
+
+/** Proves the preview loads `@microcks/deep-ink/styles.css`: an unstyled button would not be 40px / 44px high. */
+export const CssCheck: StoryObj<typeof CssCheckComposition> = {
+  tags: ['ai-generated', '!dev', '!autodocs', '!manifest'],
+  parameters: { docs: { source: { code: exampleSource8, language: 'svelte', type: 'code' } } },
+  render: () => ({ Component: CssCheckComposition, props: {} }),
+  play: async ({ canvas }) => {
+    await expect(getComputedStyle(canvas.getByRole('button', { name: 'Run test' })).height).toBe('40px');
+    await expect(getComputedStyle(canvas.getByRole('button', { name: 'Launch test' })).height).toBe('44px');
+  },
 };
 
 export const FormFooter: StoryObj<typeof FormFooterComposition> = {
