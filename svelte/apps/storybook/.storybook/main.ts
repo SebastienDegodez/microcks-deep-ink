@@ -1,5 +1,4 @@
 import type { StorybookConfig } from '@storybook/svelte-vite';
-import { storySourcePlugin } from '../scripts/story-source.mjs';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.ts'],
@@ -8,7 +7,6 @@ const config: StorybookConfig = {
   core: { disableTelemetry: true },
   viteFinal: async (cfg) => ({
     ...cfg,
-    plugins: [...(cfg.plugins ?? []), storySourcePlugin()],
     base: process.env.SB_BASE ?? cfg.base,
     resolve: {
       ...cfg.resolve,

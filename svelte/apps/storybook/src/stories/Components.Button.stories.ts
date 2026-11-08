@@ -1,3 +1,11 @@
+import exampleSource0 from './Components.Button/Default.svelte?raw';
+import exampleSource1 from './Components.Button/FormFooter.svelte?raw';
+import exampleSource2 from './Components.Button/Sizes.svelte?raw';
+import exampleSource3 from './Components.Button/WithIcon.svelte?raw';
+import exampleSource4 from './Components.Button/States.svelte?raw';
+import exampleSource5 from './Components.Button/AsLink.svelte?raw';
+import exampleSource6 from './Components.Button/CardFooter.svelte?raw';
+import exampleSource7 from './Components.Button/Playground.svelte?raw';
 import DefaultComposition from './Components.Button/Default.svelte';
 import FormFooterComposition from './Components.Button/FormFooter.svelte';
 import SizesComposition from './Components.Button/Sizes.svelte';
@@ -18,39 +26,47 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
+  parameters: { docs: { source: { code: exampleSource0, language: 'svelte', type: 'code' } } },
   render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 export const FormFooter: StoryObj<typeof FormFooterComposition> = {
+  parameters: { docs: { source: { code: exampleSource1, language: 'svelte', type: 'code' } } },
   name: 'Form footer, inline delete',
   render: () => ({ Component: FormFooterComposition, props: {} })
 };
 
 export const Sizes: StoryObj<typeof SizesComposition> = {
+  parameters: { docs: { source: { code: exampleSource2, language: 'svelte', type: 'code' } } },
   render: () => ({ Component: SizesComposition, props: {} })
 };
 
 export const WithIcon: StoryObj<typeof WithIconComposition> = {
+  parameters: { docs: { source: { code: exampleSource3, language: 'svelte', type: 'code' } } },
   name: 'Icons',
   render: () => ({ Component: WithIconComposition, props: {} })
 };
 
 export const States: StoryObj<typeof StatesComposition> = {
+  parameters: { docs: { source: { code: exampleSource4, language: 'svelte', type: 'code' } } },
   render: () => ({ Component: StatesComposition, props: {} })
 };
 
 export const AsLink: StoryObj<typeof AsLinkComposition> = {
+  parameters: { docs: { source: { code: exampleSource5, language: 'svelte', type: 'code' } } },
   name: 'As a link',
   render: () => ({ Component: AsLinkComposition, props: {} })
 };
 
 export const CardFooter: StoryObj<typeof CardFooterComposition> = {
+  parameters: { docs: { source: { code: exampleSource6, language: 'svelte', type: 'code' } } },
   name: 'Card footer (tile, 36px)',
   render: () => ({ Component: CardFooterComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof PlaygroundComposition> = {
+  parameters: { docs: { source: { code: exampleSource7, language: 'svelte', type: 'code' } } },
   args: { children: 'Run test', variant: 'primary', size: 'md', icon: undefined, iconOnly: false, loading: false, confirm: false, disabled: false },
   argTypes: {
     variant: { control: 'select', options: ['primary', 'secondary', 'outline', 'ghost', 'link', 'dashed', 'danger'] },

@@ -1,3 +1,4 @@
+import exampleSource0 from './Foundations/SpacingAndRadius.svelte?raw';
 import type { Meta, StoryObj } from '@storybook/svelte-vite';
 import { itemParams } from './_meta';
 import Composition from './Foundations/SpacingAndRadius.svelte';
@@ -7,4 +8,5 @@ export default {
   parameters: itemParams(['tokens'], 'Space follows a 4px rhythm. The shape of a corner has a meaning: controls are near-square, badges are tight, panels and nodes are rounder, only pills are round.', { controls: { disable: true } }),
 } satisfies Meta;
 
-export const Default: StoryObj = { render: () => ({ Component: Composition, props: {} }) };
+export const Default: StoryObj = {
+  parameters: { docs: { source: { code: exampleSource0, language: 'svelte', type: 'code' } } }, render: () => ({ Component: Composition, props: {} }) };

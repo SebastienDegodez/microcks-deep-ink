@@ -1,3 +1,8 @@
+import exampleSource0 from './Components.CommandBar/Default.svelte?raw';
+import exampleSource1 from './Components.CommandBar/NoShortcut.svelte?raw';
+import exampleSource2 from './Components.CommandBar/Modal.svelte?raw';
+import exampleSource3 from './Components.CommandBar/Playground.svelte?raw';
+import exampleSource4 from './Components.CommandBar/Inline.svelte?raw';
 import DefaultComposition from './Components.CommandBar/Default.svelte';
 import NoShortcutComposition from './Components.CommandBar/NoShortcut.svelte';
 import ModalComposition from './Components.CommandBar/Modal.svelte';
@@ -17,27 +22,32 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
+  parameters: { docs: { source: { code: exampleSource0, language: 'svelte', type: 'code' } } },
   name: 'Inline',
   render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `globalShortcut={false}` turns Ctrl/\u2318K off, for a page that has its own shortcut. */
 export const NoShortcut: StoryObj<typeof NoShortcutComposition> = {
+  parameters: { docs: { source: { code: exampleSource1, language: 'svelte', type: 'code' } } },
   name: 'Without the global shortcut',
   render: () => ({ Component: NoShortcutComposition, props: {} })
 };
 
 export const Modal: StoryObj<typeof ModalComposition> = {
+  parameters: { docs: { source: { code: exampleSource2, language: 'svelte', type: 'code' } } },
   render: () => ({ Component: ModalComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof PlaygroundComposition> = {
+  parameters: { docs: { source: { code: exampleSource3, language: 'svelte', type: 'code' } } },
   args: { items: COMMANDS, inline: true, label: 'Command bar', placeholder: 'Type a command or a service', globalShortcut: false },
   render: (args) => ({ Component: PlaygroundComposition, props: args })
 };
 
 export const Inline: StoryObj<typeof InlineComposition> = {
+  parameters: { docs: { source: { code: exampleSource4, language: 'svelte', type: 'code' } } },
   name: 'Inline (long placeholder)',
   render: () => ({ Component: InlineComposition, props: {} })
 };

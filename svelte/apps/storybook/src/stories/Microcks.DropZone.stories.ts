@@ -1,3 +1,6 @@
+import exampleSource0 from './Microcks.DropZone/Default.svelte?raw';
+import exampleSource1 from './Microcks.DropZone/Single.svelte?raw';
+import exampleSource2 from './Microcks.DropZone/Small.svelte?raw';
 import SmallExample from './Microcks.DropZone/Small.svelte';
 import SingleExample from './Microcks.DropZone/Single.svelte';
 import DefaultExample from './Microcks.DropZone/Default.svelte';
@@ -13,21 +16,29 @@ export default {
 } satisfies Meta<typeof DropZone>;
 
 export const Default: StoryObj<typeof DefaultExample> = {
+  parameters: { docs: { source: { code: exampleSource0, language: 'svelte', type: 'code' } } },
   render: () => ({ Component: DefaultExample, props: {} }),
 };
 
 export const Single: StoryObj = {
+  parameters: { docs: { source: { code: exampleSource1, language: 'svelte', type: 'code' } } },
   name: 'Single file',
   render: () => ({ Component: SingleExample, props: {} }),
 };
 
 export const Small: StoryObj = {
+  parameters: { docs: { source: { code: exampleSource2, language: 'svelte', type: 'code' } } },
   name: 'Small, in a panel (Admin snapshots)',
   render: () => ({ Component: SmallExample, props: {} }),
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof DropZone> = {
+  parameters: { docs: { source: { code: `<script>
+  import { DropZone } from '@microcks/deep-ink';
+</script>
+
+<DropZone heading="Drop a contract here" hint="OpenAPI, AsyncAPI, gRPC or GraphQL." accept=".yaml,.yml,.json" multiple chooseLabel="Choose files" size="md" />`, language: 'svelte', type: 'code' } } },
   args: { heading: 'Drop a contract here', hint: 'OpenAPI, AsyncAPI, gRPC or GraphQL.', accept: '.yaml,.yml,.json', multiple: true, chooseLabel: 'Choose files', size: 'md' },
   argTypes: { size: { control: 'inline-radio', options: ['md', 'sm'] }, onfiles: { table: { disable: true } } },
 };

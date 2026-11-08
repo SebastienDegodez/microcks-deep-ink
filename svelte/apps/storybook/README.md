@@ -1,14 +1,14 @@
 # Svelte Storybook examples
 
-**Show code** displays the actual `.svelte` composition used by each story,
-including local helper files when an example spans multiple components.
-Direct package-component stories show Svelte markup generated from the current
-Controls, with raw snippet arguments translated into Svelte snippet blocks.
+**Show code** uses Storybook's standard `parameters.docs.source` API.
+Composition stories import their `.svelte` example via Vite's standard `?raw`
+import; examples spanning several files include their local helpers.
+Direct package-component stories declare a Svelte usage example for their
+default arguments.
 
-The `story-source` Vite plugin reads these files at build time, watches them in
-development, and sets `parameters.docs.source`. No separate example copy is
-maintained. Unsupported story renderers fail the build instead of exposing the
-internal CSF adapter as usage code.
+There is no custom Storybook plugin, source transformer or renderer.
+When adding a story, declare its native `docs.source.code` alongside its args
+and render function so the internal CSF adapter is not shown as usage code.
 
 Run `pnpm -C svelte/apps/storybook test` for source-display regression tests.
 After building Storybook, `python scripts/check-story-source.py` (from this

@@ -4,79 +4,103 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import { parse } from 'svelte/compiler';
-import { componentSource } from '../.storybook/component-source.mjs';
-import { storySources, storySourcePlugin } from './story-source.mjs';
+import ts from 'typescript';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '..');
 const stories = resolve(root, 'src/stories');
-const sources = (file) => storySources(readFileSync(resolve(stories, file), 'utf8'), resolve(stories, file));
 
-test('Button > Icons shows the actual Svelte Button example', () => {
-  const { code } = sources('Components.Button.stories.ts').get('WithIcon');
-  assert.match(code, /import \{ Button/);
+function unwrap(node) {
+  while (node && (ts.isAsExpression(node) || ts.isSatisfiesExpression(node) || ts.isParenthesizedExpression(node))) node = node.expression;
+  return node;
+}
+
+function property(node, name) {
+  node = unwrap(node);
+  if (node && ts.isCallExpression(node)) return property(node.arguments[0], name);
+  return node && ts.isObjectLiteralExpression(node)
+    ? node.properties.find((entry) => ts.isPropertyAssignment(entry) && entry.name.getText() === name)?.initializer
+    : undefined;
+}
+
+function sources(file) {
+  const text = readFileSync(resolve(stories, file), 'utf8');
+  const ast = ts.createSourceFile(file, text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const raw = new Map();
+  for (const statement of ast.statements.filter(ts.isImportDeclaration)) {
+    const path = statement.moduleSpecifier.text;
+    if (path.endsWith('.svelte?raw')) {
+      raw.set(statement.importClause.name.text, readFileSync(resolve(stories, path.slice(0, -4)), 'utf8'));
+    }
+  }
+  function value(node) {
+    node = unwrap(node);
+    assert.ok(node, `${file}: missing native docs.source`);
+    if (ts.isStringLiteral(node) || ts.isNoSubstitutionTemplateLiteral(node)) return node.text;
+    if (ts.isIdentifier(node)) {
+      assert.ok(raw.has(node.text), `${file}: expected standard ?raw import for ${node.text}`);
+      return raw.get(node.text);
+    }
+    if (ts.isCallExpression(node) && ts.isPropertyAccessExpression(node.expression) && node.expression.name.text === 'join') {
+      const array = node.expression.expression;
+      assert.ok(ts.isArrayLiteralExpression(array));
+      return array.elements.map(value).join(value(node.arguments[0]));
+    }
+    assert.fail(`${file}: unsupported source expression ${node.getText()}`);
+  }
+  const result = new Map();
+  for (const statement of ast.statements.filter(ts.isVariableStatement)) {
+    if (!statement.modifiers?.some((entry) => entry.kind === ts.SyntaxKind.ExportKeyword)) continue;
+    for (const declaration of statement.declarationList.declarations) {
+      const source = property(property(property(declaration.initializer, 'parameters'), 'docs'), 'source');
+      assert.equal(value(property(source, 'language')), 'svelte');
+      assert.equal(value(property(source, 'type')), 'code');
+      result.set(declaration.name.text, value(property(source, 'code')));
+    }
+  }
+  return result;
+}
+
+test('Button Icons source contains real Svelte Button usage, not its CSF adapter', () => {
+  const code = sources('Components.Button.stories.ts').get('WithIcon');
   assert.match(code, /<Button variant="primary" icon="play">Run test<\/Button>/);
   assert.match(code, /<Button iconOnly icon="trash" aria-label="Delete example"/);
   assert.doesNotMatch(code, /WithIconComposition|Component:|render: \(\)/);
   parse(code);
 });
 
-test('nested compositions include the helper code instead of only <Demo />', () => {
-  const { code } = sources('Components.Dialog.stories.ts').get('Default');
+test('nested compositions include their actual helper files', () => {
+  const code = sources('Components.Dialog.stories.ts').get('Default');
   assert.match(code, /<!-- Components.Dialog\/Default.svelte -->/);
   assert.match(code, /<!-- Components.Dialog\/Demo.svelte -->/);
   assert.match(code, /<Dialog /);
 });
 
-test('helper-created stories resolve their native Svelte composition', () => {
-  assert.match(sources('Elements.WorkflowLoom.stories.ts').get('Default').code, /<WorkflowLoom/);
-  assert.match(sources('Microcks.ApiBadge.stories.ts').get('Small').code, /<ApiBadge size="sm"/);
+test('direct stories use native Svelte snippets and the public package', () => {
+  const code = sources('Microcks.StatCard.stories.ts').get('Playground');
+  assert.match(code, /import \{ StatCard \} from '@microcks\/deep-ink'/);
+  assert.match(code, /{#snippet title\(\)}Conformance{\/snippet}/);
+  assert.match(code, /Across 12 operations/);
+  parse(code);
+  parse(sources('Microcks.ApiBadge.stories.ts').get('Playground'));
 });
 
-test('direct component source responds to Controls and escapes Svelte text', () => {
-  const source = componentSource('Button', { variant: 'primary', disabled: false, children: 'Save <" {', icon: undefined });
-  assert.match(source, /<Button variant="primary" disabled=\{false\}>Save &lt;" &#123;<\/Button>/);
-  assert.doesNotMatch(source, /icon=/);
-  assert.match(componentSource('Button', { variant: 'danger', disabled: true }), /variant="danger" disabled/);
-  parse(source);
-  parse(componentSource('Input', { value: 'a "quoted" {value} & b' }));
-});
-
-test('raw snippet args become Svelte content and named snippets, not callbacks', () => {
-  const { component, snippets } = sources('Microcks.StatCard.stories.ts').get('Playground');
-  assert.equal(component, 'StatCard');
-  const source = componentSource(component, {
-    title: () => {}, value: () => {}, unit: () => {}, children: () => {}, tone: 'success',
-  }, snippets);
-  assert.match(source, /{#snippet title\(\)}Conformance{\/snippet}/);
-  assert.match(source, /Across 12 operations/);
-  assert.doesNotMatch(source, /console\.log/);
-  parse(source);
-});
-
-test('every current story gets real composition source or a public component example', () => {
+test('every story declares native source metadata', () => {
   let count = 0;
   for (const file of readdirSync(stories).filter((name) => name.endsWith('.stories.ts'))) {
-    for (const [name, source] of sources(file)) {
-      assert.ok(source.code?.includes('<') || source.component, `${file}: ${name}`);
+    for (const [name, code] of sources(file)) {
+      assert.ok(code.includes('<'), `${file}: ${name}`);
+      assert.doesNotMatch(code, /Component:/, `${file}: ${name}`);
       count++;
     }
   }
-  assert.equal(count, 307);
+  assert.ok(count >= 307, `Expected all current examples, got ${count}`);
 });
 
-test('plugin watches example files and preserves existing story parameters', () => {
-  const watched = [];
-  const file = resolve(stories, 'Components.Button.stories.ts');
-  const plugin = storySourcePlugin();
-  const result = plugin.transform.call({ addWatchFile: (path) => watched.push(path) }, readFileSync(file, 'utf8'), file);
-  assert.ok(watched.some((path) => path.endsWith('WithIcon.svelte')));
-  assert.match(result.code, /WithIcon.parameters = \{ \.\.\.WithIcon.parameters/);
-  assert.match(result.code, /language: 'svelte'/);
-  assert.match(result.code, /type: 'code'/);
-  assert.match(result.code, /<Button variant=\\"primary\\"/);
-  assert.equal(plugin.transform('', '/some/component.ts'), undefined);
-});
-
-test('unresolvable examples fail explicitly instead of showing the CSF adapter', () => {
-  assert.throws(() => storySources('export const Broken = {};', 'broken.stories.ts'), /No example component/);
+test('Show code does not require custom Storybook plugins or transforms', () => {
+  const main = readFileSync(resolve(root, '.storybook/main.ts'), 'utf8');
+  assert.doesNotMatch(main, /storySourcePlugin|deep-ink-svelte-story-source/);
+  for (const file of readdirSync(stories).filter((name) => name.endsWith('.stories.ts'))) {
+    const code = readFileSync(resolve(stories, file), 'utf8');
+    assert.doesNotMatch(code, /__deepInkComponentSource|transform:/, file);
+  }
 });

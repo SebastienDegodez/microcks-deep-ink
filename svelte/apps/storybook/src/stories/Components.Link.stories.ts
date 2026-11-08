@@ -1,3 +1,5 @@
+import exampleSource0 from './Components.Link/Default.svelte?raw';
+import exampleSource1 from './Components.Link/Playground.svelte?raw';
 import DefaultComposition from './Components.Link/Default.svelte';
 import PlaygroundComposition from './Components.Link/Playground.svelte';
 import type { Meta, StoryObj } from '@storybook/svelte-vite';
@@ -12,11 +14,13 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
+  parameters: { docs: { source: { code: exampleSource0, language: 'svelte', type: 'code' } } },
   render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof PlaygroundComposition> = {
+  parameters: { docs: { source: { code: exampleSource1, language: 'svelte', type: 'code' } } },
   args: { href: '#docs', children: 'Read the Arazzo guide', external: false },
   render: (args) => ({ Component: PlaygroundComposition, props: args })
 };

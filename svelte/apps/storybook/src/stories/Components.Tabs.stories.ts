@@ -1,3 +1,11 @@
+import exampleSource0 from './Components.Tabs/Default.svelte?raw';
+import exampleSource1 from './Components.Tabs/Demo.svelte?raw';
+import exampleSource2 from './Components.Tabs/IdPrefix.svelte?raw';
+import exampleSource3 from './Components.Tabs/ManualActivation.svelte?raw';
+import exampleSource4 from './Components.Tabs/WithDisabledTab.svelte?raw';
+import exampleSource5 from './Components.Tabs/LiveAndAlert.svelte?raw';
+import exampleSource6 from './Components.Tabs/CardWithIcons.svelte?raw';
+import exampleSource7 from './Components.Tabs/Playground.svelte?raw';
 import DefaultComposition from './Components.Tabs/Default.svelte';
 import IdPrefixComposition from './Components.Tabs/IdPrefix.svelte';
 import ManualActivationComposition from './Components.Tabs/ManualActivation.svelte';
@@ -23,39 +31,44 @@ export default {
 } satisfies Meta;
 
 export const Default: StoryObj<typeof DefaultComposition> = {
+  parameters: { docs: { source: { code: ["<!-- Components.Tabs/Default.svelte -->", exampleSource0, "<!-- Components.Tabs/Demo.svelte -->", exampleSource1].join('\n\n'), language: 'svelte', type: 'code' } } },
   render: () => ({ Component: DefaultComposition, props: {} })
 };
 
 /** `idPrefix` keeps tab and panel ids unique when two tab lists share a page. */
 export const IdPrefix: StoryObj<typeof IdPrefixComposition> = {
+  parameters: { docs: { source: { code: exampleSource2, language: 'svelte', type: 'code' } } },
   name: 'Two lists on a page (idPrefix)',
   render: () => ({ Component: IdPrefixComposition, props: {} })
 };
 
 export const ManualActivation: StoryObj<typeof ManualActivationComposition> = {
   name: 'Manual activation',
-  parameters: { docs: { description: { story: 'Arrow keys only move focus; Enter or Space selects. Use it when a panel is expensive to load.' } } },
+  parameters: { docs: {source: { code: ["<!-- Components.Tabs/ManualActivation.svelte -->", exampleSource3, "<!-- Components.Tabs/Demo.svelte -->", exampleSource1].join('\n\n'), language: 'svelte', type: 'code' },  description: { story: 'Arrow keys only move focus; Enter or Space selects. Use it when a panel is expensive to load.' } } },
   render: () => ({ Component: ManualActivationComposition, props: {} })
 };
 
 export const WithDisabledTab: StoryObj<typeof WithDisabledTabComposition> = {
+  parameters: { docs: { source: { code: exampleSource4, language: 'svelte', type: 'code' } } },
   name: 'Disabled tab',
   render: () => ({ Component: WithDisabledTabComposition, props: {} })
 };
 
 export const LiveAndAlert: StoryObj<typeof LiveAndAlertComposition> = {
   name: 'Live dot and warning count',
-  parameters: { docs: { description: { story: 'A live dot before the label (read "Tasks, live") and a warning pill (read "Users, 2 pending changes").' } } },
+  parameters: { docs: {source: { code: exampleSource5, language: 'svelte', type: 'code' },  description: { story: 'A live dot before the label (read "Tasks, live") and a warning pill (read "Users, 2 pending changes").' } } },
   render: () => ({ Component: LiveAndAlertComposition, props: {} })
 };
 
 export const CardWithIcons: StoryObj<typeof CardWithIconsComposition> = {
+  parameters: { docs: { source: { code: exampleSource6, language: 'svelte', type: 'code' } } },
   name: 'Card variant, icons and hints (Import)',
   render: () => ({ Component: CardWithIconsComposition, props: {} })
 };
 
 /** Interactive: every prop of the component is a control in the Controls panel. */
 export const Playground: StoryObj<typeof PlaygroundComposition> = {
+  parameters: { docs: { source: { code: exampleSource7, language: 'svelte', type: 'code' } } },
   args: { label: 'Service sections', value: 'operations', activation: 'automatic', variant: 'line', idPrefix: 'pg', items: [{ id: 'operations', label: 'Operations', count: 8 }, { id: 'tests', label: 'Tests', alert: 1, alertLabel: 'failing' }, { id: 'contract', label: 'Contract' }] },
   argTypes: {
     activation: { control: 'inline-radio', options: ['automatic', 'manual'] },
