@@ -17,6 +17,9 @@
       "@microcks-deep-ink/plugin-sdk": [
         "./node_modules/@microcks-deep-ink/plugin-sdk"
       ],
+      "@microcks-deep-ink/registry/*": [
+        "./node_modules/@microcks-deep-ink/registry/*"
+      ],
       "react": [
         "./node_modules/@types/react"
       ],
