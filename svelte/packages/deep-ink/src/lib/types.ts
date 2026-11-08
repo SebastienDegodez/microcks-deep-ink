@@ -51,7 +51,7 @@ export interface MethodTagProps extends SpanAttributes {
 export interface StatusBadgeProps extends SpanAttributes {
   status: Outcome;
   /** Blank labels fall back to the outcome word. */
-  label?: string;
+  label?: string | Snippet;
   size?: 'md' | 'sm' | 'lg';
   shape?: 'circled' | 'bare';
   /** Supplement the mandatory visible word with formatted context. */

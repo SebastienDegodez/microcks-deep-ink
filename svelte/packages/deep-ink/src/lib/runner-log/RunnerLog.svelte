@@ -1,33 +1,10 @@
-
-<script lang="ts" module>
-  export type RunnerLevel = 'INFO' | 'SEND' | 'PASS' | 'FAIL' | 'WARN' | 'WAIT';
-  export interface RunnerLine {
-    time: string;
-    level: RunnerLevel;
-    text: string;
-    /** Written in the main text colour. */
-    emphasis?: boolean;
-    /** Written in the danger colour. */
-    error?: boolean;
-  }
-</script>
-
 <script lang="ts">
-  import type { Snippet } from 'svelte';
-  import type { HTMLAttributes } from 'svelte/elements';
-  import { eventProps, type NativeHandlers } from '../event-props';
+  import type { RunnerLogProps } from './runner-log.js';
+  import { eventProps } from '../event-props';
 
-  type Props = Omit<HTMLAttributes<HTMLElement>, 'class' | 'title' | 'children'> &
-    NativeHandlers<HTMLElement> & {
-    /** Visible heading, also the name of the log. */
-    title?: string;
-    /** End of the header: a LiveIndicator or "12 lines · completed". */
-    status?: string | Snippet;
-    lines: RunnerLine[];
-    class?: string;
-  };
 
-  let { title = 'Runner log', status, lines, class: cssClass, ...rest }: Props = $props();
+
+  let { title = 'Runner log', status, lines, class: cssClass, ...rest }: RunnerLogProps = $props();
 
   const id = $props.id();
 </script>

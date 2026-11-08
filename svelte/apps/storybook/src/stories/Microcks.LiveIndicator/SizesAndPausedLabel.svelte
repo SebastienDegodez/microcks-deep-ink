@@ -1,0 +1,1 @@
+<script>import { LiveIndicator } from "@microcks/deep-ink";</script><div class="inline"><LiveIndicator size="sm"/><LiveIndicator variant="inline"/><LiveIndicator variant="dot" label="live task"/><LiveIndicator paused pausedLabel="paused · 2 new calls"/></div>

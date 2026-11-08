@@ -1,7 +1,7 @@
 // Framework-neutral model of the Copy panel: resolves registry items, their files and the CLI commands.
 // No React and no Storybook import here, so both Storybooks (and tests) can share it.
 
-export type CopyFramework = 'react' | 'angular' | 'html';
+export type CopyFramework = 'react' | 'angular' | 'html' | 'svelte';
 
 export interface RegistryFile {
   target: string;
@@ -18,11 +18,11 @@ export interface RegistryItem {
   description: string;
   version: string;
   registryDependencies: string[];
-  npmDependencies?: { react?: string[]; angular?: string[] };
+  npmDependencies?: { react?: string[]; angular?: string[]; svelte?: string[] };
   elements?: string[];
   a11y: { pattern: string; keyboard: string[][]; aria: string[]; rgaa: string[]; wcag: string[]; notes?: string };
   stories?: string[];
-  files: Record<CopyFramework, RegistryFile[]>;
+  files: Partial<Record<CopyFramework, RegistryFile[]>>;
   css: RegistryFile[];
 }
 
@@ -135,10 +135,22 @@ export function cliCommands(requested: readonly string[], framework: CopyFramewo
 
 /** True when a story framework value is one the panel knows. */
 export function asFramework(value: unknown, fallback: CopyFramework): CopyFramework {
-  return value === 'react' || value === 'angular' || value === 'html' ? value : fallback;
+  return value === 'react' || value === 'angular' || value === 'html' || value === 'svelte' ? value : fallback;
 }
 
-export const FRAMEWORK_LABEL: Record<CopyFramework, string> = { react: 'React', angular: 'Angular', html: 'HTML' };
+export const FRAMEWORK_LABEL: Record<CopyFramework, string> = { react: 'React', angular: 'Angular', html: 'HTML', svelte: 'Svelte' };
 
 /** Long files (compiled element bundles) are previewed, but always copied whole. */
 export const PREVIEW_LIMIT = 6000;
+
+/** Public package imports, derived from the built barrel rather than a hard-coded component list. */
+export function importSnippet(items: readonly string[], exports: Record<string, string[]>): string {
+  const names = items.flatMap((item) => {
+    const values = exports[item] ?? [];
+    const components = values.filter((name) => /^[A-Z]/.test(name));
+    return components.length ? components : values;
+  });
+  const unique = [...new Set(names)];
+  const list = unique.length > 4 ? `{\n  ${unique.join(',\n  ')},\n}` : `{ ${unique.join(', ')} }`;
+  return `import '@microcks/deep-ink/styles.css'; // once, in your entry file\nimport ${list} from '@microcks/deep-ink';`;
+}

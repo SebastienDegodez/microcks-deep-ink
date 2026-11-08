@@ -17,6 +17,7 @@
     "smoke:package": "node scripts/smoke-package.mjs",
     "test:button-parity": "pnpm build && node test/button-parity/run.mjs",
     "lint": "pnpm -r --if-present lint",
-    "publint": "pnpm -r --if-present publint"
+    "publint": "pnpm -r --if-present publint",
+    "parity": "node test/parity/run.mjs"
   }
 }

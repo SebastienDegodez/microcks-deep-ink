@@ -1,0 +1,1 @@
+<script>import { MethodTag } from "@microcks/deep-ink";</script><div class="inline">{#each ["GET", "POST", "PUT", "PATCH", "DELETE"] as m (m)}<MethodTag method={m}/>{/each}<MethodTag method="SUBSCRIBE" protocol="EVENT"/><MethodTag method="PUBLISH" protocol="EVENT"/></div>

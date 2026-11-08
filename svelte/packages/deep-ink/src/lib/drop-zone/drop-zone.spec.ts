@@ -1,0 +1,92 @@
+import { fireEvent, render, screen } from '@testing-library/svelte';
+import userEvent from '@testing-library/user-event';
+import { tick } from 'svelte';
+import { describe, expect, it, vi } from 'vitest';
+import { axeViolations } from '../../../test/axe';
+import DropZone from './DropZone.svelte';
+import Fixture from './_Fixture.svelte';
+import { filesReadyMessage } from './messages';
+const file = (name: string) => new File(['x'], name, { type: 'application/json' });
+describe('DropZone', () => {
+  it('exposes a real labelled file input, reachable by keyboard', async () => {
+    const user = userEvent.setup();
+    render(DropZone, { heading: 'Drop a contract', hint: 'OpenAPI, AsyncAPI', onfiles: vi.fn() });
+    const input = screen.getByLabelText<HTMLInputElement>('Choose files');
+    expect(input.type).toBe('file');
+    expect(input.getAttribute('aria-describedby')).toBeTruthy();
+    expect(input.className).toContain('sr-only');
+    expect(input.tabIndex).not.toBe(-1);
+    await user.tab();
+    expect(document.activeElement).toBe(input);
+  });
+  it('announces ready files, resets the input, and can upload the same file twice', async () => {
+    const user = userEvent.setup();
+    const onfiles = vi.fn();
+    render(DropZone, { heading: 'Drop', hint: 'hint', onfiles });
+    const input = screen.getByLabelText<HTMLInputElement>('Choose files');
+    const files = [file('a.json'), file('b.json')];
+    await user.upload(input, files);
+    expect(onfiles).toHaveBeenCalledWith(files);
+    expect(screen.getByRole('status').textContent).toBe('2 files ready');
+    expect(input.value).toBe('');
+    await user.upload(input, files);
+    expect(onfiles).toHaveBeenCalledTimes(2);
+  });
+  it('accepts dropped files, prevents browser navigation and keeps dragging inside the zone', async () => {
+    const onfiles = vi.fn();
+    const { container } = render(DropZone, { heading: 'Drop', hint: 'hint', onfiles });
+    const zone = screen.getByRole('group');
+    await fireEvent.dragOver(zone);
+    expect(zone.hasAttribute('data-dragging')).toBe(true);
+    const leave = new Event('dragleave');
+    Object.defineProperty(leave, 'relatedTarget', { value: container.querySelector('.drop-zone-icon') });
+    zone.dispatchEvent(leave);
+    await tick();
+    expect(zone.hasAttribute('data-dragging')).toBe(true);
+    await fireEvent.dragLeave(zone, { relatedTarget: null });
+    expect(zone.hasAttribute('data-dragging')).toBe(false);
+    const drop = new Event('drop', { cancelable: true });
+    Object.defineProperty(drop, 'dataTransfer', { value: { files: [file('c.json')] } });
+    zone.dispatchEvent(drop);
+    await tick();
+    expect(drop.defaultPrevented).toBe(true);
+    expect(zone.hasAttribute('data-dragging')).toBe(false);
+    expect(onfiles).toHaveBeenCalledTimes(1);
+    expect(screen.getByRole('status').textContent).toBe('1 file ready');
+  });
+  it('ignores empty input/drop and reads the latest callback', async () => {
+    const first = vi.fn(), next = vi.fn();
+    const { rerender } = render(DropZone, { heading: 'Drop', hint: 'hint', onfiles: first });
+    await fireEvent.change(screen.getByLabelText('Choose files'), { target: { files: [] } });
+    await fireEvent.drop(screen.getByRole('group'));
+    expect(first).not.toHaveBeenCalled();
+    expect(screen.getByRole('status').hasAttribute('data-empty')).toBe(true);
+    await rerender({ onfiles: next });
+    await fireEvent.drop(screen.getByRole('group'), { dataTransfer: { files: [file('next.json')] } });
+    expect(next).toHaveBeenCalledTimes(1);
+    expect(first).not.toHaveBeenCalled();
+  });
+  it('removes drag listeners on unmount', async () => {
+    const onfiles = vi.fn();
+    const { unmount } = render(DropZone, { heading: 'Drop', hint: 'hint', onfiles });
+    const zone = screen.getByRole('group');
+    unmount();
+    await fireEvent.drop(zone, { dataTransfer: { files: [file('a.json')] } });
+    expect(onfiles).not.toHaveBeenCalled();
+  });
+  it('formats the live message', () => {
+    expect(filesReadyMessage(1)).toBe('1 file ready');
+    expect(filesReadyMessage(3)).toBe('3 files ready');
+  });
+  it('small: secondary picker, rich hint, extra actions and single file', async () => {
+    const { container } = render(Fixture);
+    expect(screen.getByRole('group', { name: 'Drop a snapshot here' }).getAttribute('data-size')).toBe('sm');
+    expect(screen.getByText('Choose a file').getAttribute('data-variant')).toBe('secondary');
+    expect(screen.getByRole('button', { name: 'Use a sample snapshot' })).toBeTruthy();
+    const input = screen.getByLabelText<HTMLInputElement>('Choose a file');
+    expect(input.multiple).toBe(false);
+    expect(input.accept).toBe('.json');
+    expect(container.querySelector('.drop-zone-icon svg')?.getAttribute('width')).toBe('28');
+    expect(await axeViolations(container)).toEqual([]);
+  });
+});

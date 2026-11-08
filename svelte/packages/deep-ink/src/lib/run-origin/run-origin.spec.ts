@@ -17,3 +17,17 @@ describe('RunOrigin', () => {
     expect(words).toEqual(['UI', 'API', 'Mock URL']);
   });
 });
+
+describe('run-origin parity updates', () => {
+  it.each([['ui', 'UI'], ['api', 'API'], ['mock-url', 'Mock URL'], ['session', 'Session']] as const)('writes %s', (origin, word) => {
+    const { container } = render(RunOrigin, { origin });
+    expect(container.querySelector('.run-origin')?.textContent).toBe(word);
+    expect(container.querySelector('.run-origin')?.getAttribute('data-origin')).toBe(origin);
+  });
+  it('shows session IDs only for sessions', async () => {
+    const { container, rerender } = render(RunOrigin, { origin: 'session', sessionId: 's-7f3a' });
+    expect(container.querySelector('code')?.textContent).toBe('s-7f3a');
+    await rerender({ origin: 'api' });
+    expect(container.querySelector('code')).toBeNull();
+  });
+});

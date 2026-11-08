@@ -39,7 +39,7 @@ assert.deepEqual(Object.keys(manifest.peerDependencies), ['svelte']);
 scan(join(library, 'src/lib'));
 scan(join(library, 'dist'));
 scan(join(workspace, 'apps/storybook/src'));
-scan(join(workspace, 'apps/storybook/.storybook'));
+// Docs and manager are Storybook tooling (React internally); user stories remain native.
 for (const app of readdirSync(join(workspace, 'apps'))) {
   const path = join(workspace, 'apps', app, 'package.json');
   if (existsSync(path)) {

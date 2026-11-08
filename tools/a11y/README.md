@@ -133,3 +133,10 @@ make a gate unusable. `build-a11ylint.mjs` stubs the Node-only modules; `src/col
 A skill can call `node tools/a11y/rgaa-audit.mjs --url <url> --format json --out <dir> --quiet`, read `<dir>/rgaa-report.json`,
 and answer from `summary.criteria` (status per criterion) and `pages[].criteria[].findings` (elements and fix hints).
 Always report `not-tested-automatically` as "not tested", never as "ok".
+
+### Storybook docs pages
+
+Story-only discovery is unchanged. Add `--include-docs` to audit MDX/autodocs
+entries too, for example `--urls-from svelte/apps/storybook/storybook-static/index.json
+--base-url http://localhost:6008/ --include-docs`. Native Svelte stories embedded in
+MDX render through Storybook's docs runtime; no framework-specific discovery is needed.

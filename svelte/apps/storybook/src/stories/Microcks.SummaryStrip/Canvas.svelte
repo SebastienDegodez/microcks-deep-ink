@@ -1,0 +1,1 @@
+<script>import { SummaryStrip } from '@microcks/deep-ink';</script><SummaryStrip role="note" aria-label="Test setup" variant="canvas" style="max-width:900px" parts={[{ text: 'Setup', kind: 'label' }, { text: 'https://agents.acme.io/concierge' }, { text: 'JSON-RPC 2.0', sep: true }]}/>

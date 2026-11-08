@@ -13,5 +13,5 @@
 
 <span {...rest} class={['status', cssClass]} data-status={status} data-size={size} data-shape={shape}>
   <Glyph name={icons[shape][known]} size={iconSize} />
-  <span>{label?.trim() ? label : OUTCOME_WORD[known]}{@render children?.()}</span>
+  <span>{#if typeof label === 'function'}{@render label()}{:else}{label?.trim() ? label : OUTCOME_WORD[known]}{/if}{@render children?.()}</span>
 </span>

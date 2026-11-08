@@ -4,7 +4,7 @@ import tseslint from 'typescript-eslint';
 import svelteConfig from './svelte.config.js';
 
 export default [
-  { ignores: ['dist/**'] },
+  { ignores: ['dist/**', 'src/lib/internal/elements/**'] },
   ...tseslint.configs.recommended,
   ...svelte.configs.recommended,
   {

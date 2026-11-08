@@ -11,7 +11,8 @@ Native Svelte 5 `Button`, `ButtonLink`, `MethodTag`, `StatusBadge`, `LiveIndicat
 `SummaryStrip` and `SummaryStripSep`, plus every implemented upstream component
 (forms, navigation, tables, dialogs, application shell and presentational leaves).
 Declarations and layered shared CSS remain framework-isolated. The Svelte/Vite
-Storybook retains the 69 native-family stories. No Svelte demo is implemented
+Storybook mirrors the React Microcks taxonomy for native component examples,
+including charts, conformance bands/matrices and split layouts. No Svelte demo is implemented
 here; remaining registry items are listed by `pnpm -C svelte/packages/deep-ink pending`.
 See [the package README](packages/deep-ink/README.md).
 

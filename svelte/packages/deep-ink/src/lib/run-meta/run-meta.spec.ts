@@ -28,3 +28,13 @@ describe('RunMeta', () => {
     expect(await axeViolations(container)).toEqual([]);
   });
 });
+
+describe('run-meta parity updates', () => {
+  it('accepts snippet terms/values/detail and preserves native dl attributes', () => {
+    const text = createRawSnippet(() => ({ render: () => '<span>Duration</span>' }));
+    const { container } = render(RunMeta, { items: [{ id: 'duration', term: text, value: 0, kind: 'text', detail: text }], class: 'extra', id: 'meta' });
+    expect(container.querySelector('dl.extra')?.id).toBe('meta');
+    expect(container.querySelector('dd')?.textContent).toBe('0');
+    expect(container.querySelector('[data-kind]')).toBeNull();
+  });
+});
