@@ -3,6 +3,8 @@ import { describe, expect, it } from 'vitest';
 import { axeViolations } from '../../../test/axe';
 import RunProgress from './RunProgress.svelte';
 import Fixture from './_Fixture.svelte';
+/** The non-empty text nodes that are direct children of `el`. */
+const texts = (el: Element) => [...el.childNodes].filter((n) => n.nodeType === Node.TEXT_NODE && n.textContent !== '').map((n) => n.textContent);
 describe('RunProgress', () => {
   it('names the section/bar, writes counts and announces the current step outside busy content', async () => {
     const { container } = render(Fixture);
@@ -25,5 +27,9 @@ describe('RunProgress', () => {
     expect(await axeViolations(container)).toEqual([]);
     await rerender({ busy: false, now: undefined, counts: [] });
     expect(container.querySelector('[aria-busy], [aria-live], .run-progress-foot')).toBeNull();
+  });
+  it('writes the total as "/" then the number', () => {
+    const { container } = render(Fixture);
+    expect(texts(container.querySelector('.run-progress-total')!)).toEqual(['/', '7']);
   });
 });

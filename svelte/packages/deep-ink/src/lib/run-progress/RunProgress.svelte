@@ -4,9 +4,10 @@
   let { label = 'Progress', busy = false, done, total, caption, nowLabel, now, segments, counts, action, note, gap, class: cssClass, style, ...rest }: RunProgressProps = $props();
   const COUNT_ICON = { pass: 'check', fail: 'cross', warn: 'warning', pending: 'circle' } as const;
 </script>
+{#snippet textNode(text?: string)}{text}{/snippet}
 <section {...rest} aria-label={label} class={['run-progress', cssClass].filter(Boolean).join(' ')} style={gap !== undefined ? `${style ?? ''}; --run-gap: ${gap}px` : style}>
   <div class="run-progress-top">
-    <p class="run-progress-count"><span class="run-progress-done">{done}<span class="run-progress-total">/{total}</span></span><span class="run-progress-caption">{caption}</span></p>
+    <p class="run-progress-count"><span class="run-progress-done">{done}<span class="run-progress-total">{@render textNode('/')}{total}</span></span><span class="run-progress-caption">{caption}</span></p>
     {#if now !== undefined}<div class="run-progress-now" aria-live="polite">{#if nowLabel}<span class="run-progress-now-label">{nowLabel}</span>{/if}<span class="run-progress-now-value">{now}</span></div>{/if}
   </div>
   <div class="run-progress-bar" role="img" aria-label={`${done} of ${total} ${caption}`} aria-busy={busy || undefined}>{#each segments as segment, i (i)}<span data-seg={segment}></span>{/each}</div>
