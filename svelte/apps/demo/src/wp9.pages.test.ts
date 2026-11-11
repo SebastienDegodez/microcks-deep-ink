@@ -138,3 +138,62 @@ describe('Test history (/tests/service/:id)', () => {
     expect(rows.some((t) => t.includes('#119') && t.includes('Failed'))).toBe(true);
   });
 });
+
+describe('Usage (/metrics/:serviceId?)', () => {
+  it('shows the four key figures', async () => {
+    renderAt('/metrics/pastry2');
+    await screen.findByRole('heading', { level: 1 });
+    const figures = await screen.findByRole('region', { name: 'Key figures' }, { timeout: 3000 });
+    const cards = within(figures).getAllByRole('heading', { level: 2 }).map((h) => h.textContent);
+    expect(cards).toEqual(['Mock invocations · today', 'Peak hour', 'Last request', 'Conformance']);
+    expect(within(figures).getByRole('region', { name: 'Last request' }).textContent).toContain('12 s ago');
+    expect(within(figures).getByRole('link', { name: 'GET /rest/API+Pastry/2.0/pastries/Millefeuille' }).getAttribute('href')).toContain('/traces?service=pastry2');
+    expect(within(figures).getByRole('region', { name: 'Conformance' }).textContent).toContain('92%');
+  });
+
+  it('selects a bar with the keyboard and keeps text equivalents', async () => {
+    renderAt('/metrics/pastry2');
+    await screen.findByRole('heading', { level: 1, name: 'Usage & conformance' });
+    const group = await screen.findByRole('group', { name: /one bar per hour/i });
+    const bars = within(group).getAllByRole('button');
+    const current = bars.find((b) => b.getAttribute('aria-pressed') === 'true') as HTMLElement;
+    expect(current).toBeTruthy();
+    await fireEvent.keyDown(current, { key: 'ArrowLeft' });
+    await waitFor(() => expect(bars.filter((b) => b.getAttribute('aria-pressed') === 'true')).toHaveLength(1));
+    expect(screen.getByRole('table', { name: 'Invocations per hour · today' })).toBeTruthy();
+    expect(screen.getByRole('table', { name: 'Invocations per week and weekday' })).toBeTruthy();
+    const ops = screen.getByRole('table', { name: 'Invocations per operation' });
+    expect(within(ops).getAllByRole('columnheader').map((h) => h.textContent)).toEqual(['Operation', 'Dispatcher', 'Invocations', 'Share', 'vs previous', 'Last call']);
+  });
+
+  it('switches period and shows the conformance treemap and index card', async () => {
+    renderAt('/metrics/pastry2');
+    await screen.findByRole('heading', { level: 1 });
+    await fireEvent.click(await screen.findByRole('button', { name: '7 days' }));
+    await screen.findByRole('group', { name: /one bar per day/i });
+    const treemap = await screen.findByRole('region', { name: 'Conformance risk by domain' });
+    const pastry = within(treemap).getByRole('region', { name: 'domain=pastry' });
+    expect(within(pastry).getAllByRole('link').map((l) => l.textContent)).toEqual([
+      expect.stringContaining('API Pastry 2.0'), expect.stringContaining('API Pastry 1.0'), expect.stringContaining('Pastry orders API 0.1.0'),
+    ]);
+    expect(within(treemap).getByRole('link', { name: /API Pastry 2\.0.*conformance\s*92%, conformant/ }).getAttribute('aria-current')).toBe('true');
+    expect(within(treemap).getByRole('region', { name: 'no domain label' })).toBeTruthy();
+    const index = screen.getByRole('region', { name: 'Conformance index vs current score' });
+    expect(within(index).getByRole('img', { name: 'Current score 92 percent, conformance index 92 percent' })).toBeTruthy();
+    expect(within(index).getAllByRole('link')).toHaveLength(10);
+    expect(within(screen.getByRole('combobox', { name: 'Service' })).getAllByRole('option').map((o) => o.textContent)).toEqual(['API Pastry 2.0', 'All services']);
+    expect(screen.getAllByRole('region', { name: 'Conformance' })).toHaveLength(1);
+  });
+});
+
+describe('Usage heatmap (/metrics/pastry2)', () => {
+  it('names each day with its count and selects the latest day', async () => {
+    renderAt('/metrics/pastry2');
+    await screen.findByRole('heading', { level: 1 });
+    const heat = await screen.findByRole('group', { name: /Calendar heatmap/ }, { timeout: 3000 });
+    expect(screen.getByRole('heading', { level: 2, name: 'Daily invocations · last 12 weeks' })).toBeTruthy();
+    const days = within(heat).getAllByRole('button');
+    expect(days).toHaveLength(79);
+    expect(days.find((d) => d.getAttribute('aria-pressed') === 'true')?.getAttribute('aria-label')).toBe('Tue, Nov 3: 296 invocations');
+  });
+});
