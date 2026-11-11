@@ -12,8 +12,10 @@ Native Svelte 5 `Button`, `ButtonLink`, `MethodTag`, `StatusBadge`, `LiveIndicat
 (forms, navigation, tables, dialogs, application shell and presentational leaves).
 Declarations and layered shared CSS remain framework-isolated. The Svelte/Vite
 Storybook mirrors the React Microcks taxonomy for native component examples,
-including charts, conformance bands/matrices and split layouts. No Svelte demo is implemented
-here; remaining registry items are listed by `pnpm -C svelte/packages/deep-ink pending`.
+including charts, conformance bands/matrices and split layouts. The [clickable demo](apps/demo/README.md)
+now covers the 19 journey entry points with in-memory, simulated interactions and
+imports the library via `workspace:*`; it is not a full port or pixel-parity claim.
+Remaining registry items are listed by `pnpm -C svelte/packages/deep-ink pending`.
 See [the package README](packages/deep-ink/README.md).
 
 The library uses `$props`, `$derived`, snippets, native `class`/DOM attributes
@@ -39,6 +41,8 @@ pnpm -C svelte publint
 pnpm -C svelte check:boundaries
 pnpm -C svelte storybook               # port 6008
 pnpm -C svelte build:storybook
+pnpm -C svelte demo                   # clickable prototype, port 5174
+pnpm -C svelte build:demo             # native library + prototype
 pnpm -C svelte smoke:package
 pnpm -C svelte test:button-parity      # prerequisites below
 ```
@@ -60,8 +64,8 @@ variants, wrapping summaries and snippet compositions were included; maximum
 differing pixels was zero. Fixtures/reports are session artifacts outside
 the Svelte source tree, not an installed React dependency or a CI visual suite.
 This evidence covers only the recorded family matrix, not the full demo or
-arbitrary browsers. Boundary checks currently cover the library and Storybook;
-there is no demo source tree to scan yet.
+arbitrary browsers. Boundary checks cover the library, Storybook and demo source,
+and verify that the demo consumes the native workspace package.
 
 Button has a repeatable strict pixel/browser suite in `test/button-parity/`.
 It uses the real built Svelte package and read-only React reference, not a
@@ -124,8 +128,9 @@ rebase or unchecked application of those pending families was performed.
 The [follow-up contract](../docs/PLAN-v0.2.md#react--svelte-follow-up-contract-2026-11-07)
 still requires the remaining native component families, a deterministic
 cross-framework visual matrix, extracted framework-neutral demo-core, and a
-complete Svelte demo that imports reusable UI from the library rather than
-defining local design-system components. Loom is outside this foundation:
+complete behavioral/pixel parity with the React demo. The Svelte clickable
+prototype imports reusable UI from the library rather than defining local
+design-system components. Loom is outside this foundation:
 future native framework renderers may differ (including a compiled Svelte
 custom element), sharing neutral data/event contracts and pure layout rules
 with exact visual/behavior equivalence. The existing element remains until

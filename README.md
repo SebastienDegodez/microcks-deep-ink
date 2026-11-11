@@ -1,6 +1,6 @@
 # Microcks Deep Ink
 
-> **DEMO.** A design system proposal for the Microcks UI v2. Not an official Microcks release. **Nothing is published on npm**: every package is `private`. The demo site assembles a landing page, three Storybooks and a clickable React demo.
+> **DEMO.** A design system proposal for the Microcks UI v2. Not an official Microcks release. **Nothing is published on npm**: every package is `private`. The demo site assembles a landing page, three Storybooks and clickable React and Svelte demos.
 
 The **Microcks UI v2 design system**, a proposal for the maintainers, packaged for reuse by the Microcks UI and by marketplace plugins.
 
@@ -10,13 +10,16 @@ The **Microcks UI v2 design system**, a proposal for the maintainers, packaged f
 | --- | --- |
 | Landing page | https://sebastiendegodez.github.io/microcks-deep-ink/ |
 | Clickable demo, 19 screens (React) | https://sebastiendegodez.github.io/microcks-deep-ink/demo/ |
+| Clickable prototype, 19 journey entries (Svelte) | https://sebastiendegodez.github.io/microcks-deep-ink/demo-svelte/ |
 | React Storybook | https://sebastiendegodez.github.io/microcks-deep-ink/react/ |
 | Angular Storybook | https://sebastiendegodez.github.io/microcks-deep-ink/angular/ |
 | Svelte Storybook (in progress) | https://sebastiendegodez.github.io/microcks-deep-ink/svelte/ |
 
 The Svelte Storybook is included in the Pages assembly and is published after
-this change is merged and the main deployment succeeds. A complete Svelte demo
-is not available yet; its component library is separate from React's runtime.
+this change is merged and the main deployment succeeds. The Svelte clickable
+prototype imports its native components via `workspace:*`, with simulated
+in-memory interactions; full React behavioral/pixel parity is not claimed.
+See [the Svelte demo README](svelte/apps/demo/README.md).
 
 Every page is marked **DEMO**, the data is in memory and nothing is saved. Accessibility target: RGAA 4.1.2 (about WCAG 2.1 AA), status **not audited**, see [docs/accessibility.md](docs/accessibility.md).
 
@@ -74,6 +77,7 @@ so unlayered app CSS always wins. The command bar is native React and Angular co
 | `packages/plugin-sdk` | Plugin manifest, extension points, shared plugin host |
 | `react/apps/storybook`, `apps/storybook-angular` | The two Storybooks, each with a Copy panel (React: the `@microcks/deep-ink` package docs) |
 | `apps/demo-react` | The clickable demo: 19 screens, clean architecture, built on the `@microcks/deep-ink` React package |
+| `svelte/apps/demo` | The Svelte clickable prototype: 19 journey entry points, native workspace library, simulated interactions |
 | `tools/a11y` | The RGAA audit runner and the accessibility smoke run |
 | `tools/site` | The landing page and the script that assembles the Pages site |
 
@@ -138,7 +142,8 @@ pnpm test                  # tokens, core, registry, cli, demo
 pnpm lint && pnpm typecheck
 pnpm storybook:react       # http://localhost:6006
 pnpm storybook:angular     # http://localhost:6007
-pnpm build:storybooks && pnpm build:demo && pnpm build:site   # → site/
+pnpm demo:svelte           # http://127.0.0.1:5174/ (build/install the Svelte workspace first)
+pnpm build:storybooks && pnpm -C svelte build:storybook && pnpm build:demo && pnpm build:demo:svelte && pnpm build:site   # → site/
 pnpm a11y                  # needs: pip install playwright==1.63.0 && python -m playwright install chromium
 ```
 

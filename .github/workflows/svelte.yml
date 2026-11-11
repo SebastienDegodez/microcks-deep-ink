@@ -81,6 +81,13 @@ jobs:
       - run: pnpm -C svelte check
       - run: pnpm -C svelte test
       - run: pnpm -C svelte check:boundaries
+      - run: pnpm -C svelte --filter demo-svelte build
+      - uses: actions/upload-artifact@v7
+        if: inputs.storybook
+        with:
+          name: demo-svelte
+          path: svelte/apps/demo/dist
+          if-no-files-found: error
       - run: node --test apps/shared/copy-panel/model.test.ts tools/a11y/storybook-jobs.test.mjs
       - uses: actions/setup-python@v5
         with:
