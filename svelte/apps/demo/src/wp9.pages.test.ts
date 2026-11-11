@@ -61,6 +61,40 @@ describe('Run a test (/tests/create)', () => {
   });
 });
 
+describe('Test run (/tests/runner/:id)', () => {
+  it('shows the finished run #118 as passed, with a runner log and no violation', async () => {
+    renderAt('/tests/runner/118');
+    expect(await screen.findByRole('heading', { level: 1, name: 'Run #118' })).toBeTruthy();
+    expect(screen.getByRole('navigation', { name: 'Breadcrumb' }).textContent).toContain('Tests');
+    expect(await screen.findByRole('log', { name: 'Runner log' })).toBeTruthy();
+    expect(screen.getByRole('region', { name: 'Verdict' }).textContent).toContain('Passed');
+    expect(screen.queryByText('$.price')).toBeNull();
+  });
+
+  it('runs #119 live from step 3, steps forward, skips to the result and explains the price violation', async () => {
+    vi.useFakeTimers({ shouldAdvanceTime: true });
+    renderAt('/tests/runner/119');
+    const progress = await screen.findByRole('region', { name: 'Progress' });
+    expect(progress.textContent).toContain('3/7');
+    await fireEvent.click(screen.getByRole('button', { name: 'Step forward' }));
+    expect(progress.textContent).toContain('4/7');
+    expect(screen.getByRole('button', { name: /Millefeuille/ }).getAttribute('aria-expanded')).toBe('true');
+    expect(screen.getByRole('button', { name: /Eclair Chocolat · price/ }).getAttribute('aria-disabled')).toBe('true');
+    await vi.advanceTimersByTimeAsync(6000);
+    await waitFor(() => expect(screen.queryByRole('button', { name: 'Skip to result' })).toBeNull());
+    expect(screen.getByRole('region', { name: 'Verdict' }).textContent).toContain('86%');
+    expect(screen.getByRole('region', { name: 'Verdict' }).textContent).toContain('6 pts vs run #118');
+    const diff = screen.getByRole('region', { name: /Contract versus actual response for Eclair Chocolat · price/ });
+    expect(diff.textContent).toContain('$.price');
+    expect(diff.textContent).toContain('$.status');
+    expect(screen.getByRole('link', { name: /Same contract violation breaks workflow Restock a pastry/ }).getAttribute('href')).toContain('6729a1d27e4c0b5f93a8c214');
+    await fireEvent.click(screen.getByRole('button', { name: 'Add to CI' }));
+    expect(screen.getByRole('region', { name: 'Run this test in your pipeline' }).textContent).toContain('MICROCKS_CLIENT_SECRET');
+    await fireEvent.click(screen.getByRole('button', { name: 'Replay run' }));
+    expect((await screen.findByRole('region', { name: 'Progress' })).textContent).toContain('0/7');
+  });
+});
+
 describe('Test history (/tests/service/:id)', () => {
   it('lists the runs with #117 selected, filters them, and gives the timeline a text equivalent', async () => {
     renderAt('/tests/service/pastry2');
