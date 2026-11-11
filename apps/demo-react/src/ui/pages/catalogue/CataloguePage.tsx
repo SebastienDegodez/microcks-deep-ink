@@ -5,20 +5,11 @@ import { Link as RouterLink } from 'react-router';
 import { labelFromString, labelToString, type Protocol, type ServiceSummary } from '@/domain/shared';
 import type { ServiceFilter } from '@/domain/catalog';
 import { PageHeader, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge, Button, Chip, ConformanceBand, type OperationResult, DataTable, type DataTableColumn, EmptyState, Icon, FilterBar, FilterReset, FilterRow, FilterSearch, Segmented, StatusBadge } from '@microcks/deep-ink';
+import { ApiBadge, Button, Chip, ConformanceBand, DataTable, type DataTableColumn, EmptyState, Icon, FilterBar, FilterReset, FilterRow, FilterSearch, Segmented, StatusBadge } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
-import { PROTOCOL_ORDER, fmt, operationUnit, pluralize } from '@/ui/app/format';
-
-const bandOf = (s: ServiceSummary): OperationResult[] =>
-  s.lastResults ? s.lastResults.map((r) => (r === 'pass' ? 'pass' : 'fail')) : Array.from({ length: s.operationCount }, () => 'untested');
-const TEST_WORD = { passed: 'Conformant', failed: 'Failing', never: 'Never tested' } as const;
-const levelOf = (c: number | null) => (c === null ? 'neutral' : c >= 90 ? 'success' : c >= 60 ? 'warning' : 'danger');
-const outcomeOf = (s: ServiceSummary) => (s.testStatus === 'passed' ? 'conformant' : s.testStatus === 'failed' ? 'failed' : 'never');
-const callsText = (s: ServiceSummary) => `${fmt(s.calls24h)} ${s.protocol === 'EVENT' ? 'msg' : 'req'}`;
-/** The label chips of the filter panel (the prototype shows a curated set, not every label). */
-const FEATURED_LABELS = ['domain=pastry', 'domain=movies', 'status=GA', 'status=beta', 'team=platform'];
-
-const lastTestText = (s: ServiceSummary, relative: (d: string) => string) => (s.lastTest ? [`#${s.lastTest.runId}`, s.lastTest.checks ? `${s.lastTest.checks.passed}/${s.lastTest.checks.total}` : null, relative(s.lastTest.when)].filter(Boolean).join(' · ') : 'no test run yet');
+import { PROTOCOL_ORDER, operationUnit, pluralize } from '@/ui/app/format';
+import { serviceOutcomes } from '@/ui/app/outcomes';
+import { FEATURED_LABELS, TEST_WORD, activeFilterCount, activeFilterWords, callsText, lastTestText, levelOf, outcomeOf, testsHref } from './listing';
 
 export default function CataloguePage() {
   usePageTitle('APIs & Services · Microcks');
@@ -35,7 +26,7 @@ export default function CataloguePage() {
       return { ...f, [key]: cur.includes(value) ? cur.filter((x) => x !== value) : [...cur, value] };
     });
   const reset = () => setFilter({ query: '', protocols: [], labels: [], testStatus: 'all' });
-  const activeCount = (filter.query?.trim() ? 1 : 0) + (filter.protocols?.length ?? 0) + (filter.labels?.length ?? 0) + (filter.testStatus && filter.testStatus !== 'all' ? 1 : 0);
+  const activeCount = activeFilterCount(filter);
 
   const data = view$.data;
   const actions = (
@@ -62,7 +53,6 @@ export default function CataloguePage() {
 
   const known = new Set((labels$.data ?? []).map((l) => labelToString(l.label)));
   const labelNames = FEATURED_LABELS.filter((l) => known.has(l));
-  const testsHref = (s: ServiceSummary) => (s.lastTest ? (s.protocol === 'A2A' ? `/tests/agent/${s.lastTest.runId}` : `/tests/runner/${s.lastTest.runId}`) : '/tests');
   const labelChips = (s: ServiceSummary) => (
     <span className="catalogue-labels">
       {s.labels.map((l) => (
@@ -106,7 +96,7 @@ export default function CataloguePage() {
       render: (s) => (
         <span className="catalogue-conformance">
           <span className="catalogue-score" data-level={levelOf(s.conformance)}>{s.conformance === null ? '—' : `${s.conformance}%`}</span>
-          <ConformanceBand size="mini" outcomes={bandOf(s)} unit={operationUnit(s.protocol)} />
+          <ConformanceBand size="mini" outcomes={serviceOutcomes(s)} unit={operationUnit(s.protocol)} />
         </span>
       ),
     },
@@ -122,12 +112,7 @@ export default function CataloguePage() {
     },
   ];
 
-  const activeDesc = [
-    ...(filter.query?.trim() ? [`“${filter.query.trim()}”`] : []),
-    ...(filter.protocols ?? []),
-    ...(filter.labels ?? []),
-    ...(filter.testStatus && filter.testStatus !== 'all' ? [TEST_WORD[filter.testStatus]] : []),
-  ];
+  const activeDesc = activeFilterWords(filter);
 
   return (
     <div className="catalogue" data-main-pad="roomy">

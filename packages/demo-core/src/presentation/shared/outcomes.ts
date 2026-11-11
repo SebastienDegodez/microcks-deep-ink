@@ -1,4 +1,5 @@
 import type { RunStatus } from '../../domain/arazzo/index.js';
+import type { ServiceSummary } from '../../domain/shared/index.js';
 import type { TestRunSummary } from '../../domain/testing/index.js';
 
 /** Names of the design-system icons the outcomes below use: every one is an `IconName` of deep-ink. */
@@ -21,3 +22,10 @@ export const RUN_STATUS_WORD: Record<RunStatus, string> = { SUCCESS: 'Passed', F
 
 /** Circled icon of a workflow run status (check, cross, running). */
 export const RUN_STATUS_ICON: Record<RunStatus, OutcomeIcon> = { SUCCESS: 'check-circle', FAILURE: 'x-circle', RUNNING: 'running' };
+
+/** One segment of a conformance band: every value is an `OperationResult` of deep-ink. */
+export type BandOutcome = 'pass' | 'fail' | 'untested';
+
+/** Conformance band of a service: the last result of each operation, or every operation untested. */
+export const serviceOutcomes = (s: ServiceSummary): BandOutcome[] =>
+  s.lastResults ? s.lastResults.map((r) => (r === 'pass' ? 'pass' : 'fail')) : Array.from({ length: s.operationCount }, () => 'untested');

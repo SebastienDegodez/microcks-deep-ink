@@ -2,56 +2,15 @@ import '@microcks/demo-styles/pages/explore-kit/explore.css';
 import '@microcks/demo-styles/pages/cockpit/cockpit.css';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router';
-import type { OperationOutcome } from '@/domain/testing';
-import type { Protocol, ServiceSummary } from '@/domain/shared';
+import type { Protocol } from '@/domain/shared';
 import type { TraceCall } from '@/domain/observe';
 import { PageHeader, useAnnounce, useQuery, useRelativeTime, useSubscription, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge, Button, Callout, Chip, ConformanceBand, type OperationResult, Icon, LiveIndicator, SplitPane, SplitPaneMain, StatCard, StatGrid } from '@microcks/deep-ink';
+import { ApiBadge, Button, Callout, Chip, ConformanceBand, Icon, LiveIndicator, SplitPane, SplitPaneMain, StatCard, StatGrid } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { PROTOCOL_ORDER, fmt, operationUnit, pluralize, testRunHref } from '@/ui/app/format';
+import { serviceOutcomes } from '@/ui/app/outcomes';
 import { buildAttention } from './attention';
-
-const HOURS = [5, 1, 2, 1, 1, 6, 15, 40, 92, 121, 165, 125];
-const START_STEPS = [
-  { id: 'import', title: 'Import a contract', desc: 'OpenAPI, AsyncAPI, gRPC Protobuf, GraphQL schema, Postman collection or SoapUI project. Drop a file or point to a Git URL.', cta: 'Import a contract', to: '/sources/new' },
-  { id: 'call', title: 'Call the mock', desc: 'Every operation is served right after the import, at a URL derived from the service name and version.', code: 'curl http://microcks.local:8080/rest/API+Pastry/2.0/pastries/Millefeuille', cta: 'Browse APIs', to: '/services' },
-  { id: 'test', title: 'Run a conformance test', desc: 'Point Microcks at your implementation. It replays the examples and checks responses against the contract.', cta: 'Run a test', to: '/tests/create' },
-];
-
-const toOutcomes = (s: ServiceSummary): OperationResult[] =>
-  s.lastResults ? s.lastResults.map((r) => (r === 'pass' ? 'pass' : 'fail')) : Array.from({ length: s.operationCount }, () => 'untested');
-
-/** Conformance level, same thresholds as the prototype: 80 and 50. */
-const level = (c: number | null) => (c === null ? 'none' : c >= 80 ? 'high' : c >= 50 ? 'mid' : 'low');
-
-const PROTOCOL_ATTR: Record<Protocol, string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
-
-const TONE = { high: 'success', mid: 'warning', low: 'danger', none: 'neutral' } as const;
-
-const isLive = (s: ServiceSummary) => s.id === 'pastry2' || s.protocol === 'EVENT';
-
-function usageText(s: ServiceSummary) {
-  const unit = s.protocol === 'EVENT' ? 'msg' : 'req';
-  return `${pluralize(s.operationCount, operationUnit(s.protocol))} · ${fmt(s.calls24h)} ${unit} today${isLive(s) ? (s.protocol === 'EVENT' ? ' · publishing on Kafka' : ' · called 12 s ago') : ''}`;
-}
-
-const runCounts = (r: { operations?: OperationOutcome[]; runner: string; passed: number; total: number }) =>
-  r.runner === 'A2A_CONFORMANCE' ? `${r.passed}/${r.total} checks` : r.operations ? `${r.operations.filter((o) => o === 'pass').length}/${r.operations.length} ops` : '';
-
-/** "Tuesday, Nov 3, 2026 · 09:10": the demo clock, in UTC like the trace times. */
-const headerDate = (iso: string) => {
-  const d = new Date(iso);
-  const day = d.toLocaleDateString('en-US', { weekday: 'long', month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
-  return `${day} · ${iso.slice(11, 16)}`;
-};
-
-/** Status column of the ticker: messages for events, OK for gRPC, the HTTP code otherwise. */
-const traceStatus = (t: TraceCall) =>
-  t.protocol === 'EVENT' ? '1 msg' : `${t.protocol === 'gRPC' && t.status < 400 ? 'OK' : t.status} · ${t.ms} ms`;
-
-/** Third part of the runner line: the transports of an agent test, the broker of an event test. */
-const runDetail = (r: { runner: string; endpoint: string }) =>
-  r.runner === 'A2A_CONFORMANCE' ? '3 transports' : r.endpoint.startsWith('kafka') ? 'Kafka' : '';
+import { HOURS, PROTOCOL_ATTR, START_STEPS, TONE, headerDate, isLive, level, runCounts, runDetail, traceStatus, usageText } from './overview';
 
 export default function CockpitPage() {
   usePageTitle('Cockpit · Microcks');
@@ -317,7 +276,7 @@ export default function CockpitPage() {
                           {isLive(s) ? <LiveIndicator variant="inline" className="wall-tile-live" /> : null}
                         </span>
                         <span className="wall-tile-score">
-                          <ConformanceBand size="mini" outcomes={toOutcomes(s)} unit={operationUnit(s.protocol)} />
+                          <ConformanceBand size="mini" outcomes={serviceOutcomes(s)} unit={operationUnit(s.protocol)} />
                           <span className="wall-tile-pct" data-level={level(s.conformance)}>{s.conformance === null ? 'untested' : `${s.conformance}%`}</span>
                         </span>
                         <span className="wall-tile-usage">{usageText(s)}</span>
