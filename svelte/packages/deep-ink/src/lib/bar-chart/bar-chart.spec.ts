@@ -46,6 +46,10 @@ describe('BarChart', () => {
     expect(container.querySelector<HTMLElement>('.bar-chart')?.style.getPropertyValue('--bar-chart-height')).toBe('200px');
     expect(container.querySelector<HTMLElement>('.bar-chart')?.style.getPropertyValue('--bar-chart-gap')).toBe('6px');
   });
+  it('renders no whitespace between its parts, like the twin', () => {
+    const { container } = render(BarChart, { label: 'Runs', bars, max: 3000, onselect: () => {}, ticks: ['3 s', '1.5 s', '0'], table });
+    expect(container.textContent).toBe('3 s1.5 s012 s116118Last 3 runsRunResult#116Passed#117Failed#118Timed out');
+  });
   it('renders no style attribute without a size variable', () => {
     const { container } = render(BarChart, { label: 'Runs', bars, max: 3000, onselect: vi.fn(), table });
     expect(container.querySelector('.bar-chart')?.hasAttribute('style')).toBe(false);
