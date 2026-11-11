@@ -1,7 +1,9 @@
 import { fireEvent, render, screen } from '@testing-library/svelte';
+import { createRawSnippet } from 'svelte';
 import { describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../../../test/axe';
 import OpPickList from './OpPickList.svelte';
+import type { OpPickOption } from './op-pick.js';
 const options = [{ id: 'list', method: 'GET', path: '/pastries', summary: 'List pastries' }, { id: 'patch', method: 'PATCH', path: '/pastries/{name}' }];
 describe('OpPickList', () => {
   it('uses named toggle buttons and calls onchange', async () => {
@@ -17,5 +19,10 @@ describe('OpPickList', () => {
     await fireEvent.keyDown(radios[0]!, { key: 'ArrowUp' });
     expect(onchange).toHaveBeenCalledWith('patch'); expect(document.activeElement).toBe(radios[1]);
     expect(await axeViolations(container)).toEqual([]);
+  });
+  it('gives each option to its snippet content', () => {
+    const end = createRawSnippet((o: () => OpPickOption) => ({ render: () => `<span>${o().id}</span>` }));
+    render(OpPickList, { props: { mode: 'radio', label: 'Operations', options: options.map((o) => ({ ...o, end })), value: 'list', onchange: vi.fn() } });
+    expect(screen.getAllByRole('radio').map((r) => r.querySelector('.op-pick-end')?.textContent)).toEqual(['list', 'patch']);
   });
 });
