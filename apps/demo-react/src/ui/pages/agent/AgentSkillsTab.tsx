@@ -1,13 +1,9 @@
 import '@microcks/demo-styles/pages/agent/agent-skills.css';
 import { useId, useState } from 'react';
 import { Link as RouterLink } from 'react-router';
-import type { AgentProfile, AgentTaskState, Conversation, ScriptPart, ScriptStep } from '@/domain/agents';
-import { Chip, Icon, type IconName, SectionLabel, SkillList, type SkillItem, SplitPane, SplitPaneMain, SplitPaneSide, TaskStateTag, TaskTimeline, type TaskTimelineNode } from '@microcks/deep-ink';
-
-const FALLBACK_ID = '__fallback';
-
-/** Glyph of a terminal state, written next to the state word (conversation cards). */
-const END_ICON: Partial<Record<AgentTaskState, IconName>> = { completed: 'check-circle', failed: 'x-circle', rejected: 'ban', canceled: 'stop-circle' };
+import type { AgentProfile, Conversation, ScriptPart, ScriptStep } from '@/domain/agents';
+import { Chip, Icon, SectionLabel, SkillList, type SkillItem, SplitPane, SplitPaneMain, SplitPaneSide, TaskStateTag, TaskTimeline, type TaskTimelineNode } from '@microcks/deep-ink';
+import { END_ICON, FALLBACK_ID, initialSkillId, skillItems, stateIndices, timelineNodes } from './skills';
 
 function Part({ part }: { part: ScriptPart }) {
   return (
@@ -111,18 +107,8 @@ function StepBody({ step, streamed, serviceLink }: { step: ScriptStep; streamed:
 function Script({ conversation, serviceLink }: { conversation: Conversation; serviceLink?: string }) {
   const titleId = useId();
   const [node, setNode] = useState<number | undefined>();
-  const stateIdx = conversation.steps.flatMap((s, i) => (s.kind === 'state' ? [i] : []));
-  const nodes: TaskTimelineNode[] = stateIdx.map((ri, j) => {
-    const step = conversation.steps[ri];
-    const between = j > 0 ? conversation.steps.slice((stateIdx[j - 1] ?? 0) + 1, ri) : [];
-    const reply = between.find((b) => b.kind === 'user');
-    const first = reply && reply.kind === 'user' ? reply.parts[0] : undefined;
-    return {
-      state: step?.kind === 'state' ? step.state : 'submitted',
-      at: step?.at ?? '',
-      connector: first && first.kind === 'text' ? `reply “${first.text}”` : undefined,
-    };
-  });
+  const stateIdx = stateIndices(conversation);
+  const nodes: TaskTimelineNode[] = timelineNodes(conversation);
   const selectedStep = node === undefined ? undefined : stateIdx[node];
   return (
     <div role="group" aria-labelledby={titleId} className="agent-script-box">
@@ -156,7 +142,7 @@ function Script({ conversation, serviceLink }: { conversation: Conversation; ser
 
 /** Skills of the card with their scripted conversations (the APIExamples artifact). */
 export function AgentSkillsTab({ agent }: { agent: AgentProfile }) {
-  const [skillId, setSkillId] = useState(agent.skills[1]?.id ?? agent.skills[0]?.id ?? FALLBACK_ID);
+  const [skillId, setSkillId] = useState(initialSkillId(agent));
   const [convId, setConvId] = useState<string | undefined>();
   const fallbackSelected = skillId === FALLBACK_ID;
   const skill = fallbackSelected ? undefined : agent.skills.find((s) => s.id === skillId);
@@ -164,13 +150,7 @@ export function AgentSkillsTab({ agent }: { agent: AgentProfile }) {
   const conversation = convs.find((c) => c.id === convId) ?? convs[0];
   const serviceLink = skill?.usesService ? `/services/${skill.usesService}` : undefined;
 
-  const items: SkillItem[] = [
-    ...agent.skills.map((s) => ({
-      id: s.id, name: s.name, calls: s.calls, tags: s.tags, result: s.lastTest.result, resultNote: s.lastTest.title,
-      meta: `${s.conversationIds.length} ${s.conversationIds.length === 1 ? 'conversation' : 'conversations'}`,
-    })),
-    { id: FALLBACK_ID, name: 'No skill matched', fallback: true, calls: agent.fallbackCalls, meta: 'fallback · out-of-scope · answers rejected' },
-  ];
+  const items: SkillItem[] = skillItems(agent);
   const pick = (id: string) => {
     setSkillId(id);
     setConvId(undefined);

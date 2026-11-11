@@ -4,14 +4,14 @@ import { getTaskJson, isTerminalTaskState, type AgentTask } from '@/domain/agent
 import { ago } from '@/ui/app/format';
 import { useAnnounce, useSubscription, useUseCases } from '@/ui/app';
 import { Button, CodeBlock, LiveIndicator, TaskStateTag } from '@microcks/deep-ink';
-
+import { INITIAL_TASK_ID, cancelNote, getTaskCaption, historyRole, noArtifactText } from './tasks';
 
 /** Tasks created on the mock, streamed from the use case (1 s tick). */
 export function AgentTasksTab({ serviceId, initial, onChanged }: { serviceId: string; initial: AgentTask[] | undefined; onChanged: () => void }) {
   const uc = useUseCases();
   const announce = useAnnounce();
   const live = useSubscription<AgentTask[], AgentTask[]>((listener) => uc.agents.subscribeTasks(serviceId, listener), [uc, serviceId], { initial: initial ?? [] });
-  const [selectedId, setSelectedId] = useState<string | undefined>('task-9a04');
+  const [selectedId, setSelectedId] = useState<string | undefined>(INITIAL_TASK_ID);
   const [showGet, setShowGet] = useState(false);
   const [cancelError, setCancelError] = useState('');
   const tasks = live.value.length > 0 ? live.value : (initial ?? []);
@@ -89,7 +89,7 @@ export function AgentTasksTab({ serviceId, initial, onChanged }: { serviceId: st
                 <Button variant="danger" size="compact" icon="stop-circle" className="agent-task-method" disabled={terminal} aria-describedby="agent-cancel-note" onClick={cancel}>CancelTask</Button>
               </div>
               <span id="agent-cancel-note" className="agent-task-note">
-                {terminal ? `TaskNotCancelableError: ${task.id} is ${task.state}.` : 'Moves the task to canceled and notifies its webhook.'}
+                {cancelNote(task)}
               </span>
             </div>
           </div>
@@ -98,7 +98,7 @@ export function AgentTasksTab({ serviceId, initial, onChanged }: { serviceId: st
             <CodeBlock
               code={getTaskJson({ id: task.id, contextId: task.contextId, state: task.state, timestamp: task.updatedAt, history: task.history, artifacts: task.artifacts })}
               language="json"
-              caption={`GetTask · ${task.transport} · {"id":"${task.id}","historyLength":10} · 200 OK`}
+              caption={getTaskCaption(task)}
               maxHeight={360}
             />
           ) : null}
@@ -109,7 +109,7 @@ export function AgentTasksTab({ serviceId, initial, onChanged }: { serviceId: st
                 {task.history.map((h, i) => (
                   <li key={i} data-role={h.role}>
                     <div className="agent-history-msg">
-                      <span className="agent-history-role">{h.role === 'system' ? 'status change' : h.role}</span>
+                      <span className="agent-history-role">{historyRole(h.role)}</span>
                       <span className="agent-history-text">{h.text}</span>
                     </div>
                   </li>
@@ -120,7 +120,7 @@ export function AgentTasksTab({ serviceId, initial, onChanged }: { serviceId: st
               <h4>Artifacts <span className="agent-h4-note">· {task.artifacts.length}</span></h4>
               {task.artifacts.length === 0 ? (
                 <p className="agent-task-empty">
-                  {task.state === 'input-required' ? 'None yet: the task waits for the size before it produces the order.' : !terminal ? 'None yet: the first chunk arrives with the script timing.' : 'This task ended without an artifact.'}
+                  {noArtifactText(task)}
                 </p>
               ) : task.artifacts.map((a) => (
                 <div key={a.id} className="agent-task-artifact">

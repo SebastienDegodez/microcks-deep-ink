@@ -2,9 +2,7 @@ import '@microcks/demo-styles/pages/explore-kit/explore.css';
 import '@microcks/demo-styles/pages/agent/agent.css';
 import '@microcks/demo-styles/pages/agent/agent-header.css';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
-import { totalsOf } from '@/domain/agents';
 import { formatDay, formatHourMinute } from '@/domain/importing';
-import { ago } from '@/ui/app/format';
 import { PageHeader, useAnnounce, useQuery, usePageTitle, useUseCases } from '@/ui/app';
 import { ApiBadge, Button, Chip, LiveIndicator, Menu, ProjectionPill, TabPanel, Tabs } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
@@ -12,10 +10,7 @@ import { AgentCardTab } from './AgentCardTab';
 import { AgentMockTab } from './AgentMockTab';
 import { AgentSkillsTab } from './AgentSkillsTab';
 import { AgentTasksTab } from './AgentTasksTab';
-
-type TabId = 'skills' | 'card' | 'mock' | 'tasks';
-const TAB_IDS: TabId[] = ['skills', 'card', 'mock', 'tasks'];
-
+import { importHost, mockLiveLabel, runScore, runTitle, tabOf } from './page';
 
 /** Screen 18: an A2A agent imported from its Agent Card. Rendered by the service route when the protocol is A2A. */
 export default function AgentPage() {
@@ -23,7 +18,7 @@ export default function AgentPage() {
   const navigate = useNavigate();
   const uc = useUseCases();
   const announce = useAnnounce();
-  const tabId: TabId = TAB_IDS.includes(tab as TabId) ? (tab as TabId) : 'skills';
+  const tabId = tabOf(tab);
   const agent = useQuery(() => uc.agents.getAgent(serviceId), [uc, serviceId]);
   const tasks = useQuery(() => uc.agents.listTasks(serviceId), [uc, serviceId]);
   const runId = agent.data?.lastTest.runId;
@@ -48,15 +43,10 @@ export default function AgentPage() {
     );
   }
   const goTab = (id: string) => navigate(`/services/${serviceId}/${id}`);
-  const openTasks = (tasks.data ?? []).filter((t) => !['completed', 'failed', 'rejected', 'canceled'].includes(t.state)).length;
   const streams = a.card.capabilities.streaming;
   const push = a.card.capabilities.pushNotifications;
   const conversations = a.conversations.length;
-  const lastMessage = ago(Math.min(...(tasks.data ?? []).map((t) => t.updatedSecondsAgo), 999999));
-  const checks = run.data?.checks ?? [];
-  const totals = totalsOf(checks);
-  const score = run.data ? `${totals.conversationPassed}/${totals.conversationTotal}` : `#${a.lastTest.runId} ${a.lastTest.result}`;
-  const runTitle = run.data ? `Run #${run.data.id} · A2A_CONFORMANCE · ${run.data.setup.transports.length} transports` : `Run #${a.lastTest.runId}`;
+  const score = runScore(a, run.data);
 
   return (
     <div className="ex-stack agent-page">
@@ -68,7 +58,7 @@ export default function AgentPage() {
         badge={
           <>
             <ProjectionPill title="A2A support is a proposed protocol module for Microcks v2" />
-            <LiveIndicator label={`mock live · ${openTasks} open ${openTasks === 1 ? 'task' : 'tasks'} · last message ${lastMessage}`} />
+            <LiveIndicator label={mockLiveLabel(tasks.data)} />
           </>
         }
         description={a.description}
@@ -96,13 +86,13 @@ export default function AgentPage() {
         <div className="agent-head-row">
           {a.labels.map((l) => <Chip key={l} variant="outline">{l}</Chip>)}
           <span className="agent-import-line">
-            A2A spec {a.specVersion} · imported {formatDay(a.importedAt)} at {formatHourMinute(a.importedAt)} from <span className="demo-mono">{a.importedFrom.replace(/^https?:\/\//, '')}</span>
+            A2A spec {a.specVersion} · imported {formatDay(a.importedAt)} at {formatHourMinute(a.importedAt)} from <span className="demo-mono">{importHost(a.importedFrom)}</span>
           </span>
         </div>
         <div className="agent-head-row" data-gap="badges">
           <ApiBadge label="skills" value={String(a.skills.length)} status="protocol" protocol="A2A" />
           <ApiBadge label="conversations" value={String(conversations)} status="action" />
-          <RouterLink className="agent-badge-link" to={`/tests/agent/${a.lastTest.runId}`} title={runTitle}>
+          <RouterLink className="agent-badge-link" to={`/tests/agent/${a.lastTest.runId}`} title={runTitle(a, run.data)}>
             <ApiBadge label="last test" value={score} status={a.lastTest.result === 'failed' ? 'danger' : 'success'} icon={a.lastTest.result === 'failed' ? 'close-sm' : 'check'} />
           </RouterLink>
           {streams ? <ApiBadge label="streaming" status="success" icon="check" iconLabel="supported" /> : <ApiBadge label="streaming" value="no" />}
