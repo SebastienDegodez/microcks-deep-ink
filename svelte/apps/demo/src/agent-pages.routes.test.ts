@@ -73,3 +73,38 @@ describe('Agent (screen 18)', () => {
     await waitFor(() => expect(within(screen.getByRole('region', { name: 'Detail of task-5e27' })).getAllByText('canceled').length).toBeGreaterThan(0));
   });
 });
+
+describe('Agent test (screen 19)', () => {
+  it('opens the stored run #3 on its matrix, with the HTTP+JSON order failure explained', async () => {
+    renderAt('/tests/agent/3');
+    await h1('Run #3');
+    expect(await screen.findByText(/13 of 15 checks passed/)).toBeTruthy();
+    const detail = await screen.findByRole('region', { name: /Detail of HTTP\+JSON × eclair-size-m/ });
+    expect(within(detail).getByText('NEW task t-2')).toBeTruthy();
+    await fireEvent.click(screen.getByRole('button', { name: /gRPC × ord-2417-ready:\s*Failed/ }));
+    expect(await screen.findByRole('region', { name: /Detail of gRPC × ord-2417-ready/ })).toBeTruthy();
+    expect(screen.getByText(/lastChunk: not set/)).toBeTruthy();
+    const cell = screen.getByRole('button', { name: /gRPC × ord-2417-ready:\s*Failed/ });
+    await fireEvent.click(screen.getByRole('button', { name: 'Close cell detail' }));
+    expect(screen.queryByRole('region', { name: /Detail of gRPC × ord-2417-ready/ })).toBeNull();
+    expect(document.activeElement).toBe(cell);
+  });
+
+  it('starts on the setup, explains what blocks the run, then replays the checks to the result', async () => {
+    renderAt('/tests/agent');
+    await h1('Run #4');
+    const run = await screen.findByRole('button', { name: 'Run test' });
+    expect((run as HTMLButtonElement).disabled).toBe(false);
+    expect(screen.getByText('3 × 5 = 15 conversation checks, plus 4 Agent Card checks.')).toBeTruthy();
+    await fireEvent.click(screen.getByRole('checkbox', { name: /JSON-RPC/ }));
+    await fireEvent.click(screen.getByRole('checkbox', { name: /HTTP\+JSON/ }));
+    await fireEvent.click(screen.getByRole('checkbox', { name: /^gRPC/ }));
+    expect(screen.getByText('Select at least one transport.')).toBeTruthy();
+    expect((screen.getByRole('button', { name: 'Run test' }) as HTMLButtonElement).disabled).toBe(true);
+    await fireEvent.click(screen.getByRole('checkbox', { name: /JSON-RPC/ }));
+    await fireEvent.click(screen.getByRole('button', { name: 'Run test' }));
+    expect(await screen.findByRole('button', { name: 'Skip to result' })).toBeTruthy();
+    await fireEvent.click(screen.getByRole('button', { name: 'Skip to result' }));
+    expect(await screen.findByText(/5 of 5 checks passed/)).toBeTruthy();
+  });
+});
