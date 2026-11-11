@@ -9,6 +9,7 @@
   const groupPrefix = ' · ';
   const finished = (cell: MatrixCell) => ['pass', 'fail', 'warn'].includes(cell.result);
 </script>
+{#snippet textNode(text?: string)}{text}{/snippet}
 {#snippet body(cell: MatrixCell)}<Icon name={MATRIX_RESULT[cell.result].icon} size={14}/><span>{cell.label ?? MATRIX_RESULT[cell.result].word}</span>{space}{#if finished(cell) && cell.duration}<span class="matrix-ms">{cell.duration}</span>{/if}{/snippet}
 <!-- The overflow region must be keyboard-scrollable. -->
 <!-- svelte-ignore a11y_no_noninteractive_tabindex -->
@@ -16,7 +17,7 @@
   <table class="matrix" style={`--matrix-columns:${span}`}>
     <caption class="sr-only">{caption}</caption>
     <thead><tr><th scope="col">Check</th>{#each columns as c (c.id)}<th scope="col"><span>{c.label}</span>{#if c.sub}<span class="matrix-sub">{c.sub}</span>{/if}</th>{/each}</tr></thead>
-    {#each groups as g (g.id)}<tbody><tr class="matrix-group"><th scope="rowgroup" colspan={span + 1}>{g.label}{#if g.sub}<span class="matrix-sub">{groupPrefix}{g.sub}</span>{/if}</th></tr>
+    {#each groups as g (g.id)}<tbody><tr class="matrix-group"><th scope="rowgroup" colspan={span + 1}>{g.label}{#if g.sub}<span class="matrix-sub">{@render textNode(groupPrefix)}{g.sub}</span>{/if}</th></tr>
       {#each g.rows as r (r.id)}<tr><th scope="row" data-mono={r.mono ? '' : undefined}><span>{r.label}</span>{#if r.sub}<span class="matrix-sub">{r.sub}</span>{/if}</th>
         {#each r.cells as cell (cellKey(r.id, cell.columnId))}
           {@const key = cellKey(r.id, cell.columnId)}

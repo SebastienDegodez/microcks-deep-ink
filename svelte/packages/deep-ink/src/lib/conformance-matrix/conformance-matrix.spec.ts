@@ -12,6 +12,8 @@ const groups: MatrixGroup[] = [
     {id:'track',label:'ord-2417-ready',mono:true,cells:[{columnId:'jsonrpc',result:'running'},{columnId:'grpc',result:'queued'}]},
   ]},
 ];
+/** The non-empty text nodes that are direct children of `el`. */
+const texts=(el:Element)=>[...el.childNodes].filter(n=>n.nodeType===Node.TEXT_NODE&&n.textContent!=='').map(n=>n.textContent);
 describe('ConformanceMatrix', () => {
   it('has column, group, row headers, a spanning cell, and footer totals', () => {
     render(ConformanceMatrix,{caption:'Conformance matrix',columns,groups,footer:{label:'Conversations passed',cells:[{text:'1/2'},{text:'0/2',tone:'danger'}]}});
@@ -41,5 +43,9 @@ describe('ConformanceMatrix', () => {
     expect(screen.getByText('Absent')).toBeTruthy();
     expect(screen.queryByText('4 s')).toBeNull();
     expect(cellKey('sig')).toBe('sig|*');
+  });
+  it('writes the group sub as " · " then the sub', () => {
+    const {container}=render(ConformanceMatrix,{caption:'Matrix',columns,groups});
+    expect(texts(container.querySelector('.matrix-group .matrix-sub')!)).toEqual([' · ','2 replayed']);
   });
 });
