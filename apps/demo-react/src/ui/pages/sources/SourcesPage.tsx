@@ -3,25 +3,16 @@ import '@microcks/demo-styles/pages/sources/sources.css';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import {
-  defaultDiffEntry, diffStats, filterImporters, formatDay, formatHourMinute, formatShortClock, importerStatus, originCounts, splitRevision, statusCounts, SOURCE_ORIGINS,
+  defaultDiffEntry, diffStats, filterImporters, formatHourMinute, formatShortClock, importerStatus, originCounts, splitRevision, statusCounts,
   type Importer, type SourceOrigin, type SourceStatus, type SyncEntry,
 } from '@/domain/importing';
 import { PageHeader, useAnnounce, useClock, useQuery, useRelativeTime, useReturnFocus, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge, Button, CopyButton, Icon, FilterRow, FilterSearch, LiveIndicator, ResultBox, FactRow, Facts, type Fact as RegistryFact, Segmented, SummaryStrip, SummaryStripSep, Switch } from '@microcks/deep-ink';
+import { ApiBadge, Button, CopyButton, Icon, FilterRow, FilterSearch, LiveIndicator, ResultBox, FactRow, Facts, Segmented, SummaryStrip, SummaryStripSep, Switch } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
-
-const STATUS_WORD: Record<SourceStatus, string> = { imported: 'Imported', warning: 'Imported · 1 warning', failed: 'Failed', inactive: 'Inactive', running: 'Importing' };
-const STATUS_ICON: Record<SourceStatus, 'check' | 'warning' | 'cross' | 'pause-narrow' | 'running'> = { imported: 'check', warning: 'warning', failed: 'cross', inactive: 'pause-narrow', running: 'running' };
-const RESULT_WORD = { imported: 'Imported', warning: 'Warning', failed: 'Failed', paused: 'Paused' } as const;
-/** The "last import" shield of the detail pane: the word and fill come from the source status, not from the last outcome. */
-const SHIELD: Record<Exclude<SourceStatus, 'running'>, { word: string; status: 'success' | 'warning' | 'danger' | 'neutral' }> = {
-  imported: { word: 'imported', status: 'success' },
-  warning: { word: '1 warning', status: 'warning' },
-  failed: { word: 'failed', status: 'danger' },
-  inactive: { word: 'inactive', status: 'neutral' },
-};
-const DIFF_SIGN = { added: '+', removed: '−', skipped: '!', hunk: '', context: '' } as const;
-const DIFF_WORD = { added: 'added', removed: 'removed', skipped: 'skipped' } as const;
+import {
+  DIFF_SIGN, DIFF_WORD, RESULT_ICON, RESULT_WORD, SHIELD, STATUS_ICON, STATUS_WORD,
+  changeSign, emptyDiffText, facts, lastImportText, monoParts, originLabel, originOptions, scheduleText, statusOptions,
+} from './listing';
 
 function ServiceLinks({ importer, className = 'ex-row' }: { importer: Importer; className?: string }) {
   return (
@@ -191,20 +182,14 @@ export default function SourcesPage() {
             iconSize={13}
             value={status}
             onChange={(id) => setStatus(id as SourceStatus | 'all')}
-            options={[
-              { id: 'all', label: 'All', count: counts.all },
-              { id: 'imported', label: 'Imported', icon: 'check', iconTone: 'success', count: counts.imported },
-              { id: 'warning', label: 'Warnings', icon: 'warning', iconTone: 'warning', count: counts.warning },
-              { id: 'failed', label: 'Failing', icon: 'cross', iconTone: 'danger', count: counts.failed },
-              { id: 'inactive', label: 'Inactive', icon: 'pause-narrow', iconTone: 'muted', count: counts.inactive },
-            ]}
+            options={statusOptions(counts)}
           />
           <Segmented
             label="Origin"
             pressedFill="selected"
             value={origin}
             onChange={(id) => setOrigin(id as SourceOrigin | 'all')}
-            options={[{ id: 'all', label: 'All', count: originTotals.all }, ...SOURCE_ORIGINS.map((o) => ({ id: o.id, label: o.label, count: originTotals[o.id] }))]}
+            options={originOptions(originTotals)}
           />
           <span role="status" className="filter-bar-end sources-shown">{shown.length} of {counts.all} sources</span>
         </FilterRow>
@@ -226,8 +211,7 @@ export default function SourcesPage() {
             const running = st === 'running';
             const upload = j.origin === 'upload';
             const isSel = selected?.id === j.id;
-            const last = running ? 'started just now'
-              : j.lastSyncAt ? `${upload ? 'uploaded' : 'last import'} ${st === 'inactive' ? formatShortClock(j.lastSyncAt).split(' · ')[0] : relative(j.lastSyncAt)}` : '';
+            const last = lastImportText(j, st, relative);
             return (
               <article key={j.id} aria-label={j.name} className="source-card" data-selected={isSel ? '' : undefined}>
                 <div className="source-card-head">
@@ -246,7 +230,7 @@ export default function SourcesPage() {
                   <span className="source-origin">{originLabel(j.origin)}</span>
                   <span className="demo-mono source-kind">{j.artifactLabel}</span>
                   {j.secretName ? <span className="source-secret"><Icon name="lock" size={13} /><span className="sr-only">Secret </span><span className="demo-mono">{j.secretName}</span></span> : null}
-                  <span>{upload ? 'no schedule · one-off' : j.active ? `next scan ${formatHourMinute(schedule.nextScanAt)}` : 'scans paused'}</span>
+                  <span>{scheduleText(j, schedule.nextScanAt)}</span>
                   <ServiceLinks importer={j} className="source-card-services" />
                 </div>
                 {j.error ? (
@@ -374,9 +358,7 @@ export default function SourcesPage() {
                 </div>
               ) : activeEntry ? <p className="muted" style={{ margin: 0 }}>Loading the diff…</p> : (
                 <div className="diff-empty">
-                  {selected.origin === 'upload'
-                    ? `Uploaded once on ${formatDay(selected.createdAt)}. Re-upload a new version of the file and the change will appear here as a diff.`
-                    : `The contract has not changed since its initial import (${formatDay(selected.createdAt)}). Nothing to compare yet: the next change will appear here as a diff.`}
+                  {emptyDiffText(selected)}
                 </div>
               )}
             </div>
@@ -387,37 +369,10 @@ export default function SourcesPage() {
   );
 }
 
-function originLabel(origin: SourceOrigin): string {
-  return SOURCE_ORIGINS.find((o) => o.id === origin)?.label ?? origin;
-}
-
 /** Wraps each token (secret name, header) of a sentence in a mono span. */
 function monoTokens(text: string, tokens: readonly (string | undefined)[]): ReactNode {
-  const list = tokens.filter((t): t is string => Boolean(t));
-  if (!list.length) return text;
-  const re = new RegExp(`(${list.map((t) => t.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|')})`);
-  return text.split(re).map((part, i) => (list.includes(part) ? <span key={i} className={i === 1 ? 'demo-mono source-failure-secret' : 'demo-mono'}>{part}</span> : part));
+  return monoParts(text, tokens).map((part, i) => (part.className ? <span key={i} className={part.className}>{part.text}</span> : part.text));
 }
-
-type Fact = Pick<RegistryFact, 'term' | 'value' | 'sub' | 'mono'>;
-
-function facts(s: Importer, nextScanAt: Date | string): Fact[] {
-  const up = s.origin === 'upload';
-  return [
-    { term: 'Origin', value: SOURCE_ORIGINS.find((o) => o.id === s.origin)?.fact ?? s.origin, sub: up ? 'Re-upload a new version to update its Services' : undefined },
-    { term: 'Artifact', value: `${s.role === 'primary' ? 'Primary' : 'Secondary'} · ${s.artifactLabel}`, mono: true,
-      sub: s.artifactNote ?? (s.role === 'primary' ? 'Creates or updates Services from this contract' : 'Merges examples into existing Services only') },
-    { term: 'Secret', value: up ? 'None, uploaded file' : s.secretName ?? 'None, public resource', sub: s.secretName ? s.secretType : undefined, mono: Boolean(s.secretName) },
-    { term: 'TLS validation', value: up ? 'Not applicable' : s.sslValidation ? 'Enabled' : 'Disabled for this source' },
-    up ? { term: 'Schedule', value: 'None · one-off upload' }
-      : s.active ? { term: 'Schedule', value: `Global hourly scan · next ${formatHourMinute(nextScanAt)}`, sub: 'Also on demand with Import now' }
-      : { term: 'Schedule', value: 'Paused, not scanned', sub: 'Turn the switch on to resume' },
-    { term: 'Labels', value: s.labels.map((l) => `${l.key}=${l.value}`).join(' · ') || 'None', mono: true },
-    { term: 'Created', value: `${formatDay(s.createdAt)} by ${s.createdBy}` },
-  ];
-}
-
-const RESULT_ICON = { imported: 'check', warning: 'warning', failed: 'cross', paused: 'pause-narrow' } as const;
 
 function TimelineLine({ entry, when }: { entry: Extract<SyncEntry, { kind: 'run' }>; when: string }) {
   return (
@@ -432,7 +387,7 @@ function TimelineLine({ entry, when }: { entry: Extract<SyncEntry, { kind: 'run'
         {entry.changes.length ? (
           <>
             <span className="muted">contract changed:</span>
-            {entry.changes.map((c) => <span key={c.sign + c.text} className="sync-part" data-sign={c.sign}>{c.sign === '!' ? '' : c.sign === '-' ? '−' : c.sign}{c.text}</span>)}
+            {entry.changes.map((c) => <span key={c.sign + c.text} className="sync-part" data-sign={c.sign}>{changeSign(c.sign)}{c.text}</span>)}
           </>
         ) : <span className="sync-entry-plain" data-result={entry.result}>{entry.note ?? 'no contract change'}</span>}
         {entry.revision ? <span className="muted sync-entry-rev">{entry.revision}</span> : null}
