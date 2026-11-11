@@ -12,26 +12,49 @@ import {
   type TestStepResult,
 } from '@/domain/testing';
 import { PageHeader, useAnnounce, usePageTitle, useQuery, useRelativeTime, useUseCases } from '@/ui/app';
-import { ApiBadge, Button, ConformanceBand, type OperationResult, CiPanel, Icon, StatusBadge, type Outcome, LiveIndicator, MethodTag, RunProgress, type RunSegment, RunnerLog, SectionLabel } from '@microcks/deep-ink';
+import { ApiBadge, Button, ConformanceBand, CiPanel, Icon, StatusBadge, LiveIndicator, MethodTag, RunProgress, RunnerLog, SectionLabel } from '@microcks/deep-ink';
 import { TEST_RESULT_WORD } from '@/ui/app/outcomes';
 import { useReplay } from '@/ui/app/use-replay';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { useThrottledAnnounce } from '../tests/useThrottledAnnounce';
+import {
+  STEP_LOOK,
+  STEP_MS,
+  STEP_SEGMENT,
+  basePath,
+  conformantSentence,
+  failedSchemaName,
+  hostOf,
+  initialReplay,
+  newEnumValue,
+  nowCalling,
+  operationBandLabels,
+  operationOutcomes,
+  operationStates,
+  operationsSummary,
+  previousPoint,
+  progressCounts,
+  resultStatus,
+  runOperations,
+  runScore,
+  runnerLogLines,
+  runningLabel,
+  schemaBadgeValue,
+  scoreLevel,
+  selectedStepId,
+  stepAnnouncement,
+  stepCounts,
+  stepOperationText,
+  stepSchemaName,
+  stepStates,
+  trendDir,
+  trendIcon,
+  trendText,
+  verdictAnnouncement,
+  verdictIcon,
+  verdictWord,
+} from './run';
 import '@microcks/demo-styles/pages/test-run/test-run.css';
-
-/** The run "executes" one step every 1.3 s, as in the prototype. */
-const STEP_MS = 1300;
-/** A live run opens with 3 steps already finished (the prototype's baseline). */
-const LIVE_START = 3;
-
-type StepState = 'pass' | 'fail' | 'run' | 'pend';
-const LOOK: Record<StepState, { word: string; status: Outcome }> = {
-  pass: { word: 'Passed', status: 'conformant' },
-  fail: { word: 'Failed', status: 'failed' },
-  run: { word: 'Running', status: 'running' },
-  pend: { word: 'Queued', status: 'never' },
-};
-const SEGMENT: Record<StepState, RunSegment> = { pass: 'done', fail: 'failed', run: 'current', pend: 'queued' };
 
 export default function TestRunPage() {
   const { testRunId = '' } = useParams();
@@ -50,22 +73,6 @@ export default function TestRunPage() {
   );
 }
 
-function hostOf(url: string): string {
-  try {
-    return new URL(url).host;
-  } catch {
-    return url;
-  }
-}
-function basePath(url: string): string {
-  try {
-    const p = new URL(url).pathname;
-    return p === '/' ? '' : p.replace(/\/$/, '');
-  } catch {
-    return '';
-  }
-}
-
 function RunView({ base }: { base: TestRun }) {
   const uc = useUseCases();
   const relative = useRelativeTime();
@@ -74,9 +81,7 @@ function RunView({ base }: { base: TestRun }) {
   const form = useQuery(() => uc.testing.getCreateForm(base.serviceId), [base.serviceId]);
   const timeline = useQuery(() => uc.testing.timeline(base.serviceId), [base.serviceId]);
   const total = base.steps.length;
-  const [play, setPlay] = useState<{ phase: 'running' | 'done'; tick: number }>(
-    base.live ? { phase: 'running', tick: Math.min(LIVE_START, total) } : { phase: 'done', tick: total },
-  );
+  const [play, setPlay] = useState(initialReplay(base));
   const { phase, tick } = play;
   /** `null` follows the run (latest finished step while running, the first failed one when done); '' = all closed. */
   const [sel, setSel] = useState<string | null>(null);
@@ -119,15 +124,8 @@ function RunView({ base }: { base: TestRun }) {
   const service = form.data?.services.find((s) => s.id === base.serviceId);
   const serviceLabel = service ? `${service.name} ${service.version}` : base.serviceId;
 
-  const stateOf = (i: number): StepState => {
-    const s = base.steps[i];
-    if (i < finished && s) return s.result === 'passed' ? 'pass' : 'fail';
-    return i === tick && running ? 'run' : 'pend';
-  };
-  const states = base.steps.map((_, i) => stateOf(i));
-  const passCount = states.filter((s) => s === 'pass').length;
-  const failCount = states.filter((s) => s === 'fail').length;
-  const queuedCount = total - passCount - failCount;
+  const states = stepStates(base, finished, tick, running);
+  const { pass: passCount, fail: failCount, queued: queuedCount } = stepCounts(states);
 
   // Announce progress (throttled) and the verdict.
   const previousProgress = useRef({ finished, done });
@@ -135,51 +133,33 @@ function RunView({ base }: { base: TestRun }) {
     const prev = previousProgress.current;
     previousProgress.current = { finished, done };
     if (done && !prev.done) {
-      announce(`Test run #${base.id} ${TEST_RESULT_WORD[base.result].toLowerCase()}: ${passCount} of ${total} steps passed.`);
+      announce(verdictAnnouncement(base, passCount, total));
     } else if (!done && finished > prev.finished) {
       const step = base.steps[finished - 1];
-      if (step) throttled(`Step ${finished} of ${total}: ${step.name} ${step.result}.`);
+      if (step) throttled(stepAnnouncement(finished, total, step));
     }
   }, [finished, done, base, total, passCount, announce, throttled]);
 
-  const operations = useMemo(() => {
-    const labels = base.operationLabels ?? [];
-    const ids = labels.length > 0 ? labels.map((l) => l.id) : [...new Set(base.steps.map((s) => s.operationId))];
-    return ids.map((id) => {
-      const label = labels.find((l) => l.id === id);
-      const first = base.steps.find((s) => s.operationId === id);
-      const idx = base.steps.flatMap((s, i) => (s.operationId === id ? [i] : []));
-      return { id, method: label?.method ?? first?.method ?? 'GET', path: label?.path ?? first?.path ?? id, idx };
-    });
-  }, [base]);
-  const opStates = operations.map((op): StepState => {
-    const st = op.idx.map((i) => states[i]);
-    const fin = st.filter((s) => s === 'pass' || s === 'fail').length;
-    if (fin === st.length) return st.includes('fail') ? 'fail' : 'pass';
-    return st.includes('run') || fin > 0 ? 'run' : 'pend';
-  });
+  const operations = useMemo(() => runOperations(base), [base]);
+  const opStates = operationStates(operations, states);
 
-  const firstFailed = base.steps.find((s) => s.result === 'failed');
-  const autoSel = done ? (firstFailed ?? base.steps[total - 1])?.id : base.steps[tick - 1]?.id;
-  const selId = sel === null ? autoSel : sel;
+  const selId = selectedStepId(base, done, tick, sel);
 
   const log = buildRunnerLog({ ...base, result: done ? base.result : 'running' }, finished, done);
   const elapsed = elapsedMs(base, finished);
-  const score = Math.round((100 * passCount) / Math.max(1, total));
+  const score = runScore(passCount, total);
   const waitSec = Math.round(base.timeoutMs / 1000);
   const apiRef = service ? `${service.name}:${service.version}` : base.serviceId;
   const ci = ciCommandForRun(apiRef, base.endpoint, base.runner, waitSec);
   const current = running ? base.steps[tick] : undefined;
   const prefix = basePath(base.endpoint);
 
-  const points = timeline.data ?? [];
-  const at = points.findIndex((p) => p.runId === base.id);
-  const previous = at > 0 ? points[at - 1] : undefined;
+  const previous = previousPoint(timeline.data ?? [], base.id);
   const delta = previous ? score - previous.conformance : 0;
 
   const brokenOps = operations.filter((_, i) => opStates[i] === 'fail');
-  const failedSchema = firstFailed?.schemaRef?.split('/').pop();
-  const bandOutcomes: OperationResult[] = opStates.map((s) => (s === 'pass' ? 'pass' : s === 'fail' ? 'fail' : 'untested'));
+  const failedSchema = failedSchemaName(base);
+  const bandOutcomes = operationOutcomes(opStates);
   const related = base.relatedWorkflowRun;
 
   const badges = (
@@ -190,10 +170,10 @@ function RunView({ base }: { base: TestRun }) {
       {running ? (
         <>
           <LiveIndicator />
-          <StatusBadge shape="bare" status="running" label={`Running · step ${Math.min(tick + 1, total)} of ${total}`} />
+          <StatusBadge shape="bare" status="running" label={runningLabel(tick, total)} />
         </>
       ) : (
-        <ApiBadge label="result" value={TEST_RESULT_WORD[base.result].toLowerCase()} status={base.result === 'passed' ? 'success' : base.result === 'failed' ? 'danger' : 'warning'} />
+        <ApiBadge label="result" value={TEST_RESULT_WORD[base.result].toLowerCase()} status={resultStatus(base.result)} />
       )}
     </span>
   );
@@ -263,13 +243,9 @@ function RunView({ base }: { base: TestRun }) {
             total={total}
             caption="test steps done"
             nowLabel="Now calling"
-            now={current ? `${current.method} ${base.endpoint}${current.path}` : 'Computing conformance score…'}
-            segments={states.map((st) => SEGMENT[st])}
-            counts={[
-              { kind: 'pass', text: `${passCount} passed` },
-              { kind: 'fail', text: `${failCount} failed` },
-              { kind: 'pending', text: `${queuedCount} queued` },
-            ]}
+            now={nowCalling(current, base.endpoint)}
+            segments={states.map((st) => STEP_SEGMENT[st])}
+            counts={progressCounts({ pass: passCount, fail: failCount, queued: queuedCount })}
             action={
               <Button size="sm" icon="chevron" className="tr-step-forward" onClick={stepForward}>
                 Step forward
@@ -282,29 +258,27 @@ function RunView({ base }: { base: TestRun }) {
             <div className="tr-verdict-head">
               <div className="tr-score">
                 <SectionLabel lineHeight="normal">Conformance score</SectionLabel>
-                <span className="tr-score-value" data-level={score >= 80 ? 'high' : score >= 50 ? 'mid' : 'low'}>
+                <span className="tr-score-value" data-level={scoreLevel(score)}>
                   {score}%
                 </span>
                 {previous ? (
-                  <span className="tr-trend" data-dir={delta < 0 ? 'down' : delta > 0 ? 'up' : 'flat'}>
-                    <Icon name={delta < 0 ? 'arrow-down' : delta > 0 ? 'arrow-up' : 'dash'} size={13} strokeWidth={2.4} />
-                    {delta === 0 ? 'Same as' : `${Math.abs(delta)} pts vs`} run #{previous.runId} <span className="tr-trend-prev">{previous.conformance}%</span>
+                  <span className="tr-trend" data-dir={trendDir(delta)}>
+                    <Icon name={trendIcon(delta)} size={13} strokeWidth={2.4} />
+                    {trendText(delta)} run #{previous.runId} <span className="tr-trend-prev">{previous.conformance}%</span>
                   </span>
                 ) : null}
               </div>
               <div className="tr-verdict-text">
                 <span className="tr-verdict-word" data-result={base.result}>
-                  <Icon name={base.result === 'passed' ? 'check' : base.result === 'failed' ? 'cross' : 'clock'} size={18} strokeWidth={2.6} />
-                  {base.result === 'passed' ? 'Passed' : base.result === 'failed' ? 'Failed' : 'Timed out'}
+                  <Icon name={verdictIcon(base.result)} size={18} strokeWidth={2.6} />
+                  {verdictWord(base.result)}
                 </span>
                 <span className="tr-verdict-summary">
                   <span className="demo-mono-strong">
                     {passCount}/{total}
                   </span>{' '}
                   test steps passed ·{' '}
-                  {brokenOps.length === 0
-                    ? `all ${operations.length} operations match their contract`
-                    : `${brokenOps.length} of ${operations.length} operations broke ${brokenOps.length === 1 ? 'its' : 'their'} contract`}
+                  {operationsSummary(brokenOps.length, operations.length)}
                 </span>
                 {brokenOps[0] && base.result === 'failed' && failedSchema ? (
                   <span className="tr-verdict-detail">
@@ -330,10 +304,7 @@ function RunView({ base }: { base: TestRun }) {
 
             <div className="tr-band">
               <span className="tr-band-caption">Conformance band · one cell per operation</span>
-              <ConformanceBand
-                outcomes={bandOutcomes}
-                labels={operations.map((op, i) => `${op.method} ${op.path} · ${LOOK[opStates[i] ?? 'pend'].word.toLowerCase()}`)}
-              />
+              <ConformanceBand outcomes={bandOutcomes} labels={operationBandLabels(operations, opStates)} />
             </div>
 
             <div className="tr-actions">
@@ -372,7 +343,7 @@ function RunView({ base }: { base: TestRun }) {
         <RunnerLog
           className="tr-log"
           status={running ? <LiveIndicator variant="inline" label="live · streaming" /> : `${log.length} lines · completed`}
-          lines={log.map((l) => ({ time: l.time, level: l.level, text: l.message, emphasis: l.tone === 'emphasis', error: l.tone === 'error' }))}
+          lines={runnerLogLines(log)}
         />
       </div>
 
@@ -404,7 +375,7 @@ function RunView({ base }: { base: TestRun }) {
                     <span key={i} data-state={states[i]} />
                   ))}
                 </span>
-                <StatusBadge shape="bare" status={LOOK[opState].status} label={LOOK[opState].word} className="tr-state" />
+                <StatusBadge shape="bare" status={STEP_LOOK[opState].status} label={STEP_LOOK[opState].word} className="tr-state" />
                 <span className="tr-op-ms">{fin.length ? `${ms} ms` : '—'}</span>
               </div>
 
@@ -438,7 +409,7 @@ function RunView({ base }: { base: TestRun }) {
                         {isFin ? (step.httpStatus ?? 200) : '—'}
                       </span>
                       <span className="tr-step-ms">{isFin ? `${step.ms} ms` : '—'}</span>
-                      <StatusBadge shape="bare" status={LOOK[st].status} label={LOOK[st].word} className="tr-state" />
+                      <StatusBadge shape="bare" status={STEP_LOOK[st].status} label={STEP_LOOK[st].word} className="tr-state" />
                       <span className="tr-step-chevron" aria-hidden="true">
                         {isFin ? <Icon name="chevron" size={16} className="tr-step-chevron-icon" /> : null}
                       </span>
@@ -483,13 +454,10 @@ function StepDiff({ id, step, run, serviceId }: { id: string; step: TestStepResu
   const diff = buildContractDiff(step);
   const ko = step.result === 'failed';
   const isArray = Array.isArray(step.payload);
-  const n = isArray ? (step.payload as unknown[]).length : 1;
   const code = step.httpStatus ?? 200;
-  const schema = step.schemaRef?.split('/').pop() ?? 'the schema';
-  const props = step.contract?.length ?? 0;
-  const newEnum = step.violations.map((v) => /^Enum value "([^"]+)"/.exec(v.message)?.[1]).find(Boolean);
-  const label = run.operationLabels?.find((o) => o.id === step.operationId);
-  const opText = label ? `${label.method} ${label.path}` : `${step.method} ${step.path}`;
+  const schema = stepSchemaName(step);
+  const newEnum = newEnumValue(step);
+  const opText = stepOperationText(run, step);
   return (
     <div id={id} role="region" aria-label={`Contract versus actual response for ${step.name}`} className="tr-diff">
       <div className="tr-diff-head">
@@ -504,11 +472,7 @@ function StepDiff({ id, step, run, serviceId }: { id: string; step: TestStepResu
             </span>
           ) : null}
         </div>
-        <ApiBadge
-          label="schema"
-          value={ko ? `${step.violations.length} ${step.violations.length === 1 ? 'violation' : 'violations'}` : 'Conformant'}
-          status={ko ? 'danger' : 'success'}
-        />
+        <ApiBadge label="schema" value={schemaBadgeValue(step)} status={ko ? 'danger' : 'success'} />
       </div>
 
       <div className="tr-request">
@@ -577,11 +541,7 @@ function StepDiff({ id, step, run, serviceId }: { id: string; step: TestStepResu
       ) : (
         <p className="tr-diff-ok">
           <Icon name="check" size={14} className="tr-diff-ok-icon" />
-          <span>
-            {isArray
-              ? `Conformant. ${n} ${n === 1 ? 'item' : 'items'} checked against ${schema}, ${props} properties each, 0 violations. Status ${code} is declared by the contract.`
-              : `Conformant. ${props} properties checked against ${schema}, 0 violations. Status ${code} is declared by the contract.`}
-          </span>
+          <span>{conformantSentence(step)}</span>
         </p>
       )}
     </div>
