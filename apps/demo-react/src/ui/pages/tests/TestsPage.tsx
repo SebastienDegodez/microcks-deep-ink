@@ -2,15 +2,33 @@ import { useMemo, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router';
 import { filterRuns, type TestRunSummary } from '@/domain/testing';
 import { PageHeader, useQuery, useRelativeTime, usePageTitle, useUseCases } from '@/ui/app';
-import { ApiBadge, type ProofStatus, Icon, Segmented, Button, EmptyState, Select, DataTable, type DataTableColumn } from '@microcks/deep-ink';
+import { ApiBadge, Icon, Segmented, Button, EmptyState, Select, DataTable, type DataTableColumn } from '@microcks/deep-ink';
 import { TEST_RESULT_ICON, TEST_RESULT_WORD } from '@/ui/app/outcomes';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { testRunHref } from '@/ui/app/format';
-import { fmtDuration, shortDate, TestTimeline, timelineRuns } from './TestTimeline';
+import { TestTimeline } from './TestTimeline';
+import { fmtDuration, rateTone, shortDate, timelineRuns } from './timeline';
+import {
+  bandLabel,
+  bandOutcomes,
+  bandTitle,
+  endpointHost,
+  HISTORY_LIMIT,
+  historyDescription,
+  historyEnvironments,
+  historyRunners,
+  initialRunId,
+  LAST_TEST_TONE,
+  latestRun,
+  moreRunsLabel,
+  oldestRunNumber,
+  passRateOf,
+  relaunchHref,
+  resultOptions,
+  serviceLinkLabel,
+  visibleRuns,
+} from './history';
 import '@microcks/demo-styles/pages/tests/tests.css';
-
-const LIMIT = 12;
-const OP_WORD = { pass: 'passed', fail: 'failed', none: 'no result' } as const;
 
 export default function TestsPage() {
   const { serviceId = '' } = useParams();
@@ -24,10 +42,9 @@ export default function TestsPage() {
   const service = data?.[1].services.find((s) => s.id === serviceId);
 
   const runs = data?.[0] ?? [];
-  const latest = runs.reduce<TestRunSummary | undefined>((a, r) => (!a || r.startedAt > a.startedAt ? r : a), undefined);
+  const latest = latestRun(runs);
   const recent = timelineRuns(runs);
-  const passRate = recent.length ? Math.round((recent.filter((r) => r.result === 'passed').length / recent.length) * 100) : null;
-  const examples = service?.exampleCount;
+  const passRate = passRateOf(recent);
 
   return (
     <>
@@ -41,17 +58,13 @@ export default function TestsPage() {
         ]}
         leading={
           service ? (
-            <RouterLink className="tests-title-badge" to={`/services/${serviceId}`} aria-label={`${service.protocol} ${service.name} ${service.version}, open the service`}>
+            <RouterLink className="tests-title-badge" to={`/services/${serviceId}`} aria-label={serviceLinkLabel(service)}>
               <ApiBadge protocol={service.protocol} name={service.name} version={service.version} size="xl" />
             </RouterLink>
           ) : null
         }
         descriptionWidth={760}
-        description={
-          service
-            ? `Conformance tests run against the implementations of this contract, on every endpoint. Each run replays the ${examples ?? ''}${examples ? ' ' : ''}contract examples and checks responses against the ${service.format.split(' ')[0]} schemas.`
-            : undefined
-        }
+        description={service ? historyDescription(service) : undefined}
         descriptionTone="secondary"
         align="start"
         actions={
@@ -64,13 +77,13 @@ export default function TestsPage() {
         <div className="tests-head-extra">
           <ul className="tests-kpis" aria-label="Test summary">
             {service.conformance !== null ? (
-              <li><ApiBadge label="conformance" value={`${service.conformance}%`} status={tone(service.conformance)} /></li>
+              <li><ApiBadge label="conformance" value={`${service.conformance}%`} status={rateTone(service.conformance)} /></li>
             ) : null}
             {latest ? (
-              <li><ApiBadge label="last test" value={TEST_RESULT_WORD[latest.result].toLowerCase()} status={LAST_TONE[latest.result]} /></li>
+              <li><ApiBadge label="last test" value={TEST_RESULT_WORD[latest.result].toLowerCase()} status={LAST_TEST_TONE[latest.result]} /></li>
             ) : null}
             {passRate !== null ? (
-              <li><ApiBadge label={`pass rate · ${recent.length} runs`} value={`${passRate}%`} status={tone(passRate)} /></li>
+              <li><ApiBadge label={`pass rate · ${recent.length} runs`} value={`${passRate}%`} status={rateTone(passRate)} /></li>
             ) : null}
           </ul>
           {service.protocol !== 'A2A' ? <OtherServices /> : null}
@@ -82,9 +95,6 @@ export default function TestsPage() {
     </>
   );
 }
-
-const LAST_TONE: Record<TestRunSummary['result'], ProofStatus> = { passed: 'success', failed: 'danger', timeout: 'warning', running: 'info' };
-const tone = (pct: number): ProofStatus => (pct >= 80 ? 'success' : pct >= 50 ? 'warning' : 'danger');
 
 /** The agent tests live on their own screen: point to the latest one from the history of any other service. */
 function OtherServices() {
@@ -119,21 +129,16 @@ function History({
   const [environment, setEnvironment] = useState('all');
   const [showAll, setShowAll] = useState(false);
 
-  const runners = useMemo(() => [...new Set(runs.map((r) => r.runner))], [runs]);
-  const environments = useMemo(() => {
-    const seen = new Map<string, string>();
-    for (const r of runs) if (!seen.has(r.environment)) seen.set(r.environment, r.endpoint);
-    return [...seen];
-  }, [runs]);
+  const runners = useMemo(() => historyRunners(runs), [runs]);
+  const environments = useMemo(() => historyEnvironments(runs), [runs]);
   const isFiltered = result !== 'all' || runner !== 'all' || environment !== 'all';
   const filtered = filterRuns(runs, { result, runner, environment });
   const matchIds = new Set(filtered.map((r) => r.id));
   const matches = (r: TestRunSummary) => matchIds.has(r.id);
-  const visible = showAll || isFiltered ? filtered : filtered.slice(0, LIMIT);
-  const [sel, setSel] = useState(() => (runs.find((r) => r.id === '117') ? '117' : runs[0]?.id));
-  const passedCount = runs.filter((r) => r.result === 'passed').length;
+  const visible = visibleRuns(filtered, showAll || isFiltered);
+  const [sel, setSel] = useState(() => initialRunId(runs));
   const reset = () => { setResult('all'); setRunner('all'); setEnvironment('all'); };
-  const oldest = runs.reduce((min, r) => Math.min(min, Number(r.id)), Number.POSITIVE_INFINITY);
+  const oldest = oldestRunNumber(runs);
 
   const columns: DataTableColumn<TestRunSummary>[] = [
     {
@@ -191,11 +196,11 @@ function History({
       key: 'operations',
       header: 'Operations',
       render: (r) => {
-        const outcomes = operations.map((_, i) => r.operations?.[i] ?? 'none');
+        const outcomes = bandOutcomes(operations, r);
         return (
-          <span className="tests-band" role="img" aria-label={operations.map((op, i) => `${op.verb} ${op.path} ${OP_WORD[outcomes[i] ?? 'none']}`).join(', ')}>
+          <span className="tests-band" role="img" aria-label={bandLabel(operations, outcomes)}>
             {outcomes.map((o, i) => (
-              <span key={operations[i]?.id ?? i} data-outcome={o} title={`${operations[i]?.verb} ${operations[i]?.path}: ${OP_WORD[o]}`} />
+              <span key={operations[i]?.id ?? i} data-outcome={o} title={bandTitle(operations[i], o)} />
             ))}
           </span>
         );
@@ -213,7 +218,7 @@ function History({
             <RouterLink to={testRunHref(r)} aria-label={`Open run #${r.id}`}>Open</RouterLink>
           </Button>
           <Button asChild size="sm" variant="ghost" icon="reset" iconOnly aria-label={`Relaunch run #${r.id}`} title="Relaunch with the same configuration">
-            <RouterLink to={`/tests/create?service=${r.serviceId}&from=${r.id}`} />
+            <RouterLink to={relaunchHref(r)} />
           </Button>
         </span>
       ),
@@ -246,11 +251,7 @@ function History({
           variant="joined"
           value={result}
           onChange={(id) => { setResult(id as typeof result); setShowAll(false); }}
-          options={[
-            { id: 'all', label: 'All', count: runs.length },
-            { id: 'passed', label: 'Passed', count: passedCount },
-            { id: 'failed', label: 'Failed', count: runs.length - passedCount },
-          ]}
+          options={resultOptions(runs)}
         />
         <span className="tests-filter">
           <label htmlFor="tests-runner">Runner</label>
@@ -263,7 +264,7 @@ function History({
           <label htmlFor="tests-endpoint">Endpoint</label>
           <Select id="tests-endpoint" className="tests-filter-select" size="sm" value={environment} onChange={(e) => { setEnvironment(e.target.value); setShowAll(false); }}>
             <option value="all">All endpoints</option>
-            {environments.map(([env, url]) => <option key={env} value={env}>{env} · {url.replace(/^https?:\/\//, '')}</option>)}
+            {environments.map(([env, url]) => <option key={env} value={env}>{env} · {endpointHost(url)}</option>)}
           </Select>
         </span>
         {isFiltered ? <Button variant="link" onClick={reset}>Reset filters</Button> : null}
@@ -287,10 +288,10 @@ function History({
             <Button variant="link" onClick={reset}>Reset filters</Button>
           </p>
         ) : null}
-        {!isFiltered && filtered.length > LIMIT ? (
+        {!isFiltered && filtered.length > HISTORY_LIMIT ? (
           <div className="tests-table-more">
             <Button size="sm" variant="secondary" onClick={() => setShowAll(!showAll)} aria-expanded={showAll}>
-              {showAll ? `Show the ${LIMIT} latest only` : `Show ${filtered.length - LIMIT} older runs`}
+              {moreRunsLabel(showAll, filtered.length)}
             </Button>
           </div>
         ) : null}
