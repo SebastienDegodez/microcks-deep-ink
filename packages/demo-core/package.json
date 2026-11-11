@@ -2,7 +2,7 @@
   "name": "@microcks/demo-core",
   "private": true,
   "version": "0.0.0",
-  "description": "Framework-neutral domain, use cases and in-memory adapters shared by the alternative Microcks demos.",
+  "description": "Framework-neutral domain, use cases, in-memory adapters and presentation helpers shared by the alternative Microcks demos.",
   "license": "Apache-2.0",
   "type": "module",
   "exports": {
@@ -117,6 +117,10 @@
     "./infrastructure/in-memory/testing": {
       "types": "./dist/infrastructure/in-memory/testing/index.d.ts",
       "default": "./dist/infrastructure/in-memory/testing/index.js"
+    },
+    "./presentation/shared": {
+      "types": "./dist/presentation/shared/index.d.ts",
+      "default": "./dist/presentation/shared/index.js"
     },
     "./*": {
       "types": "./dist/*.d.ts",

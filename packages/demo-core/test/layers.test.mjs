@@ -5,7 +5,8 @@ import { fileURLToPath } from 'node:url';
 import { test } from 'node:test';
 import ts from 'typescript';
 
-// The layer rules demo-react applied to this code before #287 moved it here (.dependency-cruiser.cjs).
+// The layer rules demo-react applied to this code before #287 moved it here (.dependency-cruiser.cjs),
+// plus the presentation helpers both demos render with: they read the domain only.
 const sourceRoot = fileURLToPath(new URL('../src/', import.meta.url));
 const FEATURE_APPLICATIONS = /^application\/(arazzo|catalog|copilot|govern|importing|observe|testing)\//;
 
@@ -48,6 +49,8 @@ function layerViolations(graph) {
       if (FEATURE_APPLICATIONS.test(from) && FEATURE_APPLICATIONS.test(to) && featureOf(from, 'application') !== featureOf(to, 'application')) {
         result.push(`Cross-feature application: ${edge}`);
       }
+      if (from.startsWith('presentation/') && !/^(domain|presentation)\//.test(to)) result.push(`Presentation depends on domain only: ${edge}`);
+      if (from.startsWith('infrastructure/') && to.startsWith('presentation/')) result.push(`Infrastructure ignores the presentation: ${edge}`);
     }
   }
   return result.concat(cycles(graph));
@@ -83,6 +86,8 @@ test('the layer rules reject upward, cross-feature, dangling and circular import
     'Cross-feature application': { 'application/catalog/a.ts': ['application/testing/b.ts'], 'application/testing/b.ts': [] },
     Unresolvable: { 'domain/catalog/a.ts': ['domain/catalog/missing.ts'] },
     Circular: { 'domain/catalog/a.ts': ['domain/catalog/b.ts'], 'domain/catalog/b.ts': ['domain/catalog/a.ts'] },
+    'Presentation depends on domain only': { 'presentation/cockpit/a.ts': ['application/shared/b.ts'], 'application/shared/b.ts': [] },
+    'Infrastructure ignores the presentation': { 'infrastructure/in-memory/shared/a.ts': ['presentation/shared/b.ts'], 'presentation/shared/b.ts': [] },
   };
   for (const [rule, edges] of Object.entries(cases)) {
     assert.ok(layerViolations(graph(edges)).some((v) => v.startsWith(rule)), rule);
@@ -95,6 +100,8 @@ test('the layer rules reject upward, cross-feature, dangling and circular import
       'application/shared/b.ts': [],
       'application/ports/c.ts': [],
       'infrastructure/in-memory/catalog/a.ts': ['application/ports/c.ts', 'domain/catalog/a.ts'],
+      'presentation/cockpit/d.ts': ['domain/catalog/a.ts', 'domain/shared/index.ts', 'presentation/shared/e.ts'],
+      'presentation/shared/e.ts': [],
     })),
     [],
   );

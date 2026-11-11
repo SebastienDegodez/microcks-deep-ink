@@ -1,10 +1,11 @@
 # Demo core (#287)
 
 `@microcks/demo-core` is a private root-workspace package, not a design system. It holds the
-framework-neutral half of the Microcks demo: the domain, the use cases with their ports, and the
-in-memory adapters with their seed data. React, Svelte and Angular demos are alternative consumers.
-Each one keeps its own rendering, routing, hooks, page styles and composition root; no rendering
-code is shared.
+framework-neutral half of the Microcks demo: the domain, the use cases with their ports, the
+in-memory adapters with their seed data, and the presentation helpers the screens render with
+(words, formatting, navigation, screen map, view models). React, Svelte and Angular demos are
+alternative consumers. Each one keeps its own rendering, routing, hooks and composition root; no
+rendering code is shared. The page styles and the logo live in `@microcks/demo-styles`.
 
 ## Layout and entry points
 
@@ -13,10 +14,13 @@ src/domain/<feature>/                    pure types and functions
 src/application/<feature>/               use cases: create<Feature>UseCases(ports)
 src/application/ports/                   the ports the use cases depend on
 src/infrastructure/in-memory/<feature>/  createInMemory<Feature>Adapters(deps?) and seed data
+src/presentation/shared/                 words, icons, formatting and navigation of every screen
+src/presentation/<screen>/               view models of one screen (cockpit, map, test-create, workflow, admin)
 ```
 
 Features: `agents`, `arazzo`, `catalog`, `copilot`, `govern`, `importing`, `observe`, `testing`,
-plus `shared`. Every directory with an `index.ts` is an explicit entry point, for example
+plus `shared`. The presentation is organised by screen instead. Every directory with an
+`index.ts` is an explicit entry point, for example
 `@microcks/demo-core/domain/catalog` or `@microcks/demo-core/infrastructure/in-memory/shared`.
 Any other module is reachable by its path without extension, for example
 `@microcks/demo-core/infrastructure/in-memory/shared/stream`. Exports resolve to the built
@@ -72,13 +76,16 @@ sources, JSX, imports leaving `src` (type-only and dynamic ones included), compu
 and reference directives, forbids design-system manifests from depending on demo-core or the demos,
 and enforces the layer rules demo-react applied to this code: the domain imports only the domain
 and never another feature except `shared`; the application imports only the domain and the
-application, and a feature's use cases never import another feature's; no import cycle.
+application, and a feature's use cases never import another feature's; the presentation imports
+only the domain and the presentation, and the adapters never import it; no import cycle.
 
 ## React facades
 
 demo-react keeps one-line facades (`export * from '@microcks/demo-core/<path>'`) at the old paths
-of `src/domain`, `src/application` and `src/infrastructure/in-memory`, so its pages, HTTP adapters,
-mock API and composition root keep their `@/` imports. The Vitest suites of the extracted code stay
+of `src/domain`, `src/application` and `src/infrastructure/in-memory`, and at the old paths of the
+presentation helpers in `src/ui` (`app/format.ts`, `pages/workflow/loom-model.ts`…), so its pages,
+HTTP adapters, mock API and composition root keep their `@/` and relative imports. The Vitest suites of the extracted code stay
 in demo-react next to those facades and import demo-core directly; `src/test-setup.ts` sets the
 default latency mode to `fast`. Its dependency rules let only the facades, their tests and the test
-setup import demo-core, with the same layer and cross-feature rules as its own source.
+setup import demo-core, with the same layer and cross-feature rules as its own source; the `src/ui`
+facades read the presentation layer only.

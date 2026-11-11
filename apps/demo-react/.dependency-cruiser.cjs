@@ -6,6 +6,8 @@
  *   composition-root.ts / main.tsx          the only places that wire infrastructure to the rest
  *   infrastructure/http   adapters calling /api/... with fetch; infrastructure/msw   the mock API (MSW), main.tsx and tests only
  *   domain, application, infrastructure/in-memory   one-line facades over @microcks/demo-core, which holds their code (#287)
+ *   ui: the framework-neutral helpers (formatting, navigation, screen map, view models) are one-line facades over
+ *       the presentation layer of @microcks/demo-core, which the Svelte demo renders with too
  *
  * Every rule has severity "error". Test files follow the same rules as the code they test: write
  * use-case tests that need the in-memory adapters next to the adapters
@@ -26,6 +28,10 @@ const TEST_FILE = '\\.test\\.tsx?$';
 const DEMO_CORE = '(^|/)(node_modules/@microcks/demo-core|packages/demo-core)/dist/';
 const DEMO_CORE_DOMAIN = `${DEMO_CORE}domain/`;
 const DEMO_CORE_APPLICATION = `${DEMO_CORE}(domain|application)/`;
+const DEMO_CORE_PRESENTATION = `${DEMO_CORE}presentation/`;
+// The src/ui modules that re-export a presentation helper of demo-core; the pages keep importing them.
+const PRESENTATION_FACADES =
+  '^src/ui/(app/(format|nav|outcomes)|lib/cn|pages/(admin/notify|cockpit/attention|map/screens|test-create/draft|workflow/(loom-model|run-facts)))\\.ts$';
 // Port contract suites (`*.contract.ts`): test-only modules that tests import, so they follow the test-file exceptions.
 const CONTRACT_FILE = '\\.contract\\.ts$';
 
@@ -44,8 +50,15 @@ module.exports = {
       comment:
         'Only the facades of src/domain, src/application and src/infrastructure/in-memory, their tests and the test setup import demo-core; the rest of the demo keeps its @/ imports.',
       severity: 'error',
-      from: { pathNot: ['^src/(domain|application|infrastructure/in-memory)/', '^src/test-setup\\.ts$'] },
+      from: { pathNot: ['^src/(domain|application|infrastructure/in-memory)/', '^src/test-setup\\.ts$', PRESENTATION_FACADES] },
       to: { path: DEMO_CORE },
+    },
+    {
+      name: 'presentation-facades-read-presentation-only',
+      comment: 'The src/ui facades re-export the presentation layer of demo-core, never its domain, use cases or adapters.',
+      severity: 'error',
+      from: { path: PRESENTATION_FACADES },
+      to: { path: DEMO_CORE, pathNot: DEMO_CORE_PRESENTATION },
     },
     {
       name: 'application-depends-on-domain-only',
@@ -101,10 +114,11 @@ module.exports = {
     },
     {
       name: 'ui-allowed-imports',
-      comment: 'src/ui may only import src/ui, src/application, src/domain, the React packages and @microcks/deep-ink.',
+      comment:
+        'src/ui may only import src/ui, src/application, src/domain, the React packages and @microcks/deep-ink (and its facades the presentation of demo-core).',
       severity: 'error',
       from: { path: '^src/ui/' },
-      to: { pathNot: ['^src/(ui|application|domain)/', UI_PACKAGES, DESIGN_SYSTEM, TEST_RUNNER] },
+      to: { pathNot: ['^src/(ui|application|domain)/', UI_PACKAGES, DESIGN_SYSTEM, TEST_RUNNER, DEMO_CORE_PRESENTATION] },
     },
     {
       name: 'only-composition-root-imports-infrastructure',
