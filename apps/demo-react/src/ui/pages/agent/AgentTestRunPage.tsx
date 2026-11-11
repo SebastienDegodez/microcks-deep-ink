@@ -18,31 +18,38 @@ import {
   type AgentTestDefaults,
   type AgentTestRunWithDetails,
   type AgentTestSetup,
-  type DetailTone,
   type DetailVerdict,
-  type TransportId,
 } from '@/domain/agents';
-import { formatClock } from '@/domain/shared';
 import { PAGE_TITLE_ID, PageHeader, useAnnounce, usePageTitle, useQuery, useRelativeTime, useUseCases } from '@/ui/app';
 import { useReplay } from '@/ui/app/use-replay';
-import { ApiBadge, Button, Callout, Checkbox, Radio, ConformanceMatrix, type CheckResult, type MatrixGroup, type MatrixRow, CiPanel, FactRow, Facts, type FactTone, Field, ProjectionPill, ResultBox, RunMeta, Icon, StatusBadge, Input, LiveIndicator, RunProgress, type RunSegment, RunnerLog, SectionLabel, Select, SummaryStrip, TaskLanes } from '@microcks/deep-ink';
+import { ApiBadge, Button, Callout, Checkbox, Radio, ConformanceMatrix, CiPanel, FactRow, Facts, Field, ProjectionPill, ResultBox, RunMeta, Icon, StatusBadge, Input, LiveIndicator, RunProgress, RunnerLog, SectionLabel, Select, SummaryStrip, TaskLanes } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
-
-/** The runner fills one matrix cell every 800 ms, as in the prototype. */
-const CHECK_MS = 800;
-const CARD_ROWS: { id: string; label: string; sub: string; perTransport: boolean }[] = [
-  { id: 'schema', label: 'Schema · required fields', sub: 'A2A v1.0 JSON Schema · name, version, supportedInterfaces, capabilities, skills…', perTransport: false },
-  { id: 'iface', label: 'Interfaces reachable', sub: 'each supportedInterfaces entry answers with A2A-Version: 1.0', perTransport: true },
-  { id: 'caps', label: 'Capabilities honoured', sub: 'streaming and pushNotifications declared true are exercised', perTransport: true },
-  { id: 'sig', label: 'Signature (JWS)', sub: 'optional in v1.0 · absent is a warning, not an error', perTransport: false },
-];
-const TRANSPORT_SUB: Record<TransportId, string> = { jsonrpc: 'preferred · SSE', http: 'SSE', grpc: 'stream' };
-const RESULT_WORD: Record<'pass' | 'fail' | 'warn', string> = { pass: 'passed', fail: 'failed', warn: 'absent' };
-const SEGMENT: Record<CheckResult, RunSegment> = { pass: 'done', fail: 'failed', warn: 'warn', running: 'current', queued: 'queued' };
-const fmtMs = (ms: number): string => (ms >= 1000 ? `${(ms / 1000).toFixed(2)} s` : `${ms} ms`);
-const TONE_WORD: Record<DetailTone, string> = { ok: 'ok', bad: 'problem', warn: 'warning', muted: '', plain: '' };
-const FACT_TONE: Record<DetailTone, FactTone | undefined> = { ok: 'success', bad: 'danger', warn: 'warning', muted: 'muted', plain: undefined };
-const CLI = "microcks test 'Pastry concierge:1.0' https://concierge.staging.acme.io A2A_CONFORMANCE --microcksURL=http://microcks.local:8080/api/ --waitFor=30sec";
+import {
+  CARD_ROWS,
+  CHECK_MS,
+  CLI,
+  FACT_TONE,
+  RESULT_WORD,
+  SEGMENT,
+  TEXT_MODES,
+  TONE_WORD,
+  autoSelectedKey,
+  cardPassedCount,
+  cellStates,
+  conversationSubsOf,
+  isCardUrl,
+  isTimeoutOk,
+  matrixColumns,
+  matrixFooter,
+  matrixGroups,
+  progressCounts,
+  resultStatus,
+  runMetaItems,
+  scoreLevelOf,
+  shownRunId,
+  toggle,
+  transportScores,
+} from './run';
 
 /** Text with `code` segments between backticks. */
 function Coded({ text }: { text: string }) {
@@ -58,10 +65,9 @@ function Setup({ defaults, initial, onRun }: { defaults: AgentTestDefaults; init
   const [timeout, setTimeoutText] = useState(String(initial.timeoutMs));
   const merged: AgentTestSetup = { ...setup, timeoutMs: Number.parseInt(timeout, 10) };
   const problem = validateSetup(merged);
-  const urlOk = /^https?:\/\/\S+$/.test(setup.cardUrl.trim());
-  const timeoutOk = timeout.trim() !== '' && Number.isFinite(merged.timeoutMs) && merged.timeoutMs > 0;
+  const urlOk = isCardUrl(setup.cardUrl);
+  const timeoutOk = isTimeoutOk(timeout, merged.timeoutMs);
   const secret = defaults.secrets.find((s) => s.name === setup.secret);
-  const toggle = <T extends string>(list: T[], id: T): T[] => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
   return (
     <section aria-labelledby="setup-title" className="setup-card">
       <div className="setup-card-head">
@@ -140,10 +146,7 @@ function Setup({ defaults, initial, onRun }: { defaults: AgentTestDefaults; init
             <legend>Compare agent text loosely</legend>
             <p>LLM agents rephrase their answers from one call to the next, so Microcks never checks agent text for strict equality. Choose how the expected text of each conversation is matched.</p>
             <div className="setup-modes">
-              {[
-                { value: 'contains' as const, label: 'Contains', example: '"Millefeuille" in the answer' },
-                { value: 'regex' as const, label: 'Regex', example: '/mille-?feuille/i' },
-              ].map((m) => (
+              {TEXT_MODES.map((m) => (
                 <Radio
                   key={m.value}
                   variant="card"
@@ -174,13 +177,6 @@ function Setup({ defaults, initial, onRun }: { defaults: AgentTestDefaults; init
   );
 }
 
-function resultAt(checks: AgentCheck[], tick: number, running: boolean, i: number): CheckResult {
-  const c = checks[i];
-  if (!c) return 'queued';
-  if (i < tick) return c.result;
-  return running && i === tick ? 'running' : 'queued';
-}
-
 function VerdictBox({ verdict }: { verdict: DetailVerdict }) {
   return (
     <ResultBox tone="danger" icon="cross" bordered={false} surface="raised" live="off" title={<Coded text={verdict.title} />}>
@@ -200,7 +196,7 @@ function Detail({ detail, check, onClose }: { detail: AgentCheckDetail; check: A
           <span className="cell-detail-sub">{detail.sub}</span>
         </div>
         <div className="cell-detail-actions">
-          <ApiBadge label={card ? 'agent card' : 'conversation'} value={RESULT_WORD[result]} status={result === 'pass' ? 'success' : result === 'fail' ? 'danger' : 'warning'} />
+          <ApiBadge label={card ? 'agent card' : 'conversation'} value={RESULT_WORD[result]} status={resultStatus(result)} />
           <Button size="sm" iconOnly icon="close" aria-label="Close cell detail" className="cell-detail-close" onClick={onClose} />
         </div>
       </div>
@@ -305,46 +301,19 @@ function Results({ run, phase, tick, conversationSubs, onStep, onReplay, onEdit 
   const revealed = run.checks.slice(0, shown);
   const firstFail = run.failures[0];
   const last = revealed[revealed.length - 1];
-  const autoKey = !running && firstFail ? cellKey(firstFail.row, firstFail.transport) : last ? cellKey(last.row, last.transport) : '';
+  const autoKey = autoSelectedKey(running, firstFail, last);
   const selectedKey = chosen === null ? autoKey : chosen;
   const selectedIndex = selectedKey ? run.checks.findIndex((c) => cellKey(c.row, c.transport) === selectedKey) : -1;
   const selectedCheck = selectedIndex >= 0 && selectedIndex < shown ? run.checks[selectedIndex] : undefined;
   const detail = selectedCheck ? run.details[selectedKey] : undefined;
-  const indexOf = (row: string, transport: string) => run.checks.findIndex((c) => c.row === row && c.transport === transport);
   const { transports, conversations } = run.setup;
-  const columns = transports.map((t) => ({ id: t, label: AGENT_TRANSPORT_NAMES[t], sub: TRANSPORT_SUB[t] }));
-
-  const cellsFor = (row: string, perTransport: boolean): MatrixRow['cells'] => {
-    const cell = (transport: string) => {
-      const i = indexOf(row, transport);
-      const result = resultAt(run.checks, shown, running, i);
-      const done = result === 'pass' || result === 'fail' || result === 'warn';
-      return { columnId: transport === '*' ? undefined : transport, result, label: result === 'warn' ? 'Absent' : undefined, duration: done ? fmtMs(run.checks[i]?.ms ?? 0) : undefined };
-    };
-    return perTransport ? transports.map((t) => cell(t)) : [cell('*')];
-  };
-  const groups: MatrixGroup[] = [
-    { id: 'card', label: 'Agent Card', sub: '/.well-known/agent-card.json · checked once, then per interface', rows: CARD_ROWS.map((r) => ({ id: r.id, label: r.label, sub: r.sub, cells: cellsFor(r.id, r.perTransport) })) },
-    {
-      id: 'conversations', label: 'Behaviour · conversations', sub: `${conversations.length} replayed · task states, artifacts, streaming, loose text match`,
-      rows: conversations.map((c) => ({ id: c, label: c, sub: conversationSubs[c], mono: true, cells: cellsFor(c, true) })),
-    },
-  ];
-  const footer = {
-    label: 'Conversations passed',
-    cells: transports.map((t) => {
-      const fin = conversations.filter((c) => indexOf(c, t) < shown);
-      const ok = fin.filter((c) => run.checks[indexOf(c, t)]?.result === 'pass').length;
-      return { text: fin.length ? `${ok}/${conversations.length}` : `—/${conversations.length}`, tone: fin.length && ok < fin.length ? ('danger' as const) : fin.length === conversations.length ? ('success' as const) : undefined };
-    }),
-  };
-  const states = run.checks.map((_c, i) => resultAt(run.checks, shown, running, i));
-  const count = (r: CheckResult) => states.filter((s) => s === r).length;
+  const columns = matrixColumns(transports);
+  const groups = matrixGroups(run, shown, running, conversationSubs);
+  const footer = matrixFooter(run, shown);
+  const states = cellStates(run.checks, shown, running);
   const all = totalsOf(run.checks);
-  const cardRows = CARD_ROWS.map((r) => run.checks.filter((c) => c.row === r.id));
-  const cardPassed = cardRows.filter((cs) => cs.length > 0 && cs.every((c) => c.result === 'pass')).length;
-  const ratio = all.conversationPassed / Math.max(1, all.conversationTotal);
-  const scoreLevel = all.conversationFailed === 0 ? 'high' : ratio >= 0.8 ? 'mid' : 'low';
+  const cardPassed = cardPassedCount(run.checks);
+  const scoreLevel = scoreLevelOf(all);
   const current = running ? run.checks[tick] : undefined;
   const log = agentRunnerLog(run, shown, running);
 
@@ -386,12 +355,7 @@ function Results({ run, phase, tick, conversationSubs, onStep, onReplay, onEdit 
             now={current ? agentCellName(current.row, current.transport) : 'Computing the conformance score…'}
             segments={states.map((s) => SEGMENT[s])}
             gap={3}
-            counts={[
-              { kind: 'pass', text: `${count('pass')} passed` },
-              { kind: 'fail', text: `${count('fail')} failed` },
-              { kind: 'warn', text: `${count('warn')} warning` },
-              { kind: 'pending', text: `${count('queued') + count('running')} queued` },
-            ]}
+            counts={progressCounts(states)}
             action={<Button size="sm" icon="chevron" className="step-forward" onClick={onStep}>Step forward</Button>}
             note={<>Agent Card checks run first. Each conversation then runs once per transport, with a fresh <span className="demo-mono">contextId</span> per run and the OAuth2 token from the secret.</>}
           />
@@ -425,21 +389,17 @@ function Results({ run, phase, tick, conversationSubs, onStep, onReplay, onEdit 
             <div className="transport-scores">
               <span className="transport-scores-caption">Score per transport · one segment per conversation</span>
               <div className="transport-scores-row">
-                {transports.map((t) => {
-                  const results = conversations.map((c) => run.checks[indexOf(c, t)]?.result ?? 'pass');
-                  const ok = results.filter((r) => r === 'pass').length;
-                  return (
-                    <div key={t} className="transport-score">
-                      <div className="transport-score-head">
-                        <span className="transport-score-name">{AGENT_TRANSPORT_NAMES[t]}</span>
-                        <span className="transport-score-value" data-tone={ok === conversations.length ? 'success' : 'danger'}>{ok}/{conversations.length}</span>
-                      </div>
-                      <div className="transport-score-segs" aria-hidden="true">
-                        {results.map((r, i) => <span key={i} data-result={r} />)}
-                      </div>
+                {transportScores(run).map(({ transport: t, results, ok }) => (
+                  <div key={t} className="transport-score">
+                    <div className="transport-score-head">
+                      <span className="transport-score-name">{AGENT_TRANSPORT_NAMES[t]}</span>
+                      <span className="transport-score-value" data-tone={ok === conversations.length ? 'success' : 'danger'}>{ok}/{conversations.length}</span>
                     </div>
-                  );
-                })}
+                    <div className="transport-score-segs" aria-hidden="true">
+                      {results.map((r, i) => <span key={i} data-result={r} />)}
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
             <div className="run-actions">
@@ -518,7 +478,7 @@ export default function AgentTestRunPage() {
   const [replays, setReplays] = useState(0);
   const [error, setError] = useState('');
   const current = run ?? stored.data;
-  const id = phase === 'setup' && !current ? (defaults.data?.nextRunId ?? '') : (current?.id ?? '');
+  const id = shownRunId(phase, current, defaults.data?.nextRunId);
   usePageTitle(`Agent test #${id} · Microcks`);
 
   /** After a phase change the old controls are gone: move the focus to the title, never to the page body. */
@@ -593,21 +553,7 @@ export default function AgentTestRunPage() {
       )}
     </span>
   );
-  const meta = (
-    <RunMeta
-      items={[
-        { term: 'Endpoint', value: cardUrl, kind: 'url' },
-        { term: 'Runner', value: 'A2A_CONFORMANCE', kind: 'chip' },
-        ...(hasRun && current
-          ? [
-              { term: 'Started', value: relative(current.startedAt), detail: formatClock(current.startedAt) },
-              { term: running ? 'Elapsed' : 'Duration', id: 'duration', value: fmtMs(elapsed), kind: 'mono' as const },
-            ]
-          : []),
-        { term: 'Launched by', value: current?.launchedBy ?? 'MA' },
-      ]}
-    />
-  );
+  const meta = <RunMeta items={runMetaItems({ cardUrl, run: hasRun ? current : undefined, running, elapsed, launchedBy: current?.launchedBy, relative })} />;
   const header = (
     <PageHeader
       title={`Run #${id}`}
@@ -644,7 +590,7 @@ export default function AgentTestRunPage() {
           run={current}
           phase={phase}
           tick={tick}
-          conversationSubs={Object.fromEntries(defaults.data.conversations.map((c) => [c.id, `skill ${c.skillId} · ${c.turns} · expects ${c.expect}`]))}
+          conversationSubs={conversationSubsOf(defaults.data.conversations)}
           onStep={() => { if (tick + 1 >= n) focusTitle(); step(); }}
           onReplay={() => { replay(); focusTitle(); }}
           onEdit={() => { setPhase('setup'); focusTitle(); }}
