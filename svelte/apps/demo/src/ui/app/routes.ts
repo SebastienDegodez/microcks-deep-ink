@@ -44,7 +44,7 @@ export const ROUTES: readonly RouteSpec[] = [
   { id: 'catalogue', screen: '04', path: '/services', example: '/services', title: 'APIs & Services · Microcks', owner: 'WP7', nav: 'catalogue',
     load: () => import('@/ui/pages/catalogue/CataloguePage.svelte') },
   { id: 'service', screen: '05', path: '/services/:serviceId/:tab?', example: '/services/pastry2/operations', title: 'API Pastry 2.0 · Microcks', owner: 'WP7', nav: 'catalogue',
-    load: pending },
+    load: () => import('@/ui/pages/service/ServicePage.svelte') },
   { id: 'behavior', screen: '06', path: '/services/:serviceId/operations/:operationId', example: '/services/pastry2/operations/get-name', title: 'Operation behavior · Microcks', owner: 'WP7', nav: 'catalogue',
     load: pending },
   { id: 'copilot', screen: '07', path: '/services/:serviceId/copilot', example: '/services/pastry2/copilot?op=get-name&hint=Tarte%20Tatin', title: 'AI Copilot examples · Microcks', owner: 'WP7', nav: 'catalogue',

@@ -63,4 +63,22 @@ describe('explore pages', () => {
     await fireEvent.click(screen.getByRole('link', { name: 'Direct API' }));
     await waitFor(() => expect(window.location.hash).toBe('#/sources/new'));
   });
+
+  it('Service: operations tab with the AI proposal, then properties and tests tabs', async () => {
+    renderAt('/services/pastry2/operations');
+    // The h1 is the api-badge: "REST API Pastry 2.0".
+    await h1(/^REST\s+API Pastry 2\.0$/);
+    expect(screen.getByRole('heading', { level: 3, name: 'Used in 4 workflows' })).toBeTruthy();
+    const dispatch = screen.getByRole('link', { name: 'Edit behavior' }).closest('.summary-strip') as HTMLElement;
+    expect(dispatch.getAttribute('data-line-height')).toBe('inherit');
+    expect(dispatch.getAttribute('data-gap')).toBe('roomy');
+    expect(dispatch.querySelectorAll('.summary-strip-sep[aria-hidden="true"]')).toHaveLength(1);
+    await screen.findByRole('button', { name: /Accept Tartelette Framboise/ });
+    expect(screen.getByRole('button', { name: /Accept Tartelette Framboise/ })).toBeTruthy();
+    await fireEvent.click(screen.getByRole('tab', { name: /Tests/ }));
+    expect(await screen.findByRole('heading', { level: 2, name: 'Latest test runs' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: /#119/ })).toBeTruthy();
+    await fireEvent.click(screen.getByRole('tab', { name: 'Properties & MCP' }));
+    expect(await screen.findByRole('heading', { level: 2, name: 'Agent-ready' })).toBeTruthy();
+  });
 });
