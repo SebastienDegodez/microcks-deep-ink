@@ -11,6 +11,8 @@
   },
   "dependencies": {
     "@microcks/deep-ink": "workspace:*",
+    "@microcks/demo-core": "link:../../../packages/demo-core",
+    "@microcks/demo-styles": "link:../../../packages/demo-styles",
     "svelte": "^5.57.0"
   },
   "devDependencies": {

@@ -13,6 +13,12 @@ importers:
       '@microcks/deep-ink':
         specifier: workspace:*
         version: link:../../packages/deep-ink
+      '@microcks/demo-core':
+        specifier: link:../../../packages/demo-core
+        version: link:../../../packages/demo-core
+      '@microcks/demo-styles':
+        specifier: link:../../../packages/demo-styles
+        version: link:../../../packages/demo-styles
       svelte:
         specifier: ^5.57.0
         version: 5.57.3(@typescript-eslint/types@8.72.1)

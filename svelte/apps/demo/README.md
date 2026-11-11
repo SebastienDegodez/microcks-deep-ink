@@ -1,39 +1,49 @@
 # Microcks UI v2 · DEMO (Svelte)
 
-A clickable Svelte 5 prototype covering the same 19 journey entry points as the
-React demo. The layout, dark/light themes and controls use the **built native
-`@microcks/deep-ink` library**, declared as `"workspace:*"` in this isolated
-workspace. No design-system component implementation or CSS is copied into the
-demo. `src/pages/` only composes screens; `demo.css` contains page layout glue.
+The Svelte 5 flavour of the clickable demo. It renders the same 19 journey screens as the reference
+demo (`apps/demo-react`), with the same pixels, from the same shared code:
+
+| Package | Consumed for | How |
+|---|---|---|
+| `@microcks/deep-ink` | every design-system component and its CSS | `workspace:*` (this isolated workspace) |
+| `@microcks/demo-core` | domain, use cases, in-memory adapters, presentation helpers | `link:` to `packages/demo-core` (built) |
+| `@microcks/demo-styles` | page stylesheets and the brand logo | `link:` to `packages/demo-styles` |
+
+No component implementation, use case or page CSS is copied into the demo: `src/` only holds the
+composition root, the shell and the page compositions.
+
+```
+src/
+  composition-root.ts   use cases over the in-memory adapters
+  main.ts               mounts <App> with the hash router
+  ui/app/               shell, hash router, page header, loading/error states, hooks (query, focus, title)
+  ui/pages/<family>/    one folder per screen family
+```
 
 ```sh
 # From the repository root, after the shared tokens/elements/CSS build:
 pnpm -C svelte install --frozen-lockfile
 pnpm -C svelte build
-pnpm demo:svelte                     # http://127.0.0.1:5174/
+pnpm demo:svelte                     # builds @microcks/demo-core, then http://127.0.0.1:5174/
 pnpm build:demo:svelte               # svelte/apps/demo/dist/
 pnpm -C svelte --filter demo-svelte test
 pnpm -C svelte check:boundaries
 ```
 
-`#/map` links to all 19 screens. The hash router and relative Vite base allow
-deployment under `/demo-svelte/` on GitHub Pages. The Pages assembly and reusable
-Svelte CI workflow include this consumer.
+`#/map` links to all 19 screens. The hash router follows the reference demo's data router: the URL
+changes when the next page module has loaded, a link to the current page replaces the history entry,
+and a route change moves focus to the new page `<h1>` and announces its title.
 
-Implemented interactions include catalogue filters/table/badge wall, example
-selection, dispatcher configuration and simulation, AI proposal accept/edit/reject,
-source preview/confirmation, test configuration and replay/pause/step, workflow
-Loom selection and target-dependent replay, trace pause/inspection, Hub installation,
-roles/groups, masked dummy-secret creation/deletion and snapshot metadata.
-State survives navigation but resets on reload. Themes use the library's existing
-persistence. Runtime and build dependency guards reject React.
+**Text nodes.** Svelte merges adjacent text and `{expressions}` into a single text node, where the
+reference demo creates one text node per JSX child, and Chrome lays out each text node on its own
+subpixel grid. To render the same pixels, separate the runs with an empty comment, exactly where the
+reference JSX has a boundary: `Step {n} · {name}` is written `Step <!---->{n}<!----> · <!---->{name}`,
+and `priority:{' '}{list}.` is written `priority:<!----> <!---->{list}<!---->.`. `svelte.config.js`
+keeps comments for the files of `src/` only.
 
-**This is not a full port of the React application's domain/use-case layer.**
-Contracts, import previews, AI proposals, network traffic and test execution are
-explicitly simulated sample data, not real network calls. Non-Pastry service
-detail pages currently reuse the Pastry sample operations. The agent test matrix
-is a static inspection fixture, not a complete conformance runner. Snapshots are
-metadata, not backup files. No full-screen pixel parity is claimed.
+**Port in progress.** Screens are ported family by family, each one checked against the reference
+demo with strict screenshot comparisons (0 pixel of difference, no mask). A screen that is not ported
+yet renders a placeholder with its title.
 
-Every screen is marked DEMO; nothing is published on npm. Accessibility status:
-**not audited** (RGAA 4.1.2 / WCAG 2.1 AA target).
+Every screen is marked DEMO; nothing is published on npm. Runtime and build guards reject React.
+Accessibility status: **not audited** (RGAA 4.1.2 / WCAG 2.1 AA target).

@@ -16,6 +16,8 @@ on:
       - "react/pnpm-lock.yaml"
       - "apps/shared/**"
       - "packages/core/**"
+      - "packages/demo-core/**"
+      - "packages/demo-styles/**"
       - "packages/plugin-sdk/**"
       - "packages/tokens/**"
       - "packages/registry/src/css/**"
@@ -34,6 +36,8 @@ on:
       - "react/pnpm-lock.yaml"
       - "apps/shared/**"
       - "packages/core/**"
+      - "packages/demo-core/**"
+      - "packages/demo-styles/**"
       - "packages/plugin-sdk/**"
       - "packages/tokens/**"
       - "packages/registry/src/css/**"
@@ -67,9 +71,11 @@ jobs:
             pnpm-lock.yaml
             svelte/pnpm-lock.yaml
             react/pnpm-lock.yaml
-      # The reference React package needs the two element bundles; docs/Copy read the built registry; stories import apps/shared.
-      - run: pnpm install --frozen-lockfile --filter @microcks-deep-ink/core... --filter @microcks-deep-ink/registry... --filter @microcks-deep-ink/storybook-shared...
+      # The reference React package needs the two element bundles; docs/Copy read the built registry; stories import apps/shared;
+      # the demo consumes the framework-neutral demo core (built) and the shared page stylesheets.
+      - run: pnpm install --frozen-lockfile --filter @microcks-deep-ink/core... --filter @microcks-deep-ink/registry... --filter @microcks-deep-ink/storybook-shared... --filter @microcks/demo-core...
       - run: pnpm --filter @microcks-deep-ink/tokens build
+      - run: pnpm --filter @microcks/demo-core build
       - run: pnpm --filter @microcks-deep-ink/plugin-sdk build
       - run: pnpm --filter @microcks-deep-ink/core build
       - run: pnpm --filter @microcks-deep-ink/registry build
