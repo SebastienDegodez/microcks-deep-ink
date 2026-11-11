@@ -2,29 +2,10 @@
 import '@microcks/demo-styles/pages/behavior/simulator.css';
 import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
-import type { Behavior, SimulationResult, StepKind } from '@/domain/catalog';
+import type { Behavior, SimulationResult } from '@/domain/catalog';
 import { useAnnounce, useUseCases } from '@/ui/app';
 import { Button, Checkbox, Icon, Input, Panel } from '@microcks/deep-ink';
-import type { IconName } from '@microcks/deep-ink';
-
-const PRESETS = ['/pastries/Eclair%20Cafe', '/pastries/Millefeuille', '/pastries/Kouign-amann', '/pastries/Eclair%20Chocolat?size=XL'];
-const API_KEY = { 'x-api-key': 'demo-7f3a' };
-const STEP_ICON: Record<StepKind, IconName> = { ok: 'check', fail: 'cross', warn: 'warning', skip: 'minus-circle', info: 'info' };
-
-type Kind = 'ok' | 'fail' | 'fwd';
-interface HistoryItem { id: number; path: string; code: string; what: string; }
-
-const kindOf = (r: SimulationResult): Kind => (r.status === null ? 'fwd' : r.status < 300 ? 'ok' : 'fail');
-const STATUS_ICON: Record<Kind, IconName> = { ok: 'check', fail: 'cross', fwd: 'arrow-right' };
-
-/** Short "what happened" of a run, shown in the Recent runs list. */
-function what(r: SimulationResult): string {
-  if (r.matched) return r.example.name;
-  if (r.outcome === 'constraint') return 'constraint';
-  if (r.outcome === 'forwarded') return 'proxied';
-  if (r.outcome === 'no-operation') return 'no operation';
-  return 'no match';
-}
+import { API_KEY_HEADER, REQUEST_PRESETS, STATUS_ICON, STEP_ICON, resultKind, runCode, runCodeKind, runSummary, type HistoryItem } from './simulator';
 
 export interface SimulatorPanelProps {
   serviceId: string;
@@ -44,8 +25,8 @@ export interface SimulatorPanelProps {
 export function SimulatorPanel({ serviceId, operationId, method, protocol, mockBase, draft }: SimulatorPanelProps) {
   const uc = useUseCases();
   const announce = useAnnounce();
-  const [input, setInput] = useState(PRESETS[0] as string);
-  const [path, setPath] = useState(PRESETS[0] as string);
+  const [input, setInput] = useState(REQUEST_PRESETS[0] as string);
+  const [path, setPath] = useState(REQUEST_PRESETS[0] as string);
   const [sendKey, setSendKey] = useState(true);
   const [store, setStore] = useState<Record<string, number>>({});
   const [sim, setSim] = useState<SimulationResult | undefined>();
@@ -54,7 +35,7 @@ export function SimulatorPanel({ serviceId, operationId, method, protocol, mockB
   useEffect(() => {
     let live = true;
     void uc.catalog
-      .simulate(serviceId, operationId, { path, params: {}, headers: sendKey ? API_KEY : undefined, store }, draft)
+      .simulate(serviceId, operationId, { path, params: {}, headers: sendKey ? API_KEY_HEADER : undefined, store }, draft)
       .then((r) => { if (live) setSim(r); });
     return () => { live = false; };
   }, [uc, serviceId, operationId, path, sendKey, store, draft]);
@@ -62,14 +43,14 @@ export function SimulatorPanel({ serviceId, operationId, method, protocol, mockB
   const run = async (target: string) => {
     setInput(target);
     setPath(target);
-    const r = await uc.catalog.simulate(serviceId, operationId, { path: target, params: {}, headers: sendKey ? API_KEY : undefined, store }, draft);
+    const r = await uc.catalog.simulate(serviceId, operationId, { path: target, params: {}, headers: sendKey ? API_KEY_HEADER : undefined, store }, draft);
     if (r.storeKey) setStore((s) => ({ ...s, [r.storeKey as string]: (s[r.storeKey as string] ?? 0) + 1 }));
     else setSim(r);
-    setHistory((h) => [{ id: Date.now() + h.length, path: target, code: r.status === null ? 'fwd' : String(r.status), what: what(r) }, ...h].slice(0, 4));
+    setHistory((h) => [{ id: Date.now() + h.length, path: target, code: runCode(r), what: runSummary(r) }, ...h].slice(0, 4));
     announce(`Simulation: ${r.statusLabel}.`);
   };
 
-  const kind = sim ? kindOf(sim) : 'ok';
+  const kind = sim ? resultKind(sim) : 'ok';
   return (
     <Panel
       className="sim"
@@ -90,7 +71,7 @@ export function SimulatorPanel({ serviceId, operationId, method, protocol, mockB
         </div>
 
         <div className="sim-presets" role="group" aria-label="Request examples">
-          {PRESETS.map((p) => <button key={p} type="button" className="sim-preset" onClick={() => void run(p)}>{p}</button>)}
+          {REQUEST_PRESETS.map((p) => <button key={p} type="button" className="sim-preset" onClick={() => void run(p)}>{p}</button>)}
         </div>
 
         <div className="sim-send">
@@ -135,7 +116,7 @@ export function SimulatorPanel({ serviceId, operationId, method, protocol, mockB
             {history.map((h) => (
               <li key={h.id}>
                 <button type="button" className="sim-run" onClick={() => void run(h.path)}>
-                  <span className="sim-run-code" data-code={h.code === '200' ? 'ok' : h.code === 'fwd' ? 'fwd' : 'fail'}>{h.code}</span>
+                  <span className="sim-run-code" data-code={runCodeKind(h.code)}>{h.code}</span>
                   <span className="sim-run-path">{h.path}</span>
                   <span className="sim-run-what">{h.what}</span>
                 </button>

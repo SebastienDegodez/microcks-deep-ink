@@ -3,32 +3,7 @@ import { useMemo } from 'react';
 import { parseJsonBodyRule, reachability, ruleNames, scriptSample, storedAs, type Behavior, type BehaviorDispatcher } from '@/domain/catalog';
 import type { Example } from '@/domain/shared';
 import { Callout, CodeBlock, Icon, Panel, Segmented } from '@microcks/deep-ink';
-
-const CARDS: { id: BehaviorDispatcher; desc: string; tag?: string; disabled?: boolean }[] = [
-  { id: 'URI_PARTS', desc: 'Matches path segments, here {name}.', tag: 'inferred from contract' },
-  { id: 'URI_PARAMS', desc: 'Matches query parameter values.' },
-  { id: 'QUERY_ARGS', desc: 'Matches GraphQL or gRPC arguments.', tag: 'GraphQL & gRPC only', disabled: true },
-  { id: 'JSON_BODY', desc: 'Evaluates a JSON Pointer in the request body.' },
-  { id: 'SCRIPT', desc: 'Groovy or JavaScript returns the example name.' },
-  { id: 'FALLBACK', desc: 'A dispatcher, plus a default example when nothing matches.' },
-  { id: 'PROXY_FALLBACK', desc: 'A dispatcher, else forwards to the real backend.' },
-];
-
-const HINTS: Partial<Record<BehaviorDispatcher, string>> = {
-  URI_PARTS: 'Criteria built from path parameters. Example names map to /name=<value>.',
-  URI_PARAMS: 'Criteria built from query parameters, joined with &&.',
-  QUERY_ARGS: 'Not applicable to a REST operation.',
-  JSON_BODY: 'A JSON Pointer is evaluated on the body; cases map values to example names.',
-  SCRIPT: 'Code evaluated on each request; it returns the example name to serve.',
-  FALLBACK: 'Apply a dispatcher first, then serve a default example when nothing matches.',
-  PROXY_FALLBACK: 'Apply a dispatcher first, then forward unmatched calls to the real backend.',
-};
-
-/** Default query rule offered when URI_PARAMS is picked. */
-const QUERY_RULE_SAMPLE = 'size';
-const JSON_RULE_SAMPLE = JSON.stringify({ exp: '/name', operator: 'equals', cases: { 'Eclair Cafe': 'Eclair Cafe', default: 'Millefeuille' } }, null, 2);
-const PROXY_URL_SAMPLE = 'https://pastry.staging.acme.io/v2';
-const SCOPE = ['mockRequest', 'requestContext', 'store', 'log'];
+import { DISPATCHER_CARDS, RULE_HINTS, SCRIPT_SCOPE, dispatcherPatch, reachSummary, toggleRuleParam } from './dispatcher';
 
 export interface DispatcherPanelProps {
   draft: Behavior;
@@ -46,27 +21,10 @@ export function DispatcherPanel({ draft, examples, pathParams, pathPrefix, edit 
   const jsonCheck = useMemo(() => (draft.dispatcher === 'JSON_BODY' ? parseJsonBodyRule(draft.rule) : undefined), [draft]);
   const names = ruleNames(draft.rule);
   const reach = reachability(draft, examples);
-  const reachable = reach.filter((r) => r.reachable).length;
   const base = draft.baseDispatcher ?? 'URI_PARTS';
-  let reachLabel = `${reachable} of ${reach.length} examples reachable`;
-  if (draft.dispatcher === 'FALLBACK' && draft.fallback) reachLabel += ` · unknown names → ${draft.fallback}`;
-  if (draft.dispatcher === 'PROXY_FALLBACK') reachLabel += ' · unknown names → proxyUrl';
+  const reachLabel = reachSummary(draft, reach);
 
-  const pick = (id: BehaviorDispatcher) => {
-    const patch: Partial<Behavior> = { dispatcher: id };
-    const pathRule = names.length > 0 && names.every((n) => pathParams.includes(n));
-    if (id === 'JSON_BODY' && 'error' in parseJsonBodyRule(draft.rule)) patch.rule = JSON_RULE_SAMPLE;
-    if (id === 'URI_PARAMS') patch.rule = QUERY_RULE_SAMPLE;
-    if ((id === 'URI_PARTS' || id === 'FALLBACK' || id === 'PROXY_FALLBACK') && !pathRule) patch.rule = pathParams[0] ?? '';
-    if (id === 'SCRIPT' && !draft.script) {
-      patch.scriptLanguage = draft.scriptLanguage ?? 'GROOVY';
-      patch.script = scriptSample(patch.scriptLanguage, draft.stateful);
-    }
-    if (id !== 'SCRIPT' && draft.stateful) patch.stateful = false;
-    if (id === 'FALLBACK' && !draft.fallback) patch.fallback = examples[0]?.name;
-    if (id === 'PROXY_FALLBACK' && !draft.proxyUrl) patch.proxyUrl = PROXY_URL_SAMPLE;
-    edit(patch);
-  };
+  const pick = (id: BehaviorDispatcher) => edit(dispatcherPatch(id, draft, examples, pathParams));
 
   const scriptLines = (draft.script ?? '').split('\n').length;
   const firstTry = (
@@ -88,7 +46,7 @@ export function DispatcherPanel({ draft, examples, pathParams, pathPrefix, edit 
       <fieldset className="ex-fieldset">
         <legend className="sr-only">Dispatcher type</legend>
         <div className="ex-radio-cards">
-          {CARDS.map((c) => (
+          {DISPATCHER_CARDS.map((c) => (
             <label key={c.id} className="ex-radio-card" aria-disabled={c.disabled || undefined}>
               <input type="radio" name="dispatcher" value={c.id} checked={draft.dispatcher === c.id} disabled={c.disabled} onChange={() => pick(c.id)} />
               <span className="ex-radio-card-title ex-row">{c.id}{draft.dispatcher === c.id ? <Icon name="check" size={14} className="ex-radio-card-check" /> : null}</span>
@@ -103,7 +61,7 @@ export function DispatcherPanel({ draft, examples, pathParams, pathPrefix, edit 
       <div className="rules">
         <div className="rules-head">
           <h3 className="rules-title">Rules</h3>
-          <span className="rules-hint">{HINTS[draft.dispatcher]}</span>
+          <span className="rules-hint">{RULE_HINTS[draft.dispatcher]}</span>
         </div>
 
         {draft.dispatcher === 'URI_PARTS' ? (
@@ -120,7 +78,7 @@ export function DispatcherPanel({ draft, examples, pathParams, pathPrefix, edit 
                     className="rules-param"
                     aria-pressed={on}
                     aria-label={`Use path parameter ${p} as dispatch criteria`}
-                    onClick={() => edit({ rule: (on ? names.filter((n) => n !== p) : [...names, p]).join(' && ') })}
+                    onClick={() => edit({ rule: toggleRuleParam(names, p) })}
                   >
                     {on ? <Icon name="check" size={12} /> : null}
                     {`{${p}}`}
@@ -170,7 +128,7 @@ export function DispatcherPanel({ draft, examples, pathParams, pathPrefix, edit 
                 onChange={(id) => edit({ scriptLanguage: id as 'GROOVY' | 'JS', script: scriptSample(id as 'GROOVY' | 'JS', draft.stateful) })}
                 options={[{ id: 'GROOVY', label: 'Groovy' }, { id: 'JS', label: 'JavaScript' }]}
               />
-              <span className="rules-scope">In scope {SCOPE.map((s) => <code key={s}>{s}</code>)}</span>
+              <span className="rules-scope">In scope {SCRIPT_SCOPE.map((s) => <code key={s}>{s}</code>)}</span>
             </div>
             <div className="rules-editor">
               <CodeBlock frame="none" variant="bare" focusable="never" className="rules-gutter" aria-hidden="true" code={Array.from({ length: scriptLines }, (_, i) => i + 1).join('\n')} />

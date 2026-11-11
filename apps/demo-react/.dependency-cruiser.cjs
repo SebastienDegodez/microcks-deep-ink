@@ -31,7 +31,7 @@ const DEMO_CORE_APPLICATION = `${DEMO_CORE}(domain|application)/`;
 const DEMO_CORE_PRESENTATION = `${DEMO_CORE}presentation/`;
 // The src/ui modules that re-export a presentation helper of demo-core; the pages keep importing them.
 const PRESENTATION_FACADES =
-  '^src/ui/(app/(format|nav|outcomes)|lib/cn|pages/(admin/notify|catalogue/listing|cockpit/(attention|overview)|map/screens|service/overview|test-create/draft|workflow/(loom-model|run-facts)))\\.ts$';
+  '^src/ui/(app/(format|nav|outcomes)|lib/cn|pages/(admin/notify|behavior/(config|dispatcher|simulator)|catalogue/listing|cockpit/(attention|overview)|map/screens|service/overview|test-create/draft|workflow/(loom-model|run-facts)))\\.ts$';
 // Port contract suites (`*.contract.ts`): test-only modules that tests import, so they follow the test-file exceptions.
 const CONTRACT_FILE = '\\.contract\\.ts$';
 
