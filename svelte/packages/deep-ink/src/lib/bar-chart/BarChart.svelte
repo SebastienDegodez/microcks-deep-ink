@@ -19,7 +19,7 @@
     group.querySelectorAll<HTMLButtonElement>('button')[selectable.indexOf(to)]?.focus();
   }
 </script>
-<div class={['bar-chart', cssClass]} data-selection={selection} style={vars}>
+<div class={['bar-chart', cssClass]} data-selection={selection} style={vars || undefined}>
   {#if ticks}<div class="bar-chart-axis" aria-hidden="true">{#each ticks as t, i (i)}<span>{t}</span>{/each}</div>{/if}
   <div class="bar-chart-main">
     <div class="bar-chart-plot">

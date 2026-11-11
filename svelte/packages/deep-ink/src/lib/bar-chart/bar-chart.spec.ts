@@ -46,6 +46,10 @@ describe('BarChart', () => {
     expect(container.querySelector<HTMLElement>('.bar-chart')?.style.getPropertyValue('--bar-chart-height')).toBe('200px');
     expect(container.querySelector<HTMLElement>('.bar-chart')?.style.getPropertyValue('--bar-chart-gap')).toBe('6px');
   });
+  it('renders no style attribute without a size variable', () => {
+    const { container } = render(BarChart, { label: 'Runs', bars, max: 3000, onselect: vi.fn(), table });
+    expect(container.querySelector('.bar-chart')?.hasAttribute('style')).toBe(false);
+  });
   it('supports an empty group and a nonpositive maximum', async () => {
     const { container, rerender } = render(BarChart, { label:'Runs',bars:[],max:0,onselect:vi.fn(),table });
     expect(screen.queryAllByRole('button')).toHaveLength(0);
