@@ -72,6 +72,15 @@ describe('Input', () => {
     expect(await axeViolations(container)).toEqual([]);
   });
 
+  it('exposes its native element through bind:element, as Textarea does', () => {
+    let input: HTMLInputElement | undefined;
+    let textarea: HTMLTextAreaElement | undefined;
+    render(Input, { props: { 'aria-label': 'Name', get element() { return input; }, set element(e) { input = e; } } });
+    render(Textarea, { props: { 'aria-label': 'Hint', get element() { return textarea; }, set element(e) { textarea = e; } } });
+    expect(input).toBe(screen.getByRole('textbox', { name: 'Name' }));
+    expect(textarea).toBe(screen.getByRole('textbox', { name: 'Hint' }));
+  });
+
   it('is skipped by Tab when disabled', async () => {
     const user = userEvent.setup();
     render(Input, { props: { 'aria-label': 'Dispatcher', disabled: true, value: 'URI_PARTS' } });
@@ -104,5 +113,15 @@ describe('Textarea', () => {
     await user.type(textarea, '!!');
     expect(textarea.value).toBe('Hello!!');
     expect(oninput).toHaveBeenCalledTimes(2);
+  });
+
+  it('keeps a text child equal to its value, also after an input event', async () => {
+    const user = userEvent.setup();
+    render(Textarea, { props: { 'aria-label': 'Hint', value: 'Tarte Tatin' } });
+    const textarea = screen.getByRole<HTMLTextAreaElement>('textbox', { name: 'Hint' });
+    expect(textarea.textContent).toBe('Tarte Tatin');
+    await user.type(textarea, '!');
+    expect(textarea.value).toBe('Tarte Tatin!');
+    expect(textarea.textContent).toBe('Tarte Tatin!');
   });
 });
