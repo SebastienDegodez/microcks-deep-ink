@@ -20,4 +20,8 @@ describe('Facts', () => {
     expect(dl.style.getPropertyValue('--facts-gap')).toBe('2px 0');
     expect(screen.getByText('note')).toBeTruthy();
   });
+  it('renders no style attribute when no layout variable or style is set', () => {
+    const { container } = render(Facts, { props: { items: [{ term: 'Origin', value: 'Upload' }] } });
+    expect(container.querySelector('dl')!.hasAttribute('style')).toBe(false);
+  });
 });
