@@ -27,8 +27,7 @@
 
   let { label, help, error, required, children, class: cssClass }: Props = $props();
 
-  // In expressions, so that the compiler keeps their spaces.
-  const asterisk = ' *';
+  // In an expression, so that the compiler keeps its space.
   const errorWord = 'Error: ';
 
   const uid = $props.id();
@@ -44,11 +43,13 @@
 </script>
 
 {#snippet node(content: string | Snippet)}{#if typeof content === 'function'}{@render content()}{:else}{content}{/if}{/snippet}
+<!-- The twin renders the space before the required asterisk as a text node of its own. -->
+{#snippet textNode(text?: string)}{text}{/snippet}
 
 <!-- Kept on few lines: whitespace between the tags would change the text and the accessible names. -->
 <div class={['field', cssClass].filter(Boolean).join(' ')} data-invalid={error ? '' : undefined}
   ><label class="label" for={id}
-    >{@render node(label)}{#if required}<span class="required" aria-hidden="true">{asterisk}</span>{/if}</label
+    >{@render node(label)}{#if required}<span class="required" aria-hidden="true">{@render textNode(' ')}*</span>{/if}</label
   >{@render children(control)}{#if help}<p class="help" id={helpId}>{@render node(help)}</p>{/if}{#if error}<p
       class="error"
       id={errorId}><Icon name="cross" size={13} /><span><span class="sr-only">{errorWord}</span>{@render node(error)}</span></p

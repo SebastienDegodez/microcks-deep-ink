@@ -30,6 +30,12 @@ describe('Field', () => {
     expect(document.querySelector('.required')?.getAttribute('aria-hidden')).toBe('true');
   });
 
+  it('writes the required asterisk as " " then "*"', () => {
+    render(Field, { props: { label: 'Name', required: true } });
+    const required = document.querySelector('.required') as Element;
+    expect([...required.childNodes].filter((n) => n.nodeType === Node.TEXT_NODE && n.textContent !== '').map((n) => n.textContent)).toEqual([' ', '*']);
+  });
+
   it('adds no description or invalid state when valid', () => {
     render(Field, { props: { label: 'Name' } });
     const input = screen.getByLabelText('Name');
