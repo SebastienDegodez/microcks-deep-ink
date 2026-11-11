@@ -14,6 +14,5 @@
 {/snippet}
 
 <span {...rest} class={['live', cssClass]} data-paused={paused ? '' : undefined} data-size={size} data-variant={variant} data-pulse={pulse ? undefined : 'false'}>
-  {#if paused}<Glyph name="pause" size={10} />{:else}<span class="live-dot" aria-hidden="true"></span>{/if}
-  {#if variant === 'dot'}<span class="sr-only">{@render text()}</span>{:else}{@render text()}{/if}
+  {#if paused}<Glyph name="pause" size={10} />{:else}<span class="live-dot" aria-hidden="true"></span>{/if}{#if variant === 'dot'}<span class="sr-only">{@render text()}</span>{:else}{@render text()}{/if}
 </span>

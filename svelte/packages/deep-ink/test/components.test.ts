@@ -122,6 +122,12 @@ describe('LiveIndicator', () => {
     await rerender({ paused: true, pausedLabel: 'paused · 2 new calls' });
     expect(container.textContent?.trim()).toBe('paused · 2 new calls');
   });
+  it('puts no space between the dot and the label, like the twin', () => {
+    const { container } = render(LiveIndicator, {});
+    expect(container.querySelector('.live')?.textContent).toBe('live');
+    const { container: paused } = render(LiveIndicator, { variant: 'dot', paused: true });
+    expect(paused.querySelector('.live')?.textContent).toBe('live · paused');
+  });
 });
 
 describe('SummaryStrip', () => {
