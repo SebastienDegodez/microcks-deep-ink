@@ -55,4 +55,26 @@ describe('Select', () => {
     await user.tab();
     expect(document.activeElement).toBe(document.body);
   });
+
+  it('shows the first enabled option when the value matches none, and keeps the bound value', () => {
+    let value = 'SCRIPT';
+    render(Select, { props: { 'aria-label': 'Dispatcher', children: options('URI_PARTS', 'JSON_BODY'), get value() { return value; }, set value(v) { value = v as string; } } });
+    expect(screen.getByRole<HTMLSelectElement>('combobox', { name: 'Dispatcher' }).value).toBe('URI_PARTS');
+    expect(screen.getByRole<HTMLOptionElement>('option', { name: 'URI_PARTS' }).selected).toBe(true);
+    expect(value).toBe('SCRIPT');
+  });
+
+  it('keeps showing the first enabled option when options are added later', async () => {
+    render(Select, { props: { 'aria-label': 'Dispatcher', value: 'SCRIPT', children: options('URI_PARTS') } });
+    const select = screen.getByRole<HTMLSelectElement>('combobox', { name: 'Dispatcher' });
+    select.querySelector('optgroup')?.prepend(new Option('JSON_BODY', 'JSON_BODY'));
+    await new Promise((resolve) => setTimeout(resolve));
+    expect(select.value).toBe('JSON_BODY');
+  });
+
+  it('skips a disabled first option when the value matches none', () => {
+    const placeholder = createRawSnippet(() => ({ render: () => '<optgroup label="Dispatchers"><option value="" disabled>Choose</option><option value="URI_PARTS">URI_PARTS</option></optgroup>' }));
+    render(Select, { props: { 'aria-label': 'Dispatcher', value: 'SCRIPT', children: placeholder } });
+    expect(screen.getByRole<HTMLSelectElement>('combobox', { name: 'Dispatcher' }).value).toBe('URI_PARTS');
+  });
 });
