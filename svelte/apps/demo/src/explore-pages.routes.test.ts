@@ -137,4 +137,33 @@ describe('explore pages', () => {
     await fireEvent.click(screen.getByRole('button', { name: 'Dismiss the workflow context' }));
     expect(screen.queryByLabelText('Opened from a workflow run')).toBeNull();
   });
+
+  it('Sources: lists jobs, filters failed, deletes with a confirmation and undoes', async () => {
+    renderAt('/sources');
+    await h1('Sources');
+    await screen.findByRole('article', { name: 'Pastry orders events' });
+    await fireEvent.click(screen.getByRole('button', { name: /^Failing/ }));
+    await waitFor(() => expect(screen.queryByRole('article', { name: 'Hello gRPC' })).toBeNull());
+    expect(screen.getByRole('alert').textContent).toMatch(/401 Unauthorized/);
+    await fireEvent.click(screen.getByRole('button', { name: 'Delete Pastry orders events' }));
+    const confirm = await screen.findByRole('alertdialog', { name: 'Confirm deletion of Pastry orders events' });
+    await fireEvent.click(within(confirm).getByRole('button', { name: 'Delete source' }));
+    expect(await screen.findByText(/deleted. Services already discovered remain/)).toBeTruthy();
+    const undo = screen.getByRole('button', { name: 'Undo' });
+    const banner = undo.closest('.result-box');
+    expect(banner?.getAttribute('role')).toBe('status');
+    expect(banner?.getAttribute('data-tone')).toBe('info');
+    expect(banner?.getAttribute('data-density')).toBe('compact');
+    expect([undo.getAttribute('data-variant'), undo.getAttribute('data-size'), undo.getAttribute('data-tone')]).toEqual(['outline', 'xs', 'link']);
+    await waitFor(() => expect(document.activeElement).toBe(undo));
+    await fireEvent.click(undo);
+    await screen.findByRole('article', { name: 'Pastry orders events' });
+  });
+
+  it('Sources: a timeline entry with a revision shows its diff', async () => {
+    renderAt('/sources/pastry-openapi');
+    await h1('Sources');
+    expect(await screen.findByRole('region', { name: 'Unified diff' }, { timeout: 5000 })).toBeTruthy();
+    expect(screen.getByRole('heading', { level: 2, name: 'API Pastry 2.0 · OpenAPI' })).toBeTruthy();
+  });
 });

@@ -40,7 +40,7 @@ export const ROUTES: readonly RouteSpec[] = [
   { id: 'import', screen: '01', path: '/sources/new', example: '/sources/new', title: 'Add a source · Microcks', owner: 'WP7', nav: 'sources',
     load: pending },
   { id: 'sources', screen: '02', path: '/sources/:importerId?', example: '/sources', title: 'Sources · Microcks', owner: 'WP7', nav: 'sources',
-    load: pending },
+    load: () => import('@/ui/pages/sources/SourcesPage.svelte') },
   { id: 'catalogue', screen: '04', path: '/services', example: '/services', title: 'APIs & Services · Microcks', owner: 'WP7', nav: 'catalogue',
     load: () => import('@/ui/pages/catalogue/CataloguePage.svelte') },
   { id: 'service', screen: '05', path: '/services/:serviceId/:tab?', example: '/services/pastry2/operations', title: 'API Pastry 2.0 · Microcks', owner: 'WP7', nav: 'catalogue',
