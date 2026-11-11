@@ -3,6 +3,7 @@ import { timeoutHelp, type TestFormErrors, type TestTarget } from '@/domain/test
 import { Button, Checkbox, Radio, Field, Icon, Input, MethodTag } from '@microcks/deep-ink';
 import type { Draft, UpdateDraft } from './draft';
 import { FormSection } from './FormSection';
+import { allOperationsSelected, checkOperation, operationsLabel, toggleAllOperations } from './form';
 
 interface ScopeSectionProps {
   target: TestTarget;
@@ -18,7 +19,7 @@ interface ScopeSectionProps {
 
 export function ScopeSection({ target, protocol, d, update, uid, selected, errors, opsRef, timeoutRef }: ScopeSectionProps) {
   const isEvent = target.type === 'EVENT';
-  const allSelected = selected.length === target.operations.length;
+  const allSelected = allOperationsSelected(target, selected);
   const opsError = errors.operations;
   const opsErrorId = `${uid}-ops-error`;
   return (
@@ -27,10 +28,10 @@ export function ScopeSection({ target, protocol, d, update, uid, selected, error
         <div className="tc-ops" role={isEvent ? 'radiogroup' : 'group'} aria-labelledby={`${uid}-ops-label`} aria-describedby={opsError ? opsErrorId : undefined}>
           <div className="tc-ops-head">
             <span id={`${uid}-ops-label`} className="tc-ops-label">
-              {isEvent ? 'Operation to listen to' : `Operations · ${selected.length} of ${target.operations.length}`}
+              {operationsLabel(target, selected)}
             </span>
             {!isEvent ? (
-              <Button variant="link" size="sm" className="tc-ops-toggle" onClick={() => update({ ops: allSelected ? [] : target.operations.map((o) => o.id) })}>
+              <Button variant="link" size="sm" className="tc-ops-toggle" onClick={() => update(toggleAllOperations(target, selected))}>
                 {allSelected ? 'Clear all' : 'Select all'}
               </Button>
             ) : null}
@@ -47,7 +48,7 @@ export function ScopeSection({ target, protocol, d, update, uid, selected, error
                 variant="card"
                 className="tc-op"
                 checked={on}
-                onChange={(e) => update({ ops: e.target.checked ? [...selected, o.id] : selected.filter((x) => x !== o.id) })}
+                onChange={(e) => update(checkOperation(selected, o.id, e.target.checked))}
                 label={label}
               />
             );

@@ -1,5 +1,6 @@
-import { CI_FORMATS, CI_STEPS, ciDiffLegend, type CiFormat, type diffCiLines } from '@/domain/testing';
+import { CI_STEPS, ciDiffLegend, type CiFormat, type diffCiLines } from '@/domain/testing';
 import { Chip, CodeBlock, Icon } from '@microcks/deep-ink';
+import { changedLineCount, CI_TABS, codeLines } from './form';
 
 interface CiAsideProps {
   uid: string;
@@ -11,7 +12,7 @@ interface CiAsideProps {
 }
 
 export function CiAside({ uid, ciTab, onTabChange, lines, serviceLabel, oauth }: CiAsideProps) {
-  const changed = lines.filter((l) => l.changed).length;
+  const changed = changedLineCount(lines);
   return (
     <aside className="tc-ci" aria-labelledby={`${uid}-ci-title`}>
       <div className="tc-ci-head">
@@ -26,10 +27,10 @@ export function CiAside({ uid, ciTab, onTabChange, lines, serviceLabel, oauth }:
       <CodeBlock
         className="tc-ci-code"
         tabsLabel="CI format"
-        tabs={CI_FORMATS.map((f) => ({ id: f.id, label: f.label }))}
+        tabs={CI_TABS}
         tab={ciTab}
         onTabChange={(id) => onTabChange(id as CiFormat)}
-        lines={lines.map((l) => ({ text: l.text || ' ', changed: l.changed }))}
+        lines={codeLines(lines)}
       />
       <p className="tc-ci-legend" role="status">
         <span className="tc-ci-swatch" aria-hidden="true" />

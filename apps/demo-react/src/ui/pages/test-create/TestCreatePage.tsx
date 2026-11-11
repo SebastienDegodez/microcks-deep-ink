@@ -1,13 +1,14 @@
 import { useId, useRef, useState, type FormEvent } from 'react';
 import { Link as RouterLink, useNavigate, useSearchParams } from 'react-router';
 import type { CreateTestForm } from '@/application/testing';
-import { buildCiSnippet, diffCiLines, parseTimeout, summarizeSelection, validateTestForm, type CiFormat, type TestTarget } from '@/domain/testing';
+import { summarizeSelection, type CiFormat, type TestTarget } from '@/domain/testing';
 import { PageHeader, useQuery, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge, Button, Callout } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { AuthSection } from './AuthSection';
 import { CiAside } from './CiAside';
-import { initialDraft, recommendedRunner, type Draft } from './draft';
+import { initialDraft, type Draft } from './draft';
+import { ciLines, createTestInput, draftErrors, lastTestStatus, launchBlockReason, selectedOperations, serviceLabelOf, waitSeconds } from './form';
 import { HeadersSection } from './HeadersSection';
 import { RunnerSection } from './RunnerSection';
 import { ScopeSection } from './ScopeSection';
@@ -25,7 +26,7 @@ export default function TestCreatePage() {
   const serviceId = chosen ?? form?.defaults.serviceId;
   const service = form?.services.find((s) => s.id === serviceId);
   const target = form?.targets.find((t) => t.serviceId === serviceId);
-  const serviceLabel = service ? `${service.name} ${service.version}`.trim() : 'Service';
+  const serviceLabel = serviceLabelOf(service, 'Service');
 
   return (
     <>
@@ -36,7 +37,7 @@ export default function TestCreatePage() {
         descriptionTone="secondary"
         actions={
           target ? (
-            <ApiBadge label="last test" value={target.lastTest.text} status={target.lastTest.ok === null ? 'neutral' : target.lastTest.ok ? 'success' : 'danger'} />
+            <ApiBadge label="last test" value={target.lastTest.text} status={lastTestStatus(target.lastTest)} />
           ) : null
         }
       />
@@ -68,42 +69,13 @@ function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: st
   const update = (patch: Partial<Draft>) => setDraft({ ...d, ...patch });
   const isEvent = target.type === 'EVENT';
 
-  const selected = d.ops ?? target.operations.map((o) => o.id);
-  const allSelected = selected.length === target.operations.length;
-  const errors = validateTestForm(target.type, {
-    endpoint: d.endpoint,
-    timeout: d.timeout,
-    selectedOperations: selected,
-    oauth: d.oauth,
-    clientSecret: d.clientSecret,
-  });
-  // Same order and wording as the prototype's blocked Launch button.
-  const blockReason = errors.endpoint ?? (errors.operations ? 'Select at least one operation.' : undefined) ?? (errors.timeout ? 'Fix the timeout.' : undefined) ?? (errors.clientSecret ? 'OAuth2 client secret is required.' : undefined);
-  const waitSec = Math.round((parseTimeout(d.timeout) ?? 10_000) / 1000);
+  const selected = selectedOperations(target, d);
+  const errors = draftErrors(target, d, selected);
+  const blockReason = launchBlockReason(errors);
+  const waitSec = waitSeconds(d.timeout);
 
-  const ciInput = {
-    apiRef: `${service?.name ?? ''}:${service?.version ?? ''}`,
-    apiName: service?.name ?? '',
-    endpoint: d.endpoint,
-    runner: d.runner,
-    waitSec,
-    secret: d.secret,
-    allOperations: allSelected,
-    selectedOperations: target.operations.filter((o) => selected.includes(o.id)).map((o) => o.name),
-    headers: d.headers.map(({ scope, name, values }) => ({ scope, name, values })),
-    isEvent,
-  };
-  const defaultInput = {
-    ...ciInput,
-    endpoint: target.endpoint,
-    runner: recommendedRunner(target),
-    waitSec: 10,
-    secret: '',
-    allOperations: true,
-    headers: [],
-  };
-  const lines = diffCiLines(buildCiSnippet(ciInput, ciTab), buildCiSnippet(defaultInput, ciTab));
-  const serviceLabel = `${service?.name ?? ''} ${service?.version ?? ''}`.trim();
+  const lines = ciLines(service, target, d, selected, ciTab);
+  const serviceLabel = serviceLabelOf(service);
 
   const focusFirstError = () => {
     if (errors.endpoint) endpointRef.current?.focus();
@@ -122,15 +94,7 @@ function TestForm({ form, chosen, onChoose }: { form: CreateTestForm; chosen: st
     }
     setBusy(true);
     try {
-      const run = await uc.testing.create({
-        serviceId: target.serviceId,
-        endpoint: d.endpoint.trim(),
-        runner: d.runner,
-        timeoutMs: parseTimeout(d.timeout) ?? 10_000,
-        secretName: d.secret || undefined,
-        operations: selected,
-        headers: d.headers.filter((h) => h.name.trim()).map((h) => ({ name: h.name.trim(), value: h.values })),
-      });
+      const run = await uc.testing.create(createTestInput(target, d, selected));
       navigate(`/tests/runner/${run.id}`);
     } catch (err) {
       setSubmitError(err instanceof Error ? err.message : 'The test could not be launched.');

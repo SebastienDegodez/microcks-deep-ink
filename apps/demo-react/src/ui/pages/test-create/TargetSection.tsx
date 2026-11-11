@@ -4,6 +4,7 @@ import type { TestTarget } from '@/domain/testing';
 import { ApiBadge, Chip, Field, Icon, Input } from '@microcks/deep-ink';
 import type { Draft, UpdateDraft } from './draft';
 import { FormSection } from './FormSection';
+import { sampleCount, targetOperationCount } from './form';
 
 interface TargetSectionProps {
   form: CreateTestForm;
@@ -18,7 +19,7 @@ interface TargetSectionProps {
 }
 
 export function TargetSection({ form, target, service, d, update, uid, endpointError, endpointRef, onPickService }: TargetSectionProps) {
-  const samples = target.operations.reduce((n, o) => n + o.samples, 0);
+  const samples = sampleCount(target);
   return (
     <FormSection step="01" title="Target">
       <Field label="Service under test">
@@ -34,7 +35,7 @@ export function TargetSection({ form, target, service, d, update, uid, endpointE
               <select {...control} aria-describedby={`${uid}-contract`} className="tc-svc-select" value={target.serviceId} onChange={(e) => onPickService(e.target.value)}>
                 {form.services.map((s) => (
                   <option key={s.id} value={s.id}>
-                    {s.name} {s.version} · {form.targets.find((t) => t.serviceId === s.id)?.operations.length ?? 0} ops
+                    {s.name} {s.version} · {targetOperationCount(form.targets, s.id)} ops
                   </option>
                 ))}
               </select>
