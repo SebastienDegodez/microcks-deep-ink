@@ -1,37 +1,16 @@
 import '@microcks/demo-styles/pages/copilot/copilot.css';
 import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink, useParams, useSearchParams } from 'react-router';
-import type { ExampleGroup } from '@/domain/copilot';
 import type { Example, Operation } from '@/domain/shared';
 import { PageHeader, useAnnounce, useQuery, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge, Button, CopyButton, Icon, LiveIndicator, Textarea, MethodTag, OpPickList, SectionLabel, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
-import { fresh, ProposalRow, type Item, type MockTarget } from './ProposalRow';
-
-interface OpState { phase: 'idle' | 'review'; items: Item[] }
-
-const COUNTS = [1, 2, 3, 4, 5];
-/** The Copilot takes a while: the skeleton rows stay this long, as in the prototype. */
-const GENERATION_MS = 1800;
-const DEFAULT_TARGET: MockTarget = { host: 'microcks.local:8080', basePath: '' };
-
-const exWord = (n: number) => `${n} ${n === 1 ? 'example' : 'examples'}`;
-
-function mockTarget(mockBase: string | undefined): MockTarget {
-  if (!mockBase) return DEFAULT_TARGET;
-  try {
-    const url = new URL(mockBase);
-    return { host: url.host, basePath: url.pathname.replace(/\/$/, '') };
-  } catch {
-    return DEFAULT_TARGET;
-  }
-}
-
-/** Contract examples by operation id (AI examples, pending or accepted, are not part of the contract). */
-async function contractCounts(listExamples: (s: string, o: string) => Promise<Example[]>, serviceId: string, ops: Operation[]) {
-  const lists = await Promise.all(ops.map((o) => listExamples(serviceId, o.id)));
-  return Object.fromEntries(ops.map((o, i) => [o.id, (lists[i] ?? []).filter((e) => !e.aiGenerated).length])) as Record<string, number>;
-}
+import { ProposalRow } from './ProposalRow';
+import { fresh, type Item } from './proposal';
+import {
+  aiBadgeText, contractCounts, COUNTS, exportFileName, exportGroups, exWord, GENERATION_MS, mockTarget, opPickAi, opsWithProposals,
+  pendingNoteText, proposalSums, type OpState,
+} from './generation';
 
 export default function CopilotPage() {
   const { serviceId = '' } = useParams();
@@ -103,13 +82,8 @@ export default function CopilotPage() {
     });
   const patchItem = (key: string, id: string, fn: (i: Item) => Item) => setItems(key, (items) => items.map((i) => (i.example.id === id ? fn(i) : i)));
 
-  const all = Object.values(byOp).flatMap((s) => s.items);
-  const sum = {
-    accepted: all.filter((i) => i.status === 'accepted').length,
-    rejected: all.filter((i) => i.status === 'rejected').length,
-    pending: all.filter((i) => i.status === 'pending').length,
-  };
-  const opsWith = Object.keys(byOp).filter((k) => (byOp[k]?.items ?? []).some((i) => i.status !== 'rejected'));
+  const sum = proposalSums(byOp);
+  const opsWith = opsWithProposals(byOp);
 
   const generate = () => {
     const key = op.id;
@@ -166,11 +140,9 @@ export default function CopilotPage() {
   };
   const anyCollapsed = state.items.some((i) => !i.expanded && i.status !== 'rejected');
 
-  const groups: ExampleGroup[] = operations
-    .map((o) => ({ operationKey: `${o.method} ${o.path}`, examples: (byOp[o.id]?.items ?? []).filter((i) => i.status === 'accepted').map((i) => i.example) }))
-    .filter((g) => g.examples.length > 0);
+  const groups = exportGroups(operations, byOp);
   const exported = uc.copilot.exportApiExamples({ name: svc.name, version: svc.version }, groups, 'yaml');
-  const exportFile = `${svc.name.toLowerCase().replace(/\s+/g, '-')}-${svc.version}-examples.yaml`;
+  const exportFile = exportFileName(svc);
   const isGenerating = generating === op.id;
   const rows = (
             <div className="copilot-rows">
@@ -190,8 +162,8 @@ export default function CopilotPage() {
             </div>
   );
   const wf = ctx.data && !wfDismissed ? ctx.data : undefined;
-  const aiBadge = sum.accepted ? `+${sum.accepted} AI` : sum.pending ? `+${sum.pending} AI pending` : undefined;
-  const pendingNote = sum.accepted > 0 && sum.pending > 0 ? `${sum.pending} pending ${sum.pending === 1 ? 'proposal stays' : 'proposals stay'} here and are not added.` : undefined;
+  const aiBadge = aiBadgeText(sum);
+  const pendingNote = pendingNoteText(sum);
 
   return (
     <div className="copilot">
@@ -237,18 +209,15 @@ export default function CopilotPage() {
               value={op.id}
               onChange={setOpId}
               options={operations.map((o) => {
-                const its = byOp[o.id]?.items ?? [];
-                const pe = its.filter((i) => i.status === 'pending').length;
-                const ac = its.filter((i) => i.status === 'accepted').length;
-                const ai = generating === o.id ? 'generating' : pe ? `+${pe} pending` : ac ? `+${ac} accepted` : '';
+                const ai = opPickAi(byOp[o.id]?.items, generating === o.id);
                 return {
                   id: o.id,
                   method: o.method,
                   protocol: svc.protocol,
                   path: o.path,
                   summary: `${exWord(contractOf(o.id))} in the contract`,
-                  end: ai ? <><Icon name="spark" size={11} />{ai}</> : undefined,
-                  endTone: ac && !pe && generating !== o.id ? 'success' : 'warning',
+                  end: ai.label ? <><Icon name="spark" size={11} />{ai.label}</> : undefined,
+                  endTone: ai.tone,
                 };
               })}
             />

@@ -1,18 +1,8 @@
 import { useEffect, useId, useRef } from 'react';
 import { findCriteriaConflict, validateExampleDraft } from '@/domain/copilot';
 import type { Example, Operation } from '@/domain/shared';
-import { exampleUrlPath } from '@/domain/catalog';
 import { Button, Exchange, ExchangeCard, Icon, Input, Textarea, SectionLabel } from '@microcks/deep-ink';
-
-export type Status = 'pending' | 'accepted' | 'rejected';
-export interface Item { example: Example; status: Status; edited: boolean; expanded: boolean; editing: boolean; draftName: string; draftBody: string }
-
-export const fresh = (example: Example, expanded = false): Item => ({
-  example, status: 'pending', edited: false, expanded, editing: false, draftName: example.name, draftBody: example.response.body,
-});
-
-/** Where the mock serves the operation: `http://microcks.local:8080/rest/API+Pastry/2.0`. */
-export interface MockTarget { host: string; basePath: string }
+import { paramLines, proposalSub, requestLine, requestText, type Item, type MockTarget } from './proposal';
 
 interface ProposalRowProps {
   item: Item;
@@ -23,12 +13,6 @@ interface ProposalRowProps {
   onAccept: (edited: boolean) => void;
   onReject: () => void;
   onUndo: () => void;
-}
-
-/** `path    name = Tartelette Framboise` lines: path parameters first, then the query ones. */
-function paramLines(op: Operation, params: Record<string, string>): string {
-  const inPath = new Set([...op.path.matchAll(/\{([^}]+)\}/g)].map((m) => m[1]));
-  return Object.entries(params).map(([k, v]) => `${(inPath.has(k) ? 'path' : 'query').padEnd(8)}${k} = ${v}`).join('\n');
 }
 
 /** One AI proposal: a ghost row (dashed while pending) that opens on its request and response, or on an editor. */
@@ -51,9 +35,9 @@ export function ProposalRow({ item, op, target, served, onPatch, onAccept, onRej
   const rejected = item.status === 'rejected';
   const conflict = rejected ? undefined : findCriteriaConflict(e, served);
   const draftError = item.editing ? validateExampleDraft({ name: item.draftName, body: item.draftBody }) : undefined;
-  const reqLine = `${op.method} ${target.basePath}${exampleUrlPath(op.path, e.request.params)}`;
-  const reqText = `${reqLine} HTTP/1.1\nHost: ${target.host}\nAccept: application/json${e.request.body ? '\nContent-Type: application/json' : ''}`;
-  const sub = Object.entries(e.request.params).map(([k, v]) => `${k}=${v}`).join(' · ');
+  const reqLine = requestLine(op, target, e);
+  const reqText = requestText(reqLine, target, e);
+  const sub = proposalSub(e);
   const open = item.expanded && !item.editing && !rejected;
 
   return (
