@@ -64,7 +64,7 @@ export const ROUTES: readonly RouteSpec[] = [
   { id: 'test-run', screen: '09', path: '/tests/runner/:testRunId', example: '/tests/runner/119', title: 'Test run #119 · Microcks', owner: 'WP9', nav: 'tests',
     load: pending },
   { id: 'tests', screen: '10', path: '/tests/service/:serviceId', example: '/tests/service/pastry2', title: 'Test history · Microcks', owner: 'WP9', nav: 'tests',
-    load: pending },
+    load: () => import('@/ui/pages/tests/TestsPage.svelte') },
   { id: 'usage', screen: '11', path: '/metrics/:serviceId?', example: '/metrics/pastry2', title: 'Usage & conformance · Microcks', owner: 'WP9', nav: 'metrics',
     load: pending },
   { id: 'traces', screen: '12', path: '/traces', example: '/traces?service=pastry2', title: 'Live traces · Microcks', owner: 'WP9', nav: 'traces',
