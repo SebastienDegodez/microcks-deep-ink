@@ -58,7 +58,7 @@ export const ROUTES: readonly RouteSpec[] = [
   { id: 'workflow-run', screen: '17b', path: '/workflows/runs/:runId', example: '/workflows/runs/6729a1d27e4c0b5f93a8c214', title: 'Workflow run · Microcks', owner: 'WP8', nav: 'workflows',
     load: pending },
   { id: 'test-create', screen: '08', path: '/tests/create', example: '/tests/create?service=pastry2', title: 'Run a test · Microcks', owner: 'WP9', nav: 'tests',
-    load: pending },
+    load: () => import('@/ui/pages/test-create/TestCreatePage.svelte') },
   { id: 'agent-test', screen: '19', path: '/tests/agent/:runId?', example: '/tests/agent/3', title: 'Agent test #3 · Microcks', owner: 'WP9', nav: 'tests',
     load: () => import('@/ui/pages/agent/AgentTestRunPage.svelte') },
   { id: 'test-run', screen: '09', path: '/tests/runner/:testRunId', example: '/tests/runner/119', title: 'Test run #119 · Microcks', owner: 'WP9', nav: 'tests',
