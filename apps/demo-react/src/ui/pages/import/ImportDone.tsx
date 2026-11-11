@@ -1,6 +1,7 @@
 import { Link as RouterLink } from 'react-router';
 import type { ImportResult } from '@/domain/importing';
 import { ApiBadge, Button, CopyButton, Icon, ProjectionPill } from '@microcks/deep-ink';
+import { doneSub, isTestable, openTarget } from './result';
 
 interface ImportDoneProps {
   result: ImportResult;
@@ -11,12 +12,8 @@ interface ImportDoneProps {
 
 /** Step 3: the source is created and its mock is live. */
 export function ImportDone({ result, onReset, nextScanMinutes }: ImportDoneProps) {
-  const open = result.outcome === 'arazzo'
-    ? { to: '/workflows', label: 'Open workflows' }
-    : result.outcome === 'a2a'
-      ? { to: `/services/${result.serviceId}`, label: 'Open agent' }
-      : { to: `/services/${result.serviceId}`, label: 'Open service' };
-  const testable = result.outcome !== 'arazzo' && result.outcome !== 'a2a';
+  const open = openTarget(result);
+  const testable = isTestable(result);
   return (
     <div className="step-card" data-step="done">
       <div role="status" className="step-head">
@@ -97,16 +94,4 @@ export function ImportDone({ result, onReset, nextScanMinutes }: ImportDoneProps
       </div>
     </div>
   );
-}
-
-function doneSub(r: ImportResult, nextScanMinutes: number): string {
-  const full = `${r.name} ${r.version}`;
-  switch (r.outcome) {
-    case 'importer-created': return `First scan of “${r.importerName ?? r.name}” done: ${r.operationCount} Operations, ${r.samples ?? 0} Examples served. Next re-scan in ${nextScanMinutes} min.`;
-    case 'merged': return `Secondary artifact: non-conflicting Examples were added to ${full} (name + version key). The mock already serves them.`;
-    case 'arazzo': return `${full} is imported: ${r.arazzo?.workflows} workflows, ${r.arazzo?.steps} steps, ${r.arazzo?.sources} source descriptions linked. Play them on the Microcks mocks or run them against your implementations; order-pastry cannot run yet (AsyncAPI steps).`;
-    case 'a2a': return `${full} is imported as an A2A service: ${r.agent?.skills ?? 0} skills became operations and the mock serves the card on ${r.agent?.transports.length ?? 0} transports. It answers with a rejected task until conversations are added.`;
-    case 'direct': return r.protocol === 'EVENT' ? `${full} publishes the reference payload of the “${r.resource}” resource at a regular interval.` : `${full} exposes the “${r.resource}” resource: create, read, filter and delete with free-form JSON.`;
-    default: return `${full} is imported: ${r.operationCount} Operations, ${r.samples} Examples served by the mock.`;
-  }
 }

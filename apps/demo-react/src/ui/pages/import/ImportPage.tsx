@@ -3,35 +3,23 @@ import { useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 import {
   RECOGNIZED_FORMATS, validateArtifactUrl, validateDirectApi, validateGitForm,
-  type DirectApiInput, type ImportPreview, type ImportResult, type ImportSource, type RecentImport,
+  type ImportPreview, type ImportResult, type ImportSource, type RecentImport,
 } from '@/domain/importing';
 import { ValidationError } from '@/application/shared';
 import { PageHeader, useAnnounce, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
 import { ApiBadge, Button, Callout, Checkbox, Chip, DropZone, Field, Icon, Input, Textarea, Select, SplitPane, SplitPaneMain, SplitPaneSide, TabPanel, Tabs } from '@microcks/deep-ink';
 import { ImportDone } from './ImportDone';
 import { ImportPreviewCard } from './ImportPreview';
-
-type Step = 'idle' | 'analyzing' | 'detected' | 'importing' | 'done';
-type SourceTab = 'file' | 'url' | 'git' | 'direct';
-
-/** The placeholders double as defaults: an empty field takes the value it shows, as on the prototype. */
-const SAMPLE_URL = 'https://raw.githubusercontent.com/microcks/microcks/master/samples/APIPastry-openapi.yaml';
-const GIT_DEFAULTS = { name: 'API Pastry — main', url: 'https://raw.githubusercontent.com/acme/contracts/main/pastry/openapi.yaml' };
-const DIRECT_DEFAULTS = { name: 'Order API', version: '1.0', resource: 'order', payload: '{ "id": "ord-1042", "customer": "Laurent", "status": "CREATED" }' };
-const EMPTY_DIRECT = { type: 'REST' as DirectApiInput['type'], name: '', version: '', resource: '', payload: '' };
-const or = (value: string, fallback: string) => value.trim() || fallback;
-
-const SAMPLES = [
-  { label: 'Sample: API Pastry', file: { name: 'apipastry-openapi.yaml', sizeBytes: 5120 } },
-  { label: 'Example: Pastry workflows (Arazzo)', file: { name: 'pastry-workflows.arazzo.yaml', sizeBytes: 9216 } },
-  { label: 'Example: Pastry concierge (A2A Agent Card)', file: { name: 'agent-card.json', sizeBytes: 3277 } },
-];
+import {
+  DIRECT_DEFAULTS, EMPTY_DIRECT, GIT_DEFAULTS, SAMPLE_URL, SAMPLES, SOURCE_TABS, importStepIndex, importSteps, or, resolveDirect, resolveGit,
+  type ImportStep, type SourceTab,
+} from './source';
 
 export default function ImportPage() {
   usePageTitle('Add a source · Microcks');
   const uc = useUseCases();
   const announce = useAnnounce();
-  const [step, setStep] = useState<Step>('idle');
+  const [step, setStep] = useState<ImportStep>('idle');
   const [tab, setTab] = useState<SourceTab>('file');
   const [preview, setPreview] = useState<ImportPreview | undefined>();
   const [result, setResult] = useState<ImportResult | undefined>();
@@ -46,14 +34,8 @@ export default function ImportPage() {
   const secrets = useQuery(() => uc.importing.listSecrets(), [uc]);
 
   const resolvedUrl = or(url, SAMPLE_URL);
-  const resolvedGit = { name: or(git.name, GIT_DEFAULTS.name), url: or(git.url, GIT_DEFAULTS.url) };
-  const resolvedDirect: DirectApiInput = {
-    type: direct.type,
-    name: or(direct.name, DIRECT_DEFAULTS.name),
-    version: or(direct.version, DIRECT_DEFAULTS.version),
-    resource: or(direct.resource, DIRECT_DEFAULTS.resource),
-    payload: direct.type === 'GENERIC_EVENT' ? or(direct.payload, DIRECT_DEFAULTS.payload) : direct.payload.trim() || undefined,
-  };
+  const resolvedGit = resolveGit(git);
+  const resolvedDirect = resolveDirect(direct);
   const urlError = touched && tab === 'url' ? validateArtifactUrl(resolvedUrl) : undefined;
   const gitErrors = touched && tab === 'git' ? validateGitForm(resolvedGit) : {};
   const directErrors = touched && tab === 'direct' ? validateDirectApi(resolvedDirect) : {};
@@ -113,9 +95,9 @@ export default function ImportPage() {
     setTouched(false);
     setDirect(EMPTY_DIRECT);
   };
-  const stepIndex = step === 'idle' || step === 'analyzing' ? 0 : step === 'detected' || (step === 'importing' && preview) ? 1 : 2;
+  const stepIndex = importStepIndex(step, Boolean(preview));
   const directDone = step === 'done' && result?.outcome === 'direct';
-  const steps = ['Source', directDone ? 'Preview (no contract)' : 'Preview', 'Live mock'];
+  const steps = importSteps(directDone);
 
   return (
     <div className="import" data-main-pad="roomy">
@@ -152,12 +134,7 @@ export default function ImportPage() {
                 idPrefix="imp"
                 value={tab}
                 onChange={(id) => { setTab(id as SourceTab); setTouched(false); setError(undefined); }}
-                items={[
-                  { id: 'file', label: 'Upload a file', icon: 'document', hint: 'one-off' },
-                  { id: 'url', label: 'URL', icon: 'link' },
-                  { id: 'git', label: 'Git repository', icon: 'git-branch', hint: 'scheduled' },
-                  { id: 'direct', label: 'Direct API', icon: 'zap' },
-                ]}
+                items={SOURCE_TABS}
               >
                 <TabPanel id="file" idPrefix="imp" value={tab} className="source-panel">
                   <DropZone
