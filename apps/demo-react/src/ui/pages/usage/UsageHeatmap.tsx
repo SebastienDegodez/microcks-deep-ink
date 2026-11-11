@@ -2,10 +2,8 @@ import { useId, useState } from 'react';
 import { WEEKDAY_HEADERS, formatCount, heatmapWeeks, type UsageView } from '@/domain/observe';
 import { Facts, Panel } from '@microcks/deep-ink';
 import { useRovingSelection } from '../tests/roving';
+import { HEAT_ROW_LABELS, dayLabel, futureDays } from './figures';
 import '@microcks/demo-styles/pages/usage/heatmap.css';
-
-/** Weekday labels of the heatmap rows, every other day as in the prototype. */
-const HEAT_ROW_LABELS = ['Mon', '', 'Wed', '', 'Fri', '', 'Sun'] as const;
 
 /** Daily calendar of the last 12 weeks: one button per day, 4 heat steps, legend and three key figures. */
 export function UsageHeatmap({ view }: { view: UsageView }) {
@@ -55,15 +53,14 @@ export function UsageHeatmap({ view }: { view: UsageView }) {
             style={{ gridColumn: c.week + 2, gridRow: c.weekday + 2 }}
             aria-pressed={c.index === sel}
             tabIndex={c.index === sel ? 0 : -1}
-            aria-label={`${c.name}: ${formatCount(c.value)} invocations`}
+            aria-label={dayLabel(c)}
             onClick={() => setSel(c.index)}
             onKeyDown={roving.onKeyDown(c.index)}
           />
         ))}
-        {Array.from({ length: heatmap.months.length * 7 - heatmap.cells.length }, (_, i) => {
-          const day = heatmap.cells.length + i;
-          return <span key={`f-${day}`} className="us-day-future" aria-hidden="true" style={{ gridColumn: Math.floor(day / 7) + 2, gridRow: (day % 7) + 2 }} />;
-        })}
+        {futureDays(heatmap).map((f) => (
+          <span key={`f-${f.day}`} className="us-day-future" aria-hidden="true" style={{ gridColumn: f.column, gridRow: f.row }} />
+        ))}
       </div>
       <div className="us-heat-foot">
         <span aria-live="polite">

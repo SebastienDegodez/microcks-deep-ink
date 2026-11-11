@@ -1,12 +1,9 @@
 import { useId } from 'react';
 import { Link as RouterLink } from 'react-router';
 import { BAND_TEXT, conformanceBand, gapList, treemapRows, type ConformanceItem, type DomainConformance, type UsageView } from '@/domain/observe';
-import { Icon, type IconName, Panel, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
+import { Icon, Panel, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
+import { BAND_ICON, PROTO_ATTR, TREND_ICON, indexBarLabel, ops, rectSize } from './conformance';
 import '@microcks/demo-styles/pages/usage/conformance.css';
-
-const PROTO_ATTR: Record<ConformanceItem['protocol'], string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
-const BAND_ICON: Partial<Record<ReturnType<typeof conformanceBand>, IconName>> = { ok: 'check', partial: 'warning', risk: 'close' };
-const ops = (n: number) => `${n} ${n === 1 ? 'op' : 'ops'}`;
 
 /** "Conformance" section: risk treemap by domain and index vs current score. Always over all services. */
 export function ConformanceSection({ domains, view, selected }: { domains: DomainConformance[]; view: UsageView | undefined; selected: string }) {
@@ -87,7 +84,7 @@ function Treemap({ domains, selected }: { domains: DomainConformance[]; selected
 function ServiceRect({ item, selected }: { item: ConformanceItem; selected: boolean }) {
   const band = conformanceBand(item.score);
   const icon = BAND_ICON[band];
-  const size = item.score === null ? 'untested' : item.operations >= 3 ? 'lg' : 'md';
+  const size = rectSize(item);
   return (
     <RouterLink className="treemap-rect" data-band={band} data-narrow={item.operations === 1 ? '' : undefined} aria-current={selected ? 'true' : undefined} to={`/services/${item.serviceId}`}>
       <span className="treemap-rect-text">
@@ -111,13 +108,6 @@ function ServiceRect({ item, selected }: { item: ConformanceItem; selected: bool
     </RouterLink>
   );
 }
-
-const TREND_ICON: Record<NonNullable<UsageView['conformance']['direction']>, IconName> = {
-  up: 'trend-up',
-  down: 'trend-down',
-  stable: 'trend-flat',
-  mixed: 'trend-flat',
-};
 
 function IndexCard({ view, domains, selected }: { view: UsageView; domains: DomainConformance[]; selected: string }) {
   const titleId = useId();
@@ -153,7 +143,7 @@ function IndexCard({ view, domains, selected }: { view: UsageView; domains: Doma
       <div
         className="index-bar"
         role="img"
-        aria-label={`${view.scope === 'all' ? 'Average current score' : 'Current score'} ${c.score ?? 0} percent, ${view.scope === 'all' ? 'average ' : ''}conformance index ${index} percent`}
+        aria-label={indexBarLabel(view.scope, c.score, index)}
       >
         <div className="index-bar-track">
           <span className="index-bar-index" style={{ width: `${index}%` }} />

@@ -1,6 +1,7 @@
 import { useId, useState } from 'react';
 import { formatCount, type UsageView } from '@/domain/observe';
 import { BarChart, Panel } from '@microcks/deep-ink';
+import { chartBars, chartLabel, chartTable, chartTicks } from './figures';
 import '@microcks/demo-styles/pages/usage/chart.css';
 
 /**
@@ -34,14 +35,8 @@ export function HourlyChart({ view }: { view: UsageView }) {
         </span>
       </div>
       <BarChart
-        label={`${chart.summary} One bar per ${chart.unit}, use the arrow keys to move between bars.`}
-        bars={chart.points.map((p, i) => ({
-          id: String(i),
-          value: p.value,
-          description: `${p.name}: ${formatCount(p.value)} invocations`,
-          label: p.tick,
-          future: p.future,
-        }))}
+        label={chartLabel(chart)}
+        bars={chartBars(chart)}
         max={chart.max}
         selectedId={String(sel)}
         onSelect={(id) => setSel(Number(id))}
@@ -49,13 +44,9 @@ export function HourlyChart({ view }: { view: UsageView }) {
         height={200}
         gap={compact ? 3 : 6}
         minHeight={1}
-        ticks={[formatCount(chart.max), formatCount(Math.round(chart.max / 2)), '0']}
+        ticks={chartTicks(chart)}
         grid={[0, 0.5]}
-        table={{
-          caption: chart.title,
-          columns: [chart.unit === 'hour' ? 'Hour' : 'Day', 'Invocations'],
-          rows: chart.points.map((p) => [p.name, p.future ? 'not yet' : formatCount(p.value)]),
-        }}
+        table={chartTable(chart)}
       />
     </Panel>
   );

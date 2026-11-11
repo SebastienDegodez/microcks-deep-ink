@@ -1,14 +1,13 @@
 import { Link as RouterLink } from 'react-router';
 import { formatCount, type UsageView } from '@/domain/observe';
 import { Icon, LiveIndicator, StatCard, StatGrid } from '@microcks/deep-ink';
+import { conformanceValue, scoreTone, trendDir } from './figures';
 import '@microcks/demo-styles/pages/usage/kpis.css';
-
-const tone = (score: number | null) => (score === null ? 'neutral' : score >= 80 ? 'success' : score >= 50 ? 'warning' : 'danger');
 
 /** The four key figures of the Usage page: invocations, peak, last request and conformance. */
 export function UsageKpis({ view }: { view: UsageView }) {
   const { kpis, conformance } = view;
-  const direction = kpis.growth > 0 ? 'up' : kpis.growth < 0 ? 'down' : 'flat';
+  const direction = trendDir(kpis.growth);
   return (
     <StatGrid label="Key figures">
       <StatCard title={`Mock invocations · ${view.periodLabel}`} value={formatCount(kpis.total)}>
@@ -25,7 +24,7 @@ export function UsageKpis({ view }: { view: UsageView }) {
           {kpis.lastCall}
         </RouterLink>
       </StatCard>
-      <StatCard title={conformance.title} value={conformance.score === null ? 'Never tested' : `${conformance.score}%`} tone={tone(conformance.score)}>
+      <StatCard title={conformance.title} value={conformanceValue(conformance.score)} tone={scoreTone(conformance.score)}>
         <p>{conformance.subtitle}</p>
       </StatCard>
     </StatGrid>

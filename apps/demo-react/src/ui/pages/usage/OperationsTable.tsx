@@ -2,15 +2,8 @@ import { useId } from 'react';
 import { Link as RouterLink } from 'react-router';
 import { formatCount, formatTrend, type UsageTableRow, type UsageView } from '@/domain/observe';
 import { ApiBadge, LiveIndicator, MethodTag, Panel } from '@microcks/deep-ink';
+import { splitVersion, trendDir } from './figures';
 import '@microcks/demo-styles/pages/usage/table.css';
-
-const trendDir = (pct: number) => (pct > 0 ? 'up' : pct < 0 ? 'down' : 'flat');
-
-/** "API Pastry 2.0" -> ["API Pastry", "2.0"]. */
-function splitVersion(name: string): [string, string | undefined] {
-  const at = name.lastIndexOf(' ');
-  return at > 0 ? [name.slice(0, at), name.slice(at + 1)] : [name, undefined];
-}
 
 /** Invocations per operation (one service) or per service (all), with share bars and trends. */
 export function OperationsTable({ view }: { view: UsageView }) {
