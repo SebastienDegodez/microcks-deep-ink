@@ -24,6 +24,7 @@ usage:
   python3 -I snap.py leak-selftest <worktree> <out-dir> [--no-build] [--app ...]
       Injects a custom-property-only leak into a copy of dist/ and checks leak reports it as LEAK (exit 0 = pass).
   states and leak run on a paused fake clock (Playwright clock), advanced by fixed amounts.
+  Every page runs in the demo's fast mode (localStorage 'deep-ink-demo-fast'), so memory and http (MSW) builds compare.
   probe and leak default to routes.txt next to this script.
 
 Typical refactor loop: shoot the baseline BEFORE editing (or from origin/main), edit,
@@ -81,10 +82,14 @@ def served(wt, app, build, args=()):
         srv.kill()
 
 FROZEN_AT = 1_800_000_000_000  # fixed fake clock (ms since epoch) for states and leak
+# Every page runs in the demo's fast mode (no simulated latency: in-memory `latency()` with the memory backend, MSW
+# `delay()` with the http one), so captures compare settled content, not how far the random-free but backend-specific
+# delays got after a fixed wait.
+FAST_JS = "try{localStorage.setItem('deep-ink-demo-fast','1')}catch(e){}"
 
 def new_page(b, theme, reduced=True, frozen=False):
     pg = b.new_page(viewport=VIEWPORT, color_scheme=theme, reduced_motion='reduce' if reduced else 'no-preference')
-    pg.add_init_script(f"try{{localStorage.setItem('microcks-theme','{theme}')}}catch(e){{}}")
+    pg.add_init_script(f"try{{localStorage.setItem('microcks-theme','{theme}')}}catch(e){{}}"); pg.add_init_script(FAST_JS)
     if frozen:
         # Date, timers and rAF are faked and paused: JS-driven updates (cockpit traffic ticker every 1.2 s, live counters)
         # only advance through settle(), by a fixed amount, so captures do not depend on machine load.
@@ -98,10 +103,14 @@ def settle(pg, fake_ms=2000, rounds=4):
         pg.wait_for_timeout(400); pg.clock.run_for(fake_ms // rounds)
     pg.wait_for_timeout(300)
 
+def rendered(pg):
+    """Waits for the first render: with the http backend it follows the MSW worker's registration."""
+    pg.wait_for_function("() => !!document.querySelector('#root > *')", timeout=15000)
+
 def capture(b, base, route, theme, path):
     """The reference capture: fresh page, reduced motion, animations disabled, full page."""
     pg = new_page(b, theme)
-    pg.goto(base + '#' + route); pg.wait_for_timeout(1200)
+    pg.goto(base + '#' + route); rendered(pg); pg.wait_for_timeout(1200)
     pg.screenshot(path=path, full_page=True, animations='disabled')
     pg.close()
 
@@ -118,12 +127,12 @@ def shoot(wt, out, build=True, routes=None, app='apps/demo-react'):
     with served(wt, app, build) as (base, b):
         if routes is None:
             seen, queue = [], ['/']
-            pg = b.new_page(viewport=VIEWPORT)
+            pg = b.new_page(viewport=VIEWPORT); pg.add_init_script(FAST_JS)
             while queue and len(seen) < 120:
                 r = queue.pop(0)
                 if r in seen: continue
                 seen.append(r)
-                pg.goto(base + '#' + r); pg.wait_for_timeout(600)
+                pg.goto(base + '#' + r); rendered(pg); pg.wait_for_timeout(600)
                 for h in pg.eval_on_selector_all('a[href^="#/"]', 'els => els.map(e => e.getAttribute("href"))'):
                     h = h[1:].split('?')[0]
                     if h not in seen and h not in queue: queue.append(h)
@@ -206,7 +215,7 @@ def probe(wt, out, build=True, routes=None, app='apps/demo-react'):
     with served(wt, app, build) as (base, b):
         for r in routes:
             pg = new_page(b, 'dark', reduced=False)
-            pg.goto(base + '#' + r); pg.wait_for_timeout(1200)
+            pg.goto(base + '#' + r); rendered(pg); pg.wait_for_timeout(1200)
             found = sorted(pg.evaluate(ANIM_JS), key=lambda x: (x['path'], x['animationName'], x['animationDuration']))
             pg.close()
             if found:

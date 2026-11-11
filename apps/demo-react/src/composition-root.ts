@@ -5,8 +5,8 @@
  * through ports too, so this file hands the owning feature's port to the feature that needs it
  * (for example `observe` reads the catalogue and the test runs).
  *
- * Backends (`createComposition({ backend })`):
- * - `memory` (default): every feature uses its in-memory adapters, nothing goes over the network.
+ * Backends (`createComposition({ backend })`; the browser build picks `http`, see `main.tsx`):
+ * - `memory` (default here, so in tests): every feature uses its in-memory adapters, nothing goes over the network.
  * - `http`: a feature that has HTTP adapters (`src/infrastructure/http/<feature>`, registered in `HTTP_ADAPTERS`)
  *   calls `/api/...` with `fetch` (answered by MSW in the browser and in vitest); a feature without them FALLS BACK
  *   to its in-memory adapters. The fallback lets the features move to HTTP one pull request at a time while the demo
@@ -45,9 +45,9 @@ export type Backend = 'memory' | 'http';
 export const BACKENDS: readonly Backend[] = ['memory', 'http'];
 export type Feature = keyof UseCases;
 
-/** Reads `VITE_DEMO_BACKEND` (or any string): unset or empty means `memory`, an unknown value throws. */
-export function parseBackend(value: string | undefined): Backend {
-  if (value === undefined || value === '') return 'memory';
+/** Reads `VITE_DEMO_BACKEND` (or any string): unset or empty means `fallback` (`memory`), an unknown value throws. */
+export function parseBackend(value: string | undefined, fallback: Backend = 'memory'): Backend {
+  if (value === undefined || value === '') return fallback;
   if ((BACKENDS as readonly string[]).includes(value)) return value as Backend;
   throw new Error(`Unknown demo backend "${value}": expected one of ${BACKENDS.join(', ')}.`);
 }

@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import { playWorkflow, type Responder } from '@/domain/arazzo';
 import { FixedClock } from './clock';
-import { isFastMode, latency, nextLatencyMs, setLatencyMode } from './latency';
+import { isFastMode, latency, nextLatencyMs, setLatencyMode, setPerCallLatency } from './latency';
 import { RUN_IDS, SERVICE_IDS } from './seed-ids';
 import { DOCUMENTS, RESTOCK_STEPS, WORKFLOWS, seedRuns, seedSessions } from './arazzo.seed';
 import { SERVICES, OPERATIONS, PASTRY2_EXAMPLES } from './services.seed';
@@ -10,6 +10,7 @@ import { createSequenceStream, createStream, createTickingStream, TICK_MS } from
 afterEach(() => {
   vi.useRealTimers();
   setLatencyMode(undefined);
+  setPerCallLatency(true);
 });
 
 describe('seeds', () => {
@@ -99,6 +100,18 @@ describe('latency', () => {
     await vi.advanceTimersByTimeAsync(100);
     expect(done).toBe(false);
     await vi.advanceTimersByTimeAsync(300);
+    expect(done).toBe(true);
+  });
+
+  it('is zero when the per-call latency is off (http backend: MSW delays each request instead)', async () => {
+    vi.useFakeTimers();
+    setLatencyMode('normal');
+    setPerCallLatency(false);
+    let done = false;
+    void latency().then(() => {
+      done = true;
+    });
+    await vi.advanceTimersByTimeAsync(0);
     expect(done).toBe(true);
   });
 });

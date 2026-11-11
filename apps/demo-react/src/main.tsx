@@ -11,13 +11,13 @@ import '@/ui/app/app.css';
 
 restoreTheme();
 
-// `memory` unless the build sets VITE_DEMO_BACKEND=http.
-const backend = parseBackend(import.meta.env.VITE_DEMO_BACKEND);
+// `http` (answered by the MSW worker) unless the build sets VITE_DEMO_BACKEND=memory.
+const backend = parseBackend(import.meta.env.VITE_DEMO_BACKEND, 'http');
 
 async function boot(): Promise<void> {
   // With `http`, the first render waits for the mock worker: no `/api/` request may leave before it intercepts.
   // The test reads the env value itself (not `backend`) so Vite folds it and the `memory` build drops MSW entirely.
-  if (import.meta.env.VITE_DEMO_BACKEND === 'http') {
+  if (import.meta.env.VITE_DEMO_BACKEND !== 'memory') {
     const { startWorker } = await import('@/infrastructure/msw/browser');
     await startWorker();
   }

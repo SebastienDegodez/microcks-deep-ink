@@ -170,6 +170,8 @@ describe('backend switch', () => {
     expect(parseBackend(undefined)).toBe('memory');
     expect(parseBackend('')).toBe('memory');
     expect(parseBackend('http')).toBe('http');
+    expect(parseBackend(undefined, 'http')).toBe('http');
+    expect(parseBackend('memory', 'http')).toBe('memory');
     expect(() => parseBackend('graphql')).toThrow('Unknown demo backend "graphql": expected one of memory, http.');
   });
 });
