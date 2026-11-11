@@ -23,10 +23,10 @@
 <!-- The twin renders the status word as a text node of its own, between "(" and ")". -->
 {#snippet textNode(text?: string)}{text}{/snippet}
 {#snippet proof(v: ProofValue)}{#if v.icon}<Icon name={v.icon} size={12} />{/if}{v.value}{#if v.iconLabel}<span class="sr-only">{v.value ? ` ${v.iconLabel}` : v.iconLabel}</span>{/if}{#if word(v.status)} <span class="sr-only">({@render textNode(word(v.status))})</span>{/if}{/snippet}
+<!-- Spaces as in the twin: one after the type and after the name, one before each proof value, none at the end. -->
 <span {...rest} class={['api-badge', cssClass].filter(Boolean).join(' ')} data-protocol={dataProtocol} data-status={isProof ? status : undefined} data-size={size} data-fill={proofFill} data-version={versionTone}>
   <span class="api-badge-type">{type}</span> 
   {#if isProof && (main || icon)}<span class="api-badge-name" data-icon-only={icon && !main ? '' : undefined}>{@render proof({ value: main, status, icon, iconLabel })}</span>
   {:else if main}<span class="api-badge-name">{main}</span>{/if} 
-  {#if !isProof && version}<span class="api-badge-version">{version}</span>{/if}
-  {#if isProof}{#each values ?? [] as v, i (i)}<span class="api-badge-value" data-status={v.status ?? 'neutral'} data-icon-only={v.icon && !v.value ? '' : undefined}>{@render proof(v)}</span>{/each}{/if}
+  {#if !isProof && version}<span class="api-badge-version">{version}</span>{/if}{#if isProof}{#each values ?? [] as v, i (i)}{' '}<span class="api-badge-value" data-status={v.status ?? 'neutral'} data-icon-only={v.icon && !v.value ? '' : undefined}>{@render proof(v)}</span>{/each}{/if}
 </span>

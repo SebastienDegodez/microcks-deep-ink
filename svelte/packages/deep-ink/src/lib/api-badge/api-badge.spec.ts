@@ -22,4 +22,10 @@ describe('ApiBadge', () => {
     expect(skills.hasAttribute('data-protocol')).toBe(false);
     expect(await axeViolations(container)).toEqual([]);
   });
+  it('spaces its parts like the twin: nothing after the version, one space before each proof value', () => {
+    render(ApiBadge, { props: { protocol: 'REST', name: 'API Pastry', version: '1.0' } });
+    expect(screen.getByText('API Pastry').parentElement?.textContent).toBe('REST API Pastry 1.0');
+    render(ApiBadge, { props: { label: 'samples', value: '7', values: [{ value: '+1 AI' }, { value: '2' }] } });
+    expect(screen.getByText('samples').parentElement?.textContent).toBe('samples 7  +1 AI 2');
+  });
 });
