@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { restockSteps } from './test-helpers';
-import type { Session, SessionCall } from './session';
-import { verificationRun, verifySession } from './verification';
+import type { Session, SessionCall } from '@microcks/demo-core/domain/arazzo/session';
+import { verificationRun, verifySession } from '@microcks/demo-core/domain/arazzo/verification';
 
 const call = (n: number, stepId: string, extra: Partial<SessionCall> = {}): SessionCall => ({
   n, method: 'GET', path: '/pastries', httpStatus: 200, stepId,

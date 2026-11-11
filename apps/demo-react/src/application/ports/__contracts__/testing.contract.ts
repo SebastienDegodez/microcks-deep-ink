@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { NotFoundError } from '@/application/shared';
-import type { TestingPorts } from '@/application/testing';
+import { NotFoundError } from '@microcks/demo-core/application/shared';
+import type { TestingPorts } from '@microcks/demo-core/application/testing';
 import { collectFor, expectSilentAfterUnsubscribe, nextEmission, takeEmissions, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
 
 /** The ports the testing feature owns (catalogue and secrets come from other features). */

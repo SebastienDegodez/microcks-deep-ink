@@ -1,11 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import type { WorkflowRun } from '@/domain/arazzo';
-import { createArazzoUseCases, type ArazzoUseCases } from '@/application/arazzo';
-import { NotFoundError, ValidationError } from '@/application/shared';
-import type { SecretRepository } from '@/application/ports/importing';
-import { RUN_IDS, setLatencyMode } from '../shared';
-import { createInMemoryArazzoAdapters } from './index';
-import { canonicalRunId } from './runner';
+import type { WorkflowRun } from '@microcks/demo-core/domain/arazzo';
+import { createArazzoUseCases, type ArazzoUseCases } from '@microcks/demo-core/application/arazzo';
+import { NotFoundError, ValidationError } from '@microcks/demo-core/application/shared';
+import type { SecretRepository } from '@microcks/demo-core/application/ports/importing';
+import { RUN_IDS, setLatencyMode } from '@microcks/demo-core/infrastructure/in-memory/shared';
+import { createInMemoryArazzoAdapters } from '@microcks/demo-core/infrastructure/in-memory/arazzo';
+import { canonicalRunId } from '@microcks/demo-core/infrastructure/in-memory/arazzo/runner';
 
 const secrets: SecretRepository = {
   list: async () => [],

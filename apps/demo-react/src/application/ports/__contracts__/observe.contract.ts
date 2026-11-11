@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import type { TraceCall } from '@/domain/observe';
-import type { ObservePorts } from '@/application/observe';
+import type { TraceCall } from '@microcks/demo-core/domain/observe';
+import type { ObservePorts } from '@microcks/demo-core/application/observe';
 import { expectSilentAfterUnsubscribe, takeEmissions, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
 
 /** The ports the observe feature owns (catalogue, test runs and clock come from elsewhere). */

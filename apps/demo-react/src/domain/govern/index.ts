@@ -1,3 +1,1 @@
-export * from './types';
-export * from './install-preview';
-export * from './secret-form';
+export * from '@microcks/demo-core/domain/govern';

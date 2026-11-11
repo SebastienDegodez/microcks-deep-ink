@@ -57,8 +57,8 @@ test('demo-core has only local TypeScript source imports and no runtime dependen
 });
 
 test('the boundary rejects framework, design-system and demo back-references', () => {
-  const file = resolve(sourceRoot, 'govern/example.ts');
-  for (const specifier of ['react', 'svelte', '@angular/core', '@microcks/deep-ink', '../../../apps/demo-react/src/domain/shared/index.js']) {
+  const file = resolve(sourceRoot, 'domain/govern/example.ts');
+  for (const specifier of ['react', 'svelte', '@angular/core', '@microcks/deep-ink', '../../../../../apps/demo-react/src/domain/shared/index.js']) {
     for (const text of [
       `import type { Value } from '${specifier}';`,
       `export * from '${specifier}';`,

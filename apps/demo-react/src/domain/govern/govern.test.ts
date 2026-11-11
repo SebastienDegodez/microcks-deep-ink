@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { membershipChanges, membershipKey, packageTotals, previewInstall, secretCredentials, validateSecretForm, type HubPackage } from './index';
-import * as core from '@microcks/demo-core/govern';
+import { membershipChanges, membershipKey, packageTotals, previewInstall, secretCredentials, validateSecretForm, type HubPackage } from '@microcks/demo-core/domain/govern';
+import * as core from '@microcks/demo-core/domain/govern/secret-form';
 
 const pkg: HubPackage = {
   id: 'p', name: 'Pastry samples', category: 'Samples', description: '', versions: [], apiCount: 2, installed: false,

@@ -13,7 +13,7 @@ It is served under `/demo/` (hash router, Vite `base: './'`) and targets RGAA 4.
 ## Run it
 
 ```bash
-pnpm --filter @microcks/demo-core build # build the extracted framework-neutral govern policies first
+pnpm --filter @microcks/demo-core build # build the framework-neutral demo core first (domain, use cases, in-memory adapters)
 pnpm --filter demo-react dev          # http://localhost:5173/#/
 pnpm --filter demo-react test         # Vitest (domain, use cases over the in-memory adapters, routes, a11y shell)
 pnpm --filter demo-react lint         # ESLint: typescript-eslint, jsx-a11y strict, react-hooks
@@ -26,7 +26,8 @@ Useful URLs: `#/map` (screen map with a link to every screen), `#/workflows/past
 `#/tests/agent/3` (its conformance test, screen 19) and `#/sources/new` (add a source).
 
 `?fast` in the hash query (`#/workflows?fast`) or `localStorage['deep-ink-demo-fast'] = '1'` removes the
-simulated latency (120 to 350 ms, deterministic). The Playwright smoke run uses it. Streams tick every 1200 ms.
+simulated latency (120 to 350 ms, deterministic). The Playwright smoke run uses it, and `src/test-setup.ts` removes it for
+Vitest with `setDefaultLatencyMode('fast')`. Streams tick every 1200 ms.
 
 ## Backends
 
@@ -69,14 +70,19 @@ test-only: `lint:arch` lets them import vitest and MSW, and only tests may impor
  composition-root.ts ── the only place that wires infrastructure to the application layer (with main.tsx)
 ```
 
+The code of `src/domain`, `src/application` (except the port contract suites) and `src/infrastructure/in-memory` lives in the
+framework-neutral [`@microcks/demo-core`](../../packages/demo-core/README.md) package (#287), so the Svelte demo can reuse it. Each
+of their modules here is a one-line facade, `export * from '@microcks/demo-core/<same path>'`, so the rest of the demo keeps
+its `@/` imports. Their tests stay here.
+
 | Folder | Contains | May import |
 |---|---|---|
-| `src/domain/<feature>` | Types and **pure functions**: `conformanceScore`, `formatRelative`, `validatePocSubset`, `executionLayers`, `evaluateCriterion`, `nextAfterStep`, `playWorkflow`, `baggage`, `validateRunRequest`... | `src/domain` only, plus `@microcks/demo-core/govern` from the govern facade (no React). `domain/<a>` never imports `domain/<b>`, except `domain/shared`. |
+| `src/domain/<feature>` | Types and **pure functions**: `conformanceScore`, `formatRelative`, `validatePocSubset`, `executionLayers`, `evaluateCriterion`, `nextAfterStep`, `playWorkflow`, `baggage`, `validateRunRequest`... | `src/domain` and the demo-core domain only (no React). `domain/<a>` never imports `domain/<b>`, except `domain/shared`. |
 | `src/application/ports/<feature>.ts` | Interfaces the application needs (`ServiceCatalog`, `WorkflowRunRepository`, `TraceStream`...) | domain |
 | `src/application/<feature>/index.ts` | `<Feature>UseCases` interface and `create<Feature>UseCases(ports)`; DTOs of the views | domain, application (ports, shared). Never another feature's folder. |
 | `src/application/use-cases.ts` | `UseCases`: the one object pages receive | application |
 | `src/infrastructure/in-memory/<feature>` | `createInMemory<Feature>Adapters()`: seeded adapters that implement the ports | domain, application |
-| `src/infrastructure/in-memory/shared` | `FixedClock` (2026-11-03T09:10:04Z), `latency()`, `createStream`/`createTickingStream`/`createSequenceStream`, **seeds** (services, Arazzo documents, workflows, runs, sessions), `seed-ids.ts` | domain, application |
+| `src/infrastructure/in-memory/shared` | `FixedClock` (2026-11-03T09:10:04Z), `latency()`, `setDefaultLatencyMode()`, `createStream`/`createTickingStream`/`createSequenceStream`, **seeds** (services, Arazzo documents, workflows, runs, sessions), `seed-ids.ts` | domain, application |
 | `src/ui/app` | Providers and hooks (`useUseCases`, `useQuery`, `useSubscription`, `usePageTitle`, `useAnnounce`), `PageHeader`, `DemoBanner`, `AppLayout`, `routes.ts`, `router.tsx` | application (types), domain, ui, `react`, `react-router` |
 | `src/ui/pages/<screen>/<Name>Page.tsx` | One lazy page per route | same as `ui` |
 | `@microcks/deep-ink` | The design system package (see below) | |
@@ -85,18 +91,19 @@ test-only: `lint:arch` lets them import vitest and MSW, and only tests may impor
 
 Enforced by `.dependency-cruiser.cjs` (every rule has severity `error`, `pnpm lint:arch` must report 0):
 
-- `src/domain/**` imports nothing outside `src/domain`, except the govern facade's
-  `@microcks/demo-core/govern` import (secret-form and membership-draft policies).
-  See [`packages/demo-core`](../../packages/demo-core/README.md) for this small first increment of #287.
-- `src/application/**` imports only `src/domain` and `src/application`.
-- `src/infrastructure/**` imports `src/domain` and `src/application`, never `src/ui`.
+- `src/domain/**` imports nothing outside `src/domain`, except the domain of `@microcks/demo-core` that its facades re-export.
+- Only `src/domain`, `src/application`, `src/infrastructure/in-memory` (facades, tests, port contracts) and `src/test-setup.ts`
+  import `@microcks/demo-core`. The package checks its own layers (`packages/demo-core/test/layers.test.mjs`).
+- `src/application/**` imports only `src/domain` and `src/application`, here or in demo-core.
+- `src/infrastructure/**` imports `src/domain` and `src/application`, here or in demo-core, never `src/ui`.
 - `src/ui/**` imports `src/application` (types, `UseCases`), `src/domain` (types, pure functions), `src/ui`, `react`, `react-dom` and
   `react-router`. Never `src/infrastructure`.
 - Only `src/main.tsx` and `src/composition-root.ts` import `src/infrastructure`.
 - `src/ui/**` never imports `src/infrastructure/http`, `src/infrastructure/msw` or `msw` (also an ESLint rule). `msw` is imported by
   `src/infrastructure/msw` and tests only; `src/infrastructure/msw` by `src/main.tsx` and tests only; `msw/node.ts` by tests only.
 - No module imports `@microcks-deep-ink/*`.
-- No circular dependency (dynamic imports count), no `domain/<a>` to `domain/<b>` (except `shared`), no `application/<a>` to `application/<b>`.
+- No circular dependency (dynamic imports count), no `domain/<a>` to `domain/<b>` (except `shared`), no `application/<a>` to
+  `application/<b>`, here or in demo-core.
 - `vitest` and Testing Library only appear in `*.test.ts(x)` files and the port contract suites (`*.contract.ts`), which only tests import.
 
 Tests follow the same rules. Write use-case tests that need the in-memory adapters next to the adapters

@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import type { WorkflowRun } from '@/domain/arazzo';
-import type { ArazzoPorts } from '@/application/arazzo';
-import type { StartRunRequest } from '@/application/ports/arazzo';
+import type { WorkflowRun } from '@microcks/demo-core/domain/arazzo';
+import type { ArazzoPorts } from '@microcks/demo-core/application/arazzo';
+import type { StartRunRequest } from '@microcks/demo-core/application/ports/arazzo';
 import { collectFor, expectNotFound, expectSilentAfterUnsubscribe, nextEmission, takeEmissions, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
 
 /** The ports the arazzo feature owns (secrets belong to the importing feature). */

@@ -2,22 +2,136 @@
   "name": "@microcks/demo-core",
   "private": true,
   "version": "0.0.0",
-  "description": "Framework-neutral business policies shared by the alternative Microcks demos.",
+  "description": "Framework-neutral domain, use cases and in-memory adapters shared by the alternative Microcks demos.",
   "license": "Apache-2.0",
   "type": "module",
   "exports": {
-    "./govern": {
-      "types": "./dist/govern/secret-form.d.ts",
-      "default": "./dist/govern/secret-form.js"
+    "./application/agents": {
+      "types": "./dist/application/agents/index.d.ts",
+      "default": "./dist/application/agents/index.js"
+    },
+    "./application/arazzo": {
+      "types": "./dist/application/arazzo/index.d.ts",
+      "default": "./dist/application/arazzo/index.js"
+    },
+    "./application/catalog": {
+      "types": "./dist/application/catalog/index.d.ts",
+      "default": "./dist/application/catalog/index.js"
+    },
+    "./application/copilot": {
+      "types": "./dist/application/copilot/index.d.ts",
+      "default": "./dist/application/copilot/index.js"
+    },
+    "./application/govern": {
+      "types": "./dist/application/govern/index.d.ts",
+      "default": "./dist/application/govern/index.js"
+    },
+    "./application/importing": {
+      "types": "./dist/application/importing/index.d.ts",
+      "default": "./dist/application/importing/index.js"
+    },
+    "./application/observe": {
+      "types": "./dist/application/observe/index.d.ts",
+      "default": "./dist/application/observe/index.js"
+    },
+    "./application/ports": {
+      "types": "./dist/application/ports/index.d.ts",
+      "default": "./dist/application/ports/index.js"
+    },
+    "./application/shared": {
+      "types": "./dist/application/shared/index.d.ts",
+      "default": "./dist/application/shared/index.js"
+    },
+    "./application/testing": {
+      "types": "./dist/application/testing/index.d.ts",
+      "default": "./dist/application/testing/index.js"
+    },
+    "./domain/agents": {
+      "types": "./dist/domain/agents/index.d.ts",
+      "default": "./dist/domain/agents/index.js"
+    },
+    "./domain/arazzo": {
+      "types": "./dist/domain/arazzo/index.d.ts",
+      "default": "./dist/domain/arazzo/index.js"
+    },
+    "./domain/catalog": {
+      "types": "./dist/domain/catalog/index.d.ts",
+      "default": "./dist/domain/catalog/index.js"
+    },
+    "./domain/copilot": {
+      "types": "./dist/domain/copilot/index.d.ts",
+      "default": "./dist/domain/copilot/index.js"
+    },
+    "./domain/govern": {
+      "types": "./dist/domain/govern/index.d.ts",
+      "default": "./dist/domain/govern/index.js"
+    },
+    "./domain/importing": {
+      "types": "./dist/domain/importing/index.d.ts",
+      "default": "./dist/domain/importing/index.js"
+    },
+    "./domain/observe": {
+      "types": "./dist/domain/observe/index.d.ts",
+      "default": "./dist/domain/observe/index.js"
+    },
+    "./domain/shared": {
+      "types": "./dist/domain/shared/index.d.ts",
+      "default": "./dist/domain/shared/index.js"
+    },
+    "./domain/testing": {
+      "types": "./dist/domain/testing/index.d.ts",
+      "default": "./dist/domain/testing/index.js"
+    },
+    "./infrastructure/in-memory/agents": {
+      "types": "./dist/infrastructure/in-memory/agents/index.d.ts",
+      "default": "./dist/infrastructure/in-memory/agents/index.js"
+    },
+    "./infrastructure/in-memory/arazzo": {
+      "types": "./dist/infrastructure/in-memory/arazzo/index.d.ts",
+      "default": "./dist/infrastructure/in-memory/arazzo/index.js"
+    },
+    "./infrastructure/in-memory/catalog": {
+      "types": "./dist/infrastructure/in-memory/catalog/index.d.ts",
+      "default": "./dist/infrastructure/in-memory/catalog/index.js"
+    },
+    "./infrastructure/in-memory/copilot": {
+      "types": "./dist/infrastructure/in-memory/copilot/index.d.ts",
+      "default": "./dist/infrastructure/in-memory/copilot/index.js"
+    },
+    "./infrastructure/in-memory/govern": {
+      "types": "./dist/infrastructure/in-memory/govern/index.d.ts",
+      "default": "./dist/infrastructure/in-memory/govern/index.js"
+    },
+    "./infrastructure/in-memory/importing": {
+      "types": "./dist/infrastructure/in-memory/importing/index.d.ts",
+      "default": "./dist/infrastructure/in-memory/importing/index.js"
+    },
+    "./infrastructure/in-memory/observe": {
+      "types": "./dist/infrastructure/in-memory/observe/index.d.ts",
+      "default": "./dist/infrastructure/in-memory/observe/index.js"
+    },
+    "./infrastructure/in-memory/shared": {
+      "types": "./dist/infrastructure/in-memory/shared/index.d.ts",
+      "default": "./dist/infrastructure/in-memory/shared/index.js"
+    },
+    "./infrastructure/in-memory/testing": {
+      "types": "./dist/infrastructure/in-memory/testing/index.d.ts",
+      "default": "./dist/infrastructure/in-memory/testing/index.js"
+    },
+    "./*": {
+      "types": "./dist/*.d.ts",
+      "default": "./dist/*.js"
     }
   },
-  "files": ["dist"],
+  "files": [
+    "dist"
+  ],
   "sideEffects": false,
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
-    "test": "pnpm build && node --test",
-    "lint:arch": "node --test test/boundary.test.mjs"
+    "test": "pnpm build && node --test \"test/*.test.mjs\"",
+    "lint:arch": "node --test test/boundary.test.mjs test/layers.test.mjs"
   },
   "devDependencies": {
     "typescript": "~6.0.0"

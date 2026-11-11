@@ -151,6 +151,25 @@ against an unfinished prerequisite.
 - No Cockpit Svelte page or replacement Loom implementation is included in this
   lot. The complete demo-core and cross-framework demo parity gates remain open.
 
+### Third implementation lot
+
+- #287, extraction completed: the remaining domains, ports, use cases, in-memory
+  adapters and seed fixtures move with their history to `@microcks/demo-core`,
+  exported per layer and feature (`./domain/<feature>`, `./application/...`,
+  `./infrastructure/in-memory/<feature>`); the `./govern` sub-path is replaced.
+  React keeps one-line facades at the old paths, so pages and tests are
+  unchanged; dependency-cruiser limits demo-core imports to those facades, tests
+  and port contracts. Package tests enforce the layer and feature boundaries.
+- Verification: React typecheck, dependency rules, lint and build pass, and its
+  Vitest results match the previous commit on the same machine. The 408 React
+  demo cases (19 screens × 2 themes × 3 widths, then 65 interaction states and
+  82 further routes in both themes) were captured again after the extraction:
+  816 captures have zero differing pixels against the pre-extraction reference.
+- The clickable Svelte demo in `svelte/apps/demo` is still a simplified
+  re-interpretation: a strict audit found no Svelte screen pixel-identical to
+  React. Porting the React pages onto demo-core (#288) and the cross-framework
+  parity gate remain open.
+
 ---
 
 ## Summary

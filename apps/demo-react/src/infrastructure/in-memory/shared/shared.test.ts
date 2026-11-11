@@ -1,11 +1,11 @@
 import { afterEach, describe, expect, it, vi } from 'vitest';
-import { playWorkflow, type Responder } from '@/domain/arazzo';
-import { FixedClock } from './clock';
-import { isFastMode, latency, nextLatencyMs, setLatencyMode } from './latency';
-import { RUN_IDS, SERVICE_IDS } from './seed-ids';
-import { DOCUMENTS, RESTOCK_STEPS, WORKFLOWS, seedRuns, seedSessions } from './arazzo.seed';
-import { SERVICES, OPERATIONS, PASTRY2_EXAMPLES } from './services.seed';
-import { createSequenceStream, createStream, createTickingStream, TICK_MS } from './stream';
+import { playWorkflow, type Responder } from '@microcks/demo-core/domain/arazzo';
+import { FixedClock } from '@microcks/demo-core/infrastructure/in-memory/shared/clock';
+import { isFastMode, latency, nextLatencyMs, setLatencyMode } from '@microcks/demo-core/infrastructure/in-memory/shared/latency';
+import { RUN_IDS, SERVICE_IDS } from '@microcks/demo-core/infrastructure/in-memory/shared/seed-ids';
+import { DOCUMENTS, RESTOCK_STEPS, WORKFLOWS, seedRuns, seedSessions } from '@microcks/demo-core/infrastructure/in-memory/shared/arazzo.seed';
+import { SERVICES, OPERATIONS, PASTRY2_EXAMPLES } from '@microcks/demo-core/infrastructure/in-memory/shared/services.seed';
+import { createSequenceStream, createStream, createTickingStream, TICK_MS } from '@microcks/demo-core/infrastructure/in-memory/shared/stream';
 
 afterEach(() => {
   vi.useRealTimers();

@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { ImportingPorts } from '@/application/importing';
+import type { ImportingPorts } from '@microcks/demo-core/application/importing';
 import { expectNotFound, expectSilentAfterUnsubscribe, expectValidationError, nextEmission, takeEmissions, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
 
 /** The ports the importing feature owns (the clock is a dependency, not a port to test). */

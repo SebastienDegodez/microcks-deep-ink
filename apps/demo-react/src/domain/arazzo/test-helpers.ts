@@ -1,4 +1,4 @@
-import type { Action, Criterion, Step } from './workflow';
+import type { Action, Criterion, Step } from '@microcks/demo-core/domain/arazzo/workflow';
 
 /** Compact step builder shared by the domain tests (not exported from the domain barrel). */
 export function makeStep(

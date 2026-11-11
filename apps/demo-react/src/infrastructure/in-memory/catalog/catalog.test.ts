@@ -1,10 +1,10 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import type { SecretRepository } from '@/application/ports/importing';
-import { createCatalogUseCases } from '@/application/catalog';
-import { createTestingUseCases } from '@/application/testing';
-import { facetCounts } from '@/domain/catalog';
-import { createInMemoryTestingAdapters } from '../testing';
-import { createInMemoryCatalogAdapters } from '.';
+import type { SecretRepository } from '@microcks/demo-core/application/ports/importing';
+import { createCatalogUseCases } from '@microcks/demo-core/application/catalog';
+import { createTestingUseCases } from '@microcks/demo-core/application/testing';
+import { facetCounts } from '@microcks/demo-core/domain/catalog';
+import { createInMemoryTestingAdapters } from '@microcks/demo-core/infrastructure/in-memory/testing';
+import { createInMemoryCatalogAdapters } from '@microcks/demo-core/infrastructure/in-memory/catalog';
 
 let uc: { catalog: ReturnType<typeof createCatalogUseCases>; testing: ReturnType<typeof createTestingUseCases> };
 beforeEach(() => {

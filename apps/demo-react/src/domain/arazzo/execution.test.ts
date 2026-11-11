@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { evaluateCriterion } from './expression';
-import { executionLayers, nextAfterStep, playWorkflow, type Responder } from './execution';
+import { evaluateCriterion } from '@microcks/demo-core/domain/arazzo/expression';
+import { executionLayers, nextAfterStep, playWorkflow, type Responder } from '@microcks/demo-core/domain/arazzo/execution';
 import { END_IF_AVAILABLE, RETRY_PATCH, makeStep, restockSteps } from './test-helpers';
 
 describe('executionLayers', () => {

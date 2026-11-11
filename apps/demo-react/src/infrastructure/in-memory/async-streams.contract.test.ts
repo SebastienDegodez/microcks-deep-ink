@@ -8,13 +8,13 @@ import { describeArazzoPortContract } from '@/application/ports/__contracts__/ar
 import { describeImportingPortContract } from '@/application/ports/__contracts__/importing.contract';
 import { describeObservePortContract } from '@/application/ports/__contracts__/observe.contract';
 import { describeTestingPortContract } from '@/application/ports/__contracts__/testing.contract';
-import type { Listener, Unsubscribe } from '@/application/shared';
-import { createInMemoryAgentAdapters } from './agents';
-import { createInMemoryArazzoAdapters } from './arazzo';
-import { createInMemoryImportingAdapters } from './importing';
-import { createInMemoryObserveAdapters } from './observe';
-import { FixedClock } from './shared';
-import { createInMemoryTestingAdapters } from './testing';
+import type { Listener, Unsubscribe } from '@microcks/demo-core/application/shared';
+import { createInMemoryAgentAdapters } from '@microcks/demo-core/infrastructure/in-memory/agents';
+import { createInMemoryArazzoAdapters } from '@microcks/demo-core/infrastructure/in-memory/arazzo';
+import { createInMemoryImportingAdapters } from '@microcks/demo-core/infrastructure/in-memory/importing';
+import { createInMemoryObserveAdapters } from '@microcks/demo-core/infrastructure/in-memory/observe';
+import { FixedClock } from '@microcks/demo-core/infrastructure/in-memory/shared';
+import { createInMemoryTestingAdapters } from '@microcks/demo-core/infrastructure/in-memory/testing';
 
 type Subscribe<T> = (listener: Listener<T>) => Unsubscribe;
 

@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { createCatalogUseCases } from '@/application/catalog';
-import { createCopilotUseCases } from '@/application/copilot';
-import { findCriteriaConflict, validateExampleDraft } from '@/domain/copilot';
-import { createInMemoryCatalogAdapters } from '../catalog';
-import { createInMemoryCopilotAdapters } from '.';
+import { createCatalogUseCases } from '@microcks/demo-core/application/catalog';
+import { createCopilotUseCases } from '@microcks/demo-core/application/copilot';
+import { findCriteriaConflict, validateExampleDraft } from '@microcks/demo-core/domain/copilot';
+import { createInMemoryCatalogAdapters } from '@microcks/demo-core/infrastructure/in-memory/catalog';
+import { createInMemoryCopilotAdapters } from '@microcks/demo-core/infrastructure/in-memory/copilot';
 
 let uc: { catalog: ReturnType<typeof createCatalogUseCases>; copilot: ReturnType<typeof createCopilotUseCases> };
 beforeEach(() => {

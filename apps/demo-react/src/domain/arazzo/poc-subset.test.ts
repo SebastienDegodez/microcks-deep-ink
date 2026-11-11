@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { validatePocSubset } from './poc-subset';
+import { validatePocSubset } from '@microcks/demo-core/domain/arazzo/poc-subset';
 
 const doc = (workflow: Record<string, unknown>) => ({ arazzo: '1.1.0', workflows: [{ workflowId: 'w', steps: [], ...workflow }] });
 const withStep = (step: Record<string, unknown>) => doc({ steps: [{ stepId: 's', operationId: 'op', ...step }] });

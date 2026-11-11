@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { runFrames } from './progress';
-import { renderBody, simulateRun, type SimulatedResponder } from './simulation';
+import { runFrames } from '@microcks/demo-core/domain/arazzo/progress';
+import { renderBody, simulateRun, type SimulatedResponder } from '@microcks/demo-core/domain/arazzo/simulation';
 import { restockSteps } from './test-helpers';
 
 const steps = restockSteps().map((s) =>

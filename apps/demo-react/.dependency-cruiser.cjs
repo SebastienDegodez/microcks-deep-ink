@@ -5,6 +5,7 @@
  *   infrastructure  --implements ports of--> application
  *   composition-root.ts / main.tsx          the only places that wire infrastructure to the rest
  *   infrastructure/http   adapters calling /api/... with fetch; infrastructure/msw   the mock API (MSW), main.tsx and tests only
+ *   domain, application, infrastructure/in-memory   one-line facades over @microcks/demo-core, which holds their code (#287)
  *
  * Every rule has severity "error". Test files follow the same rules as the code they test: write
  * use-case tests that need the in-memory adapters next to the adapters
@@ -20,7 +21,11 @@ const TEST_RUNNER = '(^|/)node_modules/(vitest|@testing-library/[^/]+)(/|$)';
 // Mock Service Worker: the mock API of the `http` backend.
 const MSW = '(^|/)node_modules/msw(/|$)';
 const TEST_FILE = '\\.test\\.tsx?$';
-const GOVERN_CORE = '(^|/)(node_modules/@microcks/demo-core|packages/demo-core)/dist/govern/';
+// The framework-neutral domain, use cases and in-memory adapters (#287): @microcks/demo-core, resolved to its dist.
+// src/domain, src/application and src/infrastructure/in-memory keep one-line facades that re-export it.
+const DEMO_CORE = '(^|/)(node_modules/@microcks/demo-core|packages/demo-core)/dist/';
+const DEMO_CORE_DOMAIN = `${DEMO_CORE}domain/`;
+const DEMO_CORE_APPLICATION = `${DEMO_CORE}(domain|application)/`;
 // Port contract suites (`*.contract.ts`): test-only modules that tests import, so they follow the test-file exceptions.
 const CONTRACT_FILE = '\\.contract\\.ts$';
 
@@ -29,31 +34,33 @@ module.exports = {
   forbidden: [
     {
       name: 'domain-is-isolated',
-      comment: 'src/domain imports nothing outside src/domain, except the extracted framework-neutral govern policies.',
+      comment: 'src/domain imports nothing outside src/domain, except the domain layer of demo-core.',
       severity: 'error',
       from: { path: '^src/domain/' },
-      to: { pathNot: ['^src/domain/', TEST_RUNNER, GOVERN_CORE] },
+      to: { pathNot: ['^src/domain/', TEST_RUNNER, DEMO_CORE_DOMAIN] },
     },
     {
-      name: 'govern-core-only-from-govern-domain',
-      comment: 'Only the govern domain facade consumes demo-core/govern; other layers retain their domain imports.',
+      name: 'demo-core-only-through-facades',
+      comment:
+        'Only the facades of src/domain, src/application and src/infrastructure/in-memory, their tests and the test setup import demo-core; the rest of the demo keeps its @/ imports.',
       severity: 'error',
-      from: { pathNot: '^src/domain/govern/' },
-      to: { path: GOVERN_CORE },
+      from: { pathNot: ['^src/(domain|application|infrastructure/in-memory)/', '^src/test-setup\\.ts$'] },
+      to: { path: DEMO_CORE },
     },
     {
       name: 'application-depends-on-domain-only',
-      comment: 'src/application imports only src/domain and src/application.',
+      comment: 'src/application imports only src/domain and src/application, here or in demo-core.',
       severity: 'error',
       from: { path: '^src/application/' },
-      to: { pathNot: ['^src/(domain|application)/', TEST_RUNNER] },
+      to: { pathNot: ['^src/(domain|application)/', TEST_RUNNER, DEMO_CORE_APPLICATION] },
     },
     {
       name: 'infrastructure-implements-ports',
-      comment: 'src/infrastructure imports src/domain and src/application (ports) only (plus msw, see msw-only-in-infrastructure-msw). Never src/ui.',
+      comment:
+        'src/infrastructure imports src/domain and src/application (ports) only, here or in demo-core (plus msw, see msw-only-in-infrastructure-msw). Never src/ui.',
       severity: 'error',
       from: { path: '^src/infrastructure/' },
-      to: { pathNot: ['^src/(domain|application|infrastructure)/', TEST_RUNNER, MSW] },
+      to: { pathNot: ['^src/(domain|application|infrastructure)/', TEST_RUNNER, MSW, DEMO_CORE] },
     },
     {
       name: 'msw-only-in-infrastructure-msw',
@@ -136,6 +143,13 @@ module.exports = {
       to: { path: '^src/domain/([^/]+)/', pathNot: ['^src/domain/$1/', '^src/domain/shared/'] },
     },
     {
+      name: 'no-cross-feature-demo-core-domain',
+      comment: 'src/domain/<a> must not import the domain of feature <b> from demo-core either, except its shared domain.',
+      severity: 'error',
+      from: { path: '^src/domain/([^/]+)/' },
+      to: { path: `${DEMO_CORE}domain/([^/]+)/`, pathNot: [`${DEMO_CORE}domain/$1/`, `${DEMO_CORE}domain/shared/`] },
+    },
+    {
       name: 'no-cross-feature-application',
       comment:
         'src/application/<a> must not import src/application/<b>; cross-feature reads go through src/application/ports and src/application/shared.',
@@ -144,6 +158,16 @@ module.exports = {
       to: {
         path: '^src/application/(arazzo|catalog|copilot|govern|importing|observe|testing)/',
         pathNot: ['^src/application/$1/'],
+      },
+    },
+    {
+      name: 'no-cross-feature-demo-core-application',
+      comment: 'src/application/<a> must not import the use cases of feature <b> from demo-core either.',
+      severity: 'error',
+      from: { path: '^src/application/(arazzo|catalog|copilot|govern|importing|observe|testing)/' },
+      to: {
+        path: `${DEMO_CORE}application/(arazzo|catalog|copilot|govern|importing|observe|testing)/`,
+        pathNot: [`${DEMO_CORE}application/$1/`],
       },
     },
     {
@@ -162,7 +186,8 @@ module.exports = {
     },
   ],
   options: {
-    doNotFollow: { path: ['node_modules', DESIGN_SYSTEM] },
+    // demo-core checks its own layers (packages/demo-core/test/layers.test.mjs).
+    doNotFollow: { path: ['node_modules', DESIGN_SYSTEM, DEMO_CORE] },
     tsPreCompilationDeps: true,
     tsConfig: { fileName: 'tsconfig.json' },
     enhancedResolveOptions: {

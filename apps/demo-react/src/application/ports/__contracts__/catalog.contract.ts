@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { labelToString } from '@/domain/shared';
-import type { CatalogPorts } from '@/application/catalog';
+import { labelToString } from '@microcks/demo-core/domain/shared';
+import type { CatalogPorts } from '@microcks/demo-core/application/catalog';
 import { useAdapters, type MakeAdapters } from './support.contract';
 
 /** Contract of `ServiceCatalog & CatalogExtensions` over the seeded catalogue (11 services). */

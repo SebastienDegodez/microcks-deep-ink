@@ -1,9 +1,9 @@
 import { beforeEach, describe, expect, it } from 'vitest';
-import { ValidationError } from '@/application/shared';
-import { createImportingUseCases } from '@/application/importing';
-import { detectArtifactKind, directApiEndpoint, filterImporters, importerStatus, originCounts, statusCounts, validateDirectApi, validateGitForm } from '@/domain/importing';
+import { ValidationError } from '@microcks/demo-core/application/shared';
+import { createImportingUseCases } from '@microcks/demo-core/application/importing';
+import { detectArtifactKind, directApiEndpoint, filterImporters, importerStatus, originCounts, statusCounts, validateDirectApi, validateGitForm } from '@microcks/demo-core/domain/importing';
 
-import { createInMemoryImportingAdapters } from '.';
+import { createInMemoryImportingAdapters } from '@microcks/demo-core/infrastructure/in-memory/importing';
 
 let uc: { importing: ReturnType<typeof createImportingUseCases> };
 beforeEach(() => {

@@ -9,7 +9,7 @@ import {
   secretCredentials,
   secretFormHint,
   validateSecretForm,
-} from '@microcks/demo-core/govern';
+} from '@microcks/demo-core/domain/govern';
 
 const valid = { name: 'my-token', kind: 'token', description: '', secret: 'abc' };
 

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { scriptSample, storedAs, storedSummary } from './dispatch';
-import type { Behavior } from './types';
+import { scriptSample, storedAs, storedSummary } from '@microcks/demo-core/domain/catalog/dispatch';
+import type { Behavior } from '@microcks/demo-core/domain/catalog/types';
 
 const base: Behavior = { dispatcher: 'URI_PARTS', rule: 'name', delayMs: 0, constraints: [], stateful: false };
 

@@ -18,7 +18,7 @@ import {
   type TraceCall,
   type TraceTopology,
   type UsageData,
-} from './index';
+} from '@microcks/demo-core/domain/observe';
 
 const call = (over: Partial<TraceCall> = {}): TraceCall => ({
   seq: 1, callId: 'call-1', at: '2026-11-03T09:10:04.208Z', serviceId: 'pastry2', serviceName: 'API Pastry 2.0', protocol: 'REST', method: 'GET',

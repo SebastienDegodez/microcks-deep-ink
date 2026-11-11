@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { baggage, parseBaggage } from './baggage';
-import { matchesRunKind } from './run-filter';
-import { EXAMPLE_BASE_URL, validateRunRequest, type RunRequestForm } from './run-request';
+import { baggage, parseBaggage } from '@microcks/demo-core/domain/arazzo/baggage';
+import { matchesRunKind } from '@microcks/demo-core/domain/arazzo/run-filter';
+import { EXAMPLE_BASE_URL, validateRunRequest, type RunRequestForm } from '@microcks/demo-core/domain/arazzo/run-request';
 
 const form = (over: Partial<RunRequestForm> = {}): RunRequestForm => ({
   workflowId: 'restock-pastry',
