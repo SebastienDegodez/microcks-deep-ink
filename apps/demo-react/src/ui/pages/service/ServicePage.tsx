@@ -4,23 +4,13 @@ import { useState, type HTMLAttributes } from 'react';
 import { Link as RouterLink, useNavigate, useParams, useSearchParams } from 'react-router';
 import { formatDay, formatHourMinute } from '@/domain/importing';
 import { buildSnippet, exampleUrl, paramLines, requestHead, type SnippetFormat, type WorkflowUsage } from '@/domain/catalog';
-import { labelToString, type Example, type Operation } from '@/domain/shared';
+import { labelToString, type Example } from '@/domain/shared';
 import { PageHeader, useAnnounce, useClock, useQuery, useRelativeTime, useUseCases, usePageTitle } from '@/ui/app';
-import { ApiBadge, Button, Callout, Chip, CodeBlock, CopyButton, Exchange, ExchangeCard, FactRow, Facts, Icon, type IconName, Input, LiveIndicator, Menu, MethodTag, OpPickList, SectionLabel, SummaryStrip, SummaryStripSep, SplitPane, SplitPaneMain, SplitPaneSide, TabPanel, Tabs } from '@microcks/deep-ink';
+import { ApiBadge, Button, Callout, Chip, CodeBlock, CopyButton, Exchange, ExchangeCard, FactRow, Facts, Icon, Input, LiveIndicator, Menu, MethodTag, OpPickList, SectionLabel, SummaryStrip, SummaryStripSep, SplitPane, SplitPaneMain, SplitPaneSide, TabPanel, Tabs } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import AgentPage from '../agent/AgentPage';
-import { MONTHS, fmt, pluralize } from '@/ui/app/format';
-
-type TabId = 'operations' | 'properties' | 'tests';
-const TAB_IDS: TabId[] = ['operations', 'properties', 'tests'];
-const DAY_MS = 86_400_000;
-const DAY_LETTERS = ['S', 'M', 'T', 'W', 'T', 'F', 'S'];
-const DAY_NAMES = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-const TARGET_LABEL = { mocks: 'Microcks mocks', implementations: 'Implementations', mixed: 'Mocks and implementations' } as const;
-const RECENT_RUNS = 3;
-
-const examplesLabel = (n: number) => pluralize(n, 'example');
-const exampleSub = (e: Example) => Object.entries(e.request.params).map(([k, v]) => `${k}=${v}`).join(' · ') || 'no parameter';
+import { fmt, pluralize } from '@/ui/app/format';
+import { DAY_LETTERS, RECENT_RUNS, barHeight, exampleSub, exampleView, examplesLabel, examplesMeta, longDay, pendingCount, pickOperation, runTone, schemaNameOf, snippetSpec, sparkDays, stepRefsOf, tabOf, workflowResult } from './overview';
 
 /**
  * A `<pre>` that may scroll sideways. The scroll container must be keyboard reachable (WCAG 2.1.1), so it is
@@ -38,17 +28,16 @@ function ScrollPre({ children, ...rest }: HTMLAttributes<HTMLPreElement> & { 'ar
 /** Calls of the last 7 days, the last bar being today (demo clock). */
 function Sparkline({ values, total, today }: { values: number[]; total: number; today: Date }) {
   const max = Math.max(1, ...values);
-  const days = values.map((_, i) => new Date(today.getTime() - (values.length - 1 - i) * DAY_MS));
-  const long = (d: Date | undefined) => !d ? '' : `${DAY_NAMES[d.getUTCDay()]}, ${MONTHS[d.getUTCMonth()]} ${d.getUTCDate()}`;
+  const days = sparkDays(values, today);
   return (
     <div className="spark-box">
       <div className="spark-box-head">
         <span>Calls · 7 days</span>
         <span className="spark-box-total">{fmt(total)}</span>
       </div>
-      <div className="spark-box-bars" role="img" aria-label={`Calls over 7 days: ${values.map((v, i) => `${long(days[i])} ${fmt(v)}`).join(', ')}`}>
+      <div className="spark-box-bars" role="img" aria-label={`Calls over 7 days: ${values.map((v, i) => `${longDay(days[i])} ${fmt(v)}`).join(', ')}`}>
         {values.map((v, i) => (
-          <span key={i} data-today={i === values.length - 1 ? '' : undefined} style={{ height: `${Math.max(6, Math.round((v / max) * 100))}%` }} title={`${long(days[i])}: ${fmt(v)} calls`} />
+          <span key={i} data-today={i === values.length - 1 ? '' : undefined} style={{ height: barHeight(v, max) }} title={`${longDay(days[i])}: ${fmt(v)} calls`} />
         ))}
       </div>
       <div className="spark-box-days" aria-hidden="true">
@@ -59,19 +48,7 @@ function Sparkline({ values, total, today }: { values: number[]; total: number; 
 }
 
 function WorkflowResult({ usage, relative }: { usage: WorkflowUsage; relative: (d: string) => string }) {
-  const r = usage.result;
-  let icon: IconName = 'minus-circle';
-  let text = 'Never run';
-  let tone = 'never';
-  if (r?.kind === 'blocked') {
-    icon = 'warning';
-    text = r.reason;
-    tone = 'blocked';
-  } else if (r?.kind === 'passed' || r?.kind === 'failed') {
-    icon = r.kind === 'passed' ? 'check-circle' : 'x-circle';
-    text = `${r.kind === 'passed' ? 'Passed' : 'Failed'} #${r.runNumber} · ${TARGET_LABEL[r.target]} · ${relative(r.at)}`;
-    tone = r.kind;
-  }
+  const { icon, text, tone } = workflowResult(usage, relative);
   return (
     <span className="wf-usage-result" data-tone={tone}>
       <Icon name={icon} size={13} strokeWidth={2.2} />
@@ -88,7 +65,7 @@ function ApiServicePage() {
   const clock = useClock();
   const relative = useRelativeTime();
   const announce = useAnnounce();
-  const tabId: TabId = TAB_IDS.includes(tab as TabId) ? (tab as TabId) : 'operations';
+  const tabId = tabOf(tab);
   const [format, setFormat] = useState<SnippetFormat>('curl');
   const [rejected, setRejected] = useState<Example | undefined>();
 
@@ -98,8 +75,7 @@ function ApiServicePage() {
   const usages = useQuery(() => uc.catalog.workflowUsages(serviceId), [uc, serviceId]);
   const runs = useQuery(() => uc.testing.listForService(serviceId), [uc, serviceId]);
   const opParam = search.get('op');
-  // Like the prototype, open on the "by name" operation, the one that carries the AI proposal.
-  const currentOp: Operation | undefined = ops.data?.find((o) => o.id === opParam) ?? ops.data?.find((o) => o.id === 'get-name') ?? ops.data?.[0];
+  const currentOp = pickOperation(ops.data, opParam);
   // Examples of every operation: the rail shows each operation's count and its pending AI proposal.
   const allExamples = useQuery(
     () => Promise.all((ops.data ?? []).map(async (o) => [o.id, await uc.catalog.listExamples(serviceId, o.id)] as const)).then((rows) => Object.fromEntries(rows) as Record<string, Example[]>),
@@ -127,13 +103,8 @@ function ApiServicePage() {
   }
 
   const list = (currentOp && allExamples.data?.[currentOp.id]) || [];
-  const pending = list.filter((e) => e.reviewState === 'pending');
-  const accepted = list.filter((e) => e.reviewState !== 'pending');
-  const fromContract = accepted.filter((e) => !e.aiGenerated);
-  const aiAccepted = accepted.filter((e) => e.aiGenerated);
-  const ordered = [...accepted, ...pending];
-  const selected = ordered.find((e) => e.id === search.get('example')) ?? accepted[0] ?? ordered[0];
-  const pendingTotal = Object.values(allExamples.data ?? {}).reduce((n, l) => n + l.filter((e) => e.reviewState === 'pending').length, 0);
+  const { pending, fromContract, aiAccepted, ordered, selected } = exampleView(list, search.get('example'));
+  const pendingTotal = pendingCount(allExamples.data);
   const select = (patch: Record<string, string | undefined>) => {
     const next = new URLSearchParams(search);
     for (const [k, v] of Object.entries(patch)) {
@@ -144,16 +115,13 @@ function ApiServicePage() {
   };
   const goTab = (id: string) => navigate({ pathname: `/services/${serviceId}/${id}`, search: search.toString() });
 
-  const spec = currentOp && selected
-    ? { method: currentOp.method, pathTemplate: currentOp.path, example: selected, mockBase: det.mockBase, mcpBase: det.mcp?.httpUrl ?? '', mcpTool: currentOp.mcpTool }
-    : undefined;
+  const spec = snippetSpec(currentOp, selected, det);
   const mockUrl = spec ? exampleUrl(spec) : det.mockBase;
   const allUsages = usages.data ?? [];
-  const stepRefs = allUsages.flatMap((u) => (u.steps ?? []).filter((s) => s.catalogOperationId === currentOp?.id).map((s) => ({ ref: `${u.summary} › ${s.stepId}`, operationId: s.operationId })));
+  const stepRefs = stepRefsOf(allUsages, currentOp?.id);
   const recentRuns = (runs.data ?? []).slice(0, RECENT_RUNS);
   const latestRun = runs.data?.[0];
-  // The AI proposal is built from the response schema, named after the API's resource ("API Pastry" → Pastry).
-  const schemaName = svc.name.split(' ').pop() ?? svc.name;
+  const schemaName = schemaNameOf(svc.name);
 
   const accept = async (e: Example) => {
     if (!currentOp) return;
@@ -249,14 +217,13 @@ function ApiServicePage() {
                 onChange={(id) => select({ op: id, example: undefined })}
                 options={(ops.data ?? []).map((o) => {
                   const exs = allExamples.data?.[o.id] ?? [];
-                  const ai = exs.filter((e) => e.reviewState === 'pending').length;
                   return {
                     id: o.id,
                     method: o.method,
                     protocol: svc.protocol,
                     path: o.path,
                     summary: o.summary,
-                    meta: allExamples.data ? `${examplesLabel(exs.length - ai)}${ai ? ` · +${ai} AI` : ''}` : undefined,
+                    meta: allExamples.data ? examplesMeta(exs) : undefined,
                     end: fmt(o.calls),
                     endLabel: 'Calls over 7 days: ',
                   };
@@ -501,7 +468,7 @@ function ApiServicePage() {
             {recentRuns.length ? (
               <ul className="run-list">
                 {recentRuns.map((r) => {
-                  const tone = r.result === 'passed' ? 'passed' : r.result === 'running' ? 'running' : 'failed';
+                  const tone = runTone(r.result);
                   return (
                     <li key={r.id}>
                       <RouterLink to={`/tests/runner/${r.id}`} className="run-list-row">
