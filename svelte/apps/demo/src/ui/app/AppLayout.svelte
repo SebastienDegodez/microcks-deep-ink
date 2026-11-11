@@ -17,8 +17,9 @@
 
 <script lang="ts">
   import type { Snippet } from 'svelte';
-  import { AppShell, ButtonLink, CommandBar, Icon, ThemeToggle } from '@microcks/deep-ink';
+  import { AppShell, CommandBar, Icon, ThemeToggle } from '@microcks/deep-ink';
   import microcksLogo from '@microcks/demo-styles/app/microcks-logo.svg';
+  import ButtonRouterLink from './ButtonRouterLink.svelte';
   import LiveAnnouncerProvider from './LiveAnnouncerProvider.svelte';
   import RouterLink from './RouterLink.svelte';
   import { useQuery } from './query.svelte.js';
@@ -73,12 +74,7 @@
     ></button
   >{/snippet}
 
-{#snippet topbarActions()}<ButtonLink
-    variant="primary"
-    icon="download"
-    href={router.href('/sources/new')}
-    onclick={(event) => router.followLink(event, '/sources/new')}
-    data-discover="true">Import a contract</ButtonLink
+{#snippet topbarActions()}<ButtonRouterLink variant="primary" icon="download" to="/sources/new">Import a contract</ButtonRouterLink
   ><ThemeToggle /><span class="demo-avatar" role="img" aria-label="Signed in as MA">MA</span>{/snippet}
 
 {#snippet renderLink(_item: ShellNavItem, props: ShellLinkProps, content: Snippet)}<RouterLink

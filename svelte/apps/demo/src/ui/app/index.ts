@@ -19,6 +19,7 @@ export { default as AppLayout } from './AppLayout.svelte';
 export { NAV_ITEMS } from './nav';
 export type { NavId, NavItem } from './nav';
 export { default as RouterLink } from './RouterLink.svelte';
+export { default as ButtonRouterLink } from './ButtonRouterLink.svelte';
 export { default as Navigate } from './Navigate.svelte';
 export { useParams, useSearchParams, useNavigate, useLocation } from './router.svelte.js';
 export type { NavigateFunction, NavigateOptions, SetSearchParams, To } from './router.svelte.js';
