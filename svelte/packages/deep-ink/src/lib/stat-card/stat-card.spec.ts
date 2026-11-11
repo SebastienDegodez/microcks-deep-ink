@@ -13,6 +13,10 @@ describe('StatCard', () => {
     expect(screen.getByText('78%').closest('p')?.textContent).toBe('78%current score');
     expect(await axeViolations(container)).toEqual([]);
   });
+  it('puts no space between its head, figure and body, like the twin', () => {
+    const { container } = render(StatCard, { props: { title: 'Last request', value: '12 s ago', children: html('<p>GET /pastries</p>') } });
+    expect(container.querySelector('section')?.textContent).toBe('Last request12 s agoGET /pastries');
+  });
   it('names stat grid regions', () => {
     const { container } = render(StatGrid, { props: { label: 'Key figures' } });
     expect(container.querySelector('section')?.getAttribute('aria-label')).toBe('Key figures');

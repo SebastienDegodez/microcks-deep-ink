@@ -9,7 +9,5 @@
 </script>
 {#snippet text(v: string | Snippet)}{#if typeof v === 'function'}{@render v()}{:else}{v}{/if}{/snippet}
 <section {...rest} class={['stat-card', cssClass].filter(Boolean).join(' ')} aria-labelledby={id} data-tone={tone}>
-  <div class="stat-card-head"><svelte:element this={`h${headingLevel}`} class="stat-card-title" id={id}>{@render text(title)}</svelte:element>{#if action}<span class="stat-card-action">{@render action()}</span>{/if}</div>
-  <p class="stat-card-figure"><span class="stat-card-value">{@render text(value)}</span>{#if unit}<span class="stat-card-unit">{@render text(unit)}</span>{/if}</p>
-  {#if children}<div class="stat-card-body">{@render children()}</div>{/if}
+  <div class="stat-card-head"><svelte:element this={`h${headingLevel}`} class="stat-card-title" id={id}>{@render text(title)}</svelte:element>{#if action}<span class="stat-card-action">{@render action()}</span>{/if}</div><p class="stat-card-figure"><span class="stat-card-value">{@render text(value)}</span>{#if unit}<span class="stat-card-unit">{@render text(unit)}</span>{/if}</p>{#if children}<div class="stat-card-body">{@render children()}</div>{/if}
 </section>
