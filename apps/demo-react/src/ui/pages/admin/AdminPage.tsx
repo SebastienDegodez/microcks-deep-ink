@@ -9,7 +9,7 @@ import { SecretsTab } from './SecretsTab';
 import { SnapshotsTab } from './SnapshotsTab';
 import { UsersTab } from './UsersTab';
 import type { Notify } from './notify';
-import './admin.css';
+import '@microcks/demo-styles/pages/admin/admin.css';
 
 const TABS = ['users', 'groups', 'secrets', 'snapshots', 'configuration'] as const;
 type Tab = (typeof TABS)[number];

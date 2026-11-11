@@ -12,7 +12,7 @@ import { useClock, useReturnFocus, useUseCases, type QueryResult } from '@/ui/ap
 import { Button, Field, Icon, Input, Textarea, Segmented, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
-import './secrets.css';
+import '@microcks/demo-styles/pages/admin/secrets.css';
 
 const KINDS: SecretFormKind[] = ['basic', 'token', 'oauth2', 'ca'];
 const DATE = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });

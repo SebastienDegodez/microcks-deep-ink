@@ -17,7 +17,7 @@ import { TEST_RESULT_WORD } from '@/ui/app/outcomes';
 import { useReplay } from '@/ui/app/use-replay';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { useThrottledAnnounce } from '../tests/useThrottledAnnounce';
-import './test-run.css';
+import '@microcks/demo-styles/pages/test-run/test-run.css';
 
 /** The run "executes" one step every 1.3 s, as in the prototype. */
 const STEP_MS = 1300;

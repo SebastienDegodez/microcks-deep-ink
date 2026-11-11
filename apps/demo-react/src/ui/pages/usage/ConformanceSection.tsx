@@ -2,7 +2,7 @@ import { useId } from 'react';
 import { Link as RouterLink } from 'react-router';
 import { BAND_TEXT, conformanceBand, gapList, treemapRows, type ConformanceItem, type DomainConformance, type UsageView } from '@/domain/observe';
 import { Icon, type IconName, Panel, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
-import './conformance.css';
+import '@microcks/demo-styles/pages/usage/conformance.css';
 
 const PROTO_ATTR: Record<ConformanceItem['protocol'], string> = { REST: 'rest', SOAP: 'soap', EVENT: 'event', gRPC: 'grpc', GRAPHQL: 'graphql', DIRECT: 'direct', A2A: 'a2a' };
 const BAND_ICON: Partial<Record<ReturnType<typeof conformanceBand>, IconName>> = { ok: 'check', partial: 'warning', risk: 'close' };

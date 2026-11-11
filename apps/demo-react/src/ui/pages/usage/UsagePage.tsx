@@ -9,7 +9,7 @@ import { HourlyChart } from './HourlyChart';
 import { OperationsTable } from './OperationsTable';
 import { UsageHeatmap } from './UsageHeatmap';
 import { UsageKpis } from './UsageKpis';
-import './usage.css';
+import '@microcks/demo-styles/pages/usage/usage.css';
 
 export default function UsagePage() {
   const { serviceId } = useParams();

@@ -1,4 +1,4 @@
-# Page CSS selectors (apps/demo-react/src/ui/pages) allowed to reach into registry classes.
+# Page CSS selectors (packages/demo-styles/src/pages) allowed to reach into registry classes.
 # Format: page-folder<TAB>selector, sorted (LC_ALL=C). Checked in CI by tools/fidelity/registry-selectors.py --check.
 # Adding a line: list the class in react/packages/deep-ink/PUBLIC-CSS.md in the same PR; the reviewer must justify it.
 admin	.ad-form .field

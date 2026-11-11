@@ -23,7 +23,7 @@ import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { ButtonRouterLink, runPath, runSetupPath, workflowPath } from '../workflows/shared';
 import { RunApiPanel, RunBadges, Verdict, implementationsText, runBreadcrumb } from './run-parts';
 import { RunSteps, phaseOf } from './RunSteps';
-import './workflow-run.css';
+import '@microcks/demo-styles/pages/workflow-run/workflow-run.css';
 
 /** JSON-ish value as the prototype prints it: `"Eclair Cafe"`, `3.9`. */
 const J = (v: unknown) => JSON.stringify(v);

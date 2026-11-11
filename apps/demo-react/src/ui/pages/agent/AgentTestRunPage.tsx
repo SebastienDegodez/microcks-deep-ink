@@ -1,6 +1,6 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex -- scrollable code regions must be reachable by keyboard (WCAG 2.1.1) */
-import '../explore-kit/explore.css';
-import './agent-test.css';
+import '@microcks/demo-styles/pages/explore-kit/explore.css';
+import '@microcks/demo-styles/pages/agent/agent-test.css';
 import { Fragment, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Link as RouterLink, useParams, useSearchParams } from 'react-router';
 import {

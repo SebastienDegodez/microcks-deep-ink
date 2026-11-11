@@ -8,8 +8,8 @@ import { Chip, ApiBadge, Button, Callout, Checkbox, Radio, Facts, Field, Input, 
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { ButtonRouterLink, workflowPath, runPath, runSetupPath } from '../workflows/shared';
 import { RunApiPanel, RunBadges, runBreadcrumb } from './run-parts';
-import '../workflows/workflows.css';
-import './workflow-run.css';
+import '@microcks/demo-styles/pages/workflows/workflows.css';
+import '@microcks/demo-styles/pages/workflow-run/workflow-run.css';
 
 type Target = 'mocks' | 'implementations' | 'mixed';
 

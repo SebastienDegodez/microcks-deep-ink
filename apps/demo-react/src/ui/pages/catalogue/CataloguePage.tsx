@@ -1,5 +1,5 @@
-import '../explore-kit/explore.css';
-import './catalogue.css';
+import '@microcks/demo-styles/pages/explore-kit/explore.css';
+import '@microcks/demo-styles/pages/catalogue/catalogue.css';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 import { labelFromString, labelToString, type Protocol, type ServiceSummary } from '@/domain/shared';

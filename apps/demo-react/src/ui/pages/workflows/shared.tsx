@@ -1,4 +1,4 @@
-import './workflows.css';
+import '@microcks/demo-styles/pages/workflows/workflows.css';
 import { Link as RouterLink } from 'react-router';
 import type { ReactNode } from 'react';
 import type { RunOrigin as RunOriginModel, RunTarget as RunTargetModel, WorkflowRun } from '@/domain/arazzo';

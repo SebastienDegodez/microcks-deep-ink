@@ -1,7 +1,7 @@
 import { useQuery, useUseCases } from '@/ui/app';
 import { Icon } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
-import './configuration.css';
+import '@microcks/demo-styles/pages/admin/configuration.css';
 
 /** Read-only: Microcks reads these values at start-up. */
 export function ConfigurationTab() {

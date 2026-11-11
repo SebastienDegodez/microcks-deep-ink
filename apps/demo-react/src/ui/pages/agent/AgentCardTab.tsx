@@ -1,4 +1,4 @@
-import './agent-card.css';
+import '@microcks/demo-styles/pages/agent/agent-card.css';
 import { useState } from 'react';
 import { CARD_SECTIONS, cardLines, diffCards, missingCardFields, sectionRanges, serveCardFromMock, type AgentProfile } from '@/domain/agents';
 import { CopyButton, Icon, Input, SectionLabel, Segmented, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';

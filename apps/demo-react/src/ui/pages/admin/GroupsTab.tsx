@@ -5,7 +5,7 @@ import { useReturnFocus, useUseCases, type QueryResult } from '@/ui/app';
 import { Button, Icon } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
-import './groups.css';
+import '@microcks/demo-styles/pages/admin/groups.css';
 
 interface GroupsTabProps {
   users: QueryResult<AdminUser[]>;

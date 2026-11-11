@@ -1,6 +1,6 @@
-import '../explore-kit/explore.css';
-import './agent.css';
-import './agent-header.css';
+import '@microcks/demo-styles/pages/explore-kit/explore.css';
+import '@microcks/demo-styles/pages/agent/agent.css';
+import '@microcks/demo-styles/pages/agent/agent-header.css';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import { totalsOf } from '@/domain/agents';
 import { formatDay, formatHourMinute } from '@/domain/importing';

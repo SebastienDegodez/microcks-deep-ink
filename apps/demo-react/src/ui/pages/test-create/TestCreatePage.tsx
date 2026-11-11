@@ -12,7 +12,7 @@ import { HeadersSection } from './HeadersSection';
 import { RunnerSection } from './RunnerSection';
 import { ScopeSection } from './ScopeSection';
 import { TargetSection } from './TargetSection';
-import './test-create.css';
+import '@microcks/demo-styles/pages/test-create/test-create.css';
 
 export default function TestCreatePage() {
   usePageTitle('Run a test · Microcks');

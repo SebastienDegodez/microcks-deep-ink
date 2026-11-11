@@ -7,7 +7,7 @@ import { TEST_RESULT_ICON, TEST_RESULT_WORD } from '@/ui/app/outcomes';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { testRunHref } from '@/ui/app/format';
 import { fmtDuration, shortDate, TestTimeline, timelineRuns } from './TestTimeline';
-import './tests.css';
+import '@microcks/demo-styles/pages/tests/tests.css';
 
 const LIMIT = 12;
 const OP_WORD = { pass: 'passed', fail: 'failed', none: 'no result' } as const;

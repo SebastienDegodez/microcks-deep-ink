@@ -1,4 +1,4 @@
-import './agent-tasks.css';
+import '@microcks/demo-styles/pages/agent/agent-tasks.css';
 import { useState } from 'react';
 import { getTaskJson, isTerminalTaskState, type AgentTask } from '@/domain/agents';
 import { ago } from '@/ui/app/format';

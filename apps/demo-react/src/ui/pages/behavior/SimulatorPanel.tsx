@@ -1,5 +1,5 @@
 /* eslint-disable jsx-a11y/no-noninteractive-tabindex -- the scrollable response body must be reachable by keyboard (WCAG 2.1.1) */
-import './simulator.css';
+import '@microcks/demo-styles/pages/behavior/simulator.css';
 import { useEffect, useState } from 'react';
 import type { CSSProperties } from 'react';
 import type { Behavior, SimulationResult, StepKind } from '@/domain/catalog';

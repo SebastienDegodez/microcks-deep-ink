@@ -1,4 +1,4 @@
-import './agent-mock.css';
+import '@microcks/demo-styles/pages/agent/agent-mock.css';
 import { useState } from 'react';
 import { SSE_SAMPLE, pushSample, transportSample, transportStreamingNote, type AgentProfile, type CallMode } from '@/domain/agents';
 import { CodeBlock, CopyButton, Icon, Input, Segmented } from '@microcks/deep-ink';

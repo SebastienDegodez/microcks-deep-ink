@@ -1,4 +1,4 @@
-import './import.css';
+import '@microcks/demo-styles/pages/import/import.css';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 import {

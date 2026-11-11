@@ -1,6 +1,6 @@
-import '../explore-kit/explore.css';
-import './behavior.css';
-import './config.css';
+import '@microcks/demo-styles/pages/explore-kit/explore.css';
+import '@microcks/demo-styles/pages/behavior/behavior.css';
+import '@microcks/demo-styles/pages/behavior/config.css';
 import { useMemo, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router';
 import {

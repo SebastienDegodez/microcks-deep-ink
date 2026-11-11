@@ -8,7 +8,7 @@ import { RUN_STATUS_ICON, RUN_STATUS_WORD } from '@/ui/app/outcomes';
 import { Chip, Button, Icon, type IconName, MethodTag } from '@microcks/deep-ink';
 import { runPath, runSetupPath } from '../../workflows/shared';
 import { originWord } from '../run-facts';
-import './runs.css';
+import '@microcks/demo-styles/pages/workflow/tabs/runs.css';
 
 type Filter = Exclude<RunKindFilter, 'any'> | 'all';
 

@@ -4,7 +4,7 @@ import type { CommandItem as CatalogCommand } from '@/domain/catalog/types';
 import { AppShell, type ShellNavItem, Button, Icon, CommandBar, type CommandItem, ThemeToggle } from '@microcks/deep-ink';
 import { useQuery } from './hooks';
 import { LiveAnnouncerProvider } from './announcer';
-import microcksLogo from './microcks-logo.svg';
+import microcksLogo from '@microcks/demo-styles/app/microcks-logo.svg';
 import { NAV_ITEMS, type RouteHandle } from './nav';
 import { useUseCases } from './UseCasesProvider';
 

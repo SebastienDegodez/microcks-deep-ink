@@ -14,7 +14,7 @@ reg = set()
 for f in glob.glob(root + '/packages/registry/src/css/*.css'):
     reg |= set(re.findall(r'\.([a-z][a-z0-9-]*)', strip(open(f).read())))
 reg -= {'sr-only'}
-pages = root + '/apps/demo-react/src/ui/pages'
+pages = root + '/packages/demo-styles/src/pages'
 found, per, cls = [], collections.Counter(), collections.Counter()
 for f in sorted(glob.glob(pages + '/**/*.css', recursive=True)):
     folder = os.path.relpath(f, pages).split('/')[0]

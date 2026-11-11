@@ -1,5 +1,5 @@
-import '../explore-kit/explore.css';
-import './cockpit.css';
+import '@microcks/demo-styles/pages/explore-kit/explore.css';
+import '@microcks/demo-styles/pages/cockpit/cockpit.css';
 import { useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 import type { OperationOutcome } from '@/domain/testing';

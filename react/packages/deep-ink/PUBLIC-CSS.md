@@ -1,6 +1,6 @@
 # Public CSS surface used by the demo pages
 
-The demo pages (`apps/demo-react/src/ui/pages/**/*.css`) still style these registry classes directly. Until each one
+The demo pages (`packages/demo-styles/src/pages/**/*.css`, shared by the React and Svelte demos) still style these registry classes directly. Until each one
 gets a component option, they are part of the package's public API: renaming the class, moving the element or changing
 the listed structure is a breaking change. Everything else (any class not listed here) is internal.
 

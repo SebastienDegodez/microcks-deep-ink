@@ -1,5 +1,5 @@
-import '../explore-kit/explore.css';
-import './sources.css';
+import '@microcks/demo-styles/pages/explore-kit/explore.css';
+import '@microcks/demo-styles/pages/sources/sources.css';
 import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import { Link as RouterLink, useNavigate, useParams } from 'react-router';
 import {

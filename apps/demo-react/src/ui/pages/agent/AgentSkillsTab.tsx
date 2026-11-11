@@ -1,4 +1,4 @@
-import './agent-skills.css';
+import '@microcks/demo-styles/pages/agent/agent-skills.css';
 import { useId, useState } from 'react';
 import { Link as RouterLink } from 'react-router';
 import type { AgentProfile, AgentTaskState, Conversation, ScriptPart, ScriptStep } from '@/domain/agents';

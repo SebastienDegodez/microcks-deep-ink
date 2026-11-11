@@ -1,4 +1,4 @@
-import './StepStrip.css';
+import '@microcks/demo-styles/app/StepStrip.css';
 import type { StepStatus } from '@/domain/arazzo';
 import { stepStripAlt } from '@/domain/arazzo';
 

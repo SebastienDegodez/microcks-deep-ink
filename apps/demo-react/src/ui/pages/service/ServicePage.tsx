@@ -1,5 +1,5 @@
-import '../explore-kit/explore.css';
-import './service.css';
+import '@microcks/demo-styles/pages/explore-kit/explore.css';
+import '@microcks/demo-styles/pages/service/service.css';
 import { useState, type HTMLAttributes } from 'react';
 import { Link as RouterLink, useNavigate, useParams, useSearchParams } from 'react-router';
 import { formatDay, formatHourMinute } from '@/domain/importing';

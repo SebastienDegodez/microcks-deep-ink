@@ -6,7 +6,7 @@ import { useQuery, useUseCases } from '@/ui/app';
 import { ApiBadge, Button, Checkbox, Icon, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { syncedText } from '../WorkflowHeader';
-import './source.css';
+import '@microcks/demo-styles/pages/workflow/tabs/source.css';
 
 /** A block of the outline: 0-based line range, `to` inclusive. */
 export interface OutlineBlock {

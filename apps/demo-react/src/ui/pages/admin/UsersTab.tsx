@@ -4,7 +4,7 @@ import { useUseCases, type QueryResult } from '@/ui/app';
 import { Chip, FilterSearch, Select, DataTable, type DataTableColumn } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
-import './users.css';
+import '@microcks/demo-styles/pages/admin/users.css';
 
 /** Order of the prototype's select. */
 const ROLES: { id: Role; label: string }[] = [

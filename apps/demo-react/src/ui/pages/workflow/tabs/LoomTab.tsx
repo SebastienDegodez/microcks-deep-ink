@@ -12,7 +12,7 @@ import { StepInspector } from '../StepInspector';
 import { StepsTable } from '../StepsTable';
 import { buildLoomProps, lensOf } from '../loom-model';
 import { runSummary } from '../run-facts';
-import './loom.css';
+import '@microcks/demo-styles/pages/workflow/tabs/loom.css';
 
 export { RunPicker };
 

@@ -2,7 +2,7 @@ import { useId, useState } from 'react';
 import { WEEKDAY_HEADERS, formatCount, heatmapWeeks, type UsageView } from '@/domain/observe';
 import { Facts, Panel } from '@microcks/deep-ink';
 import { useRovingSelection } from '../tests/roving';
-import './heatmap.css';
+import '@microcks/demo-styles/pages/usage/heatmap.css';
 
 /** Weekday labels of the heatmap rows, every other day as in the prototype. */
 const HEAT_ROW_LABELS = ['Mon', '', 'Wed', '', 'Fri', '', 'Sun'] as const;

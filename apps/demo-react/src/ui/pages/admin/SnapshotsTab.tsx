@@ -5,7 +5,7 @@ import { useQuery, useReturnFocus, useUseCases } from '@/ui/app';
 import { ApiBadge, type Protocol, Button, DropZone, Icon, SectionLabel, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
-import './snapshots.css';
+import '@microcks/demo-styles/pages/admin/snapshots.css';
 
 const SAMPLE = 'microcks-repository-staging.json';
 /** Preselected on the prototype. */

@@ -1,4 +1,4 @@
-import './dispatcher.css';
+import '@microcks/demo-styles/pages/behavior/dispatcher.css';
 import { useMemo } from 'react';
 import { parseJsonBodyRule, reachability, ruleNames, scriptSample, storedAs, type Behavior, type BehaviorDispatcher } from '@/domain/catalog';
 import type { Example } from '@/domain/shared';

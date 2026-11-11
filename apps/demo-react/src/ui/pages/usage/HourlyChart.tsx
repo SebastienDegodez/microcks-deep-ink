@@ -1,7 +1,7 @@
 import { useId, useState } from 'react';
 import { formatCount, type UsageView } from '@/domain/observe';
 import { BarChart, Panel } from '@microcks/deep-ink';
-import './chart.css';
+import '@microcks/demo-styles/pages/usage/chart.css';
 
 /**
  * Invocations per hour (today) or per day (7 / 30 days) on the registry bar chart: one selectable bar per slot,

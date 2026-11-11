@@ -154,7 +154,7 @@ python3 -I tools/fidelity/registry-selectors.py . --check tools/fidelity/registr
 python3 -I tools/fidelity/registry-selectors.py --self-test           # allowlist parser check
 ```
 
-Counts page CSS selectors (`apps/demo-react/src/ui/pages`) that reach into registry classes (`packages/registry/src/css`).
+Counts page CSS selectors (`packages/demo-styles/src/pages`, shared by the React and Svelte demos) that reach into registry classes (`packages/registry/src/css`).
 
 CI (`root` job of `.github/workflows/storybooks.yml`, no build) runs `--check` against `registry-selectors.allow`
 (one `page-folder<TAB>selector` per line, sorted; `#` lines and blank lines are ignored). A failing check prints

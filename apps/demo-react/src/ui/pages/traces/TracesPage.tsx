@@ -21,7 +21,7 @@ import { ApiBadge, Button, Callout, FactRow, Facts, Field, Icon, LiveIndicator, 
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { useThrottledAnnounce } from '../tests/useThrottledAnnounce';
 import { CallGraph } from './CallGraph';
-import './traces.css';
+import '@microcks/demo-styles/pages/traces/traces.css';
 
 const MAX_CALLS = 60;
 const MAX_ROWS = 12;

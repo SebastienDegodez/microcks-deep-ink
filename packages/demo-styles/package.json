@@ -1,0 +1,14 @@
+{
+  "name": "@microcks/demo-styles",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Page stylesheets and the brand logo shared by the React and Svelte Microcks demos, so both render the same pixels.",
+  "license": "Apache-2.0",
+  "type": "module",
+  "exports": {
+    "./*": "./src/*"
+  },
+  "files": [
+    "src"
+  ]
+}

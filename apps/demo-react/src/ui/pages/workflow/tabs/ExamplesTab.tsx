@@ -7,7 +7,7 @@ import { Button, Icon } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { runPath, runSetupPath } from '../../workflows/shared';
 import { originWord } from '../run-facts';
-import './examples.css';
+import '@microcks/demo-styles/pages/workflow/tabs/examples.css';
 
 export interface ExamplesTabProps {
   detail: WorkflowDetail;

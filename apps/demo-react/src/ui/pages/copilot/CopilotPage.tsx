@@ -1,4 +1,4 @@
-import './copilot.css';
+import '@microcks/demo-styles/pages/copilot/copilot.css';
 import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink, useParams, useSearchParams } from 'react-router';
 import type { ExampleGroup } from '@/domain/copilot';

@@ -15,7 +15,7 @@ import { plural } from '@/ui/app/format';
 import { PageHeader, useAnnounce, usePageTitle, useQuery, useReturnFocus, useUseCases } from '@/ui/app';
 import { ApiBadge, Button, Callout, Chip, RadioGroup, FilterSearch, Icon, LiveIndicator, Panel, SectionLabel, SplitPane, SplitPaneMain, SplitPaneSide, Tile, TileGrid } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
-import './hub.css';
+import '@microcks/demo-styles/pages/hub/hub.css';
 
 const HUB_URL = 'https://hub.microcks.io/api';
 const metaOf = (p: HubPackage) => `${plural(p.apiCount, 'API')}${p.updated ? ` · ${p.updated}` : ''}`;
