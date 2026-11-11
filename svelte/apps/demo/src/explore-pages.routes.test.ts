@@ -81,4 +81,27 @@ describe('explore pages', () => {
     await fireEvent.click(screen.getByRole('tab', { name: 'Properties & MCP' }));
     expect(await screen.findByRole('heading', { level: 2, name: 'Agent-ready' })).toBeTruthy();
   });
+
+  it('Behavior: simulates a call and warns when a change is unsaved', async () => {
+    renderAt('/services/pastry2/operations/get-name');
+    await h1('/pastries/{name}');
+    await fireEvent.click(await screen.findByRole('button', { name: 'Simulate' }));
+    expect(await screen.findByText(/200 OK/)).toBeTruthy();
+    expect(screen.queryByText('Unsaved changes')).toBeNull();
+    await fireEvent.click(screen.getByRole('radio', { name: /^FALLBACK/ }));
+    expect(await screen.findByText(/Unsaved changes/)).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Save behavior' }).hasAttribute('disabled')).toBe(false);
+  });
+
+  it('Behavior: the Saved strip follows a save, in the Stored as short form', async () => {
+    renderAt('/services/pastry2/operations/get-name');
+    await h1('/pastries/{name}');
+    const strip = await screen.findByRole('note', { name: 'Saved behavior' });
+    expect(strip.textContent).toContain('URI_PARTS · rule: name');
+    expect(strip.textContent).toContain('dispatcher inferred from the OpenAPI path parameter');
+    await fireEvent.click(screen.getByRole('radio', { name: /^SCRIPT/ }));
+    await fireEvent.click(screen.getByRole('button', { name: 'Save behavior' }));
+    await waitFor(() => expect(strip.textContent).toContain('GROOVY · <script, 10 lines>'));
+    expect(strip.textContent).not.toContain('inferred');
+  });
 });
