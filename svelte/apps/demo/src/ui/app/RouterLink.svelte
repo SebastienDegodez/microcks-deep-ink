@@ -16,9 +16,11 @@
 
   const router = useRouter();
   const href = $derived(router.href(to));
+
+  // Same markup as the reference demo's router link: a native <a> with the hash href. This comment stays out of the
+  // markup: the demo keeps its markup comments, so one before the link would render a comment and a space with it.
 </script>
 
-<!-- Same markup as the reference demo's router link: a native <a> with the hash href. -->
 <a
   {...rest}
   {href}

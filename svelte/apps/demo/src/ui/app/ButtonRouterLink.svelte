@@ -14,9 +14,11 @@
 
   const router = useRouter();
   const href = $derived(router.href(to));
+
+  // A deep-ink button that navigates like `RouterLink`: the reference demo's `<Button asChild><Link …/></Button>`.
+  // Kept out of the markup, as in `RouterLink`, so no comment and space render before the button.
 </script>
 
-<!-- A deep-ink button that navigates like `RouterLink`: the reference demo's `<Button asChild><Link …/></Button>`. -->
 <ButtonLink
   {...rest}
   bind:element

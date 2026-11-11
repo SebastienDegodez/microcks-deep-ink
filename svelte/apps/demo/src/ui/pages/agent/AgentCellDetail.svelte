@@ -8,9 +8,9 @@
   const card = $derived(CARD_ROWS.some((r) => r.id === check.row));
   const result = $derived(check.result);
   const status = $derived(resultStatus(result));
+  // `coded` renders text with `code` segments between backticks.
 </script>
 
-<!-- Text with `code` segments between backticks. -->
 {#snippet coded(text: string)}{#each text.split('`') as part, i (i)}{#if i % 2 === 1}<code class="demo-mono">{part}</code>{:else if part}{part}{/if}{/each}{/snippet}
 
 {#snippet verdictBox(verdict: DetailVerdict)}{#snippet title()}{@render coded(verdict.title)}{/snippet}<ResultBox
