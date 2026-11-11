@@ -101,6 +101,9 @@
   }
 </script>
 
+<!-- The twin renders the space before the hint and before the alert words as a text node of its own. -->
+{#snippet textNode(text?: string)}{text}{/snippet}
+
 <div class={['tabs', cssClass].filter(Boolean).join(' ')} data-variant={variant === 'card' ? 'card' : undefined}
   ><div role="tablist" class="tablist" aria-label={label}
     >{#each items as t, i (t.id)}<button
@@ -118,11 +121,11 @@
         >{#if t.live}<span class="tab-live" aria-hidden="true"></span>{/if}{#if t.icon}<Icon
             name={t.icon}
             size={16}
-          />{/if}{t.label}{#if t.hint}<span class="tab-hint"><span class="sr-only">,</span>{space}{t.hint}</span
+          />{/if}{t.label}{#if t.hint}<span class="tab-hint"><span class="sr-only">,</span>{@render textNode(space)}{t.hint}</span
           >{/if}{#if t.live}<span class="sr-only">, live</span>{/if}{#if t.count !== undefined}<span class="tab-count"
             ><span class="sr-only">{comma}</span>{t.count}</span
           >{/if}{#if t.alert}<span class="tab-alert"
-            ><span class="sr-only">{comma}</span>{t.alert}<span class="sr-only">{space}{t.alertLabel ?? 'need attention'}</span
+            ><span class="sr-only">{comma}</span>{t.alert}<span class="sr-only">{@render textNode(space)}{t.alertLabel ?? 'need attention'}</span
             ></span
           >{/if}</button
       >{/each}</div

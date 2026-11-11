@@ -15,6 +15,8 @@ const items: TabItem[] = [
 
 const OPS = /^Operations\s*,\s*4$/;
 const tab = (name: string | RegExp) => screen.getByRole('tab', { name });
+/** The non-empty text nodes that are direct children of `el`. */
+const texts = (el: Element) => [...el.childNodes].filter((n) => n.nodeType === Node.TEXT_NODE && n.textContent !== '').map((n) => n.textContent);
 
 describe('Tabs', () => {
   it('exposes tablist, selected state and panel wiring', () => {
@@ -105,5 +107,24 @@ describe('Tabs icon and hint', () => {
     expect(container.querySelector('.tabs')?.getAttribute('data-variant')).toBe('card');
     expect(screen.getByRole('tabpanel').getAttribute('aria-labelledby')).toBe(t.id);
     expect(await axeViolations(document.body)).toEqual([]);
+  });
+
+  it('writes the hint as " " then the hint', () => {
+    render(Tabs, { props: { label: 'Source type', value: 'file', items: [{ id: 'file', label: 'Upload', hint: 'one-off file' }] } });
+    const hint = screen.getByRole('tab', { name: 'Upload, one-off file' }).querySelector('.tab-hint') as Element;
+    expect(texts(hint)).toEqual([' ', 'one-off file']);
+  });
+
+  it('writes the alert label as " " then the label', () => {
+    render(Tabs, {
+      props: {
+        label: 'Sections',
+        value: 'users',
+        items: [{ id: 'users', label: 'Users', alert: 2, alertLabel: 'pending changes' }, { id: 'roles', label: 'Roles', alert: 1 }],
+      },
+    });
+    const [users, roles] = screen.getAllByRole('tab').map((t) => t.querySelector('.tab-alert > .sr-only:last-child') as Element);
+    expect(texts(users as Element)).toEqual([' ', 'pending changes']);
+    expect(texts(roles as Element)).toEqual([' ', 'need attention']);
   });
 });
