@@ -38,7 +38,7 @@ export const ROUTES: readonly RouteSpec[] = [
   { id: 'cockpit', screen: '03', path: '/', example: '/', title: 'Cockpit · Microcks', owner: 'WP7', nav: 'cockpit',
     load: () => import('@/ui/pages/cockpit/CockpitPage.svelte') },
   { id: 'import', screen: '01', path: '/sources/new', example: '/sources/new', title: 'Add a source · Microcks', owner: 'WP7', nav: 'sources',
-    load: pending },
+    load: () => import('@/ui/pages/import/ImportPage.svelte') },
   { id: 'sources', screen: '02', path: '/sources/:importerId?', example: '/sources', title: 'Sources · Microcks', owner: 'WP7', nav: 'sources',
     load: () => import('@/ui/pages/sources/SourcesPage.svelte') },
   { id: 'catalogue', screen: '04', path: '/services', example: '/services', title: 'APIs & Services · Microcks', owner: 'WP7', nav: 'catalogue',

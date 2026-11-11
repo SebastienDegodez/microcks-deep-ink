@@ -138,6 +138,43 @@ describe('explore pages', () => {
     expect(screen.queryByLabelText('Opened from a workflow run')).toBeNull();
   });
 
+  it('Import: analyzes the sample then imports it', async () => {
+    renderAt('/sources/new');
+    await h1('Add a source');
+    await fireEvent.click(screen.getByRole('button', { name: 'Sample: API Pastry' }));
+    expect(await screen.findByRole('heading', { level: 2, name: 'Preview before creating the source' })).toBeTruthy();
+    expect(screen.getByText(/3 Operations discovered · 7 Examples/)).toBeTruthy();
+    expect(screen.getByText('Microcks sample · samples/APIPastry-openapi.yaml')).toBeTruthy();
+    await fireEvent.click(screen.getByRole('button', { name: 'Import' }));
+    expect(await screen.findByRole('heading', { level: 2, name: 'Source created' })).toBeTruthy();
+    expect(screen.getByRole('link', { name: 'Open service' }).getAttribute('href')).toContain('/services/pastry2');
+    expect(screen.getByText('apipastry-openapi.yaml · primary')).toBeTruthy();
+  });
+
+  it('Import: a Git source with empty fields takes the placeholders', async () => {
+    renderAt('/sources/new');
+    await h1('Add a source');
+    await fireEvent.click(screen.getByRole('tab', { name: /^Git repository/ }));
+    await fireEvent.click(screen.getByRole('button', { name: 'Analyze repository' }));
+    expect(await screen.findByText(/The source “API Pastry — main” will be created/)).toBeTruthy();
+    await fireEvent.click(screen.getByRole('button', { name: 'Create source' }));
+    expect(await screen.findByRole('heading', { level: 2, name: 'Source created' })).toBeTruthy();
+  });
+
+  it('Import: the Direct API form takes the placeholders and shows labelled errors', async () => {
+    renderAt('/sources/new');
+    await h1('Add a source');
+    await fireEvent.click(screen.getByRole('tab', { name: 'Direct API' }));
+    await fireEvent.input(screen.getByLabelText('Resource'), { target: { value: '1x' } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Create mock' }));
+    expect(await screen.findByText(/Use letters, digits/)).toBeTruthy();
+    expect(screen.getByLabelText('Resource').getAttribute('aria-invalid')).toBe('true');
+    await fireEvent.input(screen.getByLabelText('Resource'), { target: { value: '' } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Create mock' }));
+    expect(await screen.findByRole('heading', { level: 2, name: 'Mock created and live' })).toBeTruthy();
+    expect(screen.getByText(/Order API 1.0 exposes the “order” resource/)).toBeTruthy();
+  });
+
   it('Sources: lists jobs, filters failed, deletes with a confirmation and undoes', async () => {
     renderAt('/sources');
     await h1('Sources');
