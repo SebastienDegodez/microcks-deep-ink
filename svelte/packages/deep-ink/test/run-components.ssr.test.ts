@@ -33,7 +33,8 @@ it('server-renders task states, static timelines and comparison lanes', () => {
   expect(timeline).toContain('other end states');
   const lanes = render(TaskLanes, { props: { lanes: [{ label: 'Actual', nodes: [{ label: 'restarted', tone: 'bad' }] }] } }).body;
   expect(lanes).toContain('tabindex="0"');
-  expect(lanes).toContain('(illegal)');
+  // " (", the word and ")" are three text nodes, as in React, so hydration markers separate them.
+  expect(lanes.replace(/<!--.*?-->/g, '')).toContain('(illegal)');
 });
 it('server-renders a named CI region and file group without browser effects', () => {
   const ci = render(CiPanel, { props: { title: 'Pipeline', command: 'microcks test', dashed: true } }).body;
