@@ -27,8 +27,17 @@ pnpm -C svelte build
 pnpm demo:svelte                     # builds @microcks/demo-core, then http://127.0.0.1:5174/
 pnpm build:demo:svelte               # svelte/apps/demo/dist/
 pnpm -C svelte --filter demo-svelte test
+pnpm -C svelte smoke:demo            # real Chromium: menu, deep links and Administration tabs
 pnpm -C svelte check:boundaries
 ```
+
+The browser smoke check starts its own dev server with an isolated temporary dependency cache, runs
+the route unit tests while it stays open, then visits every menu entry, route example and Administration
+tab. It reports pending workflow placeholders separately; a placeholder is not a completed screen.
+To check an already-running preview instead, run `pnpm -C svelte smoke:demo http://127.0.0.1:5174/`.
+This catches lazy-module and stale dev-server failures that passing unit tests or production captures
+cannot detect. If a long-running preview reports `Outdated Optimize Dep`, restart that dev server with
+`--force` and recheck the actual preview; refreshing the browser alone may keep the broken server cache.
 
 `#/map` links to all 19 screens. The hash router follows the reference demo's data router: the URL
 changes when the next page module has loaded, a link to the current page replaces the history entry,

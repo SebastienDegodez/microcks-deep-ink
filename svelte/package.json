@@ -17,6 +17,7 @@
     "storybook": "pnpm --filter storybook-svelte storybook",
     "build:storybook": "pnpm --filter storybook-svelte build-storybook",
     "smoke:package": "node scripts/smoke-package.mjs",
+    "smoke:demo": "node scripts/smoke-demo.mjs",
     "test:button-parity": "pnpm build && node test/button-parity/run.mjs",
     "lint": "pnpm -r --if-present lint",
     "publint": "pnpm -r --if-present publint",
