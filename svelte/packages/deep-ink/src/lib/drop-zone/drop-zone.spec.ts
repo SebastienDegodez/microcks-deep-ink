@@ -8,6 +8,15 @@ import Fixture from './_Fixture.svelte';
 import { filesReadyMessage } from './messages';
 const file = (name: string) => new File(['x'], name, { type: 'application/json' });
 describe('DropZone', () => {
+  it('keeps rich hints, actions and file-status text without layout whitespace', async () => {
+    render(Fixture);
+    const zone = screen.getByRole('group', { name: 'Drop a snapshot here' });
+    const text = 'Drop a snapshot hereA microcks-repository.json exported from any Microcks instanceChoose a fileUse a sample snapshot';
+    expect(zone.textContent).toBe(text);
+    await fireEvent.drop(zone, { dataTransfer: { files: [file('snapshot.json')] } });
+    expect(zone.textContent).toBe(`${text}1 file ready`);
+  });
+
   it('exposes a real labelled file input, reachable by keyboard', async () => {
     const user = userEvent.setup();
     render(DropZone, { heading: 'Drop a contract', hint: 'OpenAPI, AsyncAPI', onfiles: vi.fn() });
