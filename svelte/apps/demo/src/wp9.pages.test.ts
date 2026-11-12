@@ -226,6 +226,51 @@ describe('Live traces (/traces)', () => {
   });
 });
 
+describe('Hub (/hub/:packageId?)', () => {
+  const detail = async () => within(await screen.findByRole('region', { name: 'Package detail' }));
+
+  it('opens banking and walks install to installed', async () => {
+    renderAt('/hub/banking');
+    await screen.findByRole('heading', { level: 1, name: 'Hub' });
+    const panel = await detail();
+    expect(panel.getByRole('heading', { level: 2, name: 'Banking APIs (sample)' })).toBeTruthy();
+    await fireEvent.click(panel.getByRole('button', { name: 'Install and keep in sync' }));
+    const view = await panel.findByRole('link', { name: /View in catalogue/ });
+    await waitFor(() => expect(document.activeElement).toBe(view));
+    expect(panel.getByRole('link', { name: 'See importers in Sources' })).toBeTruthy();
+    expect(panel.queryByRole('button', { name: /^Install/ })).toBeNull();
+  });
+
+  it('keeps focus on the card while it installs from the grid', async () => {
+    renderAt('/hub/banking');
+    const grid = within(await screen.findByRole('region', { name: 'Packages' }));
+    const card = within(await grid.findByRole('article', { name: 'Telco open APIs' }));
+    await fireEvent.click(card.getByRole('button', { name: 'Install' }));
+    const view = await card.findByRole('link', { name: /View in catalogue/ });
+    await waitFor(() => expect(document.activeElement).toBe(view));
+  });
+
+  it('shows API Pastry as already installed', async () => {
+    renderAt('/hub/pastry');
+    await screen.findByRole('heading', { level: 1 });
+    const panel = await detail();
+    await waitFor(() => expect(panel.getAllByText('Installed').length).toBeGreaterThan(0));
+    expect(panel.queryByRole('button', { name: /^Install/ })).toBeNull();
+    expect(panel.getAllByText('IN CATALOGUE').length).toBe(2);
+  });
+
+  it('picks a version per API and blocks a secondary install with nothing to merge', async () => {
+    renderAt('/hub/banking');
+    const panel = await detail();
+    const versions = within(panel.getByRole('group', { name: 'Version of Accounts API' }));
+    await fireEvent.click(versions.getByRole('button', { name: '1.1.0' }));
+    expect(versions.getByRole('button', { name: '1.1.0' }).getAttribute('aria-pressed')).toBe('true');
+    await fireEvent.click(panel.getByRole('radio', { name: /Secondary artifact/ }));
+    expect(panel.getByRole('note').textContent).toMatch(/Choose Main artifact/);
+    expect((panel.getByRole('button', { name: 'Merge examples' }) as HTMLButtonElement).disabled).toBe(true);
+  });
+});
+
 describe('Usage heatmap (/metrics/pastry2)', () => {
   it('names each day with its count and selects the latest day', async () => {
     renderAt('/metrics/pastry2');

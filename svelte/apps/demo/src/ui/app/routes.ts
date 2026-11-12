@@ -70,7 +70,7 @@ export const ROUTES: readonly RouteSpec[] = [
   { id: 'traces', screen: '12', path: '/traces', example: '/traces?service=pastry2', title: 'Live traces · Microcks', owner: 'WP9', nav: 'traces',
     load: () => import('@/ui/pages/traces/TracesPage.svelte') },
   { id: 'hub', screen: '13', path: '/hub/:packageId?', example: '/hub/banking', title: 'Hub · Microcks', owner: 'WP9', nav: 'hub',
-    load: pending },
+    load: () => import('@/ui/pages/hub/HubPage.svelte') },
   { id: 'admin', screen: '14', path: '/admin/:tab?', example: '/admin/users', title: 'Administration · Microcks', owner: 'WP9', nav: 'admin',
     load: pending },
   { id: 'map', screen: '—', path: '/map', example: '/map', title: 'Screen map · Microcks', owner: 'WP3',
