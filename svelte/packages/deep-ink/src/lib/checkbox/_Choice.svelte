@@ -29,6 +29,7 @@
     defaultChecked,
     checked = $bindable(),
     element = $bindable(),
+    name,
     ...rest
   }: ChoiceProps & { kind: 'checkbox' | 'radio' } = $props();
 
@@ -53,6 +54,7 @@
     aria-labelledby={labelId}
     class={[kind, cssClass].filter(Boolean).join(' ')}
     aria-describedby={[rest['aria-describedby'], descId].filter(Boolean).join(' ') || undefined}
+    {name}
   /><span
     ><span class="choice-label" id={labelId}>{@render node(label)}</span
     >{#if description}<span class="choice-description" id={descId}>{@render node(description)}</span>{/if}</span

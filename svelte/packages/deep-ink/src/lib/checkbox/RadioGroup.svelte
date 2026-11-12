@@ -10,14 +10,16 @@
   }
 </script>
 
-<script lang="ts">
+<script lang="ts" generics="Option extends RadioOption">
   import Icon from '../icon/Icon.svelte';
   import Radio from './Radio.svelte';
 
   type Props = {
     /** Visible group name, rendered as the fieldset legend. */
     legend: string | Snippet;
-    options: RadioOption[];
+    options: Option[];
+    /** Renders each option's label from its data, without creating one snippet per option. */
+    renderLabel?: Snippet<[Option]>;
     value: string | undefined;
     onchange?: (value: string) => void;
     /** Shared name of the radios. Generated when omitted. */
@@ -30,7 +32,7 @@
     class?: string;
   };
 
-  let { legend, options, value = $bindable(), onchange, name, required, help, error, variant = 'plain', class: cssClass }: Props = $props();
+  let { legend, options, renderLabel, value = $bindable(), onchange, name, required, help, error, variant = 'plain', class: cssClass }: Props = $props();
 
   // In expressions, so that the compiler keeps their spaces.
   const asterisk = ' *';
@@ -53,10 +55,10 @@
   data-invalid={error ? '' : undefined}
   data-variant={variant}
   ><legend>{@render node(legend)}{#if required}<span class="required" aria-hidden="true">{asterisk}</span>{/if}</legend
-  >{#each options as o (o.value)}<Radio
+  >{#each options as o (o.value)}{#snippet optionLabel()}{@render renderLabel?.(o)}{/snippet}<Radio
       name={groupName}
       value={o.value}
-      label={o.label}
+      label={renderLabel ? optionLabel : o.label}
       description={o.description}
       {variant}
       disabled={o.disabled}

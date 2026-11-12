@@ -5,6 +5,7 @@ import { axeViolations } from '../../../test/axe';
 import Checkbox from './Checkbox.svelte';
 import Radio from './Radio.svelte';
 import RadioGroup from './RadioGroup.svelte';
+import RichRadioFixture from './_RichRadioFixture.svelte';
 
 describe('Checkbox', () => {
   it('is a checkbox named by its label and described by its description, toggled with Space', async () => {
@@ -51,6 +52,24 @@ describe('Radio', () => {
 });
 
 describe('RadioGroup', () => {
+  it('renders data-driven labels while preserving selection, updates and disabled options', async () => {
+    const user = userEvent.setup();
+    const onchange = vi.fn();
+    const options = [
+      { value: 'pastry', label: 'API Pastry', version: '2.0' },
+      { value: 'orders', label: 'Orders', version: '1.0', disabled: true },
+    ];
+    const { rerender } = render(RichRadioFixture, { props: { options, onchange } });
+    await user.click(screen.getByText('API Pastry'));
+    expect(screen.getByRole<HTMLInputElement>('radio', { name: 'API Pastry 2.0' }).checked).toBe(true);
+    expect(onchange).toHaveBeenLastCalledWith('pastry');
+    await user.click(screen.getByText('Orders'));
+    expect(onchange).toHaveBeenCalledOnce();
+    await rerender({ options: [{ ...options[0]!, version: '3.0' }] });
+    expect(screen.getByRole<HTMLInputElement>('radio', { name: 'API Pastry 3.0' }).checked).toBe(true);
+    expect(screen.queryByRole('radio', { name: 'Orders 1.0' })).toBeNull();
+  });
+
   const options = [
     { value: 'uri', label: 'URI parts' },
     { value: 'json', label: 'JSON body' },
