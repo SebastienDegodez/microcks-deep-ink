@@ -3,7 +3,6 @@ import type { SecretSummary } from '@/domain/shared';
 import {
   SECRET_KIND_HINT,
   SECRET_KIND_LABEL,
-  secretCredentials,
   secretFormHint,
   validateSecretForm,
   type SecretFormKind,
@@ -11,32 +10,32 @@ import {
 import { useClock, useReturnFocus, useUseCases, type QueryResult } from '@/ui/app';
 import { Button, Field, Icon, Input, Textarea, Segmented, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
-import { plural, type Notify } from './notify';
+import type { Notify } from './notify';
+import {
+  CA_PLACEHOLDER,
+  EMPTY,
+  KINDS,
+  confirmMessage,
+  createdMessage,
+  deletedMessage,
+  editForm,
+  formTitle,
+  isMask,
+  keepPlaceholder,
+  maskParts,
+  nextAfterDelete,
+  secretInput,
+  updatedLabel,
+  updatedMessage,
+  usedLabel,
+  type FormState,
+} from './secrets';
 import '@microcks/demo-styles/pages/admin/secrets.css';
-
-const KINDS: SecretFormKind[] = ['basic', 'token', 'oauth2', 'ca'];
-const DATE = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' });
 
 /** Keeps each "••••••••" mask on one line. */
 function maskNoWrap(text: string) {
-  return text.split(/(•+)/).map((part, i) => (part.startsWith('•') ? <span key={i} className="ad-nowrap">{part}</span> : part));
+  return maskParts(text).map((part, i) => (isMask(part) ? <span key={i} className="ad-nowrap">{part}</span> : part));
 }
-
-interface FormState {
-  mode: 'new' | 'edit';
-  /** Secret id in edit mode. */
-  id?: string;
-  name: string;
-  description: string;
-  kind: SecretFormKind;
-  user: string;
-  secret: string;
-  tokenUrl: string;
-  scopes: string;
-  show: boolean;
-}
-
-const EMPTY: FormState = { mode: 'new', name: '', description: '', kind: 'basic', user: '', secret: '', tokenUrl: '', scopes: '', show: false };
 
 export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSummary[]>; notify: Notify }) {
   const uc = useUseCases();
@@ -51,18 +50,14 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
   if (!secrets.data) return <LoadingBlock label="secrets" />;
   const list = secrets.data;
 
-  const updated = (s: SecretSummary) => {
-    const at = new Date(s.updatedAt ?? s.createdAt);
-    return clock.now().getTime() - at.getTime() < 60_000 ? 'Just now' : DATE.format(at);
-  };
+  const updated = (s: SecretSummary) => updatedLabel(s, clock.now());
   const remove = async (s: SecretSummary) => {
-    const at = list.findIndex((x) => x.id === s.id);
-    const next = list[at + 1] ?? list[at - 1];
+    const next = nextAfterDelete(list, s.id);
     await uc.govern.deleteSecret(s.id);
     setFocusId(next ? `ad-del-${next.id}` : 'ad-secrets-title');
     setConfirming('');
     if (form?.id === s.id) setForm(null);
-    notify(`Secret ${s.name} deleted.`);
+    notify(deletedMessage(s.name));
     secrets.reload();
   };
   const closeForm = () => {
@@ -71,7 +66,7 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
   };
   const edit = (s: SecretSummary) => {
     setConfirming('');
-    setForm({ ...EMPTY, mode: 'edit', id: s.id, name: s.name, description: s.description ?? '', kind: s.kind });
+    setForm(editForm(s));
   };
 
   return (
@@ -116,7 +111,7 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
                     </th>
                     <td><span className="ad-secret-type">{SECRET_KIND_LABEL[s.kind]}</span></td>
                     <td className="ad-secret-detail">{maskNoWrap(s.detail ?? s.masked)}</td>
-                    <td className="ad-secret-used" data-unused={used === 0 ? '' : undefined}>{used === 0 ? 'unused' : plural(used, 'importer')}</td>
+                    <td className="ad-secret-used" data-unused={used === 0 ? '' : undefined}>{usedLabel(used)}</td>
                     <td className="ad-secret-updated">{updated(s)}</td>
                     <td data-align="end">
                       <span className="ad-secret-actions">
@@ -131,7 +126,7 @@ export function SecretsTab({ secrets, notify }: { secrets: QueryResult<SecretSum
                         <div role="alert" className="ad-confirm">
                           <Icon name="warning" size={14} className="ad-confirm-icon" />
                           <span className="ad-confirm-text">
-                            Delete {s.name}? {used ? `${plural(used, 'importer')} still reference it and will fail on next run.` : 'No importer references it.'}
+                            Delete {s.name}? {confirmMessage(used)}
                           </span>
                           <button type="button" className="ad-small-button" onClick={() => { setConfirming(''); setFocusId(`ad-del-${s.id}`); }}>Cancel</button>
                           <button type="button" className="ad-small-button" data-danger="" onClick={() => remove(s)}>Delete secret</button>
@@ -194,8 +189,8 @@ function SecretForm({ initial, names, onCancel, onSaved }: { initial: FormState;
   const editing = f.mode === 'edit';
   const set = (patch: Partial<FormState>) => setF((x) => ({ ...x, ...patch }));
   const hint = secretFormHint(validateSecretForm(f, names, editing));
-  const title = editing ? `Edit secret ${f.name}` : 'New secret';
-  const keep = editing ? '•••••• unchanged' : undefined;
+  const title = formTitle(f);
+  const keep = keepPlaceholder(editing);
   const pw = f.show ? 'text' : 'password';
   const showButton = (
     <button type="button" className="ad-show-button" aria-pressed={f.show} onClick={() => set({ show: !f.show })}>{f.show ? 'Hide' : 'Show'}</button>
@@ -204,14 +199,13 @@ function SecretForm({ initial, names, onCancel, onSaved }: { initial: FormState;
   const submit = async (e: FormEvent) => {
     e.preventDefault();
     if (hint) return;
-    const detail = f.secret || f.user || !editing ? secretCredentials(f) : undefined;
-    const input = { kind: f.kind, description: f.description || undefined, value: f.secret, detail };
+    const input = secretInput(f, editing);
     if (editing && f.id) {
       await uc.govern.updateSecret(f.id, input);
-      onSaved(`Secret ${f.name} updated.`);
+      onSaved(updatedMessage(f.name));
     } else {
       await uc.govern.createSecret({ ...input, name: f.name, description: f.description || 'No description' });
-      onSaved(`Secret ${f.name} created. Reference it from an importer or a test.`);
+      onSaved(createdMessage(f.name));
     }
   };
 
@@ -310,7 +304,7 @@ function SecretForm({ initial, names, onCancel, onSaved }: { initial: FormState;
                 {...c}
                 mono
                 rows={5}
-                placeholder={'-----BEGIN CERTIFICATE-----\nMIIDdzCCAl+gAwIBAgIE…\n-----END CERTIFICATE-----'}
+                placeholder={CA_PLACEHOLDER}
                 value={f.secret}
                 onChange={(e) => set({ secret: e.target.value })}
               />

@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { membershipChanges, membershipKey } from '@/domain/govern';
+import { membershipChanges } from '@/domain/govern';
 import { PageHeader, usePageTitle, useQuery, useUseCases } from '@/ui/app';
 import { ApiBadge, Icon, TabPanel, Tabs } from '@microcks/deep-ink';
 import { ConfigurationTab } from './ConfigurationTab';
@@ -9,19 +9,15 @@ import { SecretsTab } from './SecretsTab';
 import { SnapshotsTab } from './SnapshotsTab';
 import { UsersTab } from './UsersTab';
 import type { Notify } from './notify';
+import { TOAST_MS, alertLabel, savedMemberships, tabOf, type Tab } from './tabs';
 import '@microcks/demo-styles/pages/admin/admin.css';
-
-const TABS = ['users', 'groups', 'secrets', 'snapshots', 'configuration'] as const;
-type Tab = (typeof TABS)[number];
-/** The prototype's toast hides itself after 4 s. */
-const TOAST_MS = 4000;
 
 export default function AdminPage() {
   const { tab: tabParam } = useParams();
   usePageTitle('Administration · Microcks');
   const navigate = useNavigate();
   const uc = useUseCases();
-  const tab: Tab = (TABS as readonly string[]).includes(tabParam ?? '') ? (tabParam as Tab) : 'users';
+  const tab: Tab = tabOf(tabParam);
 
   const users = useQuery(() => uc.govern.listUsers(), []);
   const groups = useQuery(() => uc.govern.listGroups(), []);
@@ -29,7 +25,7 @@ export default function AdminPage() {
 
   // The membership draft lives here: it survives a tab change and its size is shown on the Groups tab.
   const [draft, setDraft] = useState<string[] | null>(null);
-  const saved = (groups.data ?? []).flatMap((g) => g.members.map((m) => membershipKey(g.id, m)));
+  const saved = savedMemberships(groups.data ?? []);
   const pending = membershipChanges(saved, draft ?? saved).length;
 
   const [toast, setToast] = useState('');
@@ -74,7 +70,7 @@ export default function AdminPage() {
         onChange={(id) => navigate(`/admin/${id}`)}
         items={[
           { id: 'users', label: 'Users', count: users.data?.length },
-          { id: 'groups', label: 'Groups', count: groups.data?.length, alert: pending || undefined, alertLabel: pending === 1 ? 'pending change' : 'pending changes' },
+          { id: 'groups', label: 'Groups', count: groups.data?.length, alert: pending || undefined, alertLabel: alertLabel(pending) },
           { id: 'secrets', label: 'Secrets', count: secrets.data?.length },
           { id: 'snapshots', label: 'Snapshots' },
           { id: 'configuration', label: 'Configuration' },

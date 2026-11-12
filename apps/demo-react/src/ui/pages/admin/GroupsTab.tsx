@@ -5,6 +5,8 @@ import { useReturnFocus, useUseCases, type QueryResult } from '@/ui/app';
 import { Button, Icon } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
+import { appliedMessage, cellLabel, cellState, cellTitle, changesLine, draftMembers, groupColumnWidth, matrixMinWidth, toggledDraft } from './groups';
+import { savedMemberships } from './tabs';
 import '@microcks/demo-styles/pages/admin/groups.css';
 
 interface GroupsTabProps {
@@ -30,25 +32,22 @@ export function GroupsTab({ users, groups, draft, setDraft, notify, onChanged }:
 
   const all = groups.data;
   const managers = users.data.filter((u) => u.role === 'manager');
-  const saved = all.flatMap((g) => g.members.map((m) => membershipKey(g.id, m)));
+  const saved = savedMemberships(all);
   const current = draft ?? saved;
   const changes = membershipChanges(saved, current);
-  const pathOf = (groupId: string) => all.find((g) => g.id === groupId)?.name ?? groupId;
   const coverage = (g: AdminGroup) => managers.filter((m) => current.includes(membershipKey(g.id, m.id))).length;
   const uncovered = all.filter((g) => coverage(g) === 0).length;
 
   const toggle = (key: string) => {
-    const next = current.includes(key) ? current.filter((k) => k !== key) : [...current, key];
-    const same = next.length === saved.length && next.every((k) => saved.includes(k));
-    setDraft(same ? null : next);
+    setDraft(toggledDraft(current, saved, key));
   };
   const apply = async () => {
     const touched = new Set(changes.map((c) => c.groupId));
     for (const g of all) {
       if (!touched.has(g.id)) continue;
-      await uc.govern.saveMembers(g.id, current.filter((k) => k.startsWith(`${g.id}|`)).map((k) => k.split('|')[1] ?? ''));
+      await uc.govern.saveMembers(g.id, draftMembers(current, g.id));
     }
-    notify(`${plural(changes.length, 'membership change')} applied in Keycloak realm microcks.`);
+    notify(appliedMessage(changes.length));
     setDraft(null);
     focusLater(headingRef);
     onChanged();
@@ -71,10 +70,10 @@ export function GroupsTab({ users, groups, draft, setDraft, notify, onChanged }:
 
       <div className="ad-card">
         <div className="ad-scroll">
-          <table className="ad-matrix" style={{ minWidth: `${230 + managers.length * 92 + 152}px` }}>
+          <table className="ad-matrix" style={{ minWidth: matrixMinWidth(managers.length) }}>
             <caption className="sr-only">Group memberships: groups by managers</caption>
             <colgroup>
-              <col style={{ width: `${(1.6 / (1.6 + managers.length)) * 87 + 1.4}%` }} />
+              <col style={{ width: groupColumnWidth(managers.length) }} />
               {managers.map((m) => <col key={m.id} />)}
               <col className="ad-matrix-coverage" />
             </colgroup>
@@ -104,9 +103,9 @@ export function GroupsTab({ users, groups, draft, setDraft, notify, onChanged }:
                       const key = membershipKey(g.id, m.id);
                       const was = saved.includes(key);
                       const now = current.includes(key);
-                      const state = now && !was ? 'add' : was && !now ? 'remove' : now ? 'member' : 'empty';
-                      const label = `${m.name} in ${g.name}, ${now ? 'member' : 'not a member'}${state === 'add' ? ', to be added' : state === 'remove' ? ', to be removed' : ''}`;
-                      const title = state === 'add' ? 'To be added' : state === 'remove' ? 'To be removed' : now ? 'Member' : 'Not a member';
+                      const state = cellState(was, now);
+                      const label = cellLabel(m, g, now, state);
+                      const title = cellTitle(state, now);
                       return (
                         <td key={m.id} className="ad-matrix-cell">
                           <button type="button" className="ad-cell" data-state={state} aria-pressed={now} aria-label={label} title={title} onClick={() => toggle(key)}>
@@ -134,7 +133,7 @@ export function GroupsTab({ users, groups, draft, setDraft, notify, onChanged }:
               {plural(changes.length, 'pending change')}
             </span>
             <span className="ad-pending-list">
-              {changes.map((c) => (c.kind === 'add' ? `+ ${c.userId} → ${pathOf(c.groupId)}` : `− ${c.userId} ✕ ${pathOf(c.groupId)}`)).join('   ')}
+              {changesLine(changes, all)}
             </span>
             <Button onClick={() => { setDraft(null); focusLater(headingRef); }}>Discard</Button>
             <Button variant="primary" onClick={apply}>Apply to Keycloak</Button>

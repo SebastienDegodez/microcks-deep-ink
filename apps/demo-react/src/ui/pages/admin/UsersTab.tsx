@@ -4,17 +4,8 @@ import { useUseCases, type QueryResult } from '@/ui/app';
 import { Chip, FilterSearch, Select, DataTable, type DataTableColumn } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
+import { NO_GROUP, ROLES, ROLE_CHIPS, filterUsers, noUserText, roleChangedMessage, roleChipTone, roleChipVariant, roleCount, roleSelectTitle } from './users';
 import '@microcks/demo-styles/pages/admin/users.css';
-
-/** Order of the prototype's select. */
-const ROLES: { id: Role; label: string }[] = [
-  { id: 'user', label: 'User' },
-  { id: 'manager', label: 'Manager' },
-  { id: 'admin', label: 'Admin' },
-];
-/** Microcks client roles are cumulative: an admin also holds manager and user. */
-const ROLE_CHIPS: Record<Role, Role[]> = { admin: ['user', 'manager', 'admin'], manager: ['user', 'manager'], user: ['user'] };
-const NO_GROUP: Record<Role, string> = { admin: 'all Services', manager: 'no group yet', user: 'n/a' };
 
 export function UsersTab({ users, groups, notify, onChanged }: { users: QueryResult<AdminUser[]>; groups: AdminGroup[]; notify: Notify; onChanged: () => void }) {
   const uc = useUseCases();
@@ -24,14 +15,13 @@ export function UsersTab({ users, groups, notify, onChanged }: { users: QueryRes
   if (!users.data) return <LoadingBlock label="users" />;
 
   const all = users.data;
-  const q = query.trim().toLowerCase();
-  const rows = all.filter((u) => !q || `${u.name} ${u.id} ${u.email}`.toLowerCase().includes(q));
-  const count = (r: Role) => all.filter((u) => u.role === r).length;
+  const rows = filterUsers(all, query);
+  const count = (r: Role) => roleCount(all, r);
   const groupName = (id: string) => groups.find((g) => g.id === id)?.name ?? id;
 
   const change = async (u: AdminUser, role: Role) => {
     await uc.govern.setRole(u.id, role);
-    notify(`${u.name} is now ${role === 'admin' ? 'an admin' : `a ${role}`} in realm microcks.`);
+    notify(roleChangedMessage(u, role));
     onChanged();
   };
 
@@ -59,7 +49,7 @@ export function UsersTab({ users, groups, notify, onChanged }: { users: QueryRes
       render: (u) => (
         <span className="ad-pills">
           {ROLE_CHIPS[u.role].map((r) => (
-            <Chip key={r} size="sm" tone={r === 'user' ? 'neutral' : 'info'} variant={r === 'manager' ? 'outline' : 'solid'}>{r}</Chip>
+            <Chip key={r} size="sm" tone={roleChipTone(r)} variant={roleChipVariant(r)}>{r}</Chip>
           ))}
         </span>
       ),
@@ -88,7 +78,7 @@ export function UsersTab({ users, groups, notify, onChanged }: { users: QueryRes
             size="sm"
             value={u.role}
             disabled={u.self}
-            title={u.self ? 'You cannot change your own role' : `Change the Microcks role of ${u.name}`}
+            title={roleSelectTitle(u)}
             onChange={(e) => change(u, e.target.value as Role)}
           >
             {ROLES.map((r) => <option key={r.id} value={r.id}>{r.label}</option>)}
@@ -112,7 +102,7 @@ export function UsersTab({ users, groups, notify, onChanged }: { users: QueryRes
         columns={columns}
         rows={rows}
         rowKey="id"
-        emptyText={`No user matches “${query.trim()}”.`}
+        emptyText={noUserText(query)}
       />
       <div className="ad-legend">
         <span><span className="ad-legend-key">user</span> browses APIs, runs tests</span>
