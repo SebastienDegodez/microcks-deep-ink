@@ -50,7 +50,7 @@ export const ROUTES: readonly RouteSpec[] = [
   { id: 'copilot', screen: '07', path: '/services/:serviceId/copilot', example: '/services/pastry2/copilot?op=get-name&hint=Tarte%20Tatin', title: 'AI Copilot examples · Microcks', owner: 'WP7', nav: 'catalogue',
     load: () => import('@/ui/pages/copilot/CopilotPage.svelte') },
   { id: 'workflows', screen: '15', path: '/workflows', example: '/workflows', title: 'Workflows · Microcks', owner: 'WP8', nav: 'workflows',
-    load: pending },
+    load: () => import('@/ui/pages/workflows/WorkflowsPage.svelte') },
   { id: 'workflow', screen: '16', path: '/workflows/:docId/:workflowId/:tab?', example: '/workflows/pastry/restock-pastry/loom?run=14&step=patchPastry', title: 'Restock a pastry · Microcks', owner: 'WP8', nav: 'workflows',
     load: pending },
   { id: 'workflow-run-setup', screen: '17a', path: '/workflows/:docId/:workflowId/run', example: '/workflows/pastry/restock-pastry/run?scenario=impl14', title: 'Run a workflow · Microcks', owner: 'WP8', nav: 'workflows',

@@ -45,8 +45,8 @@ keeps comments for the files of `src/` only.
 demo with strict screenshot comparisons (0 pixel of difference, no mask). A screen that is not ported
 yet renders a placeholder with its title.
 
-The shell, explore, service, agents, sources, tests, observe, Hub and Administration pages are
-ported. The workflow list, workflow details, run setup and run details are still pending.
+The shell, explore, service, agents, sources, tests, observe, Hub, Administration and workflow list
+are ported. Workflow details, run setup and run details are still pending.
 
 Every screen is marked DEMO; nothing is published on npm. Runtime and build guards reject React.
 Accessibility status: **not audited** (RGAA 4.1.2 / WCAG 2.1 AA target).
