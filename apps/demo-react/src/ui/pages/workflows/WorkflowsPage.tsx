@@ -1,86 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink } from 'react-router';
-import type { ArazzoDocument, RunKindFilter, SourceDescription, WorkflowRun } from '@/domain/arazzo';
-import { runHeadline, runOutcome, stoppedStep } from '@/domain/arazzo';
+import type { ArazzoDocument, RunKindFilter, SourceDescription } from '@/domain/arazzo';
+import { runOutcome } from '@/domain/arazzo';
 import type { WorkflowListItem } from '@/application/arazzo';
 import { PageHeader, useAnnounce, usePageTitle, useQuery, useRelativeTime, useUseCases } from '@/ui/app';
-import { ApiBadge, Button, Callout, Chip, EmptyState, FilterBar, FilterReset, FilterRow, FilterSearch, Icon, Segmented, type SegmentedOption } from '@microcks/deep-ink';
+import { ApiBadge, Button, Callout, Chip, EmptyState, FilterBar, FilterReset, FilterRow, FilterSearch, Icon, Segmented } from '@microcks/deep-ink';
 import { LinkSourceDialog } from './LinkSourceDialog';
 import { LoomThumb, sourceColor } from './LoomThumb';
 import { ErrorBlock } from '@/ui/app/states';
 import { ButtonRouterLink, runPath, runSetupPath, workflowPath } from './shared';
-
-type Result = 'all' | 'passed' | 'failed' | 'never';
-
-const RESULTS: (SegmentedOption & { id: Result })[] = [
-  { id: 'all', label: 'All', dot: 'neutral' },
-  { id: 'passed', label: 'Passed', dot: 'success' },
-  { id: 'failed', label: 'Failed', dot: 'danger' },
-  { id: 'never', label: 'Never run', dot: 'ring' },
-];
-
-const TARGET_LABEL: Record<Exclude<RunKindFilter, 'any'>, string> = {
-  mocks: 'Microcks mocks',
-  implementations: 'Implementations',
-  'mock-url': 'Mock URL',
-  session: 'Session',
-};
-
-const TARGETS: (SegmentedOption & { id: RunKindFilter })[] = [
-  { id: 'any', label: 'Any target' },
-  { id: 'mocks', label: TARGET_LABEL.mocks, icon: 'plus-square' },
-  { id: 'implementations', label: TARGET_LABEL.implementations, icon: 'server' },
-  { id: 'mock-url', label: TARGET_LABEL['mock-url'] },
-  { id: 'session', label: TARGET_LABEL.session },
-];
-
-const RESULT_LABEL: Record<Exclude<Result, 'all'>, string> = { passed: 'Passed', failed: 'Failed', never: 'Never run' };
-
-/** The run target as the prototype tags it: the origin first (Session, Mock URL), then the target. */
-function targetLabel(run: WorkflowRun): string {
-  if (run.origin.kind === 'session') return TARGET_LABEL.session;
-  if (run.origin.kind === 'mock-url') return TARGET_LABEL['mock-url'];
-  return run.target.kind === 'mocks' ? TARGET_LABEL.mocks : run.target.kind === 'implementations' ? TARGET_LABEL.implementations : 'Mixed targets';
-}
-
-/** One line on the last run: where it stopped, or how it passed. */
-function runNote(run: WorkflowRun): string {
-  if (runOutcome(run) === 'failed') {
-    const stopped = stoppedStep(run);
-    if (run.origin.kind === 'session' && stopped) {
-      const why = stopped.flow.title;
-      return `Session ${run.origin.sessionId} · ${stopped.stepId}: ${why.charAt(0).toLowerCase()}${why.slice(1)}`;
-    }
-    return runHeadline(run).detail;
-  }
-  if (run.origin.kind === 'mock-url') return 'Called through its Mock URL';
-  if (run.options.example) return `Example ${run.options.example} · Matches the example`;
-  return '';
-}
-
-const SAMPLE_YAML = `arazzo: 1.1.0
-info:
-  title: Pastry workflows
-  version: 1.2.0
-sourceDescriptions:
-  - name: apiPastry
-    url: ./apipastry-2.0-openapi.yaml
-    type: openapi
-workflows:
-  - workflowId: restock-pastry
-    steps:
-      - stepId: listPastries
-        operationId: GetPastries
-        successCriteria:
-          - condition: $statusCode == 200
-        outputs:
-          firstName: $response.body#/0/name`;
-
-const ONBOARDING = [
-  { title: 'Import an Arazzo document', text: 'Upload a file or import it from a URL in Importers. Link each source description to a Microcks API, in the dialog or with an ArazzoSources overlay.' },
-  { title: 'Play it on the mocks', text: 'Run it on the Microcks mocks, call its Mock URL, or open a verification session for the application under test.' },
-  { title: 'Run it on your implementations', text: 'Give a base URL per source; each step is checked on its successCriteria and, optionally, against its OpenAPI schema.' },
-];
+import { ONBOARDING, RESULTS, RESULT_LABEL, SAMPLE_YAML, SKELETONS, TARGETS, TARGET_LABEL, runNote, targetLabel, usesSource, type Result } from './listing';
 
 function Onboarding() {
   return (
@@ -122,8 +51,6 @@ function Onboarding() {
     </section>
   );
 }
-
-const SKELETONS = [0, 1, 2, 3].map((i) => ({ opacity: 1 - i * 0.18, w1: `${62 + ((i * 13) % 30)}%`, w2: `${180 + ((i * 47) % 120)}px` }));
 
 /** Loading state: a skeleton shaped like a document group. */
 function LoadingGroup() {
@@ -240,7 +167,6 @@ export default function WorkflowsPage() {
     const s = serviceOf(id);
     return s ? { name: s.name, version: s.version } : undefined;
   };
-  const usesSource = (w: WorkflowListItem, name: string) => w.workflow.steps.some((s) => s.sourceName === name);
 
   const showOnboarding = demo === 'empty' || (docs.status === 'success' && documents.length === 0);
   const loading = demo === 'loading' || ((docs.status === 'loading' || list.status === 'loading') && !list.data);
@@ -302,7 +228,7 @@ export default function WorkflowsPage() {
           <FilterRow title="Sources">
             {allSources.map((source) => {
               const linkedTo = source.link.status === 'linked' ? serviceOf(source.link.serviceId) : undefined;
-              const count = (list.data?.bySource ?? []).filter((w) => usesSource(w, source.name)).length;
+              const count = (list.data?.bySource ?? []).filter((w) => usesSource(w.workflow, source.name)).length;
               const toggle = () => setSources((cur) => (cur.includes(source.name) ? cur.filter((n) => n !== source.name) : [...cur, source.name]));
               if (source.link.status === 'not-linked') {
                 return (

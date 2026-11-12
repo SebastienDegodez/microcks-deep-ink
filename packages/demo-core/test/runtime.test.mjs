@@ -3,6 +3,7 @@ import { readFileSync } from 'node:fs';
 import { afterEach, test } from 'node:test';
 import { validateArtifactUrl } from '@microcks/demo-core/domain/importing';
 import { createInMemoryCatalogAdapters } from '@microcks/demo-core/infrastructure/in-memory/catalog';
+import { workflowPath } from '@microcks/demo-core/presentation/workflows/paths';
 import {
   createTickingStream,
   isFastMode,
@@ -71,4 +72,12 @@ test('artifact URLs are parsed with the host URL implementation', () => {
   assert.equal(validateArtifactUrl('https://example.com/openapi.yaml'), undefined);
   assert.equal(validateArtifactUrl('ftp://example.com/openapi.yaml'), 'Use an http or https URL.');
   assert.match(validateArtifactUrl('openapi.yaml'), /^Enter an absolute URL/);
+});
+
+test('workflow routes encode selections with the host URLSearchParams without a DOM', () => {
+  assert.equal(workflowPath('pastry', 'restock-pastry'), '/workflows/pastry/restock-pastry');
+  assert.equal(
+    workflowPath('pastry', 'restock-pastry', 'steps', { run: '14', step: 'a + b&c', empty: '', missing: undefined }),
+    '/workflows/pastry/restock-pastry/steps?run=14&step=a+%2B+b%26c',
+  );
 });
