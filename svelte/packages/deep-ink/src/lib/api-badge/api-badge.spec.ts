@@ -28,4 +28,8 @@ describe('ApiBadge', () => {
     render(ApiBadge, { props: { label: 'samples', value: '7', values: [{ value: '+1 AI' }, { value: '2' }] } });
     expect(screen.getByText('samples').parentElement?.textContent).toBe('samples 7  +1 AI 2');
   });
+  it('puts a space before each hidden status word, like the twin', () => {
+    render(ApiBadge, { props: { label: 'result', value: 'failed', status: 'danger', values: [{ value: '92%', status: 'warning' }] } });
+    expect(screen.getByText('result').parentElement?.textContent).toBe('result failed (error)  92% (warning)');
+  });
 });
