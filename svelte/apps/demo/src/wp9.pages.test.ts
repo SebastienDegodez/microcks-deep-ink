@@ -271,6 +271,97 @@ describe('Hub (/hub/:packageId?)', () => {
   });
 });
 
+describe('Administration (/admin/:tab?)', () => {
+  it('changes a role and tells it in a status message', async () => {
+    renderAt('/admin/users');
+    await screen.findByRole('heading', { level: 1, name: 'Administration' });
+    expect(await screen.findByRole('tab', { name: /^Users\W+7$/ })).toBeTruthy();
+    const select = (await screen.findByRole('combobox', { name: 'Role of Léa Martin' })) as HTMLSelectElement;
+    expect([...select.options].map((o) => o.textContent)).toEqual(['User', 'Manager', 'Admin']);
+    expect((screen.getByRole('combobox', { name: 'Role of Microcks Admin' }) as HTMLSelectElement).disabled).toBe(true);
+    await fireEvent.change(select, { target: { value: 'manager' } });
+    expect(await screen.findByText('Léa Martin is now a manager in realm microcks.', {}, { timeout: 3000 })).toBeTruthy();
+    const dismiss = screen.getByRole('button', { name: 'Dismiss message' });
+    dismiss.focus();
+    await fireEvent.click(dismiss);
+    expect(document.activeElement).toBe(screen.getByRole('tab', { name: /^Users/ }));
+    await fireEvent.input(screen.getByRole('searchbox', { name: 'Filter users' }), { target: { value: 'nobody' } });
+    expect(screen.getByText('No user matches “nobody”.')).toBeTruthy();
+  });
+
+  it('drafts memberships in the groups × managers matrix and applies them', async () => {
+    renderAt('/admin/groups');
+    await screen.findByRole('heading', { level: 1 });
+    const cell = await screen.findByRole('button', { name: 'Clara Nguyen in /microcks/manager/beer, not a member' }, { timeout: 3000 });
+    expect(screen.queryByRole('button', { name: 'Apply to Keycloak' })).toBeNull();
+    await fireEvent.click(cell);
+    expect(screen.getByRole('button', { name: 'Clara Nguyen in /microcks/manager/beer, member, to be added' }).getAttribute('aria-pressed')).toBe('true');
+    expect(screen.getByRole('tab', { name: /Groups/ }).textContent).toBe('Groups, 6, 1 pending change');
+    await fireEvent.click(screen.getByRole('button', { name: 'Discard' }));
+    expect(screen.queryByRole('button', { name: 'Apply to Keycloak' })).toBeNull();
+    expect(document.activeElement).toBe(screen.getByRole('heading', { level: 2, name: 'Manager groups' }));
+    await fireEvent.click(screen.getByRole('button', { name: 'Tom Keller in /microcks/manager/pets, member' }));
+    await fireEvent.click(screen.getByRole('button', { name: 'Apply to Keycloak' }));
+    expect(await screen.findByText('1 membership change applied in Keycloak realm microcks.', {}, { timeout: 3000 })).toBeTruthy();
+    await waitFor(() => expect(screen.getAllByText('no manager')).toHaveLength(2), { timeout: 3000 });
+  });
+
+  it('exports the preselected services and previews then imports the sample snapshot', async () => {
+    renderAt('/admin/snapshots');
+    expect(await screen.findByText('2 of 10 selected', {}, { timeout: 3000 })).toBeTruthy();
+    await fireEvent.click(screen.getByRole('button', { name: 'Export snapshot' }));
+    expect(await screen.findByText('downloaded · 2 services, 4 operations · 28 KB')).toBeTruthy();
+    await fireEvent.click(screen.getByRole('button', { name: 'Use a sample snapshot' }));
+    expect(await screen.findByRole('heading', { level: 3, name: 'Preview · 3 services detected' })).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByRole('button', { name: /^Change file/ }));
+    await fireEvent.click(screen.getByRole('button', { name: 'Import snapshot' }));
+    expect(await screen.findByText('Imported · 1 created, 2 replaced')).toBeTruthy();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('link', { name: 'Open APIs & Services' })));
+    await fireEvent.click(screen.getByRole('button', { name: 'Import another' }));
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByLabelText('Choose a file')));
+  });
+
+  it('shows the configuration read-only', async () => {
+    renderAt('/admin/configuration');
+    await screen.findByText('Async API mocking');
+    expect(screen.queryByRole('switch')).toBeNull();
+    expect(screen.queryByRole('checkbox')).toBeNull();
+  });
+
+  it('creates, edits and deletes a secret in the inline form', async () => {
+    renderAt('/admin/secrets');
+    await screen.findByRole('heading', { level: 1 });
+    await fireEvent.click(await screen.findByRole('button', { name: 'New secret' }, { timeout: 3000 }));
+    expect((screen.getByRole('button', { name: 'Create secret' }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByText('Name required')).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByLabelText('Name'));
+    await fireEvent.keyDown(screen.getByLabelText('Name'), { key: 'Escape' });
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'New secret' })));
+    await fireEvent.click(screen.getByRole('button', { name: 'New secret' }));
+    const create = screen.getByRole('button', { name: 'Create secret' }) as HTMLButtonElement;
+    await fireEvent.input(screen.getByLabelText('Name'), { target: { value: 'staging-token' } });
+    await fireEvent.click(screen.getByRole('button', { name: 'Token' }));
+    await fireEvent.input(screen.getByLabelText('Token'), { target: { value: 'hunter2hunter2' } });
+    expect(create.disabled).toBe(false);
+    await fireEvent.click(create);
+    expect(await screen.findByText('Secret staging-token created. Reference it from an importer or a test.')).toBeTruthy();
+    expect(await screen.findByText('staging-token')).toBeTruthy();
+
+    await fireEvent.click(screen.getByRole('button', { name: 'Edit secret postman-api' }));
+    expect(screen.getByRole('heading', { level: 2, name: 'Edit secret postman-api' })).toBeTruthy();
+    expect(document.activeElement).toBe(screen.getByLabelText(/^Description/));
+    await fireEvent.click(screen.getByRole('button', { name: 'Save changes' }));
+    expect(await screen.findByText('Secret postman-api updated.')).toBeTruthy();
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Edit secret postman-api' })));
+
+    await fireEvent.click(screen.getByRole('button', { name: 'Delete secret gitlab-bakery' }));
+    expect(screen.getByRole('alert').textContent).toContain('Delete gitlab-bakery? 1 importer still reference it and will fail on next run.');
+    await fireEvent.click(screen.getByRole('button', { name: 'Delete secret' }));
+    await waitFor(() => expect(screen.queryByText('gitlab-bakery')).toBeNull());
+    await waitFor(() => expect(document.activeElement).toBe(screen.getByRole('button', { name: 'Delete secret github-contracts' })));
+  });
+});
+
 describe('Usage heatmap (/metrics/pastry2)', () => {
   it('names each day with its count and selects the latest day', async () => {
     renderAt('/metrics/pastry2');

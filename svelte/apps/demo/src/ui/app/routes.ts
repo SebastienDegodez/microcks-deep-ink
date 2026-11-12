@@ -72,7 +72,7 @@ export const ROUTES: readonly RouteSpec[] = [
   { id: 'hub', screen: '13', path: '/hub/:packageId?', example: '/hub/banking', title: 'Hub · Microcks', owner: 'WP9', nav: 'hub',
     load: () => import('@/ui/pages/hub/HubPage.svelte') },
   { id: 'admin', screen: '14', path: '/admin/:tab?', example: '/admin/users', title: 'Administration · Microcks', owner: 'WP9', nav: 'admin',
-    load: pending },
+    load: () => import('@/ui/pages/admin/AdminPage.svelte') },
   { id: 'map', screen: '—', path: '/map', example: '/map', title: 'Screen map · Microcks', owner: 'WP3',
     load: () => import('@/ui/pages/map/ScreenMapPage.svelte') },
   { id: 'not-found', screen: '—', path: '*', example: '/does-not-exist', title: 'Page not found · Microcks', owner: 'WP3',
