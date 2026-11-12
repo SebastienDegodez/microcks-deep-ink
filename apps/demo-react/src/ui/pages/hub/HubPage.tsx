@@ -15,10 +15,11 @@ import { plural } from '@/ui/app/format';
 import { PageHeader, useAnnounce, usePageTitle, useQuery, useReturnFocus, useUseCases } from '@/ui/app';
 import { ApiBadge, Button, Callout, Chip, RadioGroup, FilterSearch, Icon, LiveIndicator, Panel, SectionLabel, SplitPane, SplitPaneMain, SplitPaneSide, Tile, TileGrid } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
+import {
+  HUB_URL, MODE_OPTIONS, ROLE_OPTIONS, SIGN_TONE, apiTotalOf, categoryCount, conformanceStatus, conformanceValue, countLabel,
+  installErrorMessage, installStatusOf, installVersion, installedMessage, installingMessage, metaOf, selectedPackage, shownPackages, tagKey,
+} from './packages';
 import '@microcks/demo-styles/pages/hub/hub.css';
-
-const HUB_URL = 'https://hub.microcks.io/api';
-const metaOf = (p: HubPackage) => `${plural(p.apiCount, 'API')}${p.updated ? ` · ${p.updated}` : ''}`;
 
 export default function HubPage() {
   const { packageId = 'banking' } = useParams();
@@ -39,10 +40,10 @@ export default function HubPage() {
   const list = useQuery(() => uc.govern.listPackages({ query: search || undefined }), [search]);
 
   const byQuery = list.data ?? [];
-  const shown = byQuery.filter((p) => !category || p.category === category);
-  const selected = shown.find((p) => p.id === packageId) ?? shown[0];
-  const statusOf = (p: HubPackage): InstallStatus => status[p.id] ?? (p.installed ? 'installed' : '');
-  const apiTotal = shown.reduce((n, p) => n + p.apiCount, 0);
+  const shown = shownPackages(byQuery, category);
+  const selected = selectedPackage(shown, packageId);
+  const statusOf = (p: HubPackage): InstallStatus => installStatusOf(p, status);
+  const apiTotal = apiTotalOf(shown);
 
   const select = (id: string) => {
     if (id !== packageId) navigate(`/hub/${id}`);
@@ -56,18 +57,17 @@ export default function HubPage() {
     setStatus((s) => ({ ...s, [pkg.id]: 'installing' }));
     setFocusId(`${target}-live`);
     setHow((h) => ({ ...h, [pkg.id]: mode }));
-    announce(`Installing ${pkg.name}.`);
+    announce(installingMessage(pkg));
     try {
-      const first = pkg.apis?.[0];
-      const version = first ? versionOf(first, picked) : (pkg.versions[0] ?? '');
+      const version = installVersion(pkg, picked);
       await uc.govern.install(pkg.id, { version, mode, role: 'user', artifactRole: role, versions: picked });
       setStatus((s) => ({ ...s, [pkg.id]: 'installed' }));
       setFocusId(`${target}-view`);
-      announce(`${pkg.name} installed.`);
+      announce(installedMessage(pkg));
     } catch (e) {
       setStatus((s) => ({ ...s, [pkg.id]: '' }));
       setFocusId(target);
-      setError(e instanceof Error ? e.message : 'The install failed.');
+      setError(installErrorMessage(e));
     }
   };
 
@@ -96,7 +96,7 @@ export default function HubPage() {
             onChange={(e) => setSearch(e.target.value)}
           />
           <span role="status" className="hb-count">
-            {list.data ? `${plural(shown.length, 'package')} · ${plural(apiTotal, 'API')}` : 'Loading packages'}
+            {list.data ? countLabel(shown.length, apiTotal) : 'Loading packages'}
           </span>
         </div>
         <div role="group" aria-label="Categories" className="hb-cats">
@@ -104,7 +104,7 @@ export default function HubPage() {
             All
           </Chip>
           {(categories.data ?? []).map((c) => (
-            <Chip key={c.name} size="lg" pressed={category === c.name} count={byQuery.filter((p) => p.category === c.name).length} onClick={() => setCategory(c.name)}>
+            <Chip key={c.name} size="lg" pressed={category === c.name} count={categoryCount(byQuery, c.name)} onClick={() => setCategory(c.name)}>
               {c.name}
             </Chip>
           ))}
@@ -226,15 +226,6 @@ function PackageTile({
     </Tile>
   );
 }
-
-const MODE_OPTIONS = [
-  { value: 'sync', label: 'Keep in sync', description: 'Creates one importer per artifact in Sources, rescanned every hour.' },
-  { value: 'one-shot', label: 'Import once', description: 'Direct upload of the artifacts. Later package updates are not applied.' },
-];
-const ROLE_OPTIONS = [
-  { value: 'main', label: 'Main artifact', description: 'Creates Services, operations and examples from the contracts.' },
-  { value: 'secondary', label: 'Secondary artifact', description: 'Only merges examples into Services that already exist here.' },
-];
 
 function Detail({
   pkg,
@@ -395,7 +386,7 @@ function Detail({
 function PreviewBadges({ row }: { row: PreviewRow }) {
   return (
     <li className="hb-preview-row" data-skipped={row.tag === 'SKIPPED' ? '' : undefined}>
-      <span className="hb-tag" data-tag={row.tag.toLowerCase().replace(' ', '-')}>
+      <span className="hb-tag" data-tag={tagKey(row.tag)}>
         {row.tag}
       </span>
       <ApiBadge size="compact" protocol={row.protocol} name={row.name} version={row.version} />
@@ -403,15 +394,13 @@ function PreviewBadges({ row }: { row: PreviewRow }) {
       <ApiBadge
         size="compact"
         label="conformance"
-        value={row.conformance === null ? 'not tested' : `${row.conformance}%`}
-        status={row.conformance === null ? 'neutral' : 'success'}
+        value={conformanceValue(row)}
+        status={conformanceStatus(row)}
       />
       {row.mcp ? <ApiBadge size="compact" label="mcp" value="agent-ready" status="info" /> : null}
     </li>
   );
 }
-
-const SIGN_TONE: Record<CreatedLine['sign'], string> = { '+': 'success', '~': 'warning', '↑': 'link', '→': 'muted', '·': 'muted', '✓': 'success' };
 
 function CreatedItem({ line }: { line: CreatedLine }) {
   return (
