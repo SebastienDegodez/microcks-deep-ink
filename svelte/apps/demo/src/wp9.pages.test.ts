@@ -186,6 +186,46 @@ describe('Usage (/metrics/:serviceId?)', () => {
   });
 });
 
+describe('Live traces (/traces)', () => {
+  it('lists the calls, opens call #4, pauses and clears', async () => {
+    renderAt('/traces');
+    await screen.findByRole('heading', { level: 1, name: 'Live traces' });
+    const list = (await screen.findByRole('heading', { level: 2, name: 'Latest calls' })).closest('section') as HTMLElement;
+    const rows = within(list).getAllByRole('button', { name: /^\d\d:\d\d:\d\d/ });
+    expect(rows).toHaveLength(10);
+    const detail = screen.getByRole('heading', { level: 2, name: '/pastries/Eclair%20Cafe' }).closest('section') as HTMLElement;
+    expect(within(detail).getByRole('note', { name: 'Arazzo run of this call' })).toBeTruthy();
+    expect(within(detail).getByRole('link', { name: 'Restock a pastry' }).getAttribute('href')).toContain('/workflows/pastry/restock-pastry/loom');
+    await fireEvent.click(screen.getByRole('button', { name: 'Pause' }));
+    expect(screen.getByRole('button', { name: 'Resume' }).getAttribute('aria-pressed')).toBe('true');
+    await fireEvent.click(screen.getByRole('button', { name: 'Clear list' }));
+    await screen.findByText('List cleared. Waiting for the next call…');
+    expect(screen.getByRole('complementary', { name: 'Call detail' })).toBeTruthy();
+  }, 15000);
+
+  it('focuses the list on a graph node and filters MCP tool calls by protocol', async () => {
+    renderAt('/traces');
+    await screen.findByRole('heading', { level: 1, name: 'Live traces' });
+    const graph = (await screen.findByRole('heading', { level: 2, name: 'Call graph' })).closest('section') as HTMLElement;
+    const node = within(graph).getByRole('button', { name: /^Client copilot-agent \(MCP\) 10\.0\.9\.3 · MCP client 50 calls/ });
+    await fireEvent.click(node);
+    expect(node.getAttribute('aria-pressed')).toBe('true');
+    const list = screen.getByRole('heading', { level: 2, name: 'Latest calls' }).closest('section') as HTMLElement;
+    expect(within(list).getAllByRole('button', { name: /^\d\d:/ })).toHaveLength(1);
+    await fireEvent.click(screen.getByRole('button', { name: 'Remove node focus' }));
+    await fireEvent.change(screen.getByRole('combobox', { name: 'Protocol' }), { target: { value: 'MCP' } });
+    expect(within(list).getAllByRole('button', { name: /^\d\d:/ }).every((b) => /tools\/call/.test(b.textContent ?? ''))).toBe(true);
+  }, 15000);
+
+  it('prefills the Arazzo filter from ?run= and narrows the list to that run', async () => {
+    renderAt('/traces?run=6729a1d27e4c0b5f93a8c214');
+    await screen.findByRole('heading', { level: 1 });
+    const toggle = await screen.findByRole('button', { name: /From Arazzo runs/ });
+    expect(toggle.getAttribute('aria-pressed')).toBe('true');
+    await screen.findByText('No call matches the current filters.');
+  });
+});
+
 describe('Usage heatmap (/metrics/pastry2)', () => {
   it('names each day with its count and selects the latest day', async () => {
     renderAt('/metrics/pastry2');
