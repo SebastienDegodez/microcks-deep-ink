@@ -23,6 +23,15 @@ const columns: DataTableColumn<Svc>[] = [
 const base = { caption: 'Services', columns, rows, rowKey: 'id' as const };
 
 describe('DataTable', () => {
+  it('keeps the table and sort announcement text adjacent without a formatting space', async () => {
+    const { rerender } = render(DataTable<Svc>, { props: base });
+    const region = screen.getByRole('region', { name: 'Services' });
+    const text = 'ServicesNameVersionCalls (24h)API Pastry2.01204Orders API0.1.0388';
+    expect(region.textContent).toBe(text);
+    await rerender({ sort: { key: 'name', direction: 'ascending' } });
+    expect(region.textContent).toBe(`${text}Sorted by Name, ascending`);
+  });
+
   it('has a caption, column headers with scope and a focusable named region', () => {
     render(DataTable<Svc>, { props: base });
     const table = screen.getByRole('table', { name: 'Services' });

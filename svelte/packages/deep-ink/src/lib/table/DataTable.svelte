@@ -66,6 +66,7 @@
     key,
     direction: sort?.key === key && sort.direction === 'ascending' ? 'descending' : 'ascending',
   });
+  // The live region announces a sort change; the sorted header also exposes aria-sort.
   const sortedColumn = $derived(sort ? columns.find((c) => c.key === sort.key) : undefined);
   const wrap = $derived(scroll ? { role: 'region', 'aria-labelledby': captionId, tabindex: 0 } : { 'data-scroll': 'false' });
 </script>
@@ -141,9 +142,7 @@
         {/each}
       {/if}
     </tbody>
-  </table>
-  <!-- Announces a sort change; the sorted header also exposes aria-sort. -->
-  <span role="status" aria-live="polite" class="sr-only"
+  </table><span role="status" aria-live="polite" class="sr-only"
     >{sort && sortedColumn ? `Sorted by ${sortedColumn.header}, ${sort.direction}` : ''}</span
   >
 </div>
