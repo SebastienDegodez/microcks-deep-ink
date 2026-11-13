@@ -1,19 +1,10 @@
 import type { ReactNode } from 'react';
 import { Link as RouterLink } from 'react-router';
 import { ApiBadge, CodeBlock, CopyButton, Icon } from '@microcks/deep-ink';
+import { runApiCommands, verdictStroke, type RunApiBody, type VerdictIcon } from './api';
 import '@microcks/demo-styles/pages/workflow-run/workflow-run.css';
 
 /* Pieces shared by the run setup page and the run page (the prototype is one page in two phases). */
-
-/** Breadcrumb of both pages: Workflows › Pastry workflows - 1.2.0 › Runs › <current>. */
-export function runBreadcrumb(documentLabel: string | undefined, workflowTo: string, runsTo: string, current: string) {
-  return [
-    { label: 'Workflows', to: '/workflows' },
-    { label: documentLabel ?? 'Workflow', to: workflowTo },
-    { label: 'Runs', to: runsTo },
-    { label: current },
-  ];
-}
 
 /** ARAZZO link badge of the workflow ("restock-pastry Pastry workflows 1.2.0") and the result or status chip. */
 export function RunBadges({ workflowId, documentLabel, to, chip }: { workflowId: string; documentLabel?: string; to: string; chip?: ReactNode }) {
@@ -25,23 +16,6 @@ export function RunBadges({ workflowId, documentLabel, to, chip }: { workflowId:
       {chip}
     </span>
   );
-}
-
-/** "apiPastry → https://pastry.staging.acme.io/v2" for the implementations of a run or a form. */
-export function implementationsText(baseUrls: Record<string, string>): string {
-  return Object.entries(baseUrls)
-    .map(([source, url]) => `${source} → ${url}`)
-    .join(' · ');
-}
-
-/** Body of `POST …/runs` as the POC API takes it. */
-export interface RunApiBody {
-  inputs: Record<string, unknown>;
-  timeout: number;
-  implementations?: Record<string, string>;
-  secretName?: string;
-  validateSchema: boolean;
-  example?: string;
 }
 
 /**
@@ -65,12 +39,7 @@ export function RunApiPanel({
   body: RunApiBody;
   mixed?: boolean;
 }) {
-  const runsUrl = `http://microcks.local:8080/api/arazzo/documents/${documentApiId}/workflows/${workflowId}/runs`;
-  const curl = `curl -X POST \\\n  '${runsUrl}' \\\n  -H 'Content-Type: application/json' \\\n  -d '${JSON.stringify(body, null, 2)}'`;
-  const curlOne = `curl -X POST '${runsUrl}' -H 'Content-Type: application/json' -d '${JSON.stringify(body)}'`;
-  const mockBody = JSON.stringify(body.inputs);
-  const mockCurl = `curl -X POST \\\n  '${mockUrl}' \\\n  -H 'Content-Type: application/json' \\\n  -d '${mockBody}'`;
-  const mockOne = `curl -X POST '${mockUrl}' -H 'Content-Type: application/json' -d '${mockBody}'`;
+  const { curl, curlOne, mockCurl, mockOne } = runApiCommands(documentApiId, workflowId, mockUrl, body);
   return (
     <section aria-labelledby="run-api-h" className="wfr-card wfr-api">
       <h2 id="run-api-h" className="wfr-card-title">
@@ -102,10 +71,11 @@ export function RunApiPanel({
 }
 
 /** Small status glyph + word, never colour only: "✓ Passed", "✕ Failed", "– Off". */
-export function Verdict({ tone, icon, children, size = 12 }: { tone: 'success' | 'danger' | 'muted' | 'warning' | 'running'; icon: 'check' | 'cross' | 'dash' | 'running' | 'circle'; children: ReactNode; size?: number }) {
+export function Verdict({ tone, icon, children, size = 12 }: { tone: 'success' | 'danger' | 'muted' | 'warning' | 'running'; icon: VerdictIcon; children: ReactNode; size?: number }) {
+  const stroke = verdictStroke(icon);
   return (
     <span className="wfr-verdict" data-tone={tone}>
-      <Icon name={icon} size={size} strokeWidth={icon === 'circle' ? 2 : 2.6} strokeDasharray={icon === 'circle' ? '3 3' : undefined} />
+      <Icon name={icon} size={size} strokeWidth={stroke.width} strokeDasharray={stroke.dash} />
       {children}
     </span>
   );

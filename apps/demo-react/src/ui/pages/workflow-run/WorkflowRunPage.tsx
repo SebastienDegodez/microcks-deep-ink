@@ -1,32 +1,41 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link as RouterLink, useParams, useSearchParams } from 'react-router';
-import {
-  callTotals,
-  endLabel,
-  judgeExample,
-  runHeadline,
-  stepsTally,
-  stoppedStep,
-  verdictExplanation,
-  resolveExpression,
-  runContext,
-  type Step,
-  type Workflow,
-  type WorkflowExample,
-  type WorkflowRun,
-} from '@/domain/arazzo';
+import { callTotals, endLabel, runHeadline, stepsTally, stoppedStep, type Workflow, type WorkflowExample, type WorkflowRun } from '@/domain/arazzo';
 import { formatClock, formatDuration } from '@/domain/shared';
 import { RUN_SCENARIOS, type RunScenario } from '@/application/arazzo';
 import { PageHeader, useQuery, useRelativeTime, useSubscription, useUseCases, usePageTitle } from '@/ui/app';
-import { Chip, ApiBadge, Button, Facts, Icon, StatusBadge, DataTable, LiveIndicator, RunMeta, RunProgress, type RunSegment } from '@microcks/deep-ink';
+import { Chip, ApiBadge, Button, Facts, Icon, StatusBadge, DataTable, LiveIndicator, RunMeta, RunProgress } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { ButtonRouterLink, runPath, runSetupPath, workflowPath } from '../workflows/shared';
-import { RunApiPanel, RunBadges, Verdict, implementationsText, runBreadcrumb } from './run-parts';
-import { RunSteps, phaseOf } from './RunSteps';
+import { RunApiPanel, RunBadges, Verdict } from './run-parts';
+import { RunSteps } from './RunSteps';
+import { implementationsText, runBreadcrumb } from './api';
+import { copilotExamplePath } from './steps';
+import {
+  REPLAY_TICK_MS,
+  apiBodyOf,
+  currentIndexOf,
+  endAnnouncement,
+  exampleJudging,
+  exampleVerdict,
+  explanationOf,
+  inputsText,
+  jsonText,
+  launchedBy,
+  mockSources,
+  noOutputsText,
+  openOperationOf,
+  originText,
+  outputsText,
+  progressOf,
+  runningLabel,
+  stepAnnouncement,
+  stepsBand,
+  stepsBandLabel,
+  targetKindLabel,
+  targetLine,
+} from './run';
 import '@microcks/demo-styles/pages/workflow-run/workflow-run.css';
-
-/** JSON-ish value as the prototype prints it: `"Eclair Cafe"`, `3.9`. */
-const J = (v: unknown) => JSON.stringify(v);
 
 export default function WorkflowRunPage() {
   const { runId = '' } = useParams();
@@ -81,9 +90,6 @@ export default function WorkflowRunPage() {
   );
 }
 
-
-/** Gap between two replayed frames once the replay is behind the stream (after a pause), in ms. */
-const REPLAY_TICK_MS = 1000;
 
 /**
  * Plays the buffered frames of a live run one by one. Pause stops the replay clock where it is (WCAG 2.2.2):
@@ -172,7 +178,7 @@ function RunView({
   const total = run.steps.length;
   const workflow = detail?.workflow;
   const documentLabel = detail ? `${detail.document.title} ${detail.document.version}` : undefined;
-  const currentIndex = running ? Math.max(0, run.steps.findIndex((s) => s.stepId === run.current?.stepId)) : total;
+  const currentIndex = currentIndexOf(run);
 
   // Polite, not chatty: one sentence when the current step changes, one when the run ends.
   const [message, setMessage] = useState('');
@@ -182,11 +188,11 @@ function RunView({
     if (running && currentStepId) {
       if (lastStep.current !== currentStepId) {
         lastStep.current = currentStepId;
-        setMessage(`Step ${currentIndex + 1} of ${total}, ${currentStepId}, running.`);
+        setMessage(stepAnnouncement(currentIndex, total, currentStepId));
       }
     } else if (!running && lastStep.current !== '__done') {
       lastStep.current = '__done';
-      setMessage(`${headline.title}. ${headline.detail}`.trim());
+      setMessage(endAnnouncement(headline.title, headline.detail));
     }
   }, [running, currentStepId, currentIndex, total, headline.title, headline.detail]);
 
@@ -212,7 +218,7 @@ function RunView({
         shape="bare"
         status="running"
         role="status"
-        label={`Running · step ${Math.min(currentIndex + 1, total)} of ${total}${run.current && run.current.attempt > 1 ? ` · attempt ${run.current.attempt}` : ''}`}
+        label={runningLabel(run, currentIndex)}
       />
     </span>
   ) : (
@@ -307,55 +313,19 @@ function scenarioOf(runId: string): RunScenario | undefined {
   return (Object.keys(RUN_SCENARIOS) as RunScenario[]).find((k) => RUN_SCENARIOS[k].runId === runId);
 }
 
-function launchedBy(run: WorkflowRun): string {
-  if (run.origin.kind === 'session') return run.origin.app;
-  if (run.origin.kind === 'api') return 'API';
-  if (run.origin.kind === 'mock-url') return 'Mock URL';
-  return 'MA';
-}
-
-function targetLine(run: WorkflowRun): string {
-  if (run.target.kind === 'mocks') return 'Microcks mocks';
-  if (run.target.kind === 'implementations') return `Implementations · ${implementationsText(run.target.baseUrls)}`;
-  return 'Mixed · proposed, beyond POC';
-}
-
-function apiBodyOf(run: WorkflowRun) {
-  return {
-    inputs: run.options.inputs,
-    timeout: run.options.timeoutMs,
-    ...(run.target.kind === 'implementations' ? { implementations: run.target.baseUrls } : {}),
-    ...(run.target.kind !== 'mocks' && run.options.secret ? { secretName: run.options.secret } : {}),
-    validateSchema: run.options.validateSchemas,
-    ...(run.options.example ? { example: run.options.example } : {}),
-  };
-}
-
 /* ------------------------------------------------------------------------------------- running */
 
 function Progress({ run, workflow, currentIndex, validated, paused, onStepForward }: { run: WorkflowRun; workflow?: Workflow; currentIndex: number; validated: boolean; paused: boolean; onStepForward?: () => void }) {
-  const total = run.steps.length;
-  const ended = Math.min(currentIndex, total);
-  const current = run.current ? run.steps.find((s) => s.stepId === run.current?.stepId) : undefined;
-  const retrying = run.current && run.current.attempt > 1;
-  const nowTitle = !current ? 'Now calling' : retrying ? `Retrying · attempt ${run.current?.attempt} of ${current.attempts.length}` : 'Now calling';
-  const def = workflow?.steps.find((s) => s.stepId === current?.stepId);
-  const target = current?.request ? `${current.request.method} ${current.request.url}` : def ? `${def.method} ${resolvedUrl(run, def)}` : '';
-  const nowLabel = !current ? 'All steps ended · computing the result…' : retrying ? `retryAfter → ${target}` : target;
+  const progress = progressOf(run, workflow, currentIndex);
   return (
     <RunProgress
       aria-busy="true"
-      done={ended}
-      total={total}
+      done={progress.done}
+      total={progress.total}
       caption="steps ended"
-      nowLabel={nowTitle}
-      now={nowLabel}
-      segments={run.steps.map((s, i): RunSegment => {
-        const ph = phaseOf(run, i);
-        if (ph === 'running') return 'current';
-        if (ph !== 'done') return 'queued';
-        return s.status === 'passed' ? 'done' : s.status === 'failed' ? 'failed' : 'queued';
-      })}
+      nowLabel={progress.nowTitle}
+      now={progress.now}
+      segments={progress.segments}
       action={
         paused ? (
           <Button size="sm" icon="chevron" onClick={onStepForward} aria-disabled={onStepForward ? undefined : true}>
@@ -371,21 +341,6 @@ function Progress({ run, workflow, currentIndex, validated, paused, onStepForwar
       }
     />
   );
-}
-
-/** URL a step calls, resolved from the inputs and the outputs the run has so far (before its request exists). */
-function resolvedUrl(run: WorkflowRun, def: Step): string {
-  const ctx = runContext(run);
-  let path = def.path;
-  const query: string[] = [];
-  for (const p of def.parameters) {
-    const v = p.value.startsWith('$') ? resolveExpression(p.value, ctx) : p.value;
-    const text = v === undefined ? `{${p.name}}` : String(v);
-    if (p.in === 'path') path = path.replace(`{${p.name}}`, encodeURIComponent(text));
-    else if (p.in === 'query') query.push(`${p.name}=${encodeURIComponent(text)}`);
-  }
-  const base = run.target.kind === 'implementations' ? (run.target.baseUrls[def.sourceName] ?? '') : (run.steps.find((x) => x.request)?.request?.url.replace(/\/pastries.*$/, '') ?? '');
-  return `${base}${path}${query.length ? `?${query.join('&')}` : ''}`;
 }
 
 /* ------------------------------------------------------------------------------------- summary */
@@ -435,11 +390,11 @@ function Summary({ run, totals, workflow }: { run: WorkflowRun; totals: { calls:
             columns={[
               { key: 'output', header: 'Output', render: ([name]) => <span className="wfr-mono-strong">{name}</span> },
               { key: 'expression', header: 'Runtime expression', render: ([name]) => <span className="wfr-mono-secondary">{workflowOutputs.get(name) ?? ''}</span> },
-              { key: 'value', header: 'Value', render: ([, value]) => <span className="wfr-mono-strong">{J(value)}</span> },
+              { key: 'value', header: 'Value', render: ([, value]) => <span className="wfr-mono-strong">{jsonText(value)}</span> },
             ]}
           />
         ) : (
-          <p className="wfr-muted">{passed ? 'None.' : `None: the workflow stopped at ${stopped?.stepId ?? 'a step'} and produced no outputs.`}</p>
+          <p className="wfr-muted">{noOutputsText(run)}</p>
         )}
       </div>
 
@@ -451,7 +406,7 @@ function Summary({ run, totals, workflow }: { run: WorkflowRun; totals: { calls:
           </RouterLink>
         ) : null}
         {run.coherence[0] ? (
-          <RouterLink to={`/services/pastry2/copilot?op=get-name&hint=${encodeURIComponent(run.coherence[0].copilotHint)}`} className="wfr-action" data-tone="action">
+          <RouterLink to={copilotExamplePath(run.coherence[0].copilotHint)} className="wfr-action" data-tone="action">
             <Icon name="sparkles" size={14} className="wfr-action-icon" />
             Generate the example with the AI Copilot
           </RouterLink>
@@ -465,20 +420,9 @@ function Summary({ run, totals, workflow }: { run: WorkflowRun; totals: { calls:
   );
 }
 
-/** The verdict sentence; a run ended early by an onSuccess end says which criterion held and what it spared. */
-function explanationOf(run: WorkflowRun, workflow?: Workflow): string {
-  const stopped = stoppedStep(run);
-  if (run.status !== 'SUCCESS' || !stopped) return verdictExplanation(run);
-  const action = workflow?.steps.find((s) => s.stepId === stopped.stepId)?.onSuccess.find((a) => a.type === 'end');
-  const held = action?.criteria?.map((c) => c.condition).join(' and ');
-  const name = run.workflowId === 'restock-pastry' ? run.outputs['pastryName'] : undefined;
-  return `${stopped.stepId}'s onSuccess end applied${held ? `: ${held} held` : ''}${typeof name === 'string' ? `, so ${name} needs no restock` : ''}. The run ended with SUCCESS; its outputs come from the steps it reached.`;
-}
-
 /** "Open operation PATCH /pastries/{name}": the operation of the step where the run stopped (else the last that ran). */
 function OpenOperation({ run, workflow }: { run: WorkflowRun; workflow?: Workflow }) {
-  const step = stoppedStep(run) ?? [...run.steps].reverse().find((s) => s.status !== 'not-run');
-  const def = workflow?.steps.find((s) => s.stepId === step?.stepId);
+  const def = openOperationOf(run, workflow);
   if (!def) return null;
   return (
     <RouterLink to="/services/pastry2" className="wfr-action">
@@ -490,30 +434,13 @@ function OpenOperation({ run, workflow }: { run: WorkflowRun; workflow?: Workflo
   );
 }
 
-/** "apiPastry · /rest/API+Pastry/2.0": the mock endpoint of each source a mocks run calls. */
-function mockSources(run: WorkflowRun): string {
-  return [...new Set(run.steps.flatMap((s) => (s.request ? [s.request.url] : [])))]
-    .map((u) => u.match(/^https?:\/\/[^/]+(\/rest\/[^/]+\/[^/]+)/)?.[1])
-    .filter((x, i, all): x is string => !!x && all.indexOf(x) === i)
-    .map((p) => `apiPastry · ${p}`)
-    .join(' · ');
-}
-
 /** Upper bar = success criteria, lower bar = schema validation, one column per step. */
 function StepsBand({ run }: { run: WorkflowRun }) {
-  const band = run.steps.map((s) => {
-    const notRun = s.status === 'not-run';
-    const criteriaOk = s.criteria.every((c) => c.held);
-    const schema = s.schema.state;
-    const word = notRun
-      ? 'not run'
-      : `${criteriaOk ? 'criteria held' : 'criteria failed'} · ${schema === 'pass' ? 'schema passed' : schema === 'fail' ? 'schema failed' : schema === 'na' ? 'schema n/a' : 'schema off'}`;
-    return { id: s.stepId, status: s.status, word, criteria: notRun ? 'none' : criteriaOk ? 'pass' : 'fail', schema: notRun ? 'none' : schema };
-  });
+  const band = stepsBand(run);
   return (
     <div className="wfr-band-wrap">
       <span className="wfr-band-legend">Steps band · upper bar = success criteria, lower bar = schema validation</span>
-      <div className="wfr-band" role="img" aria-label={`Steps band: ${band.map((b) => `${b.id} ${b.word}`).join('; ')}`}>
+      <div className="wfr-band" role="img" aria-label={stepsBandLabel(band)}>
         {band.map((b) => (
           <div key={b.id} className="wfr-band-step" data-status={b.status}>
             <span className="wfr-band-bar" data-part="criteria" data-state={b.criteria} />
@@ -538,11 +465,8 @@ function StepsBand({ run }: { run: WorkflowRun }) {
 /* ----------------------------------------------------------------------------- example judging */
 
 function ExampleJudging({ run, example, pending }: { run: WorkflowRun; example: WorkflowExample; pending: boolean }) {
-  const judged = judgeExample(run, example);
   // While the run plays, the expectations wait for its end: every row is "Pending".
-  const rows = pending ? judged.rows.map((r) => ({ ...r, got: '…' })) : judged.rows;
-  const unmet = pending ? [] : judged.unmet;
-  const matches = judged.matches;
+  const { rows, unmet, matches } = exampleJudging(run, example, pending);
   return (
     <section aria-labelledby="wfr-ex-h" className="wfr-card wfr-example" data-result={pending ? 'pending' : matches ? 'passed' : 'failed'}>
       <div className="wfr-example-head">
@@ -615,7 +539,7 @@ function Properties({ run, detail, example }: { run: WorkflowRun; detail?: Detai
   const onMocks = run.target.kind === 'mocks';
   const firstBaggage = run.steps.find((s) => s.status !== 'not-run')?.baggage;
   const outputs = Object.entries(run.outputs);
-  const verdict = example ? (run.status === 'RUNNING' ? 'Judged once the run ends' : judgeExample(run, example).matches ? 'Matches' : 'Does not match') : undefined;
+  const verdict = exampleVerdict(run, example);
   const rows: { term: string; value: React.ReactNode }[] = [
     {
       term: 'Workflow',
@@ -632,7 +556,7 @@ function Properties({ run, detail, example }: { run: WorkflowRun; detail?: Detai
       term: 'Target',
       value: (
         <span className="wfr-target">
-          <strong>{run.target.kind === 'mocks' ? 'Microcks mocks' : run.target.kind === 'implementations' ? 'Implementations' : 'Mixed'}</strong>
+          <strong>{targetKindLabel(run)}</strong>
           {run.target.kind === 'implementations' ? <span className="wfr-target-url">{implementationsText(run.target.baseUrls)}</span> : null}
           {run.target.kind === 'mocks' ? <span className="wfr-target-url">{mockSources(run)}</span> : null}
           {run.target.kind === 'mixed' ? <Chip size="sm" variant="dashed" tone="warning" className="wfr-proposed">Proposed · beyond POC</Chip> : null}
@@ -643,11 +567,7 @@ function Properties({ run, detail, example }: { run: WorkflowRun; detail?: Detai
     {
       term: 'Inputs',
       value: (
-        <span className="wfr-mono-sm">
-          {Object.entries(run.options.inputs)
-            .map(([k, v]) => `${k} = ${String(v)}`)
-            .join(' · ') || 'none'}
-        </span>
+<span className="wfr-mono-sm">{inputsText(run)}</span>
       ),
     },
     { term: 'Schema validation', value: run.options.validateSchemas ? 'On' : 'Off' },
@@ -668,7 +588,7 @@ function Properties({ run, detail, example }: { run: WorkflowRun; detail?: Detai
           },
         ]
       : []),
-    ...(outputs.length > 0 ? [{ term: 'Outputs', value: <span className="wfr-mono-sm">{outputs.map(([k, v]) => `${k} = ${J(v)}`).join(' · ')}</span> }] : []),
+    ...(outputs.length > 0 ? [{ term: 'Outputs', value: <span className="wfr-mono-sm">{outputsText(run)}</span> }] : []),
     ...(run.options.example
       ? [
           {
@@ -692,11 +612,4 @@ function Properties({ run, detail, example }: { run: WorkflowRun; detail?: Detai
       <Facts layout="inline" termWidth="92px" gap="9px 12px" items={rows} />
     </section>
   );
-}
-
-function originText(run: WorkflowRun): string {
-  if (run.origin.kind === 'session') return `Session ${run.origin.sessionId}`;
-  if (run.origin.kind === 'ui') return 'UI · Run workflow';
-  if (run.origin.kind === 'api') return 'API';
-  return 'Mock URL';
 }

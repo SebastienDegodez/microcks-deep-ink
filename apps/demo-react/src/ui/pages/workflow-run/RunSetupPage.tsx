@@ -7,11 +7,27 @@ import { PageHeader, useAnnounce, usePageTitle, useQuery, useUseCases } from '@/
 import { Chip, ApiBadge, Button, Callout, Checkbox, Radio, Facts, Field, Input, RunMeta, Select, Stepper } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { ButtonRouterLink, workflowPath, runPath, runSetupPath } from '../workflows/shared';
-import { RunApiPanel, RunBadges, runBreadcrumb } from './run-parts';
+import { RunApiPanel, RunBadges } from './run-parts';
+import { runBreadcrumb } from './api';
+import {
+  RUN_TARGETS,
+  SIZE_OPTIONS,
+  baseUrlHelp,
+  exampleInputs,
+  examplesFile,
+  expectedFacts,
+  inputHelp,
+  inputTypeLabel,
+  launchHint as launchHintOf,
+  planActions,
+  problemsTitle,
+  runTargetLabel,
+  setupApiBody,
+  workflowSources,
+  type RunTargetKind,
+} from './setup';
 import '@microcks/demo-styles/pages/workflows/workflows.css';
 import '@microcks/demo-styles/pages/workflow-run/workflow-run.css';
-
-type Target = 'mocks' | 'implementations' | 'mixed';
 
 export default function RunSetupPage() {
   const { docId = '', workflowId = '' } = useParams();
@@ -48,17 +64,17 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
   const navigate = useNavigate();
   const announce = useAnnounce();
   const { workflow, document, defaults } = setup;
-  const sources = [...new Set(workflow.steps.map((s) => s.sourceName))];
+  const sources = workflowSources(workflow);
 
   const initialExample = exampleParam && setup.examples.some((e) => e.id === exampleParam) ? exampleParam : defaults.example;
-  const [target, setTarget] = useState<Target>(defaults.target);
+  const [target, setTarget] = useState<RunTargetKind>(defaults.target);
   const [baseUrls, setBaseUrls] = useState<Record<string, string>>(defaults.baseUrls);
   const [perSource, setPerSource] = useState<Record<string, 'mock' | 'implementation'>>(defaults.perSource);
   const [secret, setSecret] = useState(defaults.secret);
   const [example, setExample] = useState(initialExample);
   const [inputs, setInputs] = useState<Record<string, string>>(() => {
     const ex = setup.examples.find((e) => e.id === initialExample);
-    return ex ? Object.fromEntries(Object.entries(ex.inputs).map(([k, v]) => [k, String(v)])) : defaults.inputs;
+    return ex ? exampleInputs(ex) : defaults.inputs;
   });
   const [validate, setValidate] = useState(defaults.validateSchemas);
   const [timeoutMs, setTimeoutMs] = useState(defaults.timeoutMs);
@@ -93,7 +109,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
   const pickExample = (id: string) => {
     setExample(id);
     const ex = setup.examples.find((e) => e.id === id);
-    if (ex) setInputs(Object.fromEntries(Object.entries(ex.inputs).map(([k, v]) => [k, String(v)])));
+    if (ex) setInputs(exampleInputs(ex));
   };
   const setInput = (name: string, value: string) => {
     setInputs((v) => ({ ...v, [name]: value }));
@@ -127,25 +143,17 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
     }
   };
 
-  const TARGETS: { value: Target; label: string; proposed?: boolean; description: string }[] = [
-    { value: 'mocks', label: 'Microcks mocks', description: 'Each step calls the mocks of its linked API, for example /rest/API+Pastry/2.0. Checks that the mock examples form a coherent scenario.' },
-    { value: 'implementations', label: 'Implementations', description: 'Each step calls the base URL you set per source description. Checks the real services against the workflow.' },
-    { value: 'mixed', label: 'Mixed', proposed: true, description: 'Per source description: its mocks or its implementation URL.' },
-  ];
-  const targetLabel = TARGETS.find((t) => t.value === target)?.label ?? '';
+  const targetLabel = runTargetLabel(target);
   const workflowOptions = setup.workflows;
   const documentLabel = `${document.title} ${document.version}`;
   const workflowTo = workflowPath(document.id, workflow.workflowId);
   const unused = document.sources.map((s) => s.name).filter((n) => !sources.includes(n));
   const helpOf = (name: string) => {
-    const p = workflow.steps.flatMap((st) => st.parameters.filter((x) => x.value === `$inputs.${name}`).map((x) => ({ st, x })))[0];
-    if (p) return <>{p.x.in === 'query' ? 'Query parameter' : p.x.in === 'path' ? 'Path parameter' : 'Header'} <span className="wfr-mono">{p.x.name}</span> of {p.st.stepId}</>;
-    const b = workflow.steps.find((st) => st.requestBody?.includes(`{$inputs.${name}}`));
-    const key = b?.requestBody?.match(new RegExp(`"([^"]+)"\\s*:\\s*"\\{\\$inputs\\.${name}\\}"`))?.[1];
-    return b ? `Body /${key ?? name} of ${b.stepId}` : undefined;
+    const h = inputHelp(workflow, name);
+    if (h?.kind === 'parameter') return <>{h.where} <span className="wfr-mono">{h.name}</span> of {h.stepId}</>;
+    return h?.text;
   };
-  const launchHint = `${workflow.workflowId} · ${example ? `example ${example}` : 'own inputs'} against ${target === 'mocks' ? 'the mocks' : target === 'implementations' ? 'implementations' : 'mixed targets'}`;
-  const apiInputs = Object.fromEntries(workflow.inputs.flatMap((i) => (inputs[i.name] ? [[i.name, i.type === 'number' || i.type === 'integer' ? Number(inputs[i.name]) : inputs[i.name]]] : [])));
+  const launchHint = launchHintOf(workflow.workflowId, example, target);
 
   return (
     <>
@@ -222,7 +230,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
             <fieldset className="wfr-setup-group">
               <legend className="wfr-legend">Run against</legend>
               <div className="wfr-target-grid">
-                {TARGETS.map((t) => (
+                {RUN_TARGETS.map((t) => (
                   <Radio
                     key={t.value}
                     variant="card"
@@ -303,7 +311,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
                 className="wfr-field wfr-w-420"
                 help={
                   <>
-                    Recorded in <span className="wfr-mono">{document.file.replace(/\.arazzo\.yaml$/, '.arazzo-sources.yaml')}</span>. Picking one fills the inputs; the run is then judged on it.
+                    Recorded in <span className="wfr-mono">{examplesFile(document.file)}</span>. Picking one fills the inputs; the run is then judged on it.
                   </>
                 }
               >
@@ -326,7 +334,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
                       className="wfr-field wfr-input-field"
                       label={
                         <>
-                          <span className="wfr-mono wfr-strong">{input.name}</span> <span className="wfr-label-type">{input.name === 'size' ? 'string · S | M | L' : input.type}</span>
+                          <span className="wfr-mono wfr-strong">{input.name}</span> <span className="wfr-label-type">{inputTypeLabel(input)}</span>
                         </>
                       }
                       error={errorOf(`input.${input.name}`)}
@@ -335,7 +343,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
                       {(c) =>
                         input.name === 'size' ? (
                           <Select {...c} className="wfr-mono-control" value={inputs[input.name] ?? 'M'} onChange={(e) => setInput(input.name, e.target.value)}>
-                            {['S', 'M', 'L'].map((s) => (
+                            {SIZE_OPTIONS.map((s) => (
                               <option key={s}>{s}</option>
                             ))}
                           </Select>
@@ -367,13 +375,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
                     termWidth="70px"
                     gap="6px 14px"
                     className="wfr-expected-facts"
-                    items={[
-                      ...(Object.keys(chosen.outputs).length > 0
-                        ? [{ term: 'Outputs', mono: true, value: Object.entries(chosen.outputs).map(([k, v]) => `${k} = ${String(v)}`).join(' · ') }]
-                        : []),
-                      { term: 'Steps', mono: true, value: chosen.steps.map((st) => `${st.stepId} ${st.status}`).join(' ') },
-                      { term: 'End', value: chosen.stopsAt ? `Stops at ${chosen.stopsAt}` : 'Runs to its end' },
-                    ]}
+                    items={expectedFacts(chosen)}
                   />
                 </div>
               ) : detached && Object.keys(inputs).length > 0 ? (
@@ -402,7 +404,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
             {submitted && errors.length > 0 ? (
               <div className="wfr-setup-errors">
                 <div ref={summaryRef} className="wf-error-summary" role="alert" tabIndex={-1}>
-                  <h2>{errors.length === 1 ? '1 problem to fix before running' : `${errors.length} problems to fix before running`}</h2>
+                  <h2>{problemsTitle(errors.length)}</h2>
                   <ul>
                     {errors.map((e) => (
                       <li key={e.field}>{e.message}</li>
@@ -443,10 +445,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
               variant="list"
               marker="circle"
               steps={workflow.steps.map((s, i) => {
-                const actions = [
-                  ...s.onSuccess.map((a) => (a.type === 'end' ? `onSuccess end${a.criteria?.length ? ` when ${a.criteria.map((c) => c.condition).join(' and ')}` : ''}` : '')),
-                  ...s.onFailure.map((a) => (a.type === 'retry' ? `onFailure retry · retryAfter ${a.retryAfter} · retryLimit ${a.retryLimit}` : `onFailure end`)),
-                ].filter(Boolean);
+                const actions = planActions(s);
                 return {
                   id: s.stepId,
                   label: (
@@ -480,14 +479,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
             workflowId={workflow.workflowId}
             mockUrl={workflow.mockUrl}
             mixed={target === 'mixed'}
-            body={{
-              inputs: apiInputs,
-              timeout: request.timeoutMs,
-              ...(target !== 'mocks' ? { implementations: target === 'implementations' ? baseUrls : Object.fromEntries(Object.entries(baseUrls).filter(([k]) => effectivePer(k) === 'implementation')) } : {}),
-              ...(request.secret ? { secretName: request.secret } : {}),
-              validateSchema: validate,
-              ...(example ? { example } : {}),
-            }}
+            body={setupApiBody({ workflow, inputs, timeoutMs: request.timeoutMs, target, baseUrls, perSource, secret: request.secret, validate, example })}
           />
         </aside>
       </div>
@@ -547,7 +539,7 @@ function SourceBlock({
           }
           error={error}
           className="wfr-field wfr-w-520"
-          help={`Absolute http(s) URL; the operation paths of ${s ? `${s.name} ${s.version}` : name} are appended.`}
+          help={baseUrlHelp(s ? `${s.name} ${s.version}` : name)}
         >
           {(c) => (
             <Input {...c} required className="wfr-mono-control wfr-url-control" type="url" spellCheck={false} autoComplete="off" placeholder="http://localhost:8080" value={url} onChange={(e) => onUrl(e.target.value)} />
