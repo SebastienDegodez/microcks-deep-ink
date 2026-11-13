@@ -123,15 +123,13 @@ describe('routing', () => {
     expect(window.location.hash).toBe(`#${TESTS_REDIRECT.to}`);
   });
 
-  // Enabled once the workflow pages are ported (the placeholder shows the route title).
-  it.skip('ranks static segments above dynamic ones', async () => {
+  it('ranks static segments above dynamic ones', async () => {
     renderAt('/workflows/runs/6729a1d27e4c0b5f93a8c214');
     expect(await screen.findByRole('heading', { level: 1, name: 'Run #14' })).toBeTruthy();
     await waitFor(() => expect(document.title).toBe('Workflow run · Microcks'));
   });
 
-  // Enabled once the workflow and service pages are ported (the placeholder shows the route title).
-  it.skip('routes the run setup and the operation behavior to their own pages', async () => {
+  it('routes the run setup and the operation behavior to their own pages', async () => {
     const first = renderAt('/workflows/pastry/restock-pastry/run');
     await screen.findByRole('heading', { level: 1, name: 'Run workflow' });
     first.unmount();
