@@ -85,7 +85,7 @@ jobs:
       - run: pnpm -C react/packages/deep-ink attw
       - run: pnpm -C react/packages/deep-ink pack:check
 
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: deep-ink-dist
           path: react/packages/deep-ink/dist
@@ -95,7 +95,7 @@ jobs:
       - if: inputs.storybook != false
         run: pnpm -C react --filter storybook-react build-storybook
       - if: inputs.storybook != false
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: storybook-react
           path: react/apps/storybook/storybook-static
@@ -117,7 +117,7 @@ jobs:
         with:
           node-version: 22
           registry-url: https://registry.npmjs.org
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: deep-ink-dist
           path: react/packages/deep-ink/dist
