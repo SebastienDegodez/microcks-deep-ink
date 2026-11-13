@@ -7,5 +7,5 @@
   let value = $state<string>();
 </script>
 <RadioGroup legend="API" {options} bind:value {onchange}>
-  {#snippet renderLabel(option)}<strong>{option.label}</strong>{' '}{option.version}{/snippet}
+  {#snippet renderLabel(option)}<strong>{option.label}</strong> {option.version}{/snippet}
 </RadioGroup>
