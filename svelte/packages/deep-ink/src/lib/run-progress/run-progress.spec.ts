@@ -32,4 +32,10 @@ describe('RunProgress', () => {
     const { container } = render(Fixture);
     expect(texts(container.querySelector('.run-progress-total')!)).toEqual(['/', '7']);
   });
+  it('leaves no layout whitespace between its parts, as the twin', () => {
+    const { container } = render(Fixture);
+    expect(container.querySelector('.run-progress')?.textContent).toBe(
+      '5/7test steps doneNow callingPATCH /pastries/{name}Paused: the run waits for Step forward.4 passed1 failedStep forward',
+    );
+  });
 });

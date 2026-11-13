@@ -24,6 +24,14 @@ describe('CodeBlock', () => {
     expect(screen.getByRole('region', { name: 'Stored as' })).toBeTruthy();
   });
 
+  it('leaves no layout whitespace around its header and its code, as the twin', () => {
+    const plain = render(CodeBlock, { props: { variant: 'plain', caption: 'Stored as', code: '{}' } });
+    expect(plain.container.querySelector('figure')?.textContent).toBe('{}');
+    plain.unmount();
+    const { container } = render(CodeBlock, { props: { caption: 'Request', code: 'GET /pastries', copy: false } });
+    expect(container.querySelector('figure')?.textContent).toBe('RequestGET /pastries');
+  });
+
   it('numbers lines and writes the note on the bad line', () => {
     const { container } = render(CodeBlock, { props: { variant: 'plain', lineNumbers: true, startLine: 10, lines: [{ text: 'a' }, { text: 'b', bad: true, note: 'schema: number' }] } });
     const nums = Array.from(container.querySelectorAll('.code-ln')).map((n) => n.textContent);

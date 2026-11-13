@@ -3,6 +3,7 @@ import { describe, expect, it } from 'vitest';
 import { createRawSnippet } from 'svelte';
 import { axeViolations } from '../../../test/axe';
 import Stepper from './Stepper.svelte';
+import type { StepperStep } from './types.js';
 describe('Stepper', () => {
   it('is a named ordered list, marking current and writing done', async () => {
     const { container } = render(Stepper, { label: 'Progress', steps: [{ label: 'Source', state: 'done' }, { label: 'Preview', state: 'current' }, { label: 'Live mock' }] });
@@ -34,5 +35,10 @@ describe('Stepper', () => {
     expect(container.querySelector('.stepper-n')?.getAttribute('aria-hidden')).toBe('true');
     expect(screen.getByText('checkMenu')).toBeTruthy();
     expect(await axeViolations(container)).toEqual([]);
+  });
+  it('renders data-driven labels with their position', () => {
+    const renderLabel = createRawSnippet((step: () => StepperStep, i: () => number) => ({ render: () => `<span>${i() + 1}: ${step().id}</span>` }));
+    const { container } = render(Stepper, { variant: 'list', renderLabel, steps: [{ id: 'checkMenu', label: 'unused' }, { id: 'order', label: 'unused' }] });
+    expect([...container.querySelectorAll('li > span:last-child')].map((s) => s.textContent)).toEqual(['1: checkMenu', '2: order']);
   });
 });

@@ -68,7 +68,8 @@ and `bind:value` / `bind:checked` for controlled state. DOM event capture uses
 `RowLinkProps` uses `class` for its custom link snippet.
 `RadioGroup` also accepts a `renderLabel(option)` snippet for data-driven rich
 labels. It receives the complete, inferred option type; without it, each
-option keeps its string or snippet `label`.
+option keeps its string or snippet `label`. `Stepper` accepts the same kind of
+`renderLabel(step, index)` snippet for rich step labels built from data.
 
 Run components share the reference DOM/classes and accessible naming. `RunProgress`
 keeps the current step's polite announcement outside its busy bar, and reads its

@@ -93,6 +93,10 @@ describe('StatusBadge', () => {
     expect(container.textContent?.trim()).toBe('Failed');
     expect(container.querySelector('path')?.getAttribute('d')).toBe('M6 6l12 12M18 6L6 18');
   });
+  it('renders its glyph and its word without layout whitespace, as the twin', () => {
+    const { container } = render(StatusBadge, { status: 'running', shape: 'bare', label: 'Running · step 2 of 4' });
+    expect(container.querySelector('.status')?.textContent).toBe('Running · step 2 of 4');
+  });
 });
 
 describe('LiveIndicator', () => {

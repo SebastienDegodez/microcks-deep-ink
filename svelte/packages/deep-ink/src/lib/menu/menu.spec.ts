@@ -118,4 +118,9 @@ describe('Menu', () => {
     await fireEvent.focusOut(document.activeElement!, { relatedTarget: outside });
     expect(trigger.getAttribute('aria-expanded')).toBe('false');
   });
+
+  it('puts no space between its trigger and its items, like the twin', () => {
+    const { container } = setup();
+    expect(container.textContent).toBe('ActionsCopy service idRun a testArchiveDelete service');
+  });
 });

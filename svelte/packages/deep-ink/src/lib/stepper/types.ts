@@ -10,11 +10,13 @@ export interface StepperStep {
   id?: string;
 }
 
-export interface StepperProps extends Omit<HTMLAttributes<HTMLOListElement>, 'children' | 'class'> {
+export interface StepperProps<Step extends StepperStep = StepperStep> extends Omit<HTMLAttributes<HTMLOListElement>, 'children' | 'class'> {
   class?: string;
   /** Accessible name of the list ("Progress", "Before you paste"). Optional: leave it out when the heading above names the list. */
   label?: string;
-  steps: StepperStep[];
+  steps: Step[];
+  /** Renders each step's label from its data and position, without creating one snippet per step. */
+  renderLabel?: Snippet<[Step, number]>;
   /** `progress` (default): numbered dots. `list`: numbered instructions. */
   variant?: 'progress' | 'list';
   /** `progress` only: stack the steps. */

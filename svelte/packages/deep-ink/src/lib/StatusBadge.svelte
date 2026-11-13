@@ -11,7 +11,8 @@
   let iconSize = $derived(size === 'lg' ? 15 : shape === 'circled' ? (size === 'sm' ? 14 : 15) : size === 'sm' ? 13 : 14);
 </script>
 
-<span {...rest} class={['status', cssClass]} data-status={status} data-size={size} data-shape={shape}>
-  <Glyph name={icons[shape][known]} size={iconSize} />
-  <span>{#if typeof label === 'function'}{@render label()}{:else}{label?.trim() ? label : OUTCOME_WORD[known]}{/if}{@render children?.()}</span>
-</span>
+<span {...rest} class={['status', cssClass]} data-status={status} data-size={size} data-shape={shape}
+  ><Glyph name={icons[shape][known]} size={iconSize} /><span
+    >{#if typeof label === 'function'}{@render label()}{:else}{label?.trim() ? label : OUTCOME_WORD[known]}{/if}{@render children?.()}</span
+  ></span
+>

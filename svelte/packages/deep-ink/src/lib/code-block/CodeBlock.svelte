@@ -143,15 +143,12 @@
     {...data}
     data-header-tone={header && headerTone ? headerTone : undefined}
   >
-    {#if header}
-      <figcaption>
+    {#if header}<figcaption>
         {#if tabs?.length}<span class="code-tabs" role="group" aria-label={tabsLabel}
             >{#each tabs as t (t.id)}<button type="button" aria-pressed={t.id === tab} onclick={() => ontabchange?.(t.id)}>{t.label}</button
               >{/each}</span
           >{/if}<span class="code-caption" id={captionId} data-title={source ? '' : undefined}>{caption ?? ''}</span
         >{#if source}<span class="code-source">{source}</span>{/if}{#if copy}<CopyButton {value} variant="link" class="code-copy" />{/if}
-      </figcaption>
-    {/if}
-    <pre bind:this={pre} {...regionProps} style={maxHeightCss}>{@render body()}</pre>
+      </figcaption>{/if}<pre bind:this={pre} {...regionProps} style={maxHeightCss}>{@render body()}</pre>
   </figure>
 {/if}

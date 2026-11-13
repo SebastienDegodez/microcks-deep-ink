@@ -116,8 +116,7 @@
       itemElements()[0]?.focus();
     }
   }}>{#if !iconOnly}{label}{/if}</Button
->
-<div bind:this={menu} id={menuId} class="menu" popover="auto" role="group" aria-label={label} {ontoggle}
+><div bind:this={menu} id={menuId} class="menu" popover="auto" role="group" aria-label={label} {ontoggle}
   >{#each items as item (item.id)}{@const descId = item.description ? `${menuId}-${item.id}-desc` : undefined}{#if item.separatorBefore}<hr
         class="menu-separator"
       />{/if}{#if item.href !== undefined}<a
