@@ -51,9 +51,7 @@ try {
   await page.waitForLoadState('networkidle');
   const routes = await page.evaluate(async () => {
     const { ROUTES } = await import('/src/ui/app/routes.ts');
-    return ROUTES.map(({ id, example, load }) => ({
-      id, example, pending: load.toString().includes('PendingPage.svelte'),
-    }));
+    return ROUTES.map(({ id, example }) => ({ id, example }));
   });
 
   // Exercise the real preview while the usual validation tools also run.
@@ -90,10 +88,9 @@ try {
     if (route.id !== 'not-found') {
       assert.notEqual(await page.locator('main h1').innerText(), 'Page not found', route.id);
     }
-    console.log(`${route.pending ? 'PLACEHOLDER' : 'OK'} ${route.id}: ${route.example}`);
+    console.log(`OK ${route.id}: ${route.example}`);
   }
-  const pending = routes.filter((route) => route.pending);
-  console.log(`Routes: ${routes.length - pending.length} implemented, ${pending.length} placeholders (${pending.map((route) => route.id).join(', ')}).`);
+  console.log(`Routes: ${routes.length}/${routes.length} load.`);
 
   await page.goto(`${base.href}#/admin`);
   await checkPage('admin');

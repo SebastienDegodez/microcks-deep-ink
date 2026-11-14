@@ -33,7 +33,7 @@ pnpm -C svelte check:boundaries
 
 The browser smoke check starts its own dev server with an isolated temporary dependency cache, runs
 the route unit tests while it stays open, then visits every menu entry, route example and Administration
-tab. It reports pending workflow placeholders separately; a placeholder is not a completed screen.
+tab.
 To check an already-running preview instead, run `pnpm -C svelte smoke:demo http://127.0.0.1:5174/`.
 This catches lazy-module and stale dev-server failures that passing unit tests or production captures
 cannot detect. If a long-running preview reports `Outdated Optimize Dep`, restart that dev server with
@@ -50,12 +50,10 @@ reference JSX has a boundary: `Step {n} · {name}` is written `Step <!---->{n}<!
 and `priority:{' '}{list}.` is written `priority:<!----> <!---->{list}<!---->.`. `svelte.config.js`
 keeps comments for the files of `src/` only.
 
-**Port in progress.** Screens are ported family by family, each one checked against the reference
-demo with strict screenshot comparisons (0 pixel of difference, no mask). A screen that is not ported
-yet renders a placeholder with its title.
-
-The shell, explore, service, agents, sources, tests, observe, Hub, Administration and workflow list
-are ported. Workflow details, run setup and run details are still pending.
+**Port complete.** Every screen was ported family by family, each one checked against the reference
+demo with strict screenshot comparisons (0 pixel of difference, no mask): the shell, explore, service,
+agents, sources, tests, observe, Hub, Administration, the workflow list, workflow details, run setup and
+run details.
 
 Every screen is marked DEMO; nothing is published on npm. Runtime and build guards reject React.
 Accessibility status: **not audited** (RGAA 4.1.2 / WCAG 2.1 AA target).

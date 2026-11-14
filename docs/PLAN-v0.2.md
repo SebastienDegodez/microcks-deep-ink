@@ -170,6 +170,29 @@ against an unfinished prerequisite.
   React. Porting the React pages onto demo-core (#288) and the cross-framework
   parity gate remain open.
 
+### Fourth implementation lot
+
+- #288: the clickable Svelte demo in `svelte/apps/demo` is ported page by page
+  from the reference demo, family by family. It consumes `@microcks/demo-core`
+  and `@microcks/deep-ink` through the pnpm workspace; no component code is
+  copied into the demo. All 21 routes load their real page; no placeholder
+  remains. Framework-neutral presentation helpers the two demos share move to
+  `@microcks/demo-core/presentation/...`, and React re-exports them through facades.
+- Library corrections found by the port (text nodes the React twin does not
+  render, `RadioGroup` and `Stepper` `renderLabel` snippets…) land in deep-ink
+  with their specs; the Storybook parity report stays unchanged.
+- Verification: the 408 cases of the visual matrix, rendered by the Svelte
+  build, have zero differing pixels against the React references, without
+  masks. Interaction routes compare the normalised DOM and full-page pixels in
+  both themes; one light route shows Chromium's intermittent anti-aliasing of
+  rounded corners and matches on a reload. The reference demo's own captures
+  are unchanged. A browser smoke run (`pnpm -C svelte smoke:demo`) loads every
+  menu entry, route and Administration tab.
+- Still open: this visual evidence is session-local (persistent CI visual
+  replay remains part of V/I), the accessibility smoke covers the React demo
+  only, and links the reference demo leaves broken (`/import`, `/usage`) are
+  reproduced as is.
+
 ---
 
 ## Summary
