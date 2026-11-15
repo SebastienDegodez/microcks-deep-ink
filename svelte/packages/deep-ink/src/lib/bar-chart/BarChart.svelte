@@ -29,7 +29,7 @@
             {#if b.cap}<span class="bar-chart-cap" aria-hidden="true" style={`bottom:calc(${pct(b)}% + 2px)`}>{b.cap}</span>{/if}<button type="button" class="bar-chart-bar" aria-pressed={i === selIndex} aria-label={b.description} tabindex={i === tabStop ? 0 : -1} onclick={() => onselect(b.id)} onkeydown={e => keydown(e, i)}><span class="bar-chart-fill" data-tone={b.tone && b.tone !== 'action' ? b.tone : undefined} style={`height:${pct(b)}%`}></span></button>
           </div>{/if}
         {/each}
-      </div>{#if overlay}<div class="bar-chart-overlay" aria-hidden="true">{@render overlay()}</div>{/if}
+      </div>{#if overlay}<div class="bar-chart-overlay" aria-hidden="true">{#if typeof overlay === 'function'}{@render overlay()}{:else}{overlay}{/if}</div>{/if}
     </div><div class="bar-chart-labels" aria-hidden="true">{#each bars as b, i (b.id)}<span data-selected={i === selIndex ? '' : undefined}>{b.label ?? ''}</span>{/each}</div>
   </div>{#if ticksEnd}<div class="bar-chart-axis" data-side="end" aria-hidden="true">{#each ticksEnd as t, i (i)}<span>{t}</span>{/each}</div>{/if}
 </div><table class="sr-only"><caption>{table.caption}</caption><thead><tr>{#each table.columns as c, i (i)}<th scope="col">{c}</th>{/each}</tr></thead><tbody>{#each table.rows as r, i (i)}<tr>{#each r as cell, j (j)}{#if j === 0}<th scope="row">{cell}</th>{:else}<td>{cell}</td>{/if}{/each}</tr>{/each}</tbody></table>

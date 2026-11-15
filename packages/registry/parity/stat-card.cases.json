@@ -1,0 +1,19 @@
+{
+  "component": "StatCard",
+  "cases": [
+    {"name": "default", "props": {"title": "Mock invocations · 7 days", "value": "638"}},
+    {"name": "unit-action", "props": {"title": "APIs & services", "value": "11", "unit": "29 operations", "action": "Catalogue"}},
+    {"name": "number-value", "props": {"title": "Services", "value": 11, "unit": "services"}},
+    {"name": "tone-success", "props": {"title": "Passing", "value": "8", "tone": "success"}},
+    {"name": "tone-warning-body", "props": {"title": "Average conformance", "value": "78%", "unit": "current score", "tone": "warning"}, "children": "Across 8 tested services"},
+    {"name": "tone-danger", "props": {"title": "Failing", "value": "2", "tone": "danger"}},
+    {"name": "explicit-defaults", "props": {"title": "Calls", "value": "5", "tone": "neutral", "headingLevel": 2}},
+    {"name": "level-3", "props": {"title": "Three", "value": "3", "headingLevel": 3}},
+    {"name": "level-4", "props": {"title": "Four", "value": "4", "headingLevel": 4}},
+    {"name": "level-5", "props": {"title": "Five", "value": "5", "headingLevel": 5}},
+    {"name": "level-6", "props": {"title": "Six", "value": "6", "headingLevel": 6}},
+    {"name": "class-and-attributes", "props": {"title": "T", "value": "1", "className": "wide", "id": "c1", "data-testid": "card", "aria-labelledby": "outer", "data-tone": "x"}},
+    {"name": "grid", "component": "StatGrid", "props": {"label": "Key figures"}, "children": "Cards"},
+    {"name": "grid-class-and-attributes", "component": "StatGrid", "props": {"label": "Key figures", "className": "cols", "aria-label": "Other", "data-testid": "g"}}
+  ]
+}

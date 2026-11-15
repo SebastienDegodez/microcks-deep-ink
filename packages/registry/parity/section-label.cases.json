@@ -1,0 +1,17 @@
+{
+  "component": "SectionLabel",
+  "cases": [
+    {"name": "default", "children": "Endpoints"},
+    {"name": "as-h2", "props": {"as": "h2"}, "children": "Endpoints"},
+    {"name": "as-h3", "props": {"as": "h3"}, "children": "Endpoints"},
+    {"name": "as-h4-line-height-normal", "props": {"as": "h4", "lineHeight": "normal"}, "children": "Request"},
+    {"name": "as-h5", "props": {"as": "h5"}, "children": "Five"},
+    {"name": "as-h6", "props": {"as": "h6"}, "children": "Six"},
+    {"name": "as-label-for", "props": {"as": "label", "htmlFor": "u"}, "children": "Mock URL"},
+    {"name": "as-p", "props": {"as": "p"}, "children": "Caption"},
+    {"name": "as-div-split", "props": {"as": "div", "split": true}, "children": "3 operations"},
+    {"name": "sm-regular-snug", "props": {"size": "sm", "weight": "regular", "lineHeight": "snug"}, "children": "Skills"},
+    {"name": "explicit-defaults", "props": {"as": "span", "size": "md", "weight": "semibold", "split": false, "lineHeight": "fixed"}, "children": "Label"},
+    {"name": "class-and-attributes", "props": {"className": "wide", "id": "s1", "data-testid": "sl", "aria-hidden": "true", "title": "Tip"}, "children": "Label"}
+  ]
+}

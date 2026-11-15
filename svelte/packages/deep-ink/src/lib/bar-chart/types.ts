@@ -24,7 +24,7 @@ export interface BarChartProps {
   height?: number;
   gap?: number;
   minHeight?: number;
-  overlay?: Snippet;
+  overlay?: string | Snippet;
   table: BarChartTable;
   class?: string;
 }

@@ -50,8 +50,11 @@ export interface MethodTagProps extends SpanAttributes {
 
 export interface StatusBadgeProps extends SpanAttributes {
   status: Outcome;
-  /** Blank labels fall back to the outcome word. */
-  label?: string | Snippet;
+  /**
+   * A string, a number, a snippet or an array of them. An empty label (null, a boolean, a
+   * blank string, or an array of only those) falls back to the outcome word; `0` is shown.
+   */
+  label?: string | number | boolean | null | Snippet | readonly (string | number | boolean | null | undefined)[];
   size?: 'md' | 'sm' | 'lg';
   shape?: 'circled' | 'bare';
   /** Supplement the mandatory visible word with formatted context. */

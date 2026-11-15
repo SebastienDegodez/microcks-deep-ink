@@ -1,0 +1,17 @@
+{
+  "component": "LiveIndicator",
+  "cases": [
+    {"name": "default", "props": {}},
+    {"name": "label-sm", "props": {"label": "streaming", "size": "sm"}},
+    {"name": "paused", "props": {"paused": true}},
+    {"name": "paused-label", "props": {"paused": true, "pausedLabel": "paused · 2 new calls"}},
+    {"name": "paused-label-ignored-when-live", "props": {"pausedLabel": "paused · 2 new calls"}},
+    {"name": "inline", "props": {"variant": "inline"}},
+    {"name": "box-lg", "props": {"variant": "box", "size": "lg"}},
+    {"name": "box-paused", "props": {"variant": "box", "paused": true}},
+    {"name": "dot", "props": {"variant": "dot", "label": "live task"}},
+    {"name": "dot-paused", "props": {"variant": "dot", "paused": true}},
+    {"name": "dot-paused-label-sm", "props": {"variant": "dot", "size": "sm", "paused": true, "pausedLabel": "paused · 3 new"}},
+    {"name": "pill-md-attributes", "props": {"variant": "pill", "size": "md", "paused": false, "className": "wide", "id": "l1", "data-testid": "live", "title": "Live stream"}}
+  ]
+}
