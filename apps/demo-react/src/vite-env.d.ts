@@ -1,6 +1,6 @@
 /// <reference types="vite/client" />
 
 interface ImportMetaEnv {
-  /** `memory` (default) or `http` (adapters call `/api/...`, answered by the MSW worker). */
+  /** `http` (default: adapters call `/api/...`, answered by the MSW worker) or `memory` (in-memory adapters, no MSW). */
   readonly VITE_DEMO_BACKEND?: string;
 }

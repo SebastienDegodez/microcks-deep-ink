@@ -1,5 +1,5 @@
 {
-  "$comment": "Demo routes audited by smoke.py, relative to the site root (smoke.py serves the assembled site). ?fast removes the simulated latency of the in-memory adapters.",
+  "$comment": "Demo routes audited by smoke.py, relative to the site root (smoke.py serves the assembled site). ?fast removes the simulated latency (MSW delay() with the default http backend, latency() of the in-memory adapters with memory).",
   "routes": [
     {
       "url": "demo/#/?fast",

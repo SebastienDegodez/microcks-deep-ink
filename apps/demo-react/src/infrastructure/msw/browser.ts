@@ -1,4 +1,5 @@
 import { setupWorker } from 'msw/browser';
+import { setPerCallLatency } from '@/infrastructure/in-memory/shared';
 import { handlers } from './handlers';
 
 /** The browser mock of the API. Imported by `main.tsx` only, and only when the backend is `http`. */
@@ -13,8 +14,12 @@ export const worker = setupWorker(...handlers);
  * Unhandled requests: every non-API request (scripts, CSS chunks, fonts) bypasses the worker silently; an
  * `/api/` request without a handler is a bug, so it is reported with `console.error` (and fails the smoke run)
  * instead of silently hitting a server that does not exist on Pages.
+ *
+ * Latency: the handlers delay each `/api/` request once (`handlers/latency.ts`), so the in-memory adapters they delegate
+ * to stop adding theirs (no double delay). `?fast` / the localStorage flag still remove every delay.
  */
 export function startWorker(): Promise<unknown> {
+  setPerCallLatency(false);
   return worker.start({
     serviceWorker: { url: './mockServiceWorker.js' },
     quiet: true,
