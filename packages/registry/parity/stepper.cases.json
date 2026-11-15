@@ -1,0 +1,15 @@
+{
+  "component": "Stepper",
+  "cases": [
+    {"name": "progress", "props": {"label": "Progress", "steps": [{"label": "Source", "state": "done"}, {"label": "Preview", "state": "current"}, {"label": "Live mock"}]}},
+    {"name": "progress-upcoming-explicit", "props": {"label": "Progress", "variant": "progress", "direction": "horizontal", "steps": [{"label": "A", "state": "upcoming"}]}},
+    {"name": "vertical-done-label-n", "props": {"label": "Import", "direction": "vertical", "doneLabel": "terminé", "steps": [{"label": "One", "state": "done", "n": "A", "id": "a"}, {"label": "Two", "state": "current", "n": 7, "id": "b"}]}},
+    {"name": "list", "props": {"label": "Before you paste", "variant": "list", "steps": [{"label": "Add the secret."}, {"label": "Paste the job."}]}},
+    {"name": "list-ignores-state", "props": {"variant": "list", "steps": [{"label": "Done?", "state": "done"}, {"label": "Now?", "state": "current", "n": "ii"}]}},
+    {"name": "list-circle", "props": {"variant": "list", "marker": "circle", "steps": [{"label": "checkMenu"}, {"label": "orderPastry"}]}},
+    {"name": "list-number-explicit", "props": {"variant": "list", "marker": "number", "steps": [{"label": "x"}]}},
+    {"name": "progress-ignores-circle", "props": {"marker": "circle", "direction": "vertical", "steps": [{"label": "x"}]}},
+    {"name": "empty", "props": {"steps": []}},
+    {"name": "class-and-attributes", "props": {"className": "wide", "id": "st", "data-testid": "stepper", "aria-label": "Dropped", "start": 3, "steps": [{"label": "x"}]}}
+  ]
+}

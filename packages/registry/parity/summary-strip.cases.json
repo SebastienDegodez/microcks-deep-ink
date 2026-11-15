@@ -1,0 +1,14 @@
+{
+  "component": "SummaryStrip",
+  "cases": [
+    {"name": "empty"},
+    {"name": "parts", "props": {"role": "note", "aria-label": "Saved behaviour", "parts": [{"text": "Saved", "kind": "label"}, {"text": "URI_PARTS · rule: name"}, {"text": "delay 0 ms fixed", "sep": true}]}},
+    {"name": "kind-value-explicit", "props": {"parts": [{"text": "a", "kind": "value", "sep": false}, {"text": "b", "kind": "value", "sep": true}, {"text": "c", "kind": "label", "sep": true}]}},
+    {"name": "roomy-text-values", "props": {"gap": "roomy", "values": "text", "parts": [{"text": "Owner", "kind": "label"}, {"text": "MA"}]}},
+    {"name": "canvas", "props": {"variant": "canvas", "parts": [{"text": "Setup", "kind": "label"}, {"text": "JSON-RPC 2.0"}]}},
+    {"name": "explicit-defaults", "props": {"gap": "normal", "values": "secondary", "variant": "default", "parts": [{"text": "x"}]}},
+    {"name": "children-after-parts", "props": {"parts": [{"text": "v1"}]}, "children": "More"},
+    {"name": "class-and-attributes", "props": {"className": "wide", "id": "s", "data-testid": "strip", "aria-hidden": "true"}},
+    {"name": "sep", "component": "SummaryStripSep"}
+  ]
+}

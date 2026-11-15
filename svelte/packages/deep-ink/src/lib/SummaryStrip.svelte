@@ -4,12 +4,9 @@
   let { parts = [], gap = 'normal', values = 'secondary', variant = 'default', lineHeight = 'fixed', children, class: cssClass, ...rest }: SummaryStripProps = $props();
 </script>
 
-<div {...rest} class={['summary-strip', cssClass]} data-gap={gap === 'roomy' ? 'roomy' : undefined} data-values={values === 'text' ? 'text' : undefined} data-variant={variant === 'default' ? undefined : variant} data-line-height={lineHeight === 'inherit' ? 'inherit' : undefined}>
-  {#each parts as part, i (i)}
-    {#if part.sep}<SummaryStripSep />{/if}
-    <span class={part.kind === 'label' ? 'summary-strip-label' : 'summary-strip-value'}>
-      {#if typeof part.text === 'string'}{part.text}{:else}{@render part.text()}{/if}
-    </span>
-  {/each}
-  {@render children?.()}
-</div>
+<div {...rest} class={['summary-strip', cssClass]} data-gap={gap === 'roomy' ? 'roomy' : undefined} data-values={values === 'text' ? 'text' : undefined} data-variant={variant === 'default' ? undefined : variant} data-line-height={lineHeight === 'inherit' ? 'inherit' : undefined}
+  >{#each parts as part, i (i)}{#if part.sep}<SummaryStripSep />{/if}<span
+      class={part.kind === 'label' ? 'summary-strip-label' : 'summary-strip-value'}
+      >{#if typeof part.text === 'string'}{part.text}{:else}{@render part.text()}{/if}</span
+    >{/each}{@render children?.()}</div
+>
