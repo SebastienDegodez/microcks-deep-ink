@@ -4,9 +4,11 @@ import { Icon } from './icon';
 export interface LinkProps extends AnchorHTMLAttributes<HTMLAnchorElement> {
   /** Opens in a new tab: adds an icon, a hidden notice and rel="noopener noreferrer". */
   external?: boolean;
+  /** Hidden notice read after an external link. */
+  externalLabel?: string;
 }
 
-export function Link({ external, className, children, rel, target, ...rest }: LinkProps) {
+export function Link({ external, externalLabel = '(opens in a new tab)', className, children, rel, target, ...rest }: LinkProps) {
   return (
     <a
       {...rest}
@@ -20,7 +22,7 @@ export function Link({ external, className, children, rel, target, ...rest }: Li
         <>
           <Icon name="external" size={14} />
           {' '}
-          <span className="sr-only">(opens in a new tab)</span>
+          <span className="sr-only">{externalLabel}</span>
         </>
       ) : null}
     </a>

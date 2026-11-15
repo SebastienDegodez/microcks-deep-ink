@@ -42,17 +42,37 @@ export function itemExports(name, lib = LIB) {
 
 export function barrel(lib = LIB) {
   const known = items();
-  const unknown = readdirSync(lib).filter((d) => isDir(join(lib, d)) && !known.includes(d));
+  const unknown = readdirSync(lib).filter((d) => isDir(join(lib, d)) && !known.includes(d) && d !== 'internal');
   if (unknown.length) throw new Error(`src/lib/${unknown[0]}/ is not a registry item (packages/registry/items/${unknown[0]}.json)`);
   const lines = [HEADER];
-  for (const name of known) if (isDir(join(lib, name))) lines.push(...itemExports(name, lib));
+  for (const name of known) if (isDir(join(lib, name))) {
+    const exports = itemExports(name, lib);
+    for (const line of exports) {
+      const component = line.match(/default as (\w+)/)?.[1];
+      if (component && existsSync(join(lib, `${component}.svelte`))) {
+        lines.push(`export { default as ${component} } from './${component}.svelte';`);
+      } else if (name !== 'method-tag') lines.push(line);
+    }
+  }
+  for (const component of ['StatusBadge', 'LiveIndicator', 'SummaryStrip', 'SummaryStripSep']) {
+    if (existsSync(join(lib, `${component}.svelte`))) lines.push(`export { default as ${component} } from './${component}.svelte';`);
+  }
+  if (existsSync(join(lib, 'contracts.ts'))) lines.push("export * from './contracts.js';");
+  if (existsSync(join(lib, 'types.ts'))) lines.push("export type { ButtonProps, ButtonLinkProps, ButtonVariant, ButtonSize, ButtonTone, IconName, Protocol, Outcome, MethodTagProps, StatusBadgeProps, LiveIndicatorProps, SummaryStripPart, SummaryStripProps, SummaryStripSepProps } from './types.js';");
   // A barrel with no item yet must still be a module.
   if (lines.length === 1) lines.push('export {};');
   return lines.join('\n') + '\n';
 }
 
 export function pending(lib = LIB) {
-  return items().filter((name) => !isDir(join(lib, name)));
+  const native = {
+    button: 'Button',
+    'method-tag': 'MethodTag',
+    'status-badge': 'StatusBadge',
+    'live-indicator': 'LiveIndicator',
+    'summary-strip': 'SummaryStrip',
+  };
+  return items().filter((name) => !isDir(join(lib, name)) && !existsSync(join(lib, `${native[name] ?? ''}.svelte`)));
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {

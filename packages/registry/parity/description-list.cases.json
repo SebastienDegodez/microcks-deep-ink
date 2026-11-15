@@ -1,0 +1,8 @@
+{
+  "component": "DescriptionList",
+  "cases": [
+    {"name": "story-default", "props": {"items": [{"term": "Service", "value": "API Pastry"}, {"term": "Version", "value": "2.0", "mono": true}, {"term": "Type", "value": "REST"}, {"term": "Mock URL", "value": "http://microcks.local:8080/rest/API+Pastry/2.0", "mono": true}]}},
+    {"name": "empty", "props": {"items": []}},
+    {"name": "class-and-attributes", "props": {"className": "compact", "id": "facts", "aria-label": "Service facts", "items": [{"term": "Examples", "value": 3, "mono": false}]}}
+  ]
+}

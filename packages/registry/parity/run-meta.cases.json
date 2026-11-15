@@ -1,0 +1,8 @@
+{
+  "component": "RunMeta",
+  "cases": [
+    {"name": "kinds-detail", "props": {"items": [{"term": "Endpoint", "value": "https://concierge.acme.io/a2a", "kind": "url"}, {"term": "Runner", "value": "A2A_CONFORMANCE", "kind": "chip"}, {"term": "Duration", "value": "1.4 s", "kind": "mono"}, {"term": "Origin", "value": "UI", "kind": "text"}, {"term": "Started", "value": "just now", "detail": "Nov 3, 2026 14:12:08"}]}},
+    {"name": "empty-detail-ids-attributes", "props": {"className": "compact", "id": "m1", "data-testid": "meta", "aria-label": "Run details", "items": [{"id": "a", "term": "Tests", "value": 12, "detail": ""}, {"id": "b", "term": "Tests", "value": 0}]}},
+    {"name": "empty", "props": {"items": []}}
+  ]
+}

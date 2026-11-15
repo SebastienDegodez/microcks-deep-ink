@@ -12,7 +12,7 @@ import {
   type CiSnippetInput,
   type TestRunSummary,
   type TestStepResult,
-} from './index';
+} from '@microcks/demo-core/domain/testing';
 
 const base: CiSnippetInput = {
   apiRef: 'API Pastry:2.0', apiName: 'API Pastry', endpoint: 'https://pastry.staging.acme.io/v2', runner: 'OPEN_API_SCHEMA', waitSec: 10,
@@ -113,7 +113,7 @@ describe('run helpers', () => {
   });
 });
 
-import { buildRunnerLog, elapsedMs, type TestRun } from './index';
+import { buildRunnerLog, elapsedMs, type TestRun } from '@microcks/demo-core/domain/testing';
 
 describe('runner log', () => {
   const step = (n: number, result: 'passed' | 'failed'): TestStepResult => ({

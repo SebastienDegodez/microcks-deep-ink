@@ -1,0 +1,25 @@
+{
+  "component": "Chip",
+  "cases": [
+    {"name": "default", "children": "beta"},
+    {"name": "tone-info", "props": {"tone": "info"}, "children": "info"},
+    {"name": "tone-success", "props": {"tone": "success"}, "children": "Passed"},
+    {"name": "tone-warning-dashed", "props": {"tone": "warning", "variant": "dashed"}, "children": "draft"},
+    {"name": "tone-danger-outline", "props": {"tone": "danger", "variant": "outline"}, "children": "Failed"},
+    {"name": "neutral-solid-md", "props": {"tone": "neutral", "variant": "solid", "size": "md"}, "children": "x"},
+    {"name": "sm-label-key", "props": {"size": "sm", "labelKey": "domain"}, "children": "pastry"},
+    {"name": "lg-count-zero", "props": {"size": "lg", "count": 0}, "children": "Archived"},
+    {"name": "toggle-pressed", "props": {"pressed": true, "count": 4}, "children": "REST"},
+    {"name": "toggle-unpressed-label-key", "props": {"pressed": false, "labelKey": "team", "count": 2, "size": "lg"}, "children": "core"},
+    {"name": "toggle-attributes", "props": {"pressed": true, "type": "submit", "className": "x", "id": "c1", "data-testid": "chip", "title": "Filter"}, "children": "All"},
+    {"name": "protocol-rest", "props": {"protocol": "REST", "count": 4, "pressed": true}, "children": "REST"},
+    {"name": "protocol-soap", "props": {"protocol": "SOAP"}, "children": "SOAP"},
+    {"name": "protocol-event", "props": {"protocol": "EVENT", "pressed": false}, "children": "EVENT"},
+    {"name": "protocol-grpc", "props": {"protocol": "gRPC"}, "children": "gRPC"},
+    {"name": "protocol-graphql", "props": {"protocol": "GRAPHQL"}, "children": "GRAPHQL"},
+    {"name": "protocol-direct", "props": {"protocol": "DIRECT"}, "children": "DIRECT"},
+    {"name": "protocol-a2a", "props": {"protocol": "A2A", "count": 0}, "children": "A2A"},
+    {"name": "static-attributes", "props": {"className": "x", "id": "s1", "aria-label": "Label", "removeLabel": "unused"}, "children": "beta"},
+    {"name": "no-children", "props": {"labelKey": "k"}}
+  ]
+}

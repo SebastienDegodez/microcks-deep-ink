@@ -13,5 +13,5 @@
     "verbatimModuleSyntax": true,
     "forceConsistentCasingInFileNames": true
   },
-  "include": ["src/**/*.ts", "src/**/*.svelte", "test/**/*.ts", "test/**/*.svelte", "vitest.config.ts"]
+  "include": ["src/**/*.ts", "src/**/*.svelte", "test/**/*.ts", "test/**/*.svelte", "vite*.config.ts"]
 }

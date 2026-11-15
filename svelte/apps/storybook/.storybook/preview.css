@@ -1,0 +1,5 @@
+body {
+  background: var(--canvas);
+  color: var(--text);
+  font-family: var(--font-ui);
+}

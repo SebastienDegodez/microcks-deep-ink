@@ -1,0 +1,8 @@
+{
+  "component": "AppShell",
+  "cases": [
+    {"name": "default", "props": {"brand": "Microcks", "activeId": "services", "nav": [{"id": "cockpit", "label": "Cockpit", "href": "#/cockpit"}, {"id": "services", "label": "APIs & Services", "href": "#/services", "badge": "12"}]}, "children": "APIs & Services"},
+    {"name": "all-slots-icons", "props": {"brand": "Microcks", "topbarCenter": "Search", "topbarActions": "Actions", "banner": "DEMO instance", "skipLinkLabel": "Skip to main content", "navLabel": "Primary", "activeId": "tests", "nav": [{"id": "cockpit", "label": "Cockpit", "href": "/cockpit", "icon": "cockpit"}, {"id": "apis", "label": "APIs", "href": "/apis", "icon": "apis", "badge": "3"}, {"id": "tests", "label": "Tests", "href": "/tests", "icon": "tests"}]}, "children": "Page"},
+    {"name": "no-active-empty-nav", "props": {"brand": "Microcks", "activeId": "none", "nav": []}, "children": "Page"}
+  ]
+}

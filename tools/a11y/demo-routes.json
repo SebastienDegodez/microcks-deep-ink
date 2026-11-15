@@ -38,6 +38,18 @@
       "label": "demo /services/pastry2/copilot?op=get-name"
     },
     {
+      "url": "demo/#/services/orders?fast",
+      "label": "demo /services/orders"
+    },
+    {
+      "url": "demo/#/services/usersignedup?fast",
+      "label": "demo /services/usersignedup"
+    },
+    {
+      "url": "demo/#/services/hellogrpc?fast",
+      "label": "demo /services/hellogrpc"
+    },
+    {
       "url": "demo/#/services/concierge/skills?fast",
       "label": "demo /services/concierge/skills"
     },

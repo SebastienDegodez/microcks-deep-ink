@@ -12,7 +12,6 @@ import {
   traceIds,
   type TraceCall,
   type TraceFilter,
-  type TraceKind,
   type TraceTopology,
 } from '@/domain/observe';
 import { fmt, plural } from '@/ui/app/format';
@@ -21,14 +20,32 @@ import { ApiBadge, Button, Callout, FactRow, Facts, Field, Icon, LiveIndicator, 
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { useThrottledAnnounce } from '../tests/useThrottledAnnounce';
 import { CallGraph } from './CallGraph';
-import './traces.css';
-
-const MAX_CALLS = 60;
-const MAX_ROWS = 12;
-const FLASH_MS = 1400;
-const REST_BASE = '/rest/API+Pastry/2.0';
-const DESCRIPTION =
-  'Real-time calls hitting your mocks, from REST and Kafka endpoints to MCP tool calls made by AI agents. Each call shows who called, which operation answered, which example the dispatcher picked and, for calls of an Arazzo run or session, the workflow step it belongs to.';
+import {
+  arazzoAttempt,
+  arazzoRunId,
+  arazzoStep,
+  arazzoTitle,
+  arazzoWorkflow,
+  callListMeta,
+  callPool,
+  EMPTY_TOPOLOGY,
+  FLASH_MS,
+  focusedNodeLabel,
+  matchesNodeFocus,
+  MAX_CALLS,
+  MAX_ROWS,
+  methodTone,
+  operationPath,
+  replayNoteText,
+  requestText,
+  servicesWithEndpoints,
+  shortPath,
+  traceStats,
+  TRACES_DESCRIPTION,
+  type KindFilter,
+  type StatusFilter,
+} from './calls';
+import '@microcks/demo-styles/pages/traces/traces.css';
 
 export default function TracesPage() {
   usePageTitle('Live traces · Microcks');
@@ -39,41 +56,15 @@ export default function TracesPage() {
   return <Live topology={topology.data} services={services.data ?? []} pending={pending} />;
 }
 
-const EMPTY: TraceTopology = {
-  clients: [],
-  endpoints: [],
-  examples: [],
-  clientEdges: [],
-  exampleEdges: [],
-  history: [],
-};
-
-
-/** Background of the method chip: events and writes in the event colour, MCP in the link colour. */
-function methodTone(c: Pick<TraceCall, 'kind' | 'method'>): 'event' | 'mcp' | 'rest' {
-  if (c.kind === 'EVENT') return 'event';
-  if (c.kind === 'MCP') return 'mcp';
-  return c.method === 'PATCH' || c.method === 'PUT' || c.method === 'POST' ? 'event' : 'rest';
-}
-
-const arazzoStep = (c: TraceCall) => (c.baggage ? /microcks-arazzo-step=([^,;\s]+)/.exec(c.baggage)?.[1] : undefined);
-const arazzoWorkflow = (c: TraceCall) => (c.baggage ? /microcks-arazzo-workflow=([^,;\s]+)/.exec(c.baggage)?.[1] : undefined);
-const arazzoAttempt = (c: TraceCall) => (c.baggage ? /microcks-arazzo-attempt=(\d+)/.exec(c.baggage)?.[1] : undefined);
-const arazzoRunId = (c: TraceCall) => (c.baggage ? /microcks-arazzo-run=([^,;\s]+)/.exec(c.baggage)?.[1] : undefined);
-const arazzoTitle = (c: TraceCall) =>
-  `From workflow ${c.workflowName ?? arazzoWorkflow(c) ?? ''} · run #${c.arazzoRun ?? ''} · step ${arazzoStep(c) ?? ''} · attempt ${arazzoAttempt(c) ?? '1'}`;
-
-type KindFilter = '' | Extract<TraceKind, 'REST' | 'MCP' | 'EVENT'>;
-
 /** One tree for the loading and the loaded page, so the h1 keeps its focus when the data arrives. */
 function Live({ topology: loaded, services, pending }: { topology?: TraceTopology; services: { id: string; name: string; version: string }[]; pending: ReactNode }) {
-  const topology = loaded ?? EMPTY;
+  const topology = loaded ?? EMPTY_TOPOLOGY;
   const uc = useUseCases();
   const [params] = useSearchParams();
   const [runId, setRunId] = useState(parseRunParam(params.get('run')));
   const [serviceId, setServiceId] = useState(params.get('service') ?? '');
   const [kind, setKind] = useState<KindFilter>('');
-  const [status, setStatus] = useState<'' | 'ok' | 'error'>('');
+  const [status, setStatus] = useState<StatusFilter>('');
   const [arazzoOnly, setArazzoOnly] = useState(Boolean(runId));
   const [focus, setFocus] = useState('');
   const [selectedId, setSelectedId] = useState<string | undefined>('call-4');
@@ -104,11 +95,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
     stream.toggle();
   };
 
-  const pool = useMemo(() => {
-    const byId = new Map<string, TraceCall>();
-    for (const c of [...replayed, ...stream.value, ...topology.history]) if (!byId.has(c.callId)) byId.set(c.callId, c);
-    return [...byId.values()].sort((a, b) => b.at.localeCompare(a.at) || b.seq - a.seq);
-  }, [replayed, stream.value, topology]);
+  const pool = useMemo(() => callPool(replayed, stream.value, topology.history), [replayed, stream.value, topology]);
   const replayedIds = useMemo(() => new Set(replayed.map((c) => c.callId)), [replayed]);
   const visible = pool.filter((c) => !clearedAt || c.at > clearedAt);
 
@@ -120,7 +107,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
     runId,
   };
   const hasFilters = Boolean(serviceId || kind || status || arazzoOnly || runId);
-  const matching = visible.filter((c) => matchesTraceFilter(c, filter) && (!focus || c.clientId === focus || c.endpointId === focus || c.exampleId === focus));
+  const matching = visible.filter((c) => matchesTraceFilter(c, filter) && matchesNodeFocus(c, focus));
   const shown = matching.slice(0, MAX_ROWS);
   const selected = selectedId ? pool.find((c) => c.callId === selectedId) : undefined;
 
@@ -140,15 +127,12 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
 
   const streamed = useMemo(() => [...replayed, ...stream.value], [replayed, stream.value]);
   const counts = flowCounts(topology, streamed);
-  const totalCalls = Object.values(counts.clientEdge).reduce((a, b) => a + b, 0);
-  const noMatch = topology.exampleEdges.filter((e) => !topology.examples.find((x) => x.id === e.to)?.ok).reduce((a, e) => a + (counts.exampleEdge[`${e.from}>${e.to}`] ?? 0), 0);
-  const mcpCalls = topology.clientEdges.filter((e) => e.kind === 'MCP').reduce((a, e) => a + (counts.clientEdge[`${e.from}>${e.to}`] ?? 0), 0);
+  const { totalCalls, noMatch, mcpCalls } = traceStats(topology, counts);
   const arazzoCount = visible.filter((c) => c.baggage || c.sessionId).length;
   const flashCall = flashId ? pool.find((c) => c.callId === flashId) : undefined;
 
-  const serviceOptions = services.filter((s) => topology.endpoints.some((e) => e.serviceId === s.id));
-  const focusNode = [...topology.clients, ...topology.endpoints, ...topology.examples].find((n) => n.id === focus);
-  const focusLabel = focusNode ? ('method' in focusNode ? `${focusNode.method} ${focusNode.label}` : focusNode.label) : '';
+  const serviceOptions = servicesWithEndpoints(services, topology);
+  const focusLabel = focusedNodeLabel(topology, focus);
 
   const resetFilters = () => {
     setServiceId('');
@@ -175,7 +159,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
     }
   };
 
-  const listMeta = `newest first · ${matching.length > MAX_ROWS ? `${MAX_ROWS} of ${matching.length} shown` : plural(matching.length, 'call')}`;
+  const listMeta = callListMeta(matching.length);
   const newCalls = plural(buffered, 'new call');
 
   return (
@@ -183,7 +167,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
       <PageHeader
         title="Live traces"
         badge={<LiveIndicator label="live · ~19 calls/min" paused={stream.paused} pausedLabel={`paused · ${newCalls}`} />}
-        description={DESCRIPTION}
+        description={TRACES_DESCRIPTION}
         descriptionTone="secondary"
         descriptionWidth={780}
         align="start"
@@ -205,7 +189,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
           <div className="tr2-filters" role="group" aria-label="Trace filters">
             <Field label="Service" className="tr2-filter-service">
               {(c) => (
-                <Select {...c} value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
+                <Select {...c} className="tr2-select" value={serviceId} onChange={(e) => setServiceId(e.target.value)}>
                   <option value="">All services</option>
                   {serviceOptions.map((s) => (
                     <option key={s.id} value={s.id}>
@@ -217,7 +201,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
             </Field>
             <Field label="Protocol" className="tr2-filter-narrow">
               {(c) => (
-                <Select {...c} value={kind} onChange={(e) => setKind(e.target.value as KindFilter)}>
+                <Select {...c} className="tr2-select" value={kind} onChange={(e) => setKind(e.target.value as KindFilter)}>
                   <option value="">All protocols</option>
                   <option value="REST">REST (HTTP)</option>
                   <option value="MCP">MCP tool calls</option>
@@ -227,7 +211,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
             </Field>
             <Field label="Status" className="tr2-filter-narrow">
               {(c) => (
-                <Select {...c} value={status} onChange={(e) => setStatus(e.target.value as typeof status)}>
+                <Select {...c} className="tr2-select" value={status} onChange={(e) => setStatus(e.target.value as typeof status)}>
                   <option value="">All statuses</option>
                   <option value="ok">2xx and delivered</option>
                   <option value="error">4xx no match</option>
@@ -335,7 +319,7 @@ function Live({ topology: loaded, services, pending }: { topology?: TraceTopolog
             {selected ? (
               <CallDetail
                 call={selected}
-                replayNote={replayedIds.has(selected.callId) ? `Replayed at ${clockTime(selected.at)} · new call at the top of the list` : ''}
+                replayNote={replayedIds.has(selected.callId) ? replayNoteText(selected) : ''}
                 onClose={() => setSelectedId(undefined)}
                 onReplay={() => replay(selected)}
               />
@@ -356,7 +340,7 @@ function StatusText({ call, withLatency }: { call: TraceCall; withLatency?: bool
   const miss = isMiss(call);
   return (
     <span className="tr2-status" data-miss={miss ? '' : undefined}>
-      <Icon name={miss ? 'warning' : 'check'} size={13} />
+      <Icon name={miss ? 'warning' : 'check'} size={13} strokeWidth={2.6} className="tr2-status-icon" />
       <span className="demo-mono">
         {statusLabel(call)}
         {withLatency ? ` · ${call.ms} ms` : ''}
@@ -402,24 +386,12 @@ function CallRow({ call: c, selected, flash, replay, onPick }: { call: TraceCall
   );
 }
 
-function shortPath(c: TraceCall): string {
-  if (c.kind === 'MCP') return `tools/call · ${c.mcpTool ?? ''}`;
-  if (c.kind === 'EVENT') return 'SUBSCRIBE pastry/orders';
-  return c.path.replace(REST_BASE, '');
-}
-
-function requestText(c: TraceCall): string {
-  const raw = c.rawRequest ?? 'No content captured.';
-  const { traceId, spanId } = traceIds(c.seq);
-  return raw.replace('Accept: application/json', `Accept: application/json\ntraceparent: 00-${traceId}-${spanId}-01`);
-}
-
 function CallDetail({ call: c, replayNote, onClose, onReplay }: { call: TraceCall; replayNote: string; onClose: () => void; onReplay: () => void }) {
   const miss = isMiss(c);
   const isEvent = c.kind === 'EVENT';
   const runId = arazzoRunId(c);
   const workflowId = arazzoWorkflow(c);
-  const openTo = c.operationId ? `/services/${c.serviceId}/operations/${c.operationId}` : `/services/${c.serviceId}`;
+  const openTo = operationPath(c);
   return (
     <SplitPaneSide as="section" aria-labelledby="tr2-detail-title" className="tr2-detail">
       <div className="tr2-detail-head">
@@ -436,7 +408,7 @@ function CallDetail({ call: c, replayNote, onClose, onReplay }: { call: TraceCal
           </span>
         </div>
         <button type="button" className="tr2-close" aria-label="Close call detail" onClick={onClose}>
-          <Icon name="close" size={14} />
+          <Icon name="close" size={14} strokeWidth={2.2} />
         </button>
       </div>
 
@@ -496,7 +468,7 @@ function CallDetail({ call: c, replayNote, onClose, onReplay }: { call: TraceCal
       ) : null}
       {miss ? (
         <div role="note" className="tr2-note" data-variant="miss">
-          <Icon name="warning" size={14} />
+          <Icon name="warning" size={14} className="tr2-note-icon" />
           <span>
             No example of{' '}
             <span className="demo-mono">

@@ -7,7 +7,7 @@ import { useQuery, useRelativeTime, useUseCases } from '@/ui/app';
 import { Button, Callout, Icon, MethodTag } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { workflowPath } from '../../workflows/shared';
-import './mock-url.css';
+import '@microcks/demo-styles/pages/workflow/tabs/mock-url.css';
 
 const RUN_ID = '6543f0c2a9e1b7d4c3f20a11';
 

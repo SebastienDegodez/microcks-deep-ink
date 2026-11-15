@@ -1,0 +1,155 @@
+// Every component of the batch forwards any React-named handler and any data-* / aria-* attribute to the same element
+// as React: the root, the <input> of Checkbox, Radio and Switch, the <button> of CopyButton and ThemeToggle, the <dialog>
+// (or inline <div>) of CommandBar, the <figure> of CodeBlock (its <pre> with frame="none"), the root of the microcks
+// leaves (ExchangeCard, Exchange, RunMeta, RunOrigin, ProjectionPill, RunnerLog, Tile, TileGrid). Segmented, Tabs, TabPanel,
+// AppShell, Dialog, Menu and DataTable spread nothing in React, so they forward nothing.
+import { fireEvent, render } from '@testing-library/svelte';
+import { createRawSnippet, type Component } from 'svelte';
+import { describe, expect, it, vi } from 'vitest';
+import AppShell from './app-shell/AppShell.svelte';
+import Button from './Button.svelte';
+import ButtonLink from './ButtonLink.svelte';
+import Callout from './callout/Callout.svelte';
+import Checkbox from './checkbox/Checkbox.svelte';
+import Chip from './chip/Chip.svelte';
+import CodeBlock from './code-block/CodeBlock.svelte';
+import CommandBar from './command-bar/CommandBar.svelte';
+import CopyButton from './copy-button/CopyButton.svelte';
+import EmptyState from './empty-state/EmptyState.svelte';
+import Exchange from './exchange-card/Exchange.svelte';
+import ExchangeCard from './exchange-card/ExchangeCard.svelte';
+import Radio from './checkbox/Radio.svelte';
+import MethodTag from './MethodTag.svelte';
+import ProjectionPill from './projection-pill/ProjectionPill.svelte';
+import { eventProps } from './event-props';
+import RunMeta from './run-meta/RunMeta.svelte';
+import RunOrigin from './run-origin/RunOrigin.svelte';
+import RunnerLog from './runner-log/RunnerLog.svelte';
+import Segmented from './segmented/Segmented.svelte';
+import Switch from './switch/Switch.svelte';
+import TabPanel from './tabs/TabPanel.svelte';
+import Tabs from './tabs/Tabs.svelte';
+import ThemeToggle from './theme-toggle/ThemeToggle.svelte';
+import Tile from './tile/Tile.svelte';
+import TileGrid from './tile/TileGrid.svelte';
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const cases: Array<[string, Component<any>, Record<string, unknown>, string]> = [
+  ['Button', Button, {}, 'button'],
+  ['ButtonLink', ButtonLink, { href: '/x' }, 'a'],
+  ['Callout', Callout, { title: 'T' }, '.callout'],
+  ['MethodTag', MethodTag, { method: 'GET' }, '.method'],
+  ['Checkbox', Checkbox, { label: 'L' }, 'input'],
+  ['Radio', Radio, { label: 'L' }, 'input'],
+  ['Switch', Switch, { label: 'L', checked: false }, 'input'],
+  ['EmptyState', EmptyState, { title: 'T' }, 'section'],
+  ['Chip toggle', Chip, { pressed: false, children: 'C' }, 'button'],
+  ['CommandBar inline', CommandBar, { inline: true, items: [] }, '.command-bar'],
+  ['CommandBar modal', CommandBar, { items: [] }, 'dialog'],
+  ['CodeBlock', CodeBlock, { code: 'x' }, 'figure'],
+  ['CodeBlock frame="none"', CodeBlock, { code: 'x', frame: 'none' }, 'pre'],
+  ['ExchangeCard', ExchangeCard, { title: 'T', label: 'L', blocks: [] }, 'section'],
+  ['Exchange', Exchange, { children: ['a', 'b'] }, '.exchange'],
+  ['RunMeta', RunMeta, { items: [] }, 'dl'],
+  ['RunOrigin', RunOrigin, { origin: 'ui' }, '.run-origin'],
+  ['ProjectionPill', ProjectionPill, {}, '.projection-pill'],
+  ['RunnerLog', RunnerLog, { lines: [] }, 'section'],
+  ['Tile', Tile, { title: 'T' }, 'article'],
+  ['TileGrid', TileGrid, { label: 'L' }, 'section'],
+];
+
+describe('Native Svelte handlers and attributes', () => {
+  it.each(cases)('%s forwards them to the underlying native element', (_, C, props, selector) => {
+    const spies = { onkeydown: vi.fn(), onclick: vi.fn(), onfocus: vi.fn(), onblur: vi.fn(), onmouseenter: vi.fn(), ondblclick: vi.fn(), ondblclickcapture: vi.fn(), onkeydowncapture: vi.fn() };
+    const { container } = render(C, { props: { ...props, ...spies, 'data-testid': 'x', 'aria-keyshortcuts': 'K' } });
+    const el = container.querySelector<HTMLElement>(selector)!;
+    expect([el.dataset.testid, el.getAttribute('aria-keyshortcuts')]).toEqual(['x', 'K']);
+    fireEvent.keyDown(el, { key: 'a' });
+    fireEvent.click(el);
+    fireEvent.focus(el);
+    fireEvent.blur(el);
+    fireEvent.mouseEnter(el);
+    fireEvent.dblClick(el);
+    for (const [name, spy] of Object.entries(spies)) expect(spy, name).toHaveBeenCalledOnce();
+    for (const name of Object.keys(spies)) expect(el.hasAttribute(name.toLowerCase())).toBe(false);
+  });
+
+  it('a static Chip forwards them to its span, except onclick (as React)', () => {
+    const spies = { onkeydown: vi.fn(), onclick: vi.fn(), onfocus: vi.fn(), onmouseenter: vi.fn(), ondblclickcapture: vi.fn() };
+    const { container } = render(Chip, { props: { ...spies, children: 'C', 'data-testid': 'x' } });
+    const el = container.querySelector<HTMLElement>('span.chip')!;
+    fireEvent.keyDown(el);
+    fireEvent.click(el);
+    fireEvent.focus(el);
+    fireEvent.mouseEnter(el);
+    fireEvent.dblClick(el);
+    expect(el.dataset.testid).toBe('x');
+    expect(Object.values(spies).map((s) => s.mock.calls.length)).toEqual([1, 0, 1, 1, 1]);
+  });
+
+  it('CopyButton forwards them to its button, which still copies on click', () => {
+    const writeText = vi.fn().mockResolvedValue(undefined);
+    Object.defineProperty(navigator, 'clipboard', { value: { writeText }, configurable: true });
+    const spies = { onkeydown: vi.fn(), onfocus: vi.fn(), onblur: vi.fn(), onmouseenter: vi.fn(), ondblclick: vi.fn(), onclickcapture: vi.fn() };
+    const { container } = render(CopyButton, { props: { value: 'v', ...spies, 'data-testid': 'x', 'aria-keyshortcuts': 'K' } });
+    const el = container.querySelector('button')!;
+    expect([el.dataset.testid, el.getAttribute('aria-keyshortcuts')]).toEqual(['x', 'K']);
+    fireEvent.keyDown(el);
+    fireEvent.click(el);
+    fireEvent.focus(el);
+    fireEvent.blur(el);
+    fireEvent.mouseEnter(el);
+    fireEvent.dblClick(el);
+    for (const [name, spy] of Object.entries(spies)) expect(spy, name).toHaveBeenCalledOnce();
+    expect(writeText).toHaveBeenCalledWith('v');
+  });
+
+  it('ThemeToggle forwards them to its button, which still toggles on click (React overrides onclick)', () => {
+    const spies = { onkeydown: vi.fn(), onfocus: vi.fn(), onblur: vi.fn(), onmouseenter: vi.fn(), ondblclick: vi.fn(), onclickcapture: vi.fn() };
+    const onclick = vi.fn();
+    const { container } = render(ThemeToggle as Component<Record<string, unknown>>, { props: { ...spies, onclick, 'data-testid': 'x', 'aria-keyshortcuts': 'K' } });
+    const el = container.querySelector('button')!;
+    expect([el.dataset.testid, el.getAttribute('aria-keyshortcuts')]).toEqual(['x', 'K']);
+    fireEvent.keyDown(el);
+    fireEvent.click(el);
+    fireEvent.focus(el);
+    fireEvent.blur(el);
+    fireEvent.mouseEnter(el);
+    fireEvent.dblClick(el);
+    for (const [name, spy] of Object.entries(spies)) expect(spy, name).toHaveBeenCalledOnce();
+    expect([onclick.mock.calls.length, document.documentElement.dataset.theme]).toEqual([0, 'light']);
+    delete document.documentElement.dataset.theme;
+    localStorage.clear();
+  });
+
+  it.each([
+    ['AppShell', AppShell, { brand: 'B', nav: [], activeId: 'a', children: createRawSnippet(() => ({ render: () => '<p>x</p>' })) }],
+    ['Segmented', Segmented, { label: 'L', value: 'a', options: [{ id: 'a', label: 'A' }] }],
+    ['Tabs', Tabs, { label: 'L', value: 'a', items: [{ id: 'a', label: 'A' }] }],
+    ['TabPanel', TabPanel, { id: 'a', value: 'a' }],
+  ] as const)('%s forwards nothing, as React', (_, C, props) => {
+    const onclick = vi.fn();
+    const { container } = render(C as Component<Record<string, unknown>>, { props: { ...props, onclick, 'data-testid': 'x' } });
+    fireEvent.click(container.firstElementChild!);
+    expect([container.querySelector('[data-testid]'), onclick.mock.calls.length]).toEqual([null, 0]);
+  });
+
+  it('Button runs ondblclickcapture once, in the capture phase', () => {
+    const calls: string[] = [];
+    const { container } = render(Button, { props: { ondblclickcapture: () => calls.push('capture'), ondblclick: () => calls.push('bubble') } });
+    const button = container.querySelector('button')!;
+    fireEvent.dblClick(button);
+    expect(calls).toEqual(['capture', 'bubble']);
+    expect(button.hasAttribute('ondblclickcapture')).toBe(false);
+  });
+
+  it('preserves native handlers and undefined props without wrapping', () => {
+    const calls: string[] = [];
+    const onclick = () => calls.push('native');
+    const out = eventProps({ onclick, onkeyup: undefined, id: 'a' });
+    expect(Object.keys(out).sort()).toEqual(['id', 'onclick', 'onkeyup']);
+    expect(out.onclick).toBe(onclick);
+    (out.onclick as () => void)();
+    expect(calls).toEqual(['native']);
+  });
+});

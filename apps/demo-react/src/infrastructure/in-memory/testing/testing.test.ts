@@ -1,10 +1,10 @@
 import { describe, expect, it } from 'vitest';
-import { createTestingUseCases } from '@/application/testing';
-import type { ServiceCatalog } from '@/application/ports/catalog';
-import type { SecretRepository } from '@/application/ports/importing';
-import { NotFoundError, ValidationError } from '@/application/shared';
-import { SERVICES } from '../shared';
-import { createInMemoryTestingAdapters } from './index';
+import { createTestingUseCases } from '@microcks/demo-core/application/testing';
+import type { ServiceCatalog } from '@microcks/demo-core/application/ports/catalog';
+import type { SecretRepository } from '@microcks/demo-core/application/ports/importing';
+import { NotFoundError, ValidationError } from '@microcks/demo-core/application/shared';
+import { SERVICES } from '@microcks/demo-core/infrastructure/in-memory/shared';
+import { createInMemoryTestingAdapters } from '@microcks/demo-core/infrastructure/in-memory/testing';
 
 function setup() {
   const { testRuns } = createInMemoryTestingAdapters();

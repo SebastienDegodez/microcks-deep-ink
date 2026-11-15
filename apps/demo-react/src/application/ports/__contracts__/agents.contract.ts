@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
-import { cellKey, type AgentTask } from '@/domain/agents';
-import type { AgentPorts } from '@/application/agents';
+import { cellKey, type AgentTask } from '@microcks/demo-core/domain/agents';
+import type { AgentPorts } from '@microcks/demo-core/application/agents';
 import { collectFor, expectNotFound, expectSilentAfterUnsubscribe, expectValidationError, takeEmissions, useAdapters, useFakeTimers, type MakeAdapters } from './support.contract';
 
 const AGENT = 'concierge';

@@ -31,6 +31,8 @@ export interface ResultBoxProps extends Omit<HTMLAttributes<HTMLDivElement>, 'ti
   bordered?: boolean;
   /** Default `surface`. `raised`: the --raised fill instead of --surface (Agent test verdict). */
   surface?: 'surface' | 'raised';
+  /** Default `regular`. `compact`: 18px lines, a 10px gap and a 260px text basis before the action wraps (Sources undo banner). */
+  density?: 'regular' | 'compact';
 }
 
 /** A framed result line in a `role="status"` box. Keep it mounted before the result arrives. */
@@ -45,6 +47,7 @@ export function ResultBox({
   live = 'status',
   bordered = true,
   surface = 'surface',
+  density = 'regular',
   className,
   children,
   ...rest
@@ -59,6 +62,7 @@ export function ResultBox({
       data-size={size === 'md' ? 'md' : undefined}
       data-bordered={bordered ? undefined : 'false'}
       data-surface={surface === 'surface' ? undefined : surface}
+      data-density={density === 'regular' ? undefined : density}
     >
       {name ? (
         <span className="result-box-icon" aria-hidden="true">

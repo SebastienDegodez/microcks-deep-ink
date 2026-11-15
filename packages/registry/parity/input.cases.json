@@ -1,0 +1,22 @@
+{
+  "component": "Input",
+  "cases": [
+    {"name": "default", "props": {"id": "url", "placeholder": "API Pastry"}},
+    {"name": "size-sm", "props": {"size": "sm", "aria-label": "Filter"}},
+    {"name": "mono", "props": {"mono": true, "aria-label": "Path"}},
+    {"name": "surface-bg", "props": {"surface": "bg", "aria-label": "Repository URL"}},
+    {"name": "surface-surface", "props": {"surface": "surface", "aria-label": "Repository URL"}},
+    {"name": "type-and-attributes", "props": {"type": "email", "name": "email", "required": true, "className": "wide", "aria-invalid": "true", "aria-describedby": "email-error"}},
+    {"name": "disabled-value", "props": {"disabled": true, "value": "URI_PARTS", "aria-label": "Dispatcher"}},
+    {"name": "textarea-default", "component": "Textarea", "props": {"id": "notes", "rows": 4}},
+    {"name": "textarea-variants", "component": "Textarea", "props": {"size": "sm", "surface": "bg", "mono": true, "className": "payload", "aria-label": "Payload"}},
+    {"name": "textarea-disabled-value", "component": "Textarea", "props": {"disabled": true, "value": "{ \"name\": \"Millefeuille\" }", "aria-label": "Payload"}},
+    {"name": "story-default", "props": {"id": "in-1", "placeholder": "API Pastry"}},
+    {"name": "story-mono-default-value", "props": {"id": "in-2", "mono": true, "defaultValue": "/pastries/{name}"}},
+    {"name": "story-invalid", "props": {"id": "in-3", "aria-invalid": "true", "aria-describedby": "in-3-e", "defaultValue": "80a"}},
+    {"name": "story-disabled", "props": {"id": "in-5", "disabled": true, "defaultValue": "URI_PARTS"}},
+    {"name": "story-page-background", "props": {"id": "in-bg", "mono": true, "surface": "bg", "defaultValue": "https://gitlab.acme.io/bakery/pastry-api.git"}},
+    {"name": "textarea-story-multiline", "component": "Textarea", "props": {"id": "in-4", "mono": true, "rows": 4, "defaultValue": "{\n  \"name\": \"Millefeuille\"\n}"}},
+    {"name": "textarea-story-small", "component": "Textarea", "props": {"size": "sm", "surface": "bg", "aria-label": "Notes, small", "placeholder": "Small textarea", "rows": 3}}
+  ]
+}

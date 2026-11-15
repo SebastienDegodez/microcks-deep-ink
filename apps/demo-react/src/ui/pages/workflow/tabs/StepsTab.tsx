@@ -3,7 +3,7 @@ import type { WorkflowDetail } from '@/application/arazzo';
 import { RunPicker } from '../RunPicker';
 import { StepsTable } from '../StepsTable';
 import { originWord } from '../run-facts';
-import './steps.css';
+import '@microcks/demo-styles/pages/workflow/tabs/steps.css';
 
 export interface StepsTabProps {
   detail: WorkflowDetail;

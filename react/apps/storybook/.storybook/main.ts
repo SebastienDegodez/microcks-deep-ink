@@ -2,9 +2,17 @@ import type { StorybookConfig } from '@storybook/react-vite';
 
 const config: StorybookConfig = {
   stories: ['../src/**/*.mdx', '../src/**/*.stories.@(ts|tsx)'],
-  addons: ['@storybook/addon-docs', '@storybook/addon-a11y'],
+  addons: [
+    '@chromatic-com/storybook',
+    '@storybook/addon-vitest',
+    '@storybook/addon-a11y',
+    '@storybook/addon-docs',
+    '@storybook/addon-mcp',
+  ],
   framework: { name: '@storybook/react-vite', options: {} },
   core: { disableTelemetry: true },
+  // Hide the "Get started" onboarding checklist (sidebar widget and menu entry).
+  features: { sidebarOnboardingChecklist: false, menuOnboardingChecklist: false },
   // Published under GitHub Pages /react/ next to the Angular Storybook.
   viteFinal: async (cfg) => ({
     ...cfg,

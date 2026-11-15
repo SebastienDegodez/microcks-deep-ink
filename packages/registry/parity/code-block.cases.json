@@ -1,0 +1,24 @@
+{
+  "component": "CodeBlock",
+  "cases": [
+    {"name": "default-caption-copy", "props": {"caption": "Request", "code": "curl -X GET http://localhost:8080/rest/API+Pastry/2.0/pastries\n  -H 'Accept: application/json'"}},
+    {"name": "tabs", "props": {"code": "curl …", "tabs": [{"id": "curl", "label": "curl"}, {"id": "httpie", "label": "HTTPie"}], "tab": "curl", "tabsLabel": "Client"}},
+    {"name": "tabs-default-label-no-copy", "props": {"code": "http GET :8080", "tabs": [{"id": "curl", "label": "curl"}, {"id": "httpie", "label": "HTTPie"}], "tab": "httpie", "copy": false}},
+    {"name": "plain", "props": {"variant": "plain", "caption": "Stored as", "code": "{}"}},
+    {"name": "bare-source", "props": {"variant": "bare", "caption": "Response", "source": "Pastry.json", "code": "{\n  \"name\": \"Millefeuille\"\n}"}},
+    {"name": "source-raised-header", "props": {"caption": "Expected", "source": "Pastry.json", "headerTone": "raised", "copy": false, "code": "{\"price\": \"number\"}"}},
+    {"name": "raised-without-header", "props": {"variant": "plain", "headerTone": "raised", "code": "x"}},
+    {"name": "no-header-no-copy", "props": {"copy": false, "language": "json", "code": "{ }"}},
+    {"name": "label-and-caption", "props": {"caption": "SendMessage · curl", "label": "SendMessage · curl, JSON-RPC binding", "code": "curl -X POST"}},
+    {"name": "lines-numbers-bad-notes", "props": {"variant": "plain", "lineNumbers": true, "startLine": 10, "lines": [{"text": "{"}, {"text": "  \"price\": \"2.5\"", "bad": true, "note": "schema: number"}, {"text": "}", "selected": true}]}},
+    {"name": "narrow-gutter-danger", "props": {"variant": "plain", "caption": "Response body", "lineNumbers": true, "gutter": "narrow", "tone": "danger", "lines": [{"text": "{"}, {"text": "  \"price\": \"2.5\"", "bad": true, "note": "schema: number"}]}},
+    {"name": "changed-lines", "props": {"caption": "contract-tests.yml", "lines": [{"text": "jobs:"}, {"text": "  - name: Contract test API Pastry 2.0", "changed": true}]}},
+    {"name": "code-split-numbered", "props": {"lineNumbers": true, "language": "yaml", "code": "a: 1\n\tb: 2\n"}},
+    {"name": "focusable-overflow", "props": {"variant": "bare", "caption": "Response", "focusable": "overflow", "code": "{}"}},
+    {"name": "focusable-never", "props": {"variant": "plain", "focusable": "never", "caption": "Stored as", "code": "{}"}},
+    {"name": "frame-none-bare", "props": {"frame": "none", "variant": "bare", "caption": "Schema", "label": "Input schema of getPastry", "className": "tool-card-schema", "code": "{\"type\": \"object\"}"}},
+    {"name": "frame-none-never", "props": {"frame": "none", "focusable": "never", "label": "Config", "code": "{}"}},
+    {"name": "frame-none-overflow-lines", "props": {"frame": "none", "focusable": "overflow", "variant": "plain", "tone": "danger", "lineNumbers": true, "gutter": "narrow", "maxHeight": 120, "lines": [{"text": "a"}, {"text": "b", "bad": true, "note": "schema: number"}]}},
+    {"name": "max-height-string-attributes", "props": {"maxHeight": "240px", "copy": false, "language": "json", "code": "[]", "id": "cb", "data-testid": "code", "aria-describedby": "help", "title": "JSON"}}
+  ]
+}

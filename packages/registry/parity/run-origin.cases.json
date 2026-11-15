@@ -1,0 +1,10 @@
+{
+  "component": "RunOrigin",
+  "cases": [
+    {"name": "ui", "props": {"origin": "ui"}},
+    {"name": "api", "props": {"origin": "api", "sessionId": "s-ignored"}},
+    {"name": "mock-url", "props": {"origin": "mock-url"}},
+    {"name": "session", "props": {"origin": "session", "sessionId": "s-7f3a2c91"}},
+    {"name": "session-without-id-attributes", "props": {"origin": "session", "className": "wide", "id": "o1", "data-testid": "origin", "data-origin": "overridden", "title": "Launched from a session"}}
+  ]
+}

@@ -1,0 +1,12 @@
+{
+  "component": "Segmented",
+  "cases": [
+    {"name": "default", "props": {"label": "Result", "value": "all", "options": [{"id": "all", "label": "All", "count": 12}, {"id": "passed", "label": "Passed", "dot": "success", "count": 10}, {"id": "failed", "label": "Failed", "dot": "danger", "count": 2}]}},
+    {"name": "dots", "props": {"label": "Status", "value": "ring", "options": [{"id": "neutral", "label": "Neutral", "dot": "neutral"}, {"id": "success", "label": "Success", "dot": "success"}, {"id": "danger", "label": "Danger", "dot": "danger"}, {"id": "warning", "label": "Warning", "dot": "warning"}, {"id": "muted", "label": "Muted", "dot": "muted"}, {"id": "ring", "label": "Ring", "dot": "ring", "count": 0}]}},
+    {"name": "icons-selected-fill-wide", "props": {"label": "Status", "value": "imported", "pressedFill": "selected", "iconSize": 13, "spacing": "wide", "options": [{"id": "all", "label": "All"}, {"id": "imported", "label": "Imported", "icon": "check", "iconTone": "success"}, {"id": "warn", "label": "Warnings", "icon": "warning", "iconTone": "warning"}, {"id": "err", "label": "Errors", "icon": "cross", "iconTone": "danger"}, {"id": "off", "label": "Inactive", "icon": "pause-narrow", "iconTone": "muted"}, {"id": "plain", "label": "Plain", "icon": "search"}]}},
+    {"name": "explicit-defaults", "props": {"label": "Period", "value": "7d", "variant": "track", "tone": "neutral", "pressedFill": "raised", "iconSize": 15, "size": "md", "spacing": "normal", "className": "wide", "options": [{"id": "today", "label": "Today", "icon": "usage"}, {"id": "7d", "label": "7 days"}]}},
+    {"name": "joined-primary", "props": {"label": "Artifact role", "variant": "joined", "tone": "primary", "value": "primary", "options": [{"id": "primary", "label": "Primary"}, {"id": "secondary", "label": "Secondary"}]}},
+    {"name": "joined-sm", "props": {"label": "Script language", "variant": "joined", "size": "sm", "value": "none", "options": [{"id": "g", "label": "Groovy"}, {"id": "j", "label": "JavaScript"}]}},
+    {"name": "empty", "props": {"label": "Nothing", "value": "", "options": []}}
+  ]
+}

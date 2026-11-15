@@ -1,7 +1,8 @@
 <!--
   Button recipe. One primary action per task region.
   Variants: data-variant="primary | secondary | outline | ghost | link | dashed | danger".
-  Size: data-size="sm (32px) | compact (34px) | tile (36px, card footers) | md (40px) | lg (44px)". data-tone="danger" on ghost or link: danger text.
+  Size: data-size="xs (28px, 13px 600) | sm (32px) | compact (34px) | tile (36px, card footers) | md (40px) | lg (44px)".
+  data-tone="danger" on ghost or link: danger text. data-tone="link" on outline: link-coloured text, no hover fill (Sources "Undo").
   Native <button>: Enter and Space activate it. Always set type.
 -->
 <button type="button" class="button" data-variant="primary" data-size="md">Run test</button>
@@ -13,6 +14,7 @@
 <button type="button" class="button" data-variant="dashed" data-size="compact">Add header</button>
 <button type="button" class="button" data-variant="outline" data-size="lg">Cancel</button>
 <button type="button" class="button" data-variant="primary" data-size="tile">Install</button>
+<button type="button" class="button" data-variant="outline" data-size="xs" data-tone="link">Undo</button>
 <a class="button" data-variant="secondary" data-size="tile" href="/services">View in catalogue</a>
 <button type="button" class="button" data-variant="dashed" aria-pressed="false">Show empty install</button>
 

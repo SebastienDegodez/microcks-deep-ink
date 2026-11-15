@@ -1,0 +1,1 @@
+<script>import { ProjectionPill } from "@microcks/deep-ink";</script><div class="inline"><ProjectionPill title="A2A does not exist in Microcks today: this screen projects a protocol module for v2"/><ProjectionPill>Projection · proposed CLI</ProjectionPill></div>

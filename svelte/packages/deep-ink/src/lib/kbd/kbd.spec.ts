@@ -7,8 +7,8 @@ import Kbd from './Kbd.svelte';
 const text = (t: string) => createRawSnippet(() => ({ render: () => `<span>${t}</span>` }));
 
 describe('Kbd', () => {
-  it('renders a native <kbd> with the kbd class, the className and the other attributes', async () => {
-    const { container } = render(Kbd, { props: { className: 'shortcut', title: 'Control', children: text('Ctrl') } });
+  it('renders a native <kbd> with the kbd class, the class and the other attributes', async () => {
+    const { container } = render(Kbd, { props: { class: 'shortcut', title: 'Control', children: text('Ctrl') } });
     const kbd = container.querySelector('kbd')!;
     expect(kbd.className).toBe('kbd shortcut');
     expect(kbd.title).toBe('Control');

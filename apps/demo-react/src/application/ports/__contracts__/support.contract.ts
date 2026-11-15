@@ -6,7 +6,7 @@
  * and the HTTP adapters answered by MSW (`src/infrastructure/http/port-contracts.test.ts`).
  */
 import { afterEach, beforeEach, expect, vi } from 'vitest';
-import { NotFoundError, ValidationError, type Listener, type Unsubscribe } from '@/application/shared';
+import { NotFoundError, ValidationError, type Listener, type Unsubscribe } from '@microcks/demo-core/application/shared';
 
 /** Builds a fresh set of adapters (one per test, so mutations never leak between tests). */
 export type MakeAdapters<T> = () => T;

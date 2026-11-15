@@ -1,3 +1,4 @@
+import { createRef } from 'react';
 import { fireEvent, render, screen } from '@testing-library/react';
 import { describe, expect, it, vi } from 'vitest';
 import { axeViolations } from '../test/axe';
@@ -80,6 +81,22 @@ describe('Button', () => {
     const install = screen.getByRole('button', { name: 'Install' });
     expect(install.getAttribute('data-size')).toBe('tile');
     expect(install.querySelector('svg')?.getAttribute('width')).toBe('14');
+  });
+
+  it('has a 28px xs size with a 14px icon and a link tone for the outline variant', async () => {
+    const ref = createRef<HTMLButtonElement>();
+    const onClick = vi.fn();
+    const { container } = render(<Button ref={ref} variant="outline" size="xs" tone="link" icon="refresh" onClick={onClick}>Undo</Button>);
+    const undo = screen.getByRole('button', { name: 'Undo' });
+    expect(ref.current).toBe(undo);
+    expect(undo.getAttribute('type')).toBe('button');
+    expect(undo.getAttribute('data-variant')).toBe('outline');
+    expect(undo.getAttribute('data-size')).toBe('xs');
+    expect(undo.getAttribute('data-tone')).toBe('link');
+    expect(undo.querySelector('svg')?.getAttribute('width')).toBe('14');
+    fireEvent.click(undo);
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(await axeViolations(container)).toEqual([]);
   });
 
   it('has no axe violations', async () => {

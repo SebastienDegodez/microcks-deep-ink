@@ -27,7 +27,7 @@ export function RunPicker({ runs, run, onPick, label, caption }: { runs: Workflo
             data-status={r.status}
             onClick={() => onPick(r.number)}
           >
-            <Icon name={RUN_STATUS_ICON[r.status]} size={13} strokeWidth={2.2} />
+            <Icon name={RUN_STATUS_ICON[r.status]} size={13} strokeWidth={2.2} className="wf-run-pick-icon" />
             {n}
             <span className="wf-run-pick-target">
               <span className="sr-only"> </span>

@@ -1,0 +1,10 @@
+{
+  "component": "Switch",
+  "cases": [
+    {"name": "on", "props": {"label": "Schema validation", "checked": true}},
+    {"name": "off-description", "props": {"label": "Record traffic", "description": "Keeps the last 1,000 calls for replay.", "checked": false}},
+    {"name": "disabled", "props": {"label": "Managed by your administrator", "checked": true, "disabled": true}},
+    {"name": "size-lg", "props": {"label": "Stateful", "size": "lg", "checked": true}},
+    {"name": "size-md-attributes", "props": {"label": "Slack", "size": "md", "checked": false, "className": "mine", "id": "s1", "name": "slack", "aria-describedby": "hint", "description": "When a test fails."}}
+  ]
+}

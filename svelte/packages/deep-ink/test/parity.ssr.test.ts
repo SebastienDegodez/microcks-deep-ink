@@ -9,9 +9,10 @@ const components = barrel as Record<string, unknown>;
 for (const { item, component, cases } of parityItems()) {
   describe(`parity: ${item} (${component})`, () => {
     for (const c of cases) {
-      if (!(component in components)) it.todo(c.name);
+      const name = c.component ?? component;
+      if (!(name in components)) it.todo(c.name);
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      else it(c.name, () => { const { svelte, react } = parity(components[component] as any, item, c); expect(svelte).toBe(react); });
+      else it(c.name, () => { const { svelte, react } = parity(components[name] as any, item, c); expect(svelte).toBe(react); });
     }
   });
 }

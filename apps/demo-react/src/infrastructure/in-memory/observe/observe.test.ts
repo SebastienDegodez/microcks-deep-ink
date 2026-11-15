@@ -1,9 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import { createObserveUseCases } from '@/application/observe';
-import type { ServiceCatalog } from '@/application/ports/catalog';
-import type { TestRunRepository } from '@/application/ports/testing';
-import { FixedClock, SERVICES, RUN_IDS } from '../shared';
-import { createInMemoryObserveAdapters } from './index';
+import { createObserveUseCases } from '@microcks/demo-core/application/observe';
+import type { ServiceCatalog } from '@microcks/demo-core/application/ports/catalog';
+import type { TestRunRepository } from '@microcks/demo-core/application/ports/testing';
+import { FixedClock, SERVICES, RUN_IDS } from '@microcks/demo-core/infrastructure/in-memory/shared';
+import { createInMemoryObserveAdapters } from '@microcks/demo-core/infrastructure/in-memory/observe';
 
 function setup() {
   const adapters = createInMemoryObserveAdapters();
@@ -95,7 +95,7 @@ describe('observe use cases', () => {
 
   it('filters MCP tool calls by their kind', async () => {
     const topology = await setup().traceTopology();
-    const { matchesTraceFilter } = await import('@/domain/observe');
+    const { matchesTraceFilter } = await import('@microcks/demo-core/domain/observe');
     const mcp = topology.history.filter((c) => matchesTraceFilter(c, { kind: 'MCP' }));
     expect(mcp.map((c) => c.mcpTool)).toEqual(['get_pastries_name']);
   });

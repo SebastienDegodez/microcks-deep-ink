@@ -1,0 +1,8 @@
+{
+  "component": "RunnerLog",
+  "cases": [
+    {"name": "default", "props": {"lines": [{"time": "14:12:08.120", "level": "INFO", "text": "Starting A2A conformance run"}, {"time": "14:12:08.310", "level": "SEND", "text": "message/send", "emphasis": true}, {"time": "14:12:08.512", "level": "PASS", "text": "Agent card is valid"}, {"time": "14:12:09.001", "level": "FAIL", "text": "tasks/get returned 500", "error": true}, {"time": "14:12:09.100", "level": "WARN", "text": "Slow response"}, {"time": "14:12:09.200", "level": "WAIT", "text": "Waiting for the stream"}]}},
+    {"name": "title-status", "props": {"title": "Conformance log", "status": "12 lines · completed", "lines": [{"time": "14:12:08", "level": "INFO", "text": "Done"}]}},
+    {"name": "empty-attributes", "props": {"lines": [], "className": "tall", "id": "l1", "data-testid": "log", "aria-labelledby": "other", "aria-describedby": "d1"}}
+  ]
+}

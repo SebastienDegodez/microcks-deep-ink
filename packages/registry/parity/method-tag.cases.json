@@ -1,0 +1,17 @@
+{
+  "component": "MethodTag",
+  "cases": [
+    {"name": "default", "props": {"method": "GET"}},
+    {"name": "rest-delete", "props": {"method": "DELETE", "protocol": "REST"}},
+    {"name": "soap", "props": {"method": "getPastry", "protocol": "SOAP"}},
+    {"name": "event", "props": {"method": "SUBSCRIBE", "protocol": "EVENT"}},
+    {"name": "grpc", "props": {"method": "GetPastries", "protocol": "gRPC"}},
+    {"name": "graphql", "props": {"method": "QUERY", "protocol": "GRAPHQL"}},
+    {"name": "direct", "props": {"method": "CALL", "protocol": "DIRECT"}},
+    {"name": "a2a", "props": {"method": "SEND", "protocol": "A2A"}},
+    {"name": "min-width", "props": {"method": "PATCH", "minWidth": 52}},
+    {"name": "size-sm", "props": {"method": "POST", "size": "sm"}},
+    {"name": "size-xs", "props": {"method": "PUT", "size": "xs", "minWidth": 44}},
+    {"name": "size-md-and-attributes", "props": {"method": "GET", "size": "md", "className": "wide", "id": "m1", "title": "Read"}}
+  ]
+}

@@ -1,0 +1,1 @@
+<script>import { ConformanceBand } from '@microcks/deep-ink'; import { CONFORMANCE } from '@microcks-deep-ink/storybook-shared/fixtures';</script><div class="inline"><ConformanceBand size="mini" outcomes={CONFORMANCE}/><ConformanceBand size="mini" outcomes={['pass','pass','untested','untested']}/></div>

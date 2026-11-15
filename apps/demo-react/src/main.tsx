@@ -7,7 +7,7 @@ import { createAppRouter } from '@/ui/app/router';
 import { restoreTheme } from '@microcks/deep-ink';
 // Design-system styles first (tokens, base and every component, layered), then the demo shell's own CSS.
 import '@microcks/deep-ink/styles.css';
-import '@/ui/app/app.css';
+import '@microcks/demo-styles/app/app.css';
 
 restoreTheme();
 

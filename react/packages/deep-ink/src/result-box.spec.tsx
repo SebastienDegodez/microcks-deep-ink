@@ -28,6 +28,7 @@ describe('ResultBox', () => {
     for (const box of boxes) {
       expect(box.hasAttribute('data-bordered')).toBe(false);
       expect(box.hasAttribute('data-surface')).toBe(false);
+      expect(box.hasAttribute('data-density')).toBe(false);
     }
   });
 
@@ -41,6 +42,23 @@ describe('ResultBox', () => {
     expect(box.getAttribute('data-bordered')).toBe('false');
     expect(box.getAttribute('data-surface')).toBe('raised');
     expect(box.getAttribute('role')).toBeNull();
+    expect(await axeViolations(container)).toEqual([]);
+  });
+
+  it('density="compact" keeps the status role, the text and the action (Sources undo banner)', async () => {
+    const onUndo = vi.fn();
+    const { container } = render(
+      <ResultBox tone="info" density="compact" action={<button type="button" onClick={onUndo}>Undo</button>}>
+        <strong>Pastry orders events</strong> deleted.
+      </ResultBox>,
+    );
+    const box = screen.getByRole('status');
+    expect(box.getAttribute('data-density')).toBe('compact');
+    expect(box.getAttribute('data-tone')).toBe('info');
+    expect(box.querySelector('.result-box-icon')).toBeNull();
+    expect(box.textContent).toBe('Pastry orders events deleted.Undo');
+    fireEvent.click(screen.getByRole('button', { name: 'Undo' }));
+    expect(onUndo).toHaveBeenCalledOnce();
     expect(await axeViolations(container)).toEqual([]);
   });
 });

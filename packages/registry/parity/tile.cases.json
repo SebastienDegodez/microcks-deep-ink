@@ -1,0 +1,17 @@
+{
+  "component": "Tile",
+  "cases": [
+    {"name": "static", "props": {"title": "Open Banking"}},
+    {"name": "link-meta-body-footer", "props": {"title": "Open Banking", "href": "#/hub/banking", "meta": "maintained by community", "footer": "Install"}, "children": "Accounts and payments."},
+    {"name": "link-selected-media-aside", "props": {"title": "Open Banking", "href": "#/hub/banking", "selected": true, "media": "OB", "aside": "Banking"}},
+    {"name": "button-unselected", "props": {"title": "Open Banking", "onSelect": {"$fn": "x"}, "selected": false}},
+    {"name": "button-selected-li-h2", "props": {"title": "Open Banking", "onSelect": {"$fn": "x"}, "selected": true, "as": "li", "headingLevel": 2}},
+    {"name": "div-h4", "props": {"title": "Open Banking", "as": "div", "headingLevel": 4}},
+    {"name": "h5-labelledby-attributes", "props": {"title": "Open Banking", "headingLevel": 5, "aria-labelledby": "other", "className": "wide", "id": "t1", "data-testid": "tile", "data-selected": "x"}},
+    {"name": "h6-article", "props": {"title": "Open Banking", "as": "article", "headingLevel": 6, "selected": false}},
+    {"name": "grid", "component": "TileGrid", "props": {"label": "Packages"}, "children": "tiles"},
+    {"name": "grid-ul", "component": "TileGrid", "props": {"label": "Packages", "as": "ul"}},
+    {"name": "grid-div-attributes", "component": "TileGrid", "props": {"label": "Packages", "as": "div", "className": "wide", "id": "g1", "data-testid": "grid", "role": "list"}},
+    {"name": "grid-section-role", "component": "TileGrid", "props": {"label": "Packages", "as": "section", "role": "list"}}
+  ]
+}

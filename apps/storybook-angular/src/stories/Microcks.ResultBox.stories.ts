@@ -21,7 +21,7 @@ export const Tones: StoryObj = {
           Beer Catalog API 1.0 is not in Microcks yet: import beer-catalog-1.0-openapi.yaml first, or pick the API to link in the dialog.
           <span mkResultBoxAction><button mkButton size="sm" icon="link">Link source</button></span>
         </div>
-        <div mkResultBox tone="info"><strong>Pastry orders events</strong> deleted. Services already discovered remain but are no longer updated.<span mkResultBoxAction><button mkButton size="sm">Undo</button></span></div>
+        <div mkResultBox tone="info" density="compact"><strong>Pastry orders events</strong> deleted. Services already discovered remain but are no longer updated.<span mkResultBoxAction><button mkButton variant="outline" size="xs" tone="link">Undo</button></span></div>
         <div mkResultBox tone="danger">Export failed · the repository is read-only.</div>
       </div>
     `,

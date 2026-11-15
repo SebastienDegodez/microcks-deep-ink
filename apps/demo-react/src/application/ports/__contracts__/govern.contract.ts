@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { GovernPorts } from '@/application/govern';
+import type { GovernPorts } from '@microcks/demo-core/application/govern';
 import { expectNotFound, useAdapters, type MakeAdapters } from './support.contract';
 
 /** The ports the govern feature owns (secrets belong to the importing feature). */

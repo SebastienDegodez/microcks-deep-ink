@@ -1,0 +1,14 @@
+{
+  "component": "Tabs",
+  "cases": [
+    {"name": "default", "props": {"label": "Service sections", "value": "ops", "items": [{"id": "ops", "label": "Operations", "count": 4}, {"id": "props", "label": "Properties"}, {"id": "off", "label": "Archived", "disabled": true}, {"id": "tests", "label": "Tests", "count": 0}]}, "children": "Panels"},
+    {"name": "live-alert-hint-icon", "props": {"label": "Sections", "value": "users", "idPrefix": "adm", "items": [{"id": "tasks", "label": "Tasks", "live": true, "count": 3}, {"id": "users", "label": "Users", "alert": 2, "alertLabel": "pending changes"}, {"id": "keys", "label": "Keys", "alert": 1}, {"id": "zero", "label": "Zero", "alert": 0}, {"id": "file", "label": "Upload", "hint": "one-off file", "icon": "document"}]}},
+    {"name": "card-manual", "props": {"label": "Source type", "variant": "card", "activation": "manual", "className": "x", "value": "git", "items": [{"id": "file", "label": "Upload", "hint": "one-off file", "icon": "document"}, {"id": "git", "label": "Git repository", "hint": "kept in sync", "icon": "git-branch"}]}},
+    {"name": "line-explicit", "props": {"label": "L", "variant": "line", "activation": "automatic", "idPrefix": "p", "value": "a", "items": [{"id": "a", "label": "A"}]}},
+    {"name": "disabled-selected-falls-back", "props": {"label": "Sections", "idPrefix": "s", "value": "off", "items": [{"id": "off", "label": "Archived", "disabled": true}, {"id": "a", "label": "A"}, {"id": "b", "label": "B"}]}},
+    {"name": "all-disabled", "props": {"label": "Sections", "idPrefix": "s", "value": "a", "items": [{"id": "a", "label": "A", "disabled": true}, {"id": "b", "label": "B", "disabled": true}]}},
+    {"name": "panel-active", "component": "TabPanel", "props": {"id": "ops", "value": "ops", "idPrefix": "svc", "className": "pad"}, "children": "Content of Operations"},
+    {"name": "panel-hidden", "component": "TabPanel", "props": {"id": "tests", "value": "ops", "idPrefix": "svc"}, "children": "Content of Tests"},
+    {"name": "panel-default-prefix", "component": "TabPanel", "props": {"id": "a", "value": "a"}, "children": "A"}
+  ]
+}

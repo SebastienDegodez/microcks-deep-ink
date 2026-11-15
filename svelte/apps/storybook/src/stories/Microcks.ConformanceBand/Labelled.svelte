@@ -1,0 +1,1 @@
+<script>import { ConformanceBand } from '@microcks/deep-ink';</script><ConformanceBand outcomes={['pass','pass','fail']} labels={['GET /pastries · passed','GET /pastries/{name} · passed','PATCH /pastries/{name} · failed']}/>

@@ -26,4 +26,11 @@ describe('SummaryStrip', () => {
     render(<SummaryStrip role="note" aria-label="Test setup" variant="canvas" parts={[{ text: 'Setup', kind: 'label' }, { text: 'JSON-RPC 2.0' }]} />);
     expect(screen.getByRole('note', { name: 'Test setup' }).getAttribute('data-variant')).toBe('canvas');
   });
+
+  it('keeps line-height fixed by default and inherits it on demand', () => {
+    const { rerender } = render(<SummaryStrip role="note" aria-label="Dispatcher" parts={[{ text: 'Dispatcher', kind: 'label' }]} />);
+    expect(screen.getByRole('note').hasAttribute('data-line-height')).toBe(false);
+    rerender(<SummaryStrip role="note" aria-label="Dispatcher" lineHeight="inherit" parts={[{ text: 'Dispatcher', kind: 'label' }]} />);
+    expect(screen.getByRole('note').getAttribute('data-line-height')).toBe('inherit');
+  });
 });

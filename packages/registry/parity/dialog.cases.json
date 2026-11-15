@@ -1,0 +1,10 @@
+{
+  "component": "Dialog",
+  "cases": [
+    {"name": "closed", "props": {"open": false, "title": "Delete API Pastry?", "description": "This cannot be undone.", "footer": "Delete"}, "children": "Body"},
+    {"name": "open-description-footer", "props": {"open": true, "title": "Delete API Pastry?", "description": "This cannot be undone.", "footer": "Cancel or delete"}, "children": "Reason"},
+    {"name": "open-minimal", "props": {"open": true, "title": "Settings"}},
+    {"name": "size-sm-class-backdrop", "props": {"open": true, "title": "Rename", "size": "sm", "className": "rename", "closeOnBackdrop": true}, "children": "New name"},
+    {"name": "size-lg", "props": {"open": true, "title": "Import", "size": "lg", "description": "Upload an artifact."}}
+  ]
+}

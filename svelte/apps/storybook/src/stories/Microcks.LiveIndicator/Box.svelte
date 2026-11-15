@@ -1,0 +1,1 @@
+<script>import { LiveIndicator } from "@microcks/deep-ink";</script><div class="inline"><LiveIndicator variant="box" label="live · installing 3 APIs"/><LiveIndicator variant="box" size="lg" label="live · fetching and importing artifacts"/></div>

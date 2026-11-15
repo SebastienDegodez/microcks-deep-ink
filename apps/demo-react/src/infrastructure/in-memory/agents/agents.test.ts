@@ -1,12 +1,12 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { cellKey } from '@/domain/agents';
-import { createAgentUseCases } from '@/application/agents';
-import { createCatalogUseCases } from '@/application/catalog';
-import { createTestingUseCases } from '@/application/testing';
-import { createInMemoryCatalogAdapters } from '../catalog';
-import { createInMemoryImportingAdapters } from '../importing';
-import { createInMemoryTestingAdapters } from '../testing';
-import { createInMemoryAgentAdapters } from '.';
+import { cellKey } from '@microcks/demo-core/domain/agents';
+import { createAgentUseCases } from '@microcks/demo-core/application/agents';
+import { createCatalogUseCases } from '@microcks/demo-core/application/catalog';
+import { createTestingUseCases } from '@microcks/demo-core/application/testing';
+import { createInMemoryCatalogAdapters } from '@microcks/demo-core/infrastructure/in-memory/catalog';
+import { createInMemoryImportingAdapters } from '@microcks/demo-core/infrastructure/in-memory/importing';
+import { createInMemoryTestingAdapters } from '@microcks/demo-core/infrastructure/in-memory/testing';
+import { createInMemoryAgentAdapters } from '@microcks/demo-core/infrastructure/in-memory/agents';
 
 function createUseCases() {
   const catalog = createInMemoryCatalogAdapters();
@@ -18,7 +18,7 @@ function createUseCases() {
     testing: createTestingUseCases({ testRuns: testing.testRuns, catalog: catalog.catalog, secrets: importing.secrets }),
   };
 }
-import { NotFoundError, ValidationError } from '@/application/shared';
+import { NotFoundError, ValidationError } from '@microcks/demo-core/application/shared';
 
 describe('agent use cases', () => {
   beforeEach(() => {

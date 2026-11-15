@@ -1,0 +1,1 @@
+<script>import { MethodTag } from "@microcks/deep-ink";</script><div class="inline"><MethodTag method="GET" size="sm"/><MethodTag method="PATCH" size="sm"/><MethodTag method="POST" size="sm"/><MethodTag method="GET" size="xs"/><MethodTag method="PATCH" size="xs"/></div>

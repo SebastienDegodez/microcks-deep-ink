@@ -1,0 +1,94 @@
+import { Meta, Story } from '@storybook/addon-docs/blocks';
+import * as Showcase from './stories/Docs.Showcase.stories';
+
+<Meta title="Introduction" />
+
+> **DEMO.** This Storybook demonstrates a design system proposal for the Microcks UI v2. It is not an official Microcks release, and nothing is published on npm.
+
+# Deep Ink
+
+**The contract is the source of truth; the interface makes it alive.**
+
+The Microcks UI v2 design system, a proposal for the maintainers. This page is its showcase (the "Main" board of the prototype):
+everything below is rendered live with the real tokens (`packages/tokens`) and the real components. Use the **Theme** toolbar button to switch between Deep Ink (dark) and Paper (light).
+
+## 01 Colours
+
+Inks for the grounds and the text, the brand, the protocol spectrum and the statuses. Every swatch shows its token name and its value in the active theme. Details: **Foundations/Colors**.
+
+<Story of={Showcase.Colours} />
+
+## 02 Typography
+
+**Alegreya Sans SC** is the brand, **IBM Plex Sans** sets the headings and the text, **JetBrains Mono** sets the data. All roles: **Foundations/Typography**.
+
+<Story of={Showcase.Typography} />
+
+## 03 Shapes and depth
+
+Radii 4, 8 and 12. Depth comes from light, not from shadows; the blue halo means focus. Details: **Foundations/Spacing and radius** and **Foundations/Focus and motion**.
+
+<Story of={Showcase.ShapesAndDepth} />
+
+## 04 API badges
+
+The signature of Deep Ink: every API is named by its protocol, its name and its version.
+
+<Story of={Showcase.ApiBadges} />
+
+## 05 Actions
+
+<Story of={Showcase.Actions} />
+
+## 06 Command bar ⌘K
+
+<Story of={Showcase.CommandBarShowcase} />
+
+## 07 Domain components
+
+The Microcks components: key figures, operations, the mock URL made copyable.
+
+<Story of={Showcase.DomainComponents} />
+
+## About this Storybook
+
+This Storybook documents **`@microcks/deep-ink`**, the Svelte package (private for now: built from a clone, not on npm).
+The Angular Storybook shows the same items; Angular, plain HTML and CSS are still copied with the `deep-ink` CLI, in the spirit of shadcn.
+
+- **Natural components** are native HTML (`<button>`, `<table>`, `<dialog>`) styled by a CSS class API with plain class names (`.button`, `.table`, `.dialog`).
+- **Microcks components** (API badge, status, operation row...) are native Svelte code over the same CSS, plus an HTML recipe for plugins.
+- **Two Web Components remain**, where the logic is heavy: the Workflow Loom and the Plugin Slot. They ship as self-contained bundles with a thin wrapper.
+
+```
+packages/tokens          CSS variables, dark (Deep Ink) and light (Paper)
+packages/registry        CSS, HTML recipes and Angular sources; builds the one layered stylesheet
+packages/core            the two Web Components, compiled to element bundles
+svelte/packages/deep-ink  @microcks/deep-ink: the Svelte components, styles.css, the element bundles
+```
+
+## Use a component
+
+```svelte
+<script>
+  import '@microcks/deep-ink/styles.css'; // once, in your entry file
+  import { Button } from '@microcks/deep-ink';
+</script>
+
+<Button variant="primary">Run test</Button>
+```
+
+Every story has a **Copy** panel (open by default, next to Controls and Accessibility). For Svelte it shows the import to write;
+for HTML it shows the recipe and the CSS the `deep-ink` CLI copies (`pnpm deep-ink add button --framework html`).
+
+## Accessibility
+
+Every item documents its keyboard interactions and ARIA attributes in the story docs, taken from the registry. The target is RGAA 4.1.2 (about WCAG 2.1 AA),
+checked by axe-core and a11ylint. These tools do not replace an audit: **the status is "not audited"**, and this project never claims conformance.
+
+## Principles
+
+1. **Contract first.** Paths, URLs and payloads in mono, copyable in one click.
+2. **Density with air.** Workbench density, separated by the `space-6` rhythm.
+3. **Light over shadow.** Elevation lightens the ink; shadows only for overlays and focus.
+4. **Color is data, never the only data.** Protocol colors identify API types, status colors report outcomes, and every status also has an icon and a word.
+5. **Both themes, same meaning.** Use the **Theme** toolbar button to switch.

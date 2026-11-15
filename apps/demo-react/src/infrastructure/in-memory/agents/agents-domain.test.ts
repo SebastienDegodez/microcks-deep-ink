@@ -14,8 +14,8 @@ import {
   transportSample,
   validateSetup,
   type AgentTestSetup,
-} from '@/domain/agents';
-import { conciergeProfile } from './seed/concierge';
+} from '@microcks/demo-core/domain/agents';
+import { conciergeProfile } from '@microcks/demo-core/infrastructure/in-memory/agents/seed/concierge';
 
 const setup: AgentTestSetup = {
   serviceId: 'concierge', cardUrl: 'https://concierge.staging.acme.io/.well-known/agent-card.json', transports: ['jsonrpc', 'http'],
@@ -102,7 +102,7 @@ describe('agent test setup', () => {
 
 describe('v1.0 wire names', () => {
   it('prefixes the states and keeps the interrupted ones non-terminal', async () => {
-    const { taskStateWire, INTERRUPTED_TASK_STATES, SSE_SAMPLE } = await import('@/domain/agents');
+    const { taskStateWire, INTERRUPTED_TASK_STATES, SSE_SAMPLE } = await import('@microcks/demo-core/domain/agents');
     expect(taskStateWire('input-required')).toBe('TASK_STATE_INPUT_REQUIRED');
     expect(taskStateWire('working')).toBe('TASK_STATE_WORKING');
     expect(INTERRUPTED_TASK_STATES.every((s) => !isTerminalTaskState(s))).toBe(true);

@@ -14,7 +14,7 @@
       "The tone icon is decorative; the words say what happened (\"Imported\", \"cannot run\")",
       "The dismiss button is named \"Dismiss message\" (dismissLabel)",
       "live=\"off\" removes the role for a box that is static page content, not feedback",
-      "bordered={false} and surface=\"raised\" only change the look (no frame, raised fill): the role, the decorative icon and the words stay the same; the raised fill keeps text at 4.5:1 in both themes"
+      "density=\"compact\" (18px lines, 10px gap, 260px text basis), bordered={false} and surface=\"raised\" only change the look (no frame, raised fill): the role, the decorative icon and the words stay the same; the raised fill keeps text at 4.5:1 in both themes"
     ],
     "rgaa": ["7.5", "3.1", "11.9"],
     "wcag": ["4.1.3", "1.4.1", "2.1.1"],

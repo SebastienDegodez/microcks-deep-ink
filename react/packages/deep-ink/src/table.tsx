@@ -81,6 +81,72 @@ export function sortRows<T>(rows: readonly T[], sort: SortState | undefined, val
   });
 }
 
+function nextSort(sort: SortState | undefined, key: string): SortState {
+  return { key, direction: sort?.key === key && sort.direction === 'ascending' ? 'descending' : 'ascending' };
+}
+
+function HeaderCell<T>({ column: c, sort, onSortChange }: { column: DataTableColumn<T>; sort?: SortState; onSortChange?: (sort: SortState) => void }) {
+  const active = sort?.key === c.key ? sort.direction : undefined;
+  return (
+    <th scope="col" data-align={c.align === 'end' ? 'end' : undefined} aria-sort={c.sortable ? active : undefined} style={c.width ? { width: c.width } : undefined}>
+      {c.sortable ? (
+        <button type="button" className="table-sort" onClick={() => onSortChange?.(nextSort(sort, c.key))}>
+          {c.header}
+          <Icon name={active === 'descending' ? 'arrow-down' : active === 'ascending' ? 'arrow-up' : 'dash'} size={12} />
+        </button>
+      ) : c.headerHidden ? (
+        <span className="sr-only">{c.header}</span>
+      ) : (
+        c.header
+      )}
+    </th>
+  );
+}
+
+interface CellContentArgs<T> {
+  content: ReactNode;
+  row: T;
+  /** Set on the first cell of a linked row. */
+  linkHref: string | undefined;
+  /** Row header of a selectable table. */
+  pickable: boolean;
+  /** First cell: says "Selected" to assistive technology. */
+  markSelected: boolean;
+  selected: boolean;
+  renderRowLink?: (row: T, props: RowLinkProps) => ReactNode;
+  onRowSelect?: (row: T) => void;
+}
+
+/** What goes inside a body cell: the row link, the row toggle, or the plain content. */
+function cellContent<T>({ content, row, linkHref, pickable, markSelected, selected, renderRowLink, onRowSelect }: CellContentArgs<T>): ReactNode {
+  if (linkHref !== undefined) {
+    const props: RowLinkProps = { className: 'table-rowlink', href: linkHref, 'aria-current': selected ? 'true' : undefined, children: content };
+    return renderRowLink ? (
+      renderRowLink(row, props)
+    ) : (
+      <a className={props.className} href={props.href} aria-current={props['aria-current']}>
+        {content}
+      </a>
+    );
+  }
+  if (pickable && onRowSelect) {
+    return (
+      <button type="button" className="table-pick" aria-pressed={selected} onClick={() => onRowSelect(row)}>
+        {content}
+      </button>
+    );
+  }
+  if (markSelected && selected) {
+    return (
+      <>
+        <span className="sr-only">Selected: </span>
+        {content}
+      </>
+    );
+  }
+  return content;
+}
+
 /**
  * Data table: real `<caption>`, `th scope`, `aria-sort`, a focusable scroll region.
  * Nothing in the markup is a clickable `<tr>`.
@@ -114,11 +180,6 @@ export function DataTable<T>({
     return v === undefined || v === null ? '' : String(v);
   };
 
-  const nextSort = (key: string): SortState => ({
-    key,
-    direction: sort?.key === key && sort.direction === 'ascending' ? 'descending' : 'ascending',
-  });
-
   const sortedColumn = sort ? columns.find((c) => c.key === sort.key) : undefined;
 
   return (
@@ -129,23 +190,9 @@ export function DataTable<T>({
         </caption>
         <thead>
           <tr>
-            {columns.map((c) => {
-              const active = sort?.key === c.key ? sort.direction : undefined;
-              return (
-                <th key={c.key} scope="col" data-align={c.align === 'end' ? 'end' : undefined} aria-sort={c.sortable ? active : undefined} style={c.width ? { width: c.width } : undefined}>
-                  {c.sortable ? (
-                    <button type="button" className="table-sort" onClick={() => onSortChange?.(nextSort(c.key))}>
-                      {c.header}
-                      <Icon name={active === 'descending' ? 'arrow-down' : active === 'ascending' ? 'arrow-up' : 'dash'} size={12} />
-                    </button>
-                  ) : c.headerHidden ? (
-                    <span className="sr-only">{c.header}</span>
-                  ) : (
-                    c.header
-                  )}
-                </th>
-              );
-            })}
+            {columns.map((c) => (
+              <HeaderCell key={c.key} column={c} sort={sort} onSortChange={onSortChange} />
+            ))}
           </tr>
         </thead>
         <tbody>
@@ -163,36 +210,16 @@ export function DataTable<T>({
               return (
                 <tr key={key} data-selected={selected ? '' : undefined} data-tone={rowTone?.(row)}>
                   {columns.map((c, i) => {
-                    const content = cellValue(row, c);
-                    let inner: ReactNode = content;
-                    if (i === 0 && href !== undefined) {
-                      const props: RowLinkProps = {
-                        className: 'table-rowlink',
-                        href,
-                        'aria-current': selected ? 'true' : undefined,
-                        children: content,
-                      };
-                      inner = renderRowLink ? (
-                        renderRowLink(row, props)
-                      ) : (
-                        <a className={props.className} href={props.href} aria-current={props['aria-current']}>
-                          {content}
-                        </a>
-                      );
-                    } else if (c.rowHeader && onRowSelect) {
-                      inner = (
-                        <button type="button" className="table-pick" aria-pressed={selected} onClick={() => onRowSelect(row)}>
-                          {content}
-                        </button>
-                      );
-                    } else if (i === 0 && selected) {
-                      inner = (
-                        <>
-                          <span className="sr-only">Selected: </span>
-                          {content}
-                        </>
-                      );
-                    }
+                    const inner = cellContent({
+                      content: cellValue(row, c),
+                      row,
+                      linkHref: i === 0 ? href : undefined,
+                      pickable: Boolean(c.rowHeader && onRowSelect),
+                      markSelected: i === 0,
+                      selected,
+                      renderRowLink,
+                      onRowSelect,
+                    });
                     return (
                       c.rowHeader ? (
                         <th key={c.key} scope="row" data-align={c.align === 'end' ? 'end' : undefined} data-mono={c.mono ? '' : undefined} data-nowrap={c.nowrap ? '' : undefined}>

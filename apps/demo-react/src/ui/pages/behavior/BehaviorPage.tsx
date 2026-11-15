@@ -1,6 +1,6 @@
-import '../explore-kit/explore.css';
-import './behavior.css';
-import './config.css';
+import '@microcks/demo-styles/pages/explore-kit/explore.css';
+import '@microcks/demo-styles/pages/behavior/behavior.css';
+import '@microcks/demo-styles/pages/behavior/config.css';
 import { useMemo, useState } from 'react';
 import { Link as RouterLink, useParams } from 'react-router';
 import {
@@ -11,8 +11,7 @@ import { ApiBadge, Button, Icon, MethodTag, Panel, Segmented, SplitPane, SplitPa
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { DispatcherPanel } from './DispatcherPanel';
 import { SimulatorPanel } from './SimulatorPanel';
-
-const DELAY_PRESETS = [0, 100, 250, 500, 1000];
+import { DELAY_PRESETS, constraintCounts, delayHelp, isInferred, mockBaseOf, pathParamsOf, servedExamples } from './config';
 
 export default function BehaviorPage() {
   const { serviceId = '', operationId = '' } = useParams();
@@ -44,9 +43,8 @@ export default function BehaviorPage() {
   if (!svc || !operation || !draft || !examples.data) {
     return (<><PageHeader title="Operation behavior" /><LoadingBlock label="the operation behavior" /></>);
   }
-  // A pending AI example is not served until it is accepted, so it does not count here.
-  const exs = examples.data.filter((e) => e.reviewState !== 'pending');
-  const pathParams = [...operation.path.matchAll(/\{([^}]+)\}/g)].map((m) => m[1] as string);
+  const exs = servedExamples(examples.data);
+  const pathParams = pathParamsOf(operation.path);
   const edit = (patch: Partial<Behavior>) => { setDraft({ ...draft, ...patch }); setSavedAt(false); };
   const toggleStateful = (on: boolean) => {
     if (on) {
@@ -60,10 +58,8 @@ export default function BehaviorPage() {
       setSwitched(false);
     }
   };
-  // The contract infers URI_PARTS on the path parameters; say so only while that is what is saved.
-  const inferred = current?.dispatcher === 'URI_PARTS' && current.rule === pathParams.join(' && ');
-  const headerCount = draft.constraints.filter((c) => c.in === 'header').length;
-  const counts = `${headerCount} header · ${draft.constraints.length - headerCount} query`;
+  const inferred = isInferred(current, pathParams);
+  const counts = constraintCounts(draft.constraints);
   const setConstraint = (i: number, patch: Partial<ParameterConstraint>) =>
     edit({ constraints: draft.constraints.map((c, j) => (j === i ? { ...c, ...patch } : c)) });
 
@@ -132,9 +128,7 @@ export default function BehaviorPage() {
             <div className="delay-strategy">
               <span className="field-inline-label" aria-hidden="true">Strategy</span>
               <Segmented variant="joined" size="sm" label="Strategy" value={draft.delayStrategy ?? 'fixed'} onChange={(id) => edit({ delayStrategy: id as 'fixed' | 'random' })} options={[{ id: 'fixed', label: 'fixed' }, { id: 'random', label: 'random' }]} />
-              <span className="delay-help">
-                {draft.delayMs === 0 ? 'No delay: responses return immediately.' : (draft.delayStrategy ?? 'fixed') === 'fixed' ? `Every response waits exactly ${draft.delayMs} ms.` : `The wait varies on every call, based on ${draft.delayMs} ms. Use random-N in the raw value to bound the range.`}
-              </span>
+              <span className="delay-help">{delayHelp(draft)}</span>
             </div>
             <p className="delay-overrides">
               <span>Per endpoint: <code>?delay=500</code></span>
@@ -164,8 +158,8 @@ export default function BehaviorPage() {
                           </select>
                         </td>
                         <td><input className="cell-control" type="text" aria-label={`Name of ${who}`} placeholder="parameter name" value={c.name} onChange={(e) => setConstraint(i, { name: e.target.value })} /></td>
-                        <td className="is-center"><input type="checkbox" className="checkbox" aria-label={`${who} is required`} checked={c.required} onChange={(e) => setConstraint(i, { required: e.target.checked })} /></td>
-                        <td className="is-center"><input type="checkbox" className="checkbox" aria-label={`Recopy ${who}`} checked={Boolean(c.recopy)} onChange={(e) => setConstraint(i, { recopy: e.target.checked })} /></td>
+                        <td className="is-center"><input type="checkbox" className="checkbox constraint-check" aria-label={`${who} is required`} checked={c.required} onChange={(e) => setConstraint(i, { required: e.target.checked })} /></td>
+                        <td className="is-center"><input type="checkbox" className="checkbox constraint-check" aria-label={`Recopy ${who}`} checked={Boolean(c.recopy)} onChange={(e) => setConstraint(i, { recopy: e.target.checked })} /></td>
                         <td>
                           <input
                             className="cell-control cell-regexp"
@@ -225,7 +219,7 @@ export default function BehaviorPage() {
             operationId={operationId}
             method={operation.method}
             protocol={svc.protocol}
-            mockBase={`http://microcks.local:8080/rest/${svc.name.replace(/ /g, '+')}/${svc.version}`}
+            mockBase={mockBaseOf(svc)}
             draft={draft}
           />
         </SplitPaneSide>

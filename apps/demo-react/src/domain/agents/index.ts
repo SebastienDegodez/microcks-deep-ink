@@ -1,4 +1,1 @@
-export * from './types';
-export * from './card';
-export * from './conformance';
-export * from './mock-calls';
+export * from '@microcks/demo-core/domain/agents';

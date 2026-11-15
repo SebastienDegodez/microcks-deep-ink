@@ -1,0 +1,28 @@
+{
+  "component": "Icon",
+  "cases": [
+    {"name": "decorative", "props": {"name": "check"}},
+    {"name": "labelled", "props": {"name": "check", "label": "Passed", "size": 20}},
+    {"name": "several-paths", "props": {"name": "warning", "size": 13}},
+    {"name": "dashed", "props": {"name": "never-tested"}},
+    {"name": "unknown-name", "props": {"name": "not-an-icon"}},
+    {"name": "class-and-attributes", "props": {"name": "search", "className": "lead", "id": "find", "data-testid": "find"}},
+    {"name": "group-cockpit", "props": {"name": "cockpit"}},
+    {"name": "group-sources", "props": {"name": "sources"}},
+    {"name": "group-info", "props": {"name": "info"}},
+    {"name": "group-running", "props": {"name": "running"}},
+    {"name": "group-early-end", "props": {"name": "early-end"}},
+    {"name": "group-pause-narrow", "props": {"name": "pause-narrow"}},
+    {"name": "group-lens", "props": {"name": "lens"}},
+    {"name": "group-trash-plain", "props": {"name": "trash-plain"}},
+    {"name": "group-more", "props": {"name": "more"}},
+    {"name": "group-sun", "props": {"name": "sun"}},
+    {"name": "group-moon", "props": {"name": "moon"}},
+    {"name": "group-check-circle", "props": {"name": "check-circle"}},
+    {"name": "group-grid", "props": {"name": "grid"}},
+    {"name": "group-layers-missing", "props": {"name": "layers-missing"}},
+    {"name": "group-id-card", "props": {"name": "id-card"}},
+    {"name": "group-database", "props": {"name": "database"}},
+    {"name": "group-trend-flat", "props": {"name": "trend-flat"}}
+  ]
+}

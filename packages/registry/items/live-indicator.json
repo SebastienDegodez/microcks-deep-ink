@@ -17,7 +17,7 @@
     "aria": [
       "Not a live region itself",
       "paused swaps the dot for a pause glyph and writes the word \"paused\" (pausedLabel must contain it too)",
-      "Dot pulse stops under reduced motion",
+      "Dot pulse stops under reduced motion; pulse=false (data-pulse=\"false\") also disables the animation",
       "variant=\"dot\" shows the dot alone: the label stays in the DOM in a .sr-only span, so it is still read; write a label that makes sense where it is read (\"live\")"
     ],
     "rgaa": [

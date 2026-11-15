@@ -1,0 +1,1 @@
+<script>import { StatusBadge } from "@microcks/deep-ink";</script><div class="inline"><StatusBadge shape="bare" status="conformant" label="Passed"/><StatusBadge shape="bare" status="failed"/><StatusBadge shape="bare" status="running"/><StatusBadge shape="bare" status="never" label="Pending"/></div>

@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
-import { createGovernUseCases } from '@/application/govern';
-import type { SecretRepository } from '@/application/ports/importing';
-import { NotFoundError, ValidationError } from '@/application/shared';
-import type { SecretSummary } from '@/domain/shared';
-import { createInMemoryGovernAdapters } from './index';
+import { createGovernUseCases } from '@microcks/demo-core/application/govern';
+import type { SecretRepository } from '@microcks/demo-core/application/ports/importing';
+import { NotFoundError, ValidationError } from '@microcks/demo-core/application/shared';
+import type { SecretSummary } from '@microcks/demo-core/domain/shared';
+import { createInMemoryGovernAdapters } from '@microcks/demo-core/infrastructure/in-memory/govern';
 
 function setup() {
   const store: SecretSummary[] = [{ id: 's1', name: 'pastry-staging-oauth', kind: 'oauth2', masked: '••••', createdAt: '2026-10-30T00:00:00Z' }];

@@ -5,11 +5,8 @@ import { useQuery, useReturnFocus, useUseCases } from '@/ui/app';
 import { ApiBadge, type Protocol, Button, DropZone, Icon, SectionLabel, SplitPane, SplitPaneMain, SplitPaneSide } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { plural, type Notify } from './notify';
-import './snapshots.css';
-
-const SAMPLE = 'microcks-repository-staging.json';
-/** Preselected on the prototype. */
-const INITIAL = ['pastry2', 'orders'];
+import { DEFAULT_FILE, INITIAL, SAMPLE, importedMessage, toggledSelection } from './snapshots';
+import '@microcks/demo-styles/pages/admin/snapshots.css';
 
 export function SnapshotsTab({ notify }: { notify: Notify }) {
   return (
@@ -59,7 +56,7 @@ function ExportCard() {
             const on = selected.includes(s.id);
             return (
               <label key={s.id} className="ad-snap-service" data-selected={on ? '' : undefined}>
-                <input type="checkbox" checked={on} onChange={(e) => choose(e.target.checked ? [...selected, s.id] : selected.filter((x) => x !== s.id))} />
+                <input type="checkbox" checked={on} onChange={(e) => choose(toggledSelection(selected, s.id, e.target.checked))} />
                 <ApiBadge protocol={s.protocol as Protocol} name={`${s.name} ${s.version}`} size="sm" className="ad-snap-badge" />
                 <span className="ad-snap-ops">{plural(s.operationCount, 'op')}</span>
               </label>
@@ -112,7 +109,7 @@ function ImportCard({ notify }: { notify: Notify }) {
     const r = await uc.govern.importSnapshot(fileName);
     setResult(r);
     focusLater(() => document.getElementById(`${inputId}-open`));
-    notify(`Snapshot ${fileName} imported: ${plural(r.created, 'Service')} created, ${r.replaced} replaced.`);
+    notify(importedMessage(fileName, r));
   };
 
   return (
@@ -126,14 +123,14 @@ function ImportCard({ notify }: { notify: Notify }) {
           accept="application/json,.json"
           multiple={false}
           chooseLabel="Choose a file"
-          onFiles={(files) => void pick(files[0]?.name ?? 'microcks-repository.json')}
+          onFiles={(files) => void pick(files[0]?.name ?? DEFAULT_FILE)}
         >
           <button type="button" className="ad-link-button ad-drop-sample" onClick={() => pick(SAMPLE)}>Use a sample snapshot</button>
         </DropZone>
       ) : (
         <div className="ad-snap-preview">
           <div className="ad-snap-filerow">
-            <Icon name="file-plain" size={15} />
+            <Icon name="file-plain" size={15} className="ad-snap-file-icon" />
             <span className="ad-snap-filename">{fileName}</span>
             {result ? null : <button type="button" id={`${inputId}-change`} className="ad-link-button" aria-label={`Change file ${fileName}`} onClick={clear}>Change</button>}
           </div>

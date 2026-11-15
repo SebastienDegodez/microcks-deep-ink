@@ -1,4 +1,4 @@
-import './states.css';
+import '@microcks/demo-styles/app/states.css';
 import { NotFoundError } from '@/application/shared';
 import { Button, Callout, EmptyState, Skeleton } from '@microcks/deep-ink';
 

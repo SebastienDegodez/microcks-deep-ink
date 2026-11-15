@@ -26,6 +26,13 @@ export const Paused: StoryObj = {
   }),
 };
 
+export const CompactStatic: StoryObj = {
+  name: 'Compact, static dot',
+  render: () => ({
+    template: '<span mkLiveIndicator size="compact" [pulse]="false"></span>',
+  }),
+};
+
 export const CustomLabel: StoryObj = {
   name: "Custom label",
   render: () => ({
@@ -62,4 +69,4 @@ export const Box: StoryObj = {
 };
 
 /** Interactive: every input is a control in the Controls panel. */
-export const Playground: StoryObj = playground('live-indicator', 'LiveIndicatorComponent', { label: 'live', paused: false, pausedLabel: 'paused', size: 'md', variant: 'pill' }, '');
+export const Playground: StoryObj = playground('live-indicator', 'LiveIndicatorComponent', { label: 'live', paused: false, pausedLabel: 'paused', size: 'md', variant: 'pill', pulse: true }, '');

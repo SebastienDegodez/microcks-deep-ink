@@ -19,17 +19,18 @@ export const COPY_PANEL_ID = 'deep-ink/copy';
 
 export interface CopyPanelOptions {
   framework: CopyFramework;
+  exports?: Record<string, string[]>;
 }
 
 /** Registers the Copy panel. Select it by default with `parameters.options.selectedPanel = 'deep-ink/copy'`. */
-export function registerCopyPanel({ framework }: CopyPanelOptions): void {
+export function registerCopyPanel({ framework, exports }: CopyPanelOptions): void {
   addons.add(COPY_PANEL_ID, {
     type: types.PANEL,
     title: 'Copy',
     paramKey: 'deepInk',
     render: ({ active }) => (
       <AddonPanel active={Boolean(active)}>
-        <CopyPanel framework={framework} />
+        <CopyPanel framework={framework} exports={exports} />
       </AddonPanel>
     ),
   });

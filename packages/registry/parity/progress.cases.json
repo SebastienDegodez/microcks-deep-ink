@@ -1,0 +1,11 @@
+{
+  "component": "Progress",
+  "cases": [
+    { "name": "determinate", "props": { "label": "Importing contract", "value": 65 } },
+    { "name": "indeterminate", "props": { "label": "Waiting for the broker" } },
+    { "name": "custom-max", "props": { "label": "Operations tested", "value": 8, "max": 12 } },
+    { "name": "class-and-id", "props": { "label": "Importing operations", "value": 60, "id": "import-progress", "className": "wide", "aria-describedby": "import-help" } },
+    { "name": "meter-default", "component": "Meter", "props": { "label": "Operations passing", "value": 11, "max": 12 } },
+    { "name": "meter-range", "component": "Meter", "props": { "label": "Latency", "value": 140, "min": 50, "max": 500, "low": 200, "high": 350, "optimum": 80, "valueText": "140 ms", "id": "latency", "className": "wide" } }
+  ]
+}

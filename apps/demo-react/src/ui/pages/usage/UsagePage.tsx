@@ -9,7 +9,7 @@ import { HourlyChart } from './HourlyChart';
 import { OperationsTable } from './OperationsTable';
 import { UsageHeatmap } from './UsageHeatmap';
 import { UsageKpis } from './UsageKpis';
-import './usage.css';
+import '@microcks/demo-styles/pages/usage/usage.css';
 
 export default function UsagePage() {
   const { serviceId } = useParams();
@@ -49,7 +49,7 @@ export default function UsagePage() {
               <SectionLabel as="label" htmlFor={selectId}>
                 Service
               </SectionLabel>
-              <Select id={selectId} value={scope} onChange={(e) => navigate(e.target.value === 'all' ? '/metrics' : `/metrics/${e.target.value}`)}>
+              <Select id={selectId} className="us-select" value={scope} onChange={(e) => navigate(e.target.value === 'all' ? '/metrics' : `/metrics/${e.target.value}`)}>
                 {(scopes.data ?? [{ id: 'all', label: 'All services' }]).map((o) => (
                   <option key={o.id} value={o.id}>
                     {o.label}

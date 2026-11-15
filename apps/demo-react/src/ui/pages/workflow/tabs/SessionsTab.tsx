@@ -7,7 +7,7 @@ import { useClock, useRelativeTime } from '@/ui/app';
 import { STATUS_ICON } from '@/ui/app/outcomes';
 import { Button, Callout, Checkbox, Facts, Field, Icon, Input, MethodTag, Select, SplitPane, SplitPaneMain, SplitPaneSide, DataTable, type DataTableColumn } from '@microcks/deep-ink';
 import { runPath } from '../../workflows/shared';
-import './sessions.css';
+import '@microcks/demo-styles/pages/workflow/tabs/sessions.css';
 
 /** Examples of the mocked API that can answer a step when a failure is injected (API Pastry 2.0). */
 const FAILURE_EXAMPLES: Record<string, { value: string; code: number }[]> = {

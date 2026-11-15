@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { conformanceScore } from './conformance';
-import { formatClock, formatDuration, formatRelative } from './time';
-import { labelFromString, labelToString } from './service';
+import { conformanceScore } from '@microcks/demo-core/domain/shared/conformance';
+import { formatClock, formatDuration, formatRelative } from '@microcks/demo-core/domain/shared/time';
+import { labelFromString, labelToString } from '@microcks/demo-core/domain/shared/service';
 
 describe('conformanceScore', () => {
   it('is round(100 * pass / tested)', () => {

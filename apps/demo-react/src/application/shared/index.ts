@@ -1,2 +1,1 @@
-export * from './stream';
-export * from './errors';
+export * from '@microcks/demo-core/application/shared';

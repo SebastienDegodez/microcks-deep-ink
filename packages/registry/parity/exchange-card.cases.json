@@ -1,0 +1,13 @@
+{
+  "component": "ExchangeCard",
+  "cases": [
+    {"name": "request", "props": {"title": "Request", "label": "Request of Eclair Cafe", "meta": "Eclair Cafe", "blocks": [{"label": "Request line", "text": "GET /pastries/Eclair%20Cafe", "tone": "secondary"}, {"label": "Parameters", "text": "name = Eclair Cafe", "tone": "params"}, {"label": "Request headers", "text": "Accept: application/json\nX-Trace: 1", "tone": "headers"}]}},
+    {"name": "response-warning-grow", "props": {"title": "Response", "label": "Response of Eclair Cafe", "status": "404 Not Found", "statusTone": "warning", "blocks": [{"label": "Response body", "text": "{\n  \"error\": \"not found\"\n}", "tone": "body", "grow": true}]}},
+    {"name": "success-sm-h3", "props": {"title": "Response", "label": "Response", "meta": "ok", "status": "200 OK", "statusTone": "success", "size": "sm", "headingLevel": 3, "blocks": []}},
+    {"name": "danger-md-h5", "props": {"title": "Response", "label": "Response", "status": "500 Internal Server Error", "statusTone": "danger", "size": "md", "headingLevel": 5, "blocks": [{"label": "Body", "text": "  indented  "}]}},
+    {"name": "h6", "props": {"title": "Request", "label": "Request", "headingLevel": 6, "blocks": [{"label": "Body", "text": ""}]}},
+    {"name": "no-heading-attributes", "props": {"title": "Request", "label": "Request", "headingLevel": "none", "meta": "", "status": "", "className": "wide", "id": "c1", "data-testid": "card", "aria-label": "overridden", "data-size": "lg", "blocks": [{"label": "Body", "text": "x"}]}},
+    {"name": "exchange", "component": "Exchange", "props": {}, "children": ["Request card", "Response card"]},
+    {"name": "exchange-no-separator-attributes", "component": "Exchange", "props": {"separator": false, "className": "stacked", "id": "x1", "data-testid": "exchange"}, "children": ["Request card", "Response card"]}
+  ]
+}

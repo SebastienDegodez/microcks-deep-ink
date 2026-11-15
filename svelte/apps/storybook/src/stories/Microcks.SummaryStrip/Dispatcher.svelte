@@ -1,0 +1,1 @@
+<script>import { SummaryStrip } from '@microcks/deep-ink';</script><SummaryStrip gap="roomy" values="text" style="max-width:900px" parts={[{ text: 'Dispatcher', kind: 'label' }, { text: 'URI_PARTS' }, { text: 'name', sep: true }]}><a href="#/behavior">Edit the behaviour</a></SummaryStrip>

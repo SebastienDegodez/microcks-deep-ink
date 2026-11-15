@@ -51,4 +51,23 @@ describe('gen-index', () => {
     expect(() => barrel(lib({ 'not-an-item/Foo.svelte': '' }))).toThrow(/not a registry item/);
     expect(() => barrel(lib({ 'kbd/notes.md': '' }))).toThrow(/no PascalCase/);
   });
+
+  it('preserves native overrides, upstream components and the private helper folder', () => {
+    const dir = lib({
+      'Button.svelte': '',
+      'StatusBadge.svelte': '',
+      'internal/ButtonIcon.svelte': '',
+      'button/Button.svelte': '',
+      'button/button.ts': '',
+      'kbd/Kbd.svelte': '',
+    });
+    const text = barrel(dir);
+    expect(text).toContain("export { default as Button } from './Button.svelte';");
+    expect(text).not.toContain("from './button/Button.svelte'");
+    expect(text).toContain("export * from './button/button.js';");
+    expect(text).toContain("export { default as Kbd } from './kbd/Kbd.svelte';");
+    expect(text).toContain("export { default as StatusBadge } from './StatusBadge.svelte';");
+    expect(text).not.toContain("from './internal/");
+    expect(pending(dir)).not.toContain('status-badge');
+  });
 });

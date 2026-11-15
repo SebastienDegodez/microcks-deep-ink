@@ -6,7 +6,7 @@ import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import * as barrel from '../src/lib/index';
 
-const sources = import.meta.glob(['../src/lib/*/*.svelte', '../src/lib/*/*.ts']);
+const sources = import.meta.glob(['../src/lib/*.svelte', '../src/lib/*.ts', '../src/lib/*/*.svelte', '../src/lib/*/*.ts']);
 const load = (path: string) => sources[`../src/lib/${path}`]!() as Promise<Record<string, unknown>>;
 
 const text = readFileSync(join(__dirname, '..', 'src', 'lib', 'index.ts'), 'utf8');

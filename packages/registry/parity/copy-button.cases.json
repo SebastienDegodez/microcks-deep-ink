@@ -1,0 +1,13 @@
+{
+  "component": "CopyButton",
+  "cases": [
+    {"name": "default", "props": {"value": "http://microcks.local:8080/rest/API+Pastry/2.0/pastries"}},
+    {"name": "ghost-sm", "props": {"value": "microcks test", "size": "sm", "variant": "ghost"}},
+    {"name": "outline-compact-labels", "props": {"value": "microcks test", "size": "compact", "variant": "outline", "label": "Copy command", "copiedLabel": "Command copied"}},
+    {"name": "primary-lg", "props": {"value": "microcks test", "size": "lg", "variant": "primary"}},
+    {"name": "md-link-danger", "props": {"value": "x", "size": "md", "variant": "link", "tone": "danger"}},
+    {"name": "tile-dashed", "props": {"value": "x", "size": "tile", "variant": "dashed"}},
+    {"name": "icon-only", "props": {"value": "x", "iconOnly": true, "label": "Copy mock URL", "aria-label": "ignored"}},
+    {"name": "attributes", "props": {"value": "x", "className": "wide", "id": "cb", "disabled": true, "type": "submit", "aria-label": "Copy the id", "data-testid": "copy"}}
+  ]
+}

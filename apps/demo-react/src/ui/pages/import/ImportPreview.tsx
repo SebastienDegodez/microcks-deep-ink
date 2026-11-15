@@ -3,6 +3,7 @@ import { Link as RouterLink } from 'react-router';
 import type { ArazzoPreview, AgentPreview, ImportPreview } from '@/domain/importing';
 import { Chip, ApiBadge, Button, Field, Icon, type IconName, ProjectionPill, MethodTag, Segmented, Select } from '@microcks/deep-ink';
 import { pluralize } from '@/ui/app/format';
+import { agentStatus, arazzoStatus, importLabel, overlayFileName, workflowSteps } from './result';
 
 interface ImportPreviewProps {
   preview: ImportPreview;
@@ -19,7 +20,6 @@ interface ImportPreviewProps {
 /** Step 2: what Microcks understood of the artifact. Nothing is created yet. */
 export function ImportPreviewCard({ preview, role, onRoleChange, secret, onSecretChange, secretNames, importing, onImport, onCancel }: ImportPreviewProps) {
   const { arazzo, agent, source } = preview;
-  const importLabel = arazzo ? `Import ${arazzo.workflows.length} workflows` : agent || source.kind === 'git' || source.kind === 'url' ? 'Create source' : 'Import';
   return (
     <div className="step-card">
       <div className="step-head">
@@ -79,7 +79,7 @@ export function ImportPreviewCard({ preview, role, onRoleChange, secret, onSecre
           ) : null}
           {source.kind === 'git' ? (
             <div className="note-box">
-              <Icon name="clock" size={16} />
+              <Icon name="clock" size={16} className="note-box-icon" />
               <span>The source “{source.name}” will be created, scanned and imported immediately, then re-scanned every hour. <RouterLink to="/sources">Manage sources</RouterLink></span>
             </div>
           ) : null}
@@ -87,7 +87,7 @@ export function ImportPreviewCard({ preview, role, onRoleChange, secret, onSecre
       )}
 
       <div className="step-actions">
-        <Button variant="primary" icon="download" loading={importing} onClick={onImport}>{importLabel}</Button>
+        <Button variant="primary" icon="download" loading={importing} onClick={onImport}>{importLabel(preview)}</Button>
         <Button variant="secondary" onClick={onCancel}>Cancel</Button>
       </div>
     </div>
@@ -113,14 +113,14 @@ function ArtifactCard({ icon, name, origin, status, format, badge, extra }: { ic
 }
 
 function ArazzoBody({ preview, arazzo }: { preview: ImportPreview; arazzo: ArazzoPreview }) {
-  const steps = arazzo.workflows.reduce((n, w) => n + w.steps, 0);
+  const steps = workflowSteps(arazzo);
   return (
     <>
       <ArtifactCard
         icon="grid"
         name={arazzo.fileName}
         origin={preview.origin}
-        status={`Valid Arazzo ${arazzo.arazzoVersion} · title “${arazzo.title}” ${arazzo.version} · ${arazzo.workflows.length} workflows · ${arazzo.sources.length} source descriptions`}
+        status={arazzoStatus(arazzo)}
         format={`Arazzo ${arazzo.arazzoVersion}`}
         badge={<ApiBadge arazzo name={`${arazzo.title} ${arazzo.version}`} />}
       />
@@ -165,7 +165,7 @@ function ArazzoBody({ preview, arazzo }: { preview: ImportPreview; arazzo: Arazz
                       <span className="mono-sm">MATCHED</span>
                     </span>
                   </td>
-                  <td><span className="ops-found"><Icon name="check-circle" size={14} />{d.operationsFound}</span></td>
+                  <td><span className="ops-found"><Icon name="check-circle" size={14} className="ops-found-icon" />{d.operationsFound}</span></td>
                 </tr>
               ))}
             </tbody>
@@ -173,10 +173,10 @@ function ArazzoBody({ preview, arazzo }: { preview: ImportPreview; arazzo: Arazz
         </div>
         <p className="overlay-line">
           <Icon name="layers" size={15} />
-          <span>Linked through the {arazzo.overlay} overlay <code>{arazzo.fileName.replace(/\.arazzo\.ya?ml$/, '.arazzo-sources.yaml')}</code>, or link them here.</span>
+          <span>Linked through the {arazzo.overlay} overlay <code>{overlayFileName(arazzo)}</code>, or link them here.</span>
         </p>
         <div role="note" className="note-box" data-tone="info" style={{ maxWidth: 760 }}>
-          <Icon name="info" size={16} />
+          <Icon name="info" size={16} className="note-box-icon" />
           <span>Arazzo documents outside the supported subset are refused (e.g. goto actions, jsonpath criteria, workflowId steps). Success criteria use the simple and regex types; step actions are end and retry.</span>
         </div>
       </div>
@@ -191,7 +191,7 @@ function AgentBody({ preview, agent }: { preview: ImportPreview; agent: AgentPre
         icon="id-card"
         name={agent.fileName}
         origin={preview.origin}
-        status={`Valid A2A Agent Card · provider ${agent.provider} · ${agent.skills.length} skills · ${agent.interfaces.length} interfaces · security ${agent.security}`}
+        status={agentStatus(agent)}
         format={preview.formatLabel}
         badge={<ApiBadge protocol="A2A" name="Pastry concierge" version="1.0" />}
         extra={<ProjectionPill />}
@@ -240,7 +240,7 @@ function AgentBody({ preview, agent }: { preview: ImportPreview; agent: AgentPre
         </div>
       </div>
       <div role="note" className="note-box" data-tone="warning">
-        <Icon name="alert-circle" size={16} />
+        <Icon name="alert-circle" size={16} className="note-box-icon" />
         <span>Add an APIExamples secondary artifact to give the mock its conversations. The card alone describes skills, not what the agent answers. The mock serves the card with supportedInterfaces rewritten to point at Microcks, on all {agent.mockInterfaces.length} transports.</span>
       </div>
     </>

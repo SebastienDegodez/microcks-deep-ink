@@ -1,0 +1,12 @@
+import exampleSource0 from './Plugins.Slots.svelte?raw';
+import type { Meta, StoryObj } from '@storybook/svelte-vite';
+import { registerDemoPlugin } from '@microcks-deep-ink/storybook-shared/demo-plugin';
+import Slots from './Plugins.Slots.svelte';
+import { itemParams } from './_meta';
+const meta = { title: 'Plugins/Slots', parameters: itemParams(['plugin-slot', 'panel', 'api-badge', 'live-indicator'], 'A marketplace plugin ships a backend part (loaded by the Microcks server) and/or a frontend part: an ES module that registers custom elements into **extension points**. `plugin-slot` renders them. The demo plugin is a plain Web Component styled with the Deep Ink HTML recipes (live indicator, API badge), so it looks identical in every framework.'), loaders: [async () => ({ ready: await registerDemoPlugin() })] } satisfies Meta;
+export default meta;
+type Story = StoryObj<typeof meta>;
+const story = (variant: string, name: string): Story => ({ name, render: (() => ({ Component: Slots, props: { variant } })) as never });
+export const CockpitWidgets = { ...(story('CockpitWidgets', 'cockpit.widgets')), parameters: { docs: { source: { code: exampleSource0, language: 'svelte', type: 'code' } } } };
+export const ConditionalTab = { ...(story('ConditionalTab', 'service.tabs (when)')), parameters: { docs: { source: { code: exampleSource0, language: 'svelte', type: 'code' } } } };
+export const NavContribution = { ...(story('NavContribution', 'nav.items')), parameters: { docs: { source: { code: exampleSource0, language: 'svelte', type: 'code' } } } };

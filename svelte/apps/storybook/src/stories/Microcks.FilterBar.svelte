@@ -1,0 +1,12 @@
+<script lang="ts">
+ import { Chip, FilterBar, FilterReset, FilterRow, FilterSearch, Segmented } from '@microcks/deep-ink';
+ import type { Protocol } from '@microcks/deep-ink';
+ let { variant='Catalogue', label='Filter services' }: { variant?: string; label?: string } = $props(); let q=$state(''); let result=$state('all'); let proto=$state<Protocol | null>(null); let cat=$state('');
+ const protocols: Array<[Protocol,number]> = [['REST',4],['SOAP',1],['EVENT',2],['GRAPHQL',1]];
+ const categories: Array<[string,number]> = [['All',8],['Samples',3],['Banking',1],['Retail',2]];
+ const active = $derived((q?1:0)+(result!=='all'?1:0)+(proto?1:0));
+</script>
+{#if variant === 'Catalogue'}<FilterBar label="Catalogue filters" style="max-width:1100px"><FilterRow><FilterSearch label="Search APIs and services" value={q} oninput={(e)=>q=(e.currentTarget as HTMLInputElement).value} /><Segmented label="Last test" value={result} onchange={(id)=>result=id} options={[{id:'all',label:'All',count:11,dot:'neutral'},{id:'ok',label:'Conformant',count:3,dot:'success'},{id:'ko',label:'Failing',count:5,dot:'danger'}]} /></FilterRow><FilterRow title="Protocol">{#each protocols as [p,n] (p)}<Chip protocol={p} count={n} pressed={proto===p} onclick={()=>proto=proto===p?null:p}>{p}</Chip>{/each}<FilterReset count={active} onclick={()=>{q='';result='all';proto=null;}} /></FilterRow></FilterBar>
+{:else if variant === 'ResetLabel'}<FilterBar label="Filter runs"><FilterSearch label="Search runs" placeholder="Run number" /><FilterReset count={3} label="Clear filters" /></FilterBar>
+{:else if variant === 'Playground'}<FilterBar {label}><FilterRow title="Search"><FilterSearch label="Search services" placeholder="Search by name" size="md" /></FilterRow><FilterRow title="Protocol"><Chip protocol="REST">REST</Chip><Chip protocol="EVENT">EVENT</Chip></FilterRow><FilterReset count={2} label="Reset" /></FilterBar>
+{:else}<div class="stack"><div class="inline"><FilterSearch size="lg" label="Search packages and APIs" placeholder="Search packages, APIs, protocols…" value={q} oninput={(e)=>q=(e.currentTarget as HTMLInputElement).value} /><span style="font-size:13px;color:var(--text-muted)">8 packages · 22 APIs</span></div><div class="inline" role="group" aria-label="Categories">{#each categories as [c,n] (c)}<Chip size="lg" count={n} pressed={(cat||'All')===c} onclick={()=>cat=c==='All'?'':c}>{c}</Chip>{/each}</div></div>{/if}

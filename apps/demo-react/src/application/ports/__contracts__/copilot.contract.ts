@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import type { CopilotPorts } from '@/application/copilot';
+import type { CopilotPorts } from '@microcks/demo-core/application/copilot';
 import { useAdapters, type MakeAdapters } from './support.contract';
 
 /** The ports the Copilot feature owns (it reads the catalogue through the catalog feature's port). */

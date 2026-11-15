@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { actionLabel, describeAction, runHeadline, stepStripAlt, verdictExplanation } from './describe';
+import { actionLabel, describeAction, runHeadline, stepStripAlt, verdictExplanation } from '@microcks/demo-core/domain/arazzo/describe';
 import { END_IF_AVAILABLE, RETRY_PATCH } from './test-helpers';
-import type { WorkflowRun } from './run';
+import type { WorkflowRun } from '@microcks/demo-core/domain/arazzo/run';
 
 const run14 = {
   number: 14, status: 'FAILURE', options: { validateSchemas: true, inputs: {}, timeoutMs: 1 }, target: { kind: 'implementations', baseUrls: {} },
