@@ -53,7 +53,7 @@
   "dependencies": {
     "@microcks-deep-ink/plugin-sdk": "workspace:*",
     "@microcks-deep-ink/tokens": "workspace:*",
-    "@stencil/core": "^4.45.2"
+    "@stencil/core": "^4.45.3"
   },
   "devDependencies": {
     "esbuild": "^0.28.0",
