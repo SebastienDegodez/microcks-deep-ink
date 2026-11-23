@@ -34,6 +34,6 @@
     "eslint": "^9.0.0",
     "typescript-eslint": "^8.72.0",
     "@angular-eslint/eslint-plugin-template": "^22.6.0",
-    "@angular-eslint/template-parser": "^22.6.0"
+    "@angular-eslint/template-parser": "^22.8.0"
   }
 }
