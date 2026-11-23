@@ -59,7 +59,7 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       # The React package, built by the react job (the demo and the Angular fixtures consume it).
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: deep-ink-dist
           path: react/packages/deep-ink/dist
@@ -74,12 +74,12 @@ jobs:
       # Angular Storybook and the demo.
       - run: pnpm --filter storybook-angular build-storybook
       - run: pnpm build:demo
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: storybook-angular
           path: apps/storybook-angular/storybook-static
           if-no-files-found: error
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         with:
           name: demo
           path: apps/demo-react/dist
@@ -95,23 +95,23 @@ jobs:
         with:
           node-version: 22
           cache: pnpm
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: storybook-react
           path: artifacts/storybook-react
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: storybook-angular
           path: artifacts/storybook-angular
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: storybook-svelte
           path: artifacts/storybook-svelte
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: demo
           path: artifacts/demo
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           name: demo-svelte
           path: artifacts/demo-svelte
@@ -125,13 +125,13 @@ jobs:
 
       # Accessibility smoke run: every story, every demo route, dark and light, axe + a11ylint (RGAA 4.1.2).
       - run: pnpm install --frozen-lockfile --filter a11y-tools
-      - uses: actions/setup-python@v5
+      - uses: actions/setup-python@v7
         with:
           python-version: "3.12"
       - run: pip install playwright==1.63.0
       - run: python -m playwright install --with-deps chromium
       - run: pnpm a11y
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v7
         if: always()
         with:
           name: a11y-report
