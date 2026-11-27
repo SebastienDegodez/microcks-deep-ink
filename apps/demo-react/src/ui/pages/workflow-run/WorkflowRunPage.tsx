@@ -4,12 +4,12 @@ import { callTotals, endLabel, runHeadline, stepsTally, stoppedStep, type Workfl
 import { formatClock, formatDuration } from '@/domain/shared';
 import { RUN_SCENARIOS, type RunScenario } from '@/application/arazzo';
 import { PageHeader, useQuery, useRelativeTime, useSubscription, useUseCases, usePageTitle } from '@/ui/app';
-import { Chip, ApiBadge, Button, Facts, Icon, StatusBadge, DataTable, LiveIndicator, RunMeta, RunProgress } from '@microcks/deep-ink';
+import { ApiBadge, Button, Facts, Icon, StatusBadge, DataTable, LiveIndicator, RunMeta, RunProgress } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { ButtonRouterLink, runPath, runSetupPath, workflowPath } from '../workflows/shared';
 import { RunApiPanel, RunBadges, Verdict } from './run-parts';
 import { RunSteps } from './RunSteps';
-import { implementationsText, runBreadcrumb } from './api';
+import { implementationsText, mixedSourcesText, runBreadcrumb } from './api';
 import { copilotExamplePath } from './steps';
 import {
   REPLAY_TICK_MS,
@@ -559,7 +559,7 @@ function Properties({ run, detail, example }: { run: WorkflowRun; detail?: Detai
           <strong>{targetKindLabel(run)}</strong>
           {run.target.kind === 'implementations' ? <span className="wfr-target-url">{implementationsText(run.target.baseUrls)}</span> : null}
           {run.target.kind === 'mocks' ? <span className="wfr-target-url">{mockSources(run)}</span> : null}
-          {run.target.kind === 'mixed' ? <Chip size="sm" variant="dashed" tone="warning" className="wfr-proposed">Proposed · beyond POC</Chip> : null}
+          {run.target.kind === 'mixed' ? <span className="wfr-target-url">{mixedSourcesText(run.target)}</span> : null}
         </span>
       ),
     },

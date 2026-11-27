@@ -54,8 +54,8 @@ export function RunApiPanel({
         <CopyButton value={curlOne} label="Copy command" variant="outline" className="wfr-copy" />
       </div>
       {mixed ? (
-        <p className="wfr-note" data-tone="warning">
-          Proposed · beyond POC: a source left out of <span className="wfr-mono">implementations</span> stays on its mocks.
+        <p className="wfr-note">
+          A source left out of <span className="wfr-mono">implementations</span> stays on its mocks.
         </p>
       ) : null}
       <div className="wfr-api-mock">

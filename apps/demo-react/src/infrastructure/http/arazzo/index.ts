@@ -19,7 +19,7 @@
  * - mock URL: `POST <microcks>/arazzo/{documentTitle}/{documentVersion}/{workflowId}` (outside `/api`), the
  *   `mockUrl` of a workflow, built from its document when the answer has none.
  *
- * Demo-only, beyond the POC: the `origin` query of the run list and the `origin`/`mixed` target of a launch,
+ * Demo-only, beyond the POC: the `origin` query of the run list and the `origin` of a launch,
  * `PUT /arazzo/runs/{runId}` (`runs.save()`), `GET /arazzo/documents/{documentId}/{source,overlay}` (YAML, text/plain),
  * `GET /arazzo/documents/{documentId}/workflows/{workflowId}/examples`, `GET /arazzo/sessions?document=&workflow=` and
  * `GET /arazzo/sessions/{sessionId}`, and the progress feed below.

@@ -84,6 +84,17 @@ describe('runner: the story of run #14', () => {
     expect((await uc.listRuns('pastry', 'restock-pastry'))[0]?.id).toBe(runId);
   });
 
+  it('calls the URL given for a source of a mixed run that goes to its implementation, and keeps the other on its mocks', async () => {
+    const uc = setup();
+    const url = 'https://pastry.example.test/v9';
+    const { runId } = await uc.startRun(
+      form({ target: 'mixed', perSource: { apiPastry: 'implementation', apiPastryV1: 'mock' }, baseUrls: { apiPastry: url, apiPastryV1: 'https://stale.example' }, validateSchemas: false }),
+    );
+    const run = await uc.getRun(runId);
+    expect(run.target).toEqual({ kind: 'mixed', perSource: { apiPastry: 'implementation', apiPastryV1: 'mock' }, baseUrls: { apiPastry: url } });
+    expect(run.steps.flatMap((s) => (s.request ? [s.request.url] : [])).every((u) => u.startsWith(url))).toBe(true);
+  });
+
   it('passes on staging when schema validation is off (criteria alone hold)', async () => {
     const uc = setup();
     const { runId } = await uc.startRun(form({ target: 'implementations', baseUrls: { apiPastry: 'https://pastry.staging.acme.io/v2' }, validateSchemas: false }));

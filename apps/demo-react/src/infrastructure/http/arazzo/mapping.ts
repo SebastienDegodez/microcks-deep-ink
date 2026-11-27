@@ -18,6 +18,8 @@ import {
   type WorkflowInput,
   type ImportIssue,
   type RunOrigin,
+  callsImplementation,
+  launchTargetFields,
   type RunTarget,
   type RunOptions,
   type Session,
@@ -203,7 +205,14 @@ export function toRun(dto: ArazzoRunDto, context: { documentId?: string } = {}):
     poc.origin === 'MOCK_URL' ? { kind: 'mock-url' } : poc.origin === 'SESSION' ? { kind: 'session', sessionId: session?.sessionId ?? '', app: '' } : { kind: 'api' };
   const baseUrls: Record<string, string> = {};
   for (const s of poc.sources ?? []) if (s.baseUrl) baseUrls[s.sourceName] = s.baseUrl;
-  const target: RunTarget = poc.target === 'IMPLEMENTATIONS' ? { kind: 'implementations', baseUrls } : { kind: 'mocks' };
+  // A mixed run: a relative base URL (/rest/...) is a mock, an absolute one an implementation.
+  const perSource = Object.fromEntries((poc.sources ?? []).map((s) => [s.sourceName, /^https?:\/\//.test(s.baseUrl ?? '') ? 'implementation' : 'mock'] as const));
+  const target: RunTarget =
+    poc.target === 'IMPLEMENTATIONS'
+      ? { kind: 'implementations', baseUrls }
+      : poc.target === 'MIXED'
+        ? { kind: 'mixed', perSource, ...(Object.keys(baseUrls).length ? { baseUrls: Object.fromEntries(Object.entries(baseUrls).filter(([k]) => perSource[k] === 'implementation')) } : {}) }
+        : { kind: 'mocks' };
   const options: RunOptions = { inputs: poc.inputs ?? {}, timeoutMs: poc.timeout ?? DEFAULT_RUN_TIMEOUT_MS, validateSchemas: poc.validateSchema === true };
   if (exampleName) options.example = exampleName;
   if (poc.secretRef?.name) options.secret = poc.secretRef.name;
@@ -236,18 +245,21 @@ export function toLaunch(request: StartRunRequest): ArazzoRunLaunchDto {
   return {
     inputs: options.inputs,
     timeout: options.timeoutMs,
-    implementations: target.kind === 'implementations' ? target.baseUrls : undefined,
-    secretName: options.secret,
+    ...launchTargetFields(target),
+    secretName: callsImplementation(target) ? options.secret : undefined,
     validateSchema: options.validateSchemas,
     example: options.example,
     origin,
-    target: target.kind === 'mixed' ? target : undefined,
   };
 }
 
 /** A launch as the POC reads it: the mocks without `implementations`, an `api` origin by default. */
 export function fromLaunch(dto: ArazzoRunLaunchDto): { target: RunTarget; origin: RunOrigin; options: RunOptions } {
-  const target: RunTarget = dto.target ?? (dto.implementations ? { kind: 'implementations', baseUrls: dto.implementations } : { kind: 'mocks' });
+  const target: RunTarget = dto.target
+    ? { kind: 'mixed', perSource: dto.target.perSource, ...(dto.implementations ? { baseUrls: dto.implementations } : {}) }
+    : dto.implementations
+      ? { kind: 'implementations', baseUrls: dto.implementations }
+      : { kind: 'mocks' };
   const options: RunOptions = {
     inputs: dto.inputs ?? {},
     timeoutMs: dto.timeout ?? DEFAULT_RUN_TIMEOUT_MS,

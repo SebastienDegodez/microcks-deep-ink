@@ -1,8 +1,29 @@
 export type RunTarget =
   | { kind: 'mocks' }
   | { kind: 'implementations'; baseUrls: Record<string, string> }
-  /** Proposed, beyond the POC. */
-  | { kind: 'mixed'; perSource: Record<string, 'mock' | 'implementation'>; proposed: true };
+  /** Each source on its mocks or its implementation; `baseUrls` holds the URL of the sources on their implementation. */
+  | { kind: 'mixed'; perSource: Record<string, 'mock' | 'implementation'>; baseUrls?: Record<string, string> };
+
+/** The base URL of every source a run sends to its implementation (none for the mocks). */
+export function implementationUrls(target: RunTarget): Record<string, string> {
+  if (target.kind === 'mocks') return {};
+  if (target.kind === 'implementations') return target.baseUrls;
+  const urls = target.baseUrls ?? {};
+  return Object.fromEntries(Object.entries(urls).filter(([source]) => target.perSource[source] === 'implementation'));
+}
+
+/** What a launch says of its target (Microcks 2.0): `implementations` for the sources on their implementation, plus `target` for a mixed run. */
+export function launchTargetFields(target: RunTarget): { implementations?: Record<string, string>; target?: { kind: 'mixed'; perSource: Record<string, 'mock' | 'implementation'> } } {
+  const urls = implementationUrls(target);
+  return {
+    ...(Object.keys(urls).length > 0 ? { implementations: urls } : {}),
+    ...(target.kind === 'mixed' ? { target: { kind: 'mixed' as const, perSource: target.perSource } } : {}),
+  };
+}
+
+/** Whether at least one source goes to its implementation: only then does the secret authenticate anything. */
+export const callsImplementation = (target: RunTarget): boolean =>
+  target.kind === 'implementations' || (target.kind === 'mixed' && Object.values(target.perSource).includes('implementation'));
 
 export type RunOrigin =
   | { kind: 'ui' }

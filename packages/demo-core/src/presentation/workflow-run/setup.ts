@@ -1,5 +1,6 @@
 import type { Step, Workflow, WorkflowExample, WorkflowInput } from '../../domain/arazzo/index.js';
-import type { RunApiBody } from './api.js';
+import type { RunTarget } from '../../domain/arazzo/index.js';
+import { launchBody, type RunApiBody } from './api.js';
 
 /** What the steps of a run call. */
 export type RunTargetKind = 'mocks' | 'implementations' | 'mixed';
@@ -8,15 +9,14 @@ export type RunTargetKind = 'mocks' | 'implementations' | 'mixed';
 export interface RunTargetChoice {
   value: RunTargetKind;
   label: string;
-  proposed?: boolean;
   description: string;
 }
 
-/** The choices of "Run against": the mocks, the implementations, or each source on its own (proposed). */
+/** The choices of "Run against": the mocks, the implementations, or each source on its own. */
 export const RUN_TARGETS: readonly RunTargetChoice[] = [
   { value: 'mocks', label: 'Microcks mocks', description: 'Each step calls the mocks of its linked API, for example /rest/API+Pastry/2.0. Checks that the mock examples form a coherent scenario.' },
   { value: 'implementations', label: 'Implementations', description: 'Each step calls the base URL you set per source description. Checks the real services against the workflow.' },
-  { value: 'mixed', label: 'Mixed', proposed: true, description: 'Per source description: its mocks or its implementation URL.' },
+  { value: 'mixed', label: 'Mixed', description: 'Per source description: its mocks or its implementation URL.' },
 ];
 
 /** Label of a target choice. */
@@ -73,16 +73,16 @@ export interface SetupBodyState {
 
 /** The `POST …/runs` body that launches the run the form describes. */
 export function setupApiBody(s: SetupBodyState): RunApiBody {
-  return {
+  const perSource = Object.fromEntries(workflowSources(s.workflow).map((source) => [source, s.perSource[source] ?? 'mock'] as const));
+  const target: RunTarget =
+    s.target === 'mocks' ? { kind: 'mocks' } : s.target === 'implementations' ? { kind: 'implementations', baseUrls: s.baseUrls } : { kind: 'mixed', perSource, baseUrls: s.baseUrls };
+  return launchBody(target, {
     inputs: apiInputs(s.workflow, s.inputs),
     timeout: s.timeoutMs,
-    ...(s.target !== 'mocks'
-      ? { implementations: s.target === 'implementations' ? s.baseUrls : Object.fromEntries(Object.entries(s.baseUrls).filter(([k]) => (s.perSource[k] ?? 'mock') === 'implementation')) }
-      : {}),
-    ...(s.secret ? { secretName: s.secret } : {}),
+    secretName: s.secret,
     validateSchema: s.validate,
-    ...(s.example ? { example: s.example } : {}),
-  };
+    example: s.example,
+  });
 }
 
 /** The onSuccess and onFailure actions of a step, in words, for "What runs". */

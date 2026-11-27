@@ -1,3 +1,5 @@
+import { callsImplementation, launchTargetFields, type RunTarget } from '../../domain/arazzo/index.js';
+
 /* Pieces shared by the run setup page and the run page (the prototype is one page in two phases). */
 
 /** One crumb of the run pages' breadcrumb; the current page has no route. */
@@ -23,14 +25,39 @@ export function implementationsText(baseUrls: Record<string, string>): string {
     .join(' · ');
 }
 
-/** Body of `POST …/runs` as the POC API takes it. */
+/** "customerApi → https://customers.staging.example · orderApi → its mocks": where each source of a mixed run goes. */
+export function mixedSourcesText(target: Extract<RunTarget, { kind: 'mixed' }>): string {
+  return Object.entries(target.perSource)
+    .map(([source, where]) => `${source} → ${where === 'implementation' ? (target.baseUrls?.[source] ?? 'its implementation') : 'its mocks'}`)
+    .join(' · ');
+}
+
+/** Body of `POST …/runs` as Microcks takes it. */
 export interface RunApiBody {
   inputs: Record<string, unknown>;
   timeout: number;
+  /** Base URL of each source sent to its implementation; a source left out goes to its mocks. */
   implementations?: Record<string, string>;
+  /** Only for a mixed run: where each source goes. */
+  target?: { kind: 'mixed'; perSource: Record<string, 'mock' | 'implementation'> };
   secretName?: string;
   validateSchema: boolean;
   example?: string;
+}
+
+/** The launch body of a run: the target as Microcks 2.0 takes it, and the secret only when an implementation is called. */
+export function launchBody(
+  target: RunTarget,
+  rest: { inputs: Record<string, unknown>; timeout: number; secretName?: string; validateSchema: boolean; example?: string },
+): RunApiBody {
+  return {
+    inputs: rest.inputs,
+    timeout: rest.timeout,
+    ...launchTargetFields(target),
+    ...(callsImplementation(target) && rest.secretName ? { secretName: rest.secretName } : {}),
+    validateSchema: rest.validateSchema,
+    ...(rest.example ? { example: rest.example } : {}),
+  };
 }
 
 /** The curl commands of "Run it from the API": pretty-printed to show, on one line to copy. */

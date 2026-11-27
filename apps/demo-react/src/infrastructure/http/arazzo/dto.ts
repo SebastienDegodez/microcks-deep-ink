@@ -11,7 +11,6 @@ import type {
   ArazzoDocument,
   ImportIssue,
   RunOrigin,
-  RunTarget,
   Session,
   SourceDescription,
   Workflow,
@@ -101,7 +100,7 @@ export type ArazzoWorkflowDto =
   | (Omit<Workflow, 'mockUrl' | 'runnability' | 'inputs' | 'steps' | 'outputs'> & Partial<Pick<Workflow, 'mockUrl' | 'runnability' | 'inputs' | 'steps' | 'outputs'>>)
   | PocWorkflowDetail;
 
-export type PocRunTarget = 'MOCKS' | 'IMPLEMENTATIONS';
+export type PocRunTarget = 'MOCKS' | 'IMPLEMENTATIONS' | 'MIXED';
 export type PocRunStatus = 'IN_PROGRESS' | 'SUCCESS' | 'FAILURE';
 /** Null for a run launched from the UI or the API. */
 export type PocRunOrigin = 'MOCK_URL' | 'SESSION';
@@ -175,21 +174,21 @@ export interface ArazzoRunFrameDto {
 
 /**
  * `POST /api/arazzo/documents/{documentId}/workflows/{workflowId}/runs`: the POC's `ArazzoRunLaunchDTO`
- * (`implementations` absent for the mocks) + `origin` and the proposed `mixed` target.
+ * (`implementations` absent for the mocks, `target` only for a mixed run) + `origin`.
  */
 export interface ArazzoRunLaunchDto {
   inputs: Record<string, unknown>;
   /** Milliseconds. */
   timeout?: number;
-  /** Base URL of each source's implementation, by source name; absent to run on the mocks. */
+  /** Base URL of each source sent to its implementation, by source name; a source left out runs on its mocks. */
   implementations?: Record<string, string>;
   secretName?: string;
   validateSchema?: boolean;
   example?: string;
   /** Demo extension: who started the run (the POC derives it from the endpoint). */
   origin?: RunOrigin;
-  /** Demo extension: the proposed `mixed` target only. */
-  target?: Extract<RunTarget, { kind: 'mixed' }>;
+  /** Mixed run only: where each source goes. */
+  target?: { kind: 'mixed'; perSource: Record<string, 'mock' | 'implementation'> };
 }
 
 /** `PUT /api/arazzo/documents/{documentId}/sources`: the POC's `ArazzoLinksRequest` (`ServiceRef` by source name). */

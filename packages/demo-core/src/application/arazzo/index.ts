@@ -130,7 +130,11 @@ function toTarget(input: StartRunInput): RunTarget {
     case 'implementations':
       return { kind: 'implementations', baseUrls: input.baseUrls };
     case 'mixed':
-      return { kind: 'mixed', perSource: input.perSource ?? {}, proposed: true };
+    {
+      const perSource = input.perSource ?? {};
+      const onImplementation = Object.entries(input.baseUrls).filter(([source]) => perSource[source] === 'implementation');
+      return { kind: 'mixed', perSource, ...(onImplementation.length ? { baseUrls: Object.fromEntries(onImplementation) } : {}) };
+    }
   }
 }
 

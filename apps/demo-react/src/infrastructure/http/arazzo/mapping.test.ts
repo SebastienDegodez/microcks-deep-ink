@@ -100,9 +100,33 @@ describe('requests (POC bodies)', () => {
     expect(fromLaunch({ inputs: { size: 'S' } })).toEqual({ target: { kind: 'mocks' }, origin: { kind: 'api' }, options: { inputs: { size: 'S' }, timeoutMs: 10_000, validateSchemas: false } });
   });
 
-  it('keeps the proposed mixed target as a demo extension', () => {
-    const target = { kind: 'mixed', perSource: { apiPastry: 'mock' }, proposed: true } as const;
-    expect(fromLaunch(toLaunch(request({ target }))).target).toEqual(target);
+  it('launches a mixed run as the Microcks 2.0 contract: implementations, target and secret', () => {
+    const target = { kind: 'mixed', perSource: { customerApi: 'implementation', orderApi: 'mock' }, baseUrls: { customerApi: 'https://customers.staging.example' } } as const;
+    const launch = toLaunch(request({ target, options: { inputs: {}, secret: 'staging', timeoutMs: 10_000, validateSchemas: true } }));
+    expect(launch).toMatchObject({
+      implementations: { customerApi: 'https://customers.staging.example' },
+      target: { kind: 'mixed', perSource: { customerApi: 'implementation', orderApi: 'mock' } },
+      secretName: 'staging',
+    });
+    expect(fromLaunch(JSON.parse(JSON.stringify(launch))).target).toEqual(target);
+  });
+
+  it('sends no secret and no implementations for a mixed run entirely on its mocks', () => {
+    const launch = toLaunch(request({ target: { kind: 'mixed', perSource: { orderApi: 'mock' } }, options: { inputs: {}, secret: 'staging', timeoutMs: 10_000, validateSchemas: true } }));
+    expect(launch.implementations).toBeUndefined();
+    expect(launch.secretName).toBeUndefined();
+  });
+
+  it('reads a mixed run of the API: relative base URLs are mocks, absolute ones the implementation', () => {
+    const run = toRun({
+      id: 'r1', number: 7, workflowId: 'w', documentId: 'pastry', status: 'SUCCESS', origin: 'API', target: 'MIXED',
+      sources: [{ sourceName: 'customerApi', baseUrl: 'https://customers.staging.example' }, { sourceName: 'orderApi', baseUrl: '/rest/Orders/1.0' }],
+    } as never);
+    expect(run.target).toEqual({
+      kind: 'mixed',
+      perSource: { customerApi: 'implementation', orderApi: 'mock' },
+      baseUrls: { customerApi: 'https://customers.staging.example' },
+    });
   });
 
   it('opens a session with the failure injection as POC failures, and back', () => {

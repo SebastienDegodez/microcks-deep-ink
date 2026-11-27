@@ -1,5 +1,5 @@
 import { judgeExample, resolveExpression, runContext, stoppedStep, verdictExplanation, type ExampleExpectation, type Step, type Workflow, type WorkflowExample, type WorkflowRun } from '../../domain/arazzo/index.js';
-import { implementationsText, type RunApiBody } from './api.js';
+import { implementationsText, launchBody, mixedSourcesText, type RunApiBody } from './api.js';
 import { phaseOf } from './steps.js';
 
 /** Gap between two replayed frames once the replay is behind the stream (after a pause), in ms. */
@@ -37,19 +37,18 @@ export function launchedBy(run: WorkflowRun): string {
 export function targetLine(run: WorkflowRun): string {
   if (run.target.kind === 'mocks') return 'Microcks mocks';
   if (run.target.kind === 'implementations') return `Implementations · ${implementationsText(run.target.baseUrls)}`;
-  return 'Mixed · proposed, beyond POC';
+  return `Mixed · ${mixedSourcesText(run.target)}`;
 }
 
 /** The `POST …/runs` body that launches the same run. */
 export function apiBodyOf(run: WorkflowRun): RunApiBody {
-  return {
+  return launchBody(run.target, {
     inputs: run.options.inputs,
     timeout: run.options.timeoutMs,
-    ...(run.target.kind === 'implementations' ? { implementations: run.target.baseUrls } : {}),
-    ...(run.target.kind !== 'mocks' && run.options.secret ? { secretName: run.options.secret } : {}),
+    secretName: run.options.secret,
     validateSchema: run.options.validateSchemas,
-    ...(run.options.example ? { example: run.options.example } : {}),
-  };
+    example: run.options.example,
+  });
 }
 
 /** URL a step calls, resolved from the inputs and the outputs the run has so far (before its request exists). */
@@ -63,7 +62,8 @@ export function resolvedUrl(run: WorkflowRun, def: Step): string {
     if (p.in === 'path') path = path.replace(`{${p.name}}`, encodeURIComponent(text));
     else if (p.in === 'query') query.push(`${p.name}=${encodeURIComponent(text)}`);
   }
-  const base = run.target.kind === 'implementations' ? (run.target.baseUrls[def.sourceName] ?? '') : (run.steps.find((x) => x.request)?.request?.url.replace(/\/pastries.*$/, '') ?? '');
+  const given = run.target.kind === 'mocks' ? undefined : run.target.baseUrls?.[def.sourceName];
+  const base = run.target.kind === 'implementations' ? (given ?? '') : (given ?? run.steps.find((x) => x.request)?.request?.url.replace(/\/pastries.*$/, '') ?? '');
   return `${base}${path}${query.length ? `?${query.join('&')}` : ''}`;
 }
 

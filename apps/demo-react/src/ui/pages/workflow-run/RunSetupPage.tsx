@@ -4,7 +4,7 @@ import { timeoutOrDefault, validateRunRequest, type FieldError } from '@/domain/
 import { isRunScenario, type RunSetup, type StartRunInput } from '@/application/arazzo';
 import { Link as RouterLink } from 'react-router';
 import { PageHeader, useAnnounce, usePageTitle, useQuery, useUseCases } from '@/ui/app';
-import { Chip, ApiBadge, Button, Callout, Checkbox, Radio, Facts, Field, Input, RunMeta, Select, Stepper } from '@microcks/deep-ink';
+import { ApiBadge, Button, Callout, Checkbox, Radio, Facts, Field, Input, RunMeta, Select, Stepper } from '@microcks/deep-ink';
 import { ErrorBlock, LoadingBlock } from '@/ui/app/states';
 import { ButtonRouterLink, workflowPath, runPath, runSetupPath } from '../workflows/shared';
 import { RunApiPanel, RunBadges } from './run-parts';
@@ -121,7 +121,7 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
     workflowId: workflow.workflowId,
     target,
     baseUrls: usesImplementation ? baseUrls : {},
-    perSource: target === 'mixed' ? perSource : undefined,
+    perSource: target === 'mixed' ? Object.fromEntries(sources.map((name) => [name, effectivePer(name)])) : undefined,
     secret: usesImplementation && secret ? secret : undefined,
     example: example || undefined,
     inputs,
@@ -241,7 +241,6 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
                     label={
                       <>
                         {t.label}
-                        {t.proposed ? <Chip size="sm" variant="dashed" tone="warning" className="wfr-proposed">Proposed · beyond POC</Chip> : null}
                       </>
                     }
                     description={t.description}
@@ -250,8 +249,8 @@ function RunForm({ setup, exampleParam }: { setup: RunSetup; exampleParam?: stri
               </div>
               {target === 'mixed' ? (
                 <p className="wfr-muted">
-                  Proposal beyond the POC: the POC sends every source to its mocks or every source to its implementation. Mixed lets a workflow spanning several APIs hit one real
-                  service while Microcks mocks the others, e.g. <span className="wfr-mono">compare-prices</span> with apiPastry on staging and apiPastryV1 on its mocks.
+                  Mixed lets a workflow spanning several APIs hit one real service while Microcks mocks the others, e.g. <span className="wfr-mono">compare-prices</span> with
+                  apiPastry on staging and apiPastryV1 on its mocks. A source you do not send to its implementation stays on its mocks.
                 </p>
               ) : null}
 

@@ -168,5 +168,5 @@ Realistic data comes from the clickable prototypes and the Arazzo POC of the Mic
 `end` only (no goto), `check-menu` uses step-level `dependsOn`, `order-pastry` has AsyncAPI steps and cannot run yet, `beerCatalog` is not
 linked. Run #14 of `restock-pastry` targets the implementations (staging) with schema validation on: `patchPastry` fails because `price` comes
 back as the string `"3.9"` while its success criteria hold, it is retried twice, the run stops, `verifyPastry` is not run. It is the same bug as
-test run #119. Run targets Mocks / Implementations / Mixed (Mixed is proposed, beyond the POC); run origins UI/API, Mock URL, session
+test run #119. Run targets Mocks / Implementations / Mixed (Mixed follows the Microcks 2.0 contract: `implementations` + `target`); run origins UI/API, Mock URL, session
 (`x-microcks-session`).

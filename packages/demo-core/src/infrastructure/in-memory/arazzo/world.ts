@@ -53,7 +53,7 @@ function whereOf(target: RunTarget, sourceName: string): Where {
 /** Base URL a source is called on, for this run. */
 export function baseUrlFor(target: RunTarget, sourceName: string): string {
   if (whereOf(target, sourceName) === 'implementation') {
-    const given = target.kind === 'implementations' ? target.baseUrls[sourceName] : undefined;
+    const given = target.kind === 'mocks' ? undefined : target.baseUrls?.[sourceName];
     return (given && given.trim()) || STAGING_BASE;
   }
   if (sourceName === 'apiPastryV1') return MOCK_BASE.replace('/2.0', '/1.0');

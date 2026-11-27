@@ -267,7 +267,6 @@ button[aria-expanded="true"] > .wfr-step-chevron { transform: rotate(90deg); }
 .wfr-target { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
 .wfr-target strong { font-weight: 600; }
 .wfr-target-url { font: 400 11px/1.4 var(--font-mono); color: var(--text-secondary); overflow-wrap: anywhere; }
-.wfr-proposed { align-self: flex-start; }
 .wfr-baggage-block { display: flex; flex-direction: column; gap: 4px; min-width: 0; }
 .wfr-baggage-block .wfr-baggage { padding: 3px 6px; }
 
